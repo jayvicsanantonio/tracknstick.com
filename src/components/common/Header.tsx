@@ -1,5 +1,7 @@
-import { BarChart2, CheckCircle2, Edit, Plus, Sun, Moon } from "lucide-react";
+import MiscellaneousIcons from "@/icons/miscellaneous";
 import { Button } from "@/components/ui/button";
+
+const { BarChart2, CheckCircle2, Edit, Plus, Sun, Moon } = MiscellaneousIcons;
 
 export default function Header({
   isNewUser,
