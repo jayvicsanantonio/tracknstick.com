@@ -1,4 +1,5 @@
 import Header from "@/components/common/Header";
+import Footer from "@/components/Footer";
 import { useToggle } from "./hooks/use-toggle";
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
           toggleEditMode={toggleEditMode}
           toggleDarkMode={toggleDarkMode}
         />
+        <div className="flex min-h-screen items-center space-x-4"></div>
+        <Footer isDarkMode={isDarkMode} />
       </div>
     </div>
   );
