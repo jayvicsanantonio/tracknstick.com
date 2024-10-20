@@ -41,6 +41,7 @@ export default function Header({
               : "bg-purple-600 hover:bg-purple-700"
           }`}
           onClick={toggleEditMode}
+          aria-label="Toggle Edit Mode"
         >
           <Edit className="h-6 w-6" />
         </Button>
@@ -50,6 +51,7 @@ export default function Header({
               ? "bg-purple-700 hover:bg-purple-600"
               : "bg-purple-600 hover:bg-purple-700"
           }`}
+          aria-label="Toggle Progress Overview"
         >
           <BarChart2 className="h-6 w-6" />
         </Button>
@@ -60,6 +62,7 @@ export default function Header({
               : "bg-purple-600 hover:bg-purple-700"
           }`}
           onClick={toggleDarkMode}
+          aria-label="Toggle Dark Mode"
         >
           {isDarkMode ? (
             <Sun className="h-6 w-6" />
