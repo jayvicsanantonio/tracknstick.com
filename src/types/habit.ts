@@ -1,9 +1,10 @@
 import { icons } from "lucide-react";
+import { Frequency } from "@/types/frequency";
 
 export interface Habit {
-  id: number;
+  id: string;
   name: string;
   icon: keyof typeof icons;
-  frequency: string[];
+  frequency: Frequency[];
   completed: boolean;
 }

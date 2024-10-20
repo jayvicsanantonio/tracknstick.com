@@ -66,8 +66,9 @@ export default function AddHabitDialog({
           <DialogTitle
             className={isDarkMode ? "text-purple-200" : "text-purple-800"}
           >
-            <DialogDescription>Add New Habit</DialogDescription>
+            Add New Habit
           </DialogTitle>
+          <DialogDescription>Add a new habit to your list.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -81,7 +82,7 @@ export default function AddHabitDialog({
             </Label>
             <Input
               id="name"
-              className={`col-span-3 ${
+              className={`col-span-3 bg-white ${
                 isDarkMode
                   ? "border-gray-600 focus:border-purple-400"
                   : "border-purple-300 focus:border-purple-500"
@@ -102,8 +103,8 @@ export default function AddHabitDialog({
                   key={name}
                   className={`flex items-center justify-center rounded-md border-2 ${
                     isDarkMode
-                      ? "border-gray-600 bg-gray-700 hover:bg-gray-600 hover:text-purple-200    [&:has([data-state=checked])]:border-purple-400"
-                      : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 [&:has([data-state=checked])]:border-purple-500"
+                      ? "border-gray-600 bg-gray-700 hover:text-purple-200 hover:border-purple-200 [&:has([data-state=checked])]:border-purple-400 [&:has([data-state=checked])]:text-purple-400"
+                      : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600"
                   } p-2 cursor-pointer`}
                 >
                   <RadioGroupItem value={name} id={name} className="sr-only" />
@@ -129,9 +130,9 @@ export default function AddHabitDialog({
                   key={day}
                   value={day}
                   aria-label={`Toggle ${day}`}
-                  className={`w-10 h-10 rounded-full ${
+                  className={`w-10 h-10 rounded-full hover:bg-purple-400 hover:text-white ${
                     isDarkMode
-                      ? "data-[state=on]:bg-purple-600 data-[state=on]:text-white"
+                      ? "data-[state=on]:bg-purple-600 data-[state=on]:text-white text-gray-600"
                       : "data-[state=on]:bg-purple-600 data-[state=on]:text-white"
                   }`}
                 >
