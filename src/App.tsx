@@ -8,6 +8,7 @@ function App() {
   const [habits] = useState([]);
   const [isDarkMode, toggleDarkMode] = useToggle(false);
   const [isEditMode, toggleEditMode] = useToggle(false);
+  const isNewUser = habits.length === 0;
 
   return (
     <div
@@ -17,13 +18,14 @@ function App() {
     >
       <div className="max-w-7xl mx-auto flex flex-col min-h-screen">
         <Header
+          isNewUser={isNewUser}
           isDarkMode={isDarkMode}
           isEditMode={isEditMode}
           toggleEditMode={toggleEditMode}
           toggleDarkMode={toggleDarkMode}
         />
         <div className="flex-1">
-          {habits.length === 0 ? <Welcome isDarkMode={isDarkMode} /> : null}
+          {isNewUser ? <Welcome isDarkMode={isDarkMode} /> : null}
         </div>
         <Footer isDarkMode={isDarkMode} />
       </div>
