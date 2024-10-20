@@ -2,11 +2,13 @@ import { BarChart2, CheckCircle2, Edit, Plus, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Header({
+  isNewUser,
   isDarkMode,
   isEditMode,
   toggleEditMode,
   toggleDarkMode,
 }: {
+  isNewUser: boolean;
   isDarkMode: boolean;
   isEditMode: boolean;
   toggleEditMode: () => void;
@@ -29,32 +31,36 @@ export default function Header({
         </span>
       </div>
       <div className="flex items-center space-x-4">
-        <Button className="rounded-full w-10 h-10 p-0 bg-purple-600 hover:bg-purple-700">
-          <Plus className="h-6 w-6" />
-        </Button>
-        <Button
-          className={`rounded-full w-10 h-10 p-0 ${
-            isEditMode
-              ? "bg-purple-400"
-              : isDarkMode
-              ? "bg-purple-700 hover:bg-purple-600"
-              : "bg-purple-600 hover:bg-purple-700"
-          }`}
-          onClick={toggleEditMode}
-          aria-label="Toggle Edit Mode"
-        >
-          <Edit className="h-6 w-6" />
-        </Button>
-        <Button
-          className={`rounded-full w-10 h-10 p-0 ${
-            isDarkMode
-              ? "bg-purple-700 hover:bg-purple-600"
-              : "bg-purple-600 hover:bg-purple-700"
-          }`}
-          aria-label="Toggle Progress Overview"
-        >
-          <BarChart2 className="h-6 w-6" />
-        </Button>
+        {!isNewUser && (
+          <>
+            <Button className="rounded-full w-10 h-10 p-0 bg-purple-600 hover:bg-purple-700">
+              <Plus className="h-6 w-6" />
+            </Button>
+            <Button
+              className={`rounded-full w-10 h-10 p-0 ${
+                isEditMode
+                  ? "bg-purple-400"
+                  : isDarkMode
+                  ? "bg-purple-700 hover:bg-purple-600"
+                  : "bg-purple-600 hover:bg-purple-700"
+              }`}
+              onClick={toggleEditMode}
+              aria-label="Toggle Edit Mode"
+            >
+              <Edit className="h-6 w-6" />
+            </Button>
+            <Button
+              className={`rounded-full w-10 h-10 p-0 ${
+                isDarkMode
+                  ? "bg-purple-700 hover:bg-purple-600"
+                  : "bg-purple-600 hover:bg-purple-700"
+              }`}
+              aria-label="Toggle Progress Overview"
+            >
+              <BarChart2 className="h-6 w-6" />
+            </Button>
+          </>
+        )}
         <Button
           className={`rounded-full w-10 h-10 p-0 ${
             isDarkMode
