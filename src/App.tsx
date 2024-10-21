@@ -3,6 +3,7 @@ import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import Header from "@/components/common/Header";
 import Welcome from "@/components/common/Welcome";
+import DailyHabitTracker from "@/components/common/DailyHabitTracker";
 import Footer from "@/components/common/Footer";
 
 const data: Habit[] = [
@@ -39,7 +40,7 @@ const data: Habit[] = [
     name: "Cycle",
     completed: false,
     icon: "Bike",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Tue", "Thu"],
   },
   {
     id: "6",
@@ -53,7 +54,7 @@ const data: Habit[] = [
     name: "Paint",
     completed: false,
     icon: "Palette",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Sun"],
   },
   {
     id: "8",
@@ -67,7 +68,7 @@ const data: Habit[] = [
     name: "Practice Instrument",
     completed: false,
     icon: "Music",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Sat", "Sun"],
   },
   {
     id: "10",
@@ -81,14 +82,14 @@ const data: Habit[] = [
     name: "Take Photos",
     completed: false,
     icon: "Camera",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Sat"],
   },
   {
     id: "12",
     name: "Learn Language",
     completed: false,
     icon: "Book",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Wed"],
   },
   {
     id: "13",
@@ -102,19 +103,19 @@ const data: Habit[] = [
     name: "Listen to Podcast",
     completed: false,
     icon: "Headphones",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Sat", "Sun"],
   },
   {
     id: "15",
     name: "Yoga",
     completed: false,
     icon: "Heart",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    frequency: ["Mon", "Wed", "Fri"],
   },
 ];
 
 function App() {
-  const [habits] = useState<Habit[]>(null);
+  const [habits, setHabits] = useState<Habit[]>(data);
   const [isDarkMode, toggleDarkMode] = useToggle(false);
   const [isEditMode, toggleEditMode] = useToggle(false);
   const isNewUser = habits === null;
@@ -136,7 +137,13 @@ function App() {
         <div className="flex-1">
           {isNewUser ? (
             <Welcome isDarkMode={isDarkMode} isNewUser={isNewUser} />
-          ) : null}
+          ) : (
+            <DailyHabitTracker
+              isDarkMode={isDarkMode}
+              habits={habits}
+              setHabits={setHabits}
+            />
+          )}
         </div>
         <Footer isDarkMode={isDarkMode} />
       </div>
