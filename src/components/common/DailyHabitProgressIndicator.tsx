@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
@@ -11,7 +11,15 @@ export default function DailyHabitProgressIndicator({
   completionRate: number;
   isDarkMode: boolean;
 }) {
-  const [showCompletionAnimation] = useState(false);
+  const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
+
+  useEffect(() => {
+    if (completionRate === 100) {
+      setShowCompletionAnimation(true);
+      const timer = setTimeout(() => setShowCompletionAnimation(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [completionRate]);
 
   return (
     <div className="flex flex-col items-center justify-center mb-12">
@@ -74,7 +82,7 @@ export default function DailyHabitProgressIndicator({
       <AnimatePresence>
         {showCompletionAnimation && (
           <motion.div
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-purple-500 bg-opacity-50 z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -86,7 +94,12 @@ export default function DailyHabitProgressIndicator({
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                duration: 0.5,
+              }}
             >
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
