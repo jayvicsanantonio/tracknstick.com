@@ -1,4 +1,5 @@
 import MiscellaneousIcons from "@/icons/miscellaneous";
+import AddHabitDialog from "@/components/common/AddHabitDialog";
 import { Button } from "@/components/ui/button";
 
 const { BarChart2, CheckCircle2, Edit, Plus, Sun, Moon } = MiscellaneousIcons;
@@ -35,9 +36,7 @@ export default function Header({
       <div className="flex items-center space-x-4">
         {!isNewUser && (
           <>
-            <Button className="rounded-full w-10 h-10 p-0 bg-purple-600 hover:bg-purple-700">
-              <Plus className="h-6 w-6" />
-            </Button>
+            <AddHabitDialog isDarkMode={isDarkMode} isNewUser={false} />
             <Button
               className={`rounded-full w-10 h-10 p-0 ${
                 isEditMode
