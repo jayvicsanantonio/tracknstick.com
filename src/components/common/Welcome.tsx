@@ -1,13 +1,7 @@
 import { motion } from "framer-motion";
 import AddHabitDialog from "@/components/common/AddHabitDialog";
 
-export default function Welcome({
-  isDarkMode,
-  isNewUser,
-}: {
-  isDarkMode: boolean;
-  isNewUser: boolean;
-}) {
+export default function Welcome({ isDarkMode }: { isDarkMode: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] relative overflow-hidden">
       <motion.div
@@ -31,7 +25,7 @@ export default function Welcome({
           Embark on your journey to better habits and personal growth. Start by
           adding your first habit and watch your progress unfold.
         </p>
-        <AddHabitDialog isDarkMode={isDarkMode} isNewUser={isNewUser} />
+        <AddHabitDialog isDarkMode={isDarkMode} isNewUser={true} />
       </motion.div>
     </div>
   );

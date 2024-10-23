@@ -136,7 +136,7 @@ function App() {
         />
         <div className="flex-1">
           {isNewUser ? (
-            <Welcome isDarkMode={isDarkMode} isNewUser={isNewUser} />
+            <Welcome isDarkMode={isDarkMode} />
           ) : (
             <DailyHabitTracker
               isDarkMode={isDarkMode}
