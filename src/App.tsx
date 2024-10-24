@@ -204,7 +204,7 @@ function App() {
         isDarkMode ? "bg-gray-900 text-white" : "bg-purple-100"
       } p-4 sm:p-8`}
     >
-      <div className="max-w-7xl mx-auto flex flex-col min-h-screen">
+      <div className="min-w-[400px] max-w-7xl mx-auto flex flex-col min-h-screen">
         <Header
           isNewUser={isNewUser}
           isDarkMode={isDarkMode}
