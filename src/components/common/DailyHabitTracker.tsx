@@ -10,12 +10,18 @@ import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
 
 export default function DailyHabitTracker({
   isDarkMode,
+  isEditMode,
   habits,
   setHabits,
+  toggleIsEditingHabit,
+  setEditingHabit,
 }: {
   isDarkMode: boolean;
+  isEditMode: boolean;
   habits: Habit[];
   setHabits: (habits: Habit[]) => void;
+  toggleIsEditingHabit: () => void;
+  setEditingHabit: (habit: Habit | null) => void;
 }) {
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
 
@@ -72,9 +78,12 @@ export default function DailyHabitTracker({
         />
         <DailyHabitList
           isDarkMode={isDarkMode}
+          isEditMode={isEditMode}
           habits={habits}
           toggleHabit={toggleHabit}
           animatingHabitId={animatingHabitId}
+          toggleIsEditingHabit={toggleIsEditingHabit}
+          setEditingHabit={setEditingHabit}
         />
       </CardContent>
     </Card>

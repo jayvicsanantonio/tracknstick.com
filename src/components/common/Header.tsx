@@ -2,19 +2,19 @@ import MiscellaneousIcons from "@/icons/miscellaneous";
 import AddHabitDialog from "@/components/common/AddHabitDialog";
 import { Button } from "@/components/ui/button";
 
-const { BarChart2, CheckCircle2, Edit, Plus, Sun, Moon } = MiscellaneousIcons;
+const { BarChart2, CheckCircle2, Edit, Sun, Moon } = MiscellaneousIcons;
 
 export default function Header({
   isNewUser,
   isDarkMode,
   isEditMode,
-  toggleEditMode,
+  toggleIsEditMode,
   toggleDarkMode,
 }: {
   isNewUser: boolean;
   isDarkMode: boolean;
   isEditMode: boolean;
-  toggleEditMode: () => void;
+  toggleIsEditMode: () => void;
   toggleDarkMode: () => void;
 }) {
   return (
@@ -45,7 +45,7 @@ export default function Header({
                   ? "bg-purple-700 hover:bg-purple-600"
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
-              onClick={toggleEditMode}
+              onClick={toggleIsEditMode}
               aria-label="Toggle Edit Mode"
             >
               <Edit className="h-6 w-6" />

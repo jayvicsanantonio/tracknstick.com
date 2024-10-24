@@ -3,6 +3,7 @@ import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import Header from "@/components/common/Header";
 import Welcome from "@/components/common/Welcome";
+import HabitDetailsDialog from "@/components/common/HabitDetailsDialog";
 import DailyHabitTracker from "@/components/common/DailyHabitTracker";
 import Footer from "@/components/common/Footer";
 
@@ -13,6 +14,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Book",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "2",
@@ -20,6 +26,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Dumbbell",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "3",
@@ -27,6 +38,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Brain",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "4",
@@ -34,6 +50,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Coffee",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "5",
@@ -41,6 +62,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Bike",
     frequency: ["Tue", "Thu"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "6",
@@ -48,6 +74,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Code",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "7",
@@ -55,6 +86,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Palette",
     frequency: ["Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "8",
@@ -62,6 +98,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Music",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "9",
@@ -69,6 +110,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Music",
     frequency: ["Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "10",
@@ -76,6 +122,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Pencil",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "11",
@@ -83,6 +134,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Camera",
     frequency: ["Sat"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "12",
@@ -90,6 +146,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Book",
     frequency: ["Wed"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "13",
@@ -97,6 +158,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Briefcase",
     frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "14",
@@ -104,6 +170,11 @@ const data: Habit[] = [
     completed: false,
     icon: "Headphones",
     frequency: ["Sat", "Sun"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
   {
     id: "15",
@@ -111,13 +182,20 @@ const data: Habit[] = [
     completed: false,
     icon: "Heart",
     frequency: ["Mon", "Wed", "Fri"],
+    stats: {
+      streak: 7,
+      totalCompletions: 14,
+      lastCompleted: "2023-01-01T00:00:00.000Z",
+    },
   },
 ];
 
 function App() {
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [habits, setHabits] = useState<Habit[]>(data);
+  const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [isDarkMode, toggleDarkMode] = useToggle(false);
-  const [isEditMode, toggleEditMode] = useToggle(false);
+  const [isEditingHabit, toggleIsEditingHabit] = useToggle(false);
   const isNewUser = habits === null;
 
   return (
@@ -131,7 +209,7 @@ function App() {
           isNewUser={isNewUser}
           isDarkMode={isDarkMode}
           isEditMode={isEditMode}
-          toggleEditMode={toggleEditMode}
+          toggleIsEditMode={toggleIsEditMode}
           toggleDarkMode={toggleDarkMode}
         />
         <div className="flex-1">
@@ -140,13 +218,23 @@ function App() {
           ) : (
             <DailyHabitTracker
               isDarkMode={isDarkMode}
+              isEditMode={isEditMode}
               habits={habits}
               setHabits={setHabits}
+              toggleIsEditingHabit={toggleIsEditingHabit}
+              setEditingHabit={setEditingHabit}
             />
           )}
         </div>
         <Footer isDarkMode={isDarkMode} />
       </div>
+      <HabitDetailsDialog
+        habit={editingHabit}
+        setHabit={(habit) => setHabits([...habits, habit])}
+        isDarkMode={isDarkMode}
+        isEditingHabit={isEditingHabit}
+        toggleIsEditingHabit={toggleIsEditingHabit}
+      />
     </div>
   );
 }

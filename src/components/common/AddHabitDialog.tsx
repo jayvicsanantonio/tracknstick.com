@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/dialog";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import HabitsIcons from "@/icons/habits";
+import { daysOfWeek } from "@/constants";
 
 const { Plus } = MiscellaneousIcons;
-const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function AddHabitDialog({
   isDarkMode,
