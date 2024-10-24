@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -26,6 +27,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Habit } from "@/types/habit";
 import { daysOfWeek } from "@/constants";
+import frequencyLabel from "@/lib/frequencyLabel";
 import HabitsIcons from "@/icons/habits";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
@@ -77,6 +79,11 @@ export default function HabitDetailsDialog({
             )}
             {habit?.name}
           </DialogTitle>
+          {habit && (
+            <DialogDescription>
+              {frequencyLabel(habit.frequency)}
+            </DialogDescription>
+          )}
         </DialogHeader>
         {habit && (
           <Tabs defaultValue="edit" className="w-full">
@@ -102,7 +109,7 @@ export default function HabitDetailsDialog({
                 Stats
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="edit">
+            <TabsContent value="edit" className="h-[600px] sm:h-[496px]">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label
@@ -189,8 +196,95 @@ export default function HabitDetailsDialog({
                   </ToggleGroup>
                 </div>
               </div>
+              <Separator
+                className={`my-6 ${
+                  isDarkMode ? "bg-gray-600" : "bg-purple-200"
+                }`}
+              />
+              <DialogFooter className="flex justify-between sm:justify-between items-center flex-row gap-2">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`${
+                        isDarkMode
+                          ? "border-red-700 text-red-500 hover:bg-red-900/10"
+                          : "border-red-500 text-red-600 hover:bg-red-100"
+                      }`}
+                    >
+                      Remove Habit
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent
+                    className={
+                      isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
+                    }
+                  >
+                    <AlertDialogHeader>
+                      <AlertDialogTitle
+                        className={
+                          isDarkMode ? "text-purple-200" : "text-purple-800"
+                        }
+                      >
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription
+                        className={
+                          isDarkMode ? "text-gray-400" : "text-gray-600"
+                        }
+                      >
+                        This action cannot be undone. This will permanently
+                        delete your habit and remove all associated data.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel
+                        className={
+                          isDarkMode
+                            ? "bg-gray-700 hover:bg-gray-600"
+                            : "bg-gray-100 hover:bg-gray-200"
+                        }
+                      >
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={removeHabit}
+                        className={`${
+                          isDarkMode
+                            ? "bg-red-700 hover:bg-red-600"
+                            : "bg-red-500 hover:bg-red-600"
+                        }`}
+                      >
+                        Delete Habit
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <div className="flex flex-row gap-2">
+                  <Button
+                    onClick={toggleIsEditingHabit}
+                    variant="outline"
+                    className={
+                      isDarkMode
+                        ? "border-gray-600 hover:bg-gray-700"
+                        : "border-purple-300 hover:bg-purple-100"
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className={`${
+                      isDarkMode
+                        ? "bg-purple-700 hover:bg-purple-600"
+                        : "bg-purple-600 hover:bg-purple-700"
+                    }`}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </DialogFooter>
             </TabsContent>
-            <TabsContent value="stats">
+            <TabsContent value="stats" className="h-[496px]">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <span
@@ -262,87 +356,6 @@ export default function HabitDetailsDialog({
             </TabsContent>
           </Tabs>
         )}
-        <Separator
-          className={`my-1 ${isDarkMode ? "bg-gray-600" : "bg-purple-200"}`}
-        />
-        <DialogFooter className="flex justify-between sm:justify-between items-center flex-row gap-2">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                className={`${
-                  isDarkMode
-                    ? "border-red-700 text-red-500 hover:bg-red-900/10"
-                    : "border-red-500 text-red-600 hover:bg-red-100"
-                }`}
-              >
-                Remove Habit
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent
-              className={
-                isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
-              }
-            >
-              <AlertDialogHeader>
-                <AlertDialogTitle
-                  className={isDarkMode ? "text-purple-200" : "text-purple-800"}
-                >
-                  Are you absolutely sure?
-                </AlertDialogTitle>
-                <AlertDialogDescription
-                  className={isDarkMode ? "text-gray-400" : "text-gray-600"}
-                >
-                  This action cannot be undone. This will permanently delete
-                  your habit and remove all associated data.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel
-                  className={
-                    isDarkMode
-                      ? "bg-gray-700 hover:bg-gray-600"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }
-                >
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={removeHabit}
-                  className={`${
-                    isDarkMode
-                      ? "bg-red-700 hover:bg-red-600"
-                      : "bg-red-500 hover:bg-red-600"
-                  }`}
-                >
-                  Delete Habit
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <div className="flex flex-row gap-2">
-            <Button
-              onClick={toggleIsEditingHabit}
-              variant="outline"
-              className={
-                isDarkMode
-                  ? "border-gray-600 hover:bg-gray-700"
-                  : "border-purple-300 hover:bg-purple-100"
-              }
-            >
-              Cancel
-            </Button>
-            <Button
-              className={`${
-                isDarkMode
-                  ? "bg-purple-700 hover:bg-purple-600"
-                  : "bg-purple-600 hover:bg-purple-700"
-              }`}
-            >
-              Save Changes
-            </Button>
-          </div>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

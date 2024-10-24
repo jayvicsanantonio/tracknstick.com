@@ -2,7 +2,7 @@ import HabitsIcons from "@/icons/habits";
 import { Button } from "@/components/ui/button";
 import StarAnimation from "@/components/common/StarAnimation";
 import { Habit } from "@/types/habit";
-import { Frequency } from "@/types/frequency";
+import frequencyLabel from "@/lib/frequencyLabel";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { Edit } = MiscellaneousIcons;
@@ -25,18 +25,6 @@ export default function DailyHabitItem({
   setEditingHabit: (habit: Habit | null) => void;
 }) {
   const Icon = HabitsIcons[habit.icon];
-
-  const frequencyLabel = (frequency: Frequency[]) => {
-    if (frequency.length === 7) {
-      return "Daily";
-    }
-
-    if (frequency.length === 1) {
-      return "Weekly";
-    }
-
-    return `${frequency.length}x a week`;
-  };
 
   return (
     <div key={habit.id} className="flex flex-col items-center">

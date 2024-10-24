@@ -64,9 +64,10 @@ export default function DailyHabitTracker({
 
   return (
     <Card
-      className={
+      className={`min-w-[400px] ${
         isDarkMode ? "border-gray-700 bg-gray-800" : "border-purple-200"
       }
+      `}
     >
       <CardHeader>
         <DailyHabitDate isDarkMode={isDarkMode} />
