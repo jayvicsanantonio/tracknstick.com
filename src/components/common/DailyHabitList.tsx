@@ -1,5 +1,5 @@
 import DailyHabitItem from "@/components/common/DailyHabitItem";
-import { Habit } from "@/types/habit";
+import { DailyHabitListProps } from "@/types/dailyhabitlist";
 
 export default function DailyHabitList({
   isDarkMode,
@@ -9,15 +9,7 @@ export default function DailyHabitList({
   animatingHabitId,
   toggleIsEditingHabit,
   setEditingHabit,
-}: {
-  isDarkMode: boolean;
-  isEditMode: boolean;
-  habits: Habit[];
-  toggleHabit: (id: string) => Promise<void>;
-  animatingHabitId: string | null;
-  toggleIsEditingHabit: () => void;
-  setEditingHabit: (habit: Habit | null) => void;
-}) {
+}: DailyHabitListProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
       {habits.map((habit) => (
