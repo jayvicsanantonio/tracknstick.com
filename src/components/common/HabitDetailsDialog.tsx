@@ -92,7 +92,7 @@ export default function HabitDetailsDialog({
                 value="edit"
                 className={`text-sm ${
                   isDarkMode
-                    ? "data-[state=active]:bg-purple-700"
+                    ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
                     : "data-[state=active]:bg-purple-200"
                 }`}
               >
@@ -102,7 +102,7 @@ export default function HabitDetailsDialog({
                 value="stats"
                 className={`text-sm ${
                   isDarkMode
-                    ? "data-[state=active]:bg-purple-700"
+                    ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
                     : "data-[state=active]:bg-purple-200"
                 }`}
               >
@@ -128,7 +128,7 @@ export default function HabitDetailsDialog({
                     }
                     className={`w-full ${
                       isDarkMode
-                        ? "bg-gray-700 border-gray-600 focus:border-purple-400"
+                        ? "bg-gray-700 border-gray-600 focus:border-purple-400 text-purple-300"
                         : "bg-white border-purple-300 focus:border-purple-500"
                     }`}
                   />
@@ -184,10 +184,10 @@ export default function HabitDetailsDialog({
                         key={day}
                         value={day}
                         aria-label={`Toggle ${day}`}
-                        className={`w-10 h-10 rounded-full data-[state=off]:hover:bg-purple-400 data-[state=off]:hover:text-white ${
+                        className={`w-10 h-10 rounded-full data-[state=off]:hover:text-white ${
                           isDarkMode
-                            ? "data-[state=on]:bg-purple-600 data-[state=on]:text-white data-[state=off]:bg-gray-700 data-[state=off]:text-gray-300"
-                            : "data-[state=on]:bg-purple-500 data-[state=on]:text-white data-[state=off]:bg-gray-100 data-[state=off]:text-gray-600"
+                            ? "data-[state=on]:bg-purple-400 data-[state=on]:text-white data-[state=off]:bg-gray-700 data-[state=off]:text-gray-300 data-[state=off]:hover:bg-purple-300"
+                            : "data-[state=on]:bg-purple-500 data-[state=on]:text-white data-[state=off]:bg-gray-100 data-[state=off]:text-gray-600 data-[state=off]:hover:bg-purple-400"
                         }`}
                       >
                         {day[0]}
@@ -208,7 +208,7 @@ export default function HabitDetailsDialog({
                       variant="outline"
                       className={`${
                         isDarkMode
-                          ? "border-red-700 text-red-500 hover:bg-red-900/10"
+                          ? "border-red-700 text-red-500 hover:bg-red-500 hover:text-white"
                           : "border-red-500 text-red-600 hover:bg-red-100"
                       }`}
                     >
@@ -266,7 +266,7 @@ export default function HabitDetailsDialog({
                     variant="outline"
                     className={
                       isDarkMode
-                        ? "border-gray-600 hover:bg-gray-700"
+                        ? "border-gray-600 hover:bg-gray-700 hover:text-white"
                         : "border-purple-300 hover:bg-purple-100"
                     }
                   >
