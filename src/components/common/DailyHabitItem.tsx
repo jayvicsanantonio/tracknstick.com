@@ -1,18 +1,28 @@
 import HabitsIcons from "@/icons/habits";
+import { Button } from "@/components/ui/button";
 import StarAnimation from "@/components/common/StarAnimation";
 import { Habit } from "@/types/habit";
 import { Frequency } from "@/types/frequency";
+import MiscellaneousIcons from "@/icons/miscellaneous";
+
+const { Edit } = MiscellaneousIcons;
 
 export default function DailyHabitItem({
   habit,
   isDarkMode,
+  isEditMode,
   animatingHabitId,
   toggleHabit,
+  toggleIsEditingHabit,
+  setEditingHabit,
 }: {
   habit: Habit;
   isDarkMode: boolean;
+  isEditMode: boolean;
   animatingHabitId: string | null;
   toggleHabit: (id: string) => Promise<void>;
+  toggleIsEditingHabit: () => void;
+  setEditingHabit: (habit: Habit | null) => void;
 }) {
   const Icon = HabitsIcons[habit.icon];
 
@@ -56,21 +66,21 @@ export default function DailyHabitItem({
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />
         </button>
-        {/* {isEditMode && (
-                <Button
-                  className={`absolute top-0 right-0 rounded-full w-8 h-8 p-0 ${
-                    isDarkMode
-                      ? "bg-purple-700 hover:bg-purple-600"
-                      : "bg-purple-400 hover:bg-purple-500"
-                  }`}
-                  onClick={() => {
-                    setEditingHabit(habit);
-                    setIsEditingHabit(true);
-                  }}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              )} */}
+        {isEditMode && (
+          <Button
+            className={`absolute top-0 right-0 rounded-full w-8 h-8 p-0 ${
+              isDarkMode
+                ? "bg-purple-700 hover:bg-purple-600"
+                : "bg-purple-400 hover:bg-purple-500"
+            }`}
+            onClick={() => {
+              setEditingHabit(habit);
+              toggleIsEditingHabit();
+            }}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <span
         className={`text-sm font-medium ${
