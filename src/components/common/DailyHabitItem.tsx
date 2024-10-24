@@ -56,11 +56,7 @@ export default function DailyHabitItem({
         </button>
         {isEditMode && (
           <Button
-            className={`absolute top-0 right-0 rounded-full w-8 h-8 p-0 ${
-              isDarkMode
-                ? "bg-purple-700 hover:bg-purple-600"
-                : "bg-purple-400 hover:bg-purple-500"
-            }`}
+            className="absolute top-0 right-0 rounded-full w-8 h-8 p-0 bg-purple-400 hover:bg-purple-500"
             onClick={() => {
               setEditingHabit(habit);
               toggleIsEditingHabit();
