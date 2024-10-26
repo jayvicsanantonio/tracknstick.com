@@ -5,6 +5,7 @@ import Header from "@/components/common/Header";
 import Welcome from "@/components/common/Welcome";
 import HabitDetailsDialog from "@/components/common/HabitDetailsDialog";
 import DailyHabitTracker from "@/components/common/DailyHabitTracker";
+import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 
 const data: Habit[] = [
@@ -196,6 +197,7 @@ function App() {
   const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [isDarkMode, toggleDarkMode] = useToggle(false);
   const [isEditingHabit, toggleIsEditingHabit] = useToggle(false);
+  const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
   const isNewUser = habits === null;
 
   return (
@@ -210,6 +212,7 @@ function App() {
           isDarkMode={isDarkMode}
           isEditMode={isEditMode}
           toggleIsEditMode={toggleIsEditMode}
+          toggleIsOverviewMode={toggleIsOverviewMode}
           toggleDarkMode={toggleDarkMode}
         />
         <div className="flex-1">
@@ -234,6 +237,11 @@ function App() {
         isDarkMode={isDarkMode}
         isEditingHabit={isEditingHabit}
         toggleIsEditingHabit={toggleIsEditingHabit}
+      />
+      <ProgressOverview
+        isDarkMode={isDarkMode}
+        isOverviewMode={isOverviewMode}
+        toggleIsOverviewMode={toggleIsOverviewMode}
       />
     </div>
   );

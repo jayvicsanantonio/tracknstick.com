@@ -47,7 +47,7 @@ export default function DailyHabitDate({
         className={
           isDarkMode
             ? "border-gray-600 text-purple-700 hover:bg-purple-300"
-            : "border-purple-400 text-purple-400 hover:bg-purple-100 hover:text-purple-500"
+            : "border-purple-200 text-purple-400 hover:bg-purple-100 hover:text-purple-500 shadow"
         }
       >
         <ChevronLeft className="h-4 w-4" />
@@ -75,7 +75,7 @@ export default function DailyHabitDate({
         className={
           isDarkMode
             ? "border-gray-600 text-purple-700 hover:bg-purple-300"
-            : "border-purple-400 text-purple-400 hover:bg-purple-100 hover:text-purple-500"
+            : "border-purple-200 text-purple-400 hover:bg-purple-100 hover:text-purple-500 shadow"
         }
       >
         <ChevronRight className="h-4 w-4" />

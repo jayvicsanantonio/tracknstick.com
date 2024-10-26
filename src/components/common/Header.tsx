@@ -9,12 +9,14 @@ export default function Header({
   isDarkMode,
   isEditMode,
   toggleIsEditMode,
+  toggleIsOverviewMode,
   toggleDarkMode,
 }: {
   isNewUser: boolean;
   isDarkMode: boolean;
   isEditMode: boolean;
   toggleIsEditMode: () => void;
+  toggleIsOverviewMode: () => void;
   toggleDarkMode: () => void;
 }) {
   return (
@@ -57,6 +59,7 @@ export default function Header({
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
               aria-label="Toggle Progress Overview"
+              onClick={toggleIsOverviewMode}
             >
               <BarChart2 className="h-6 w-6" />
             </Button>
