@@ -1,4 +1,5 @@
 import { Habit } from "@/types/habit";
+import formatDate from "@/lib/formatDate";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { Trophy } = MiscellaneousIcons;
@@ -13,7 +14,7 @@ export default function HabitStats({
   if (!habit) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="group" aria-label="Habit Statistics">
       <div className="flex items-center justify-between">
         <span className={isDarkMode ? "text-purple-300" : "text-purple-700"}>
           Current Streak
@@ -63,9 +64,7 @@ export default function HabitStats({
             isDarkMode ? "text-purple-200" : "text-purple-800"
           }`}
         >
-          {habit.stats.lastCompleted
-            ? new Date(habit.stats.lastCompleted).toLocaleDateString()
-            : "Never"}
+          {formatDate(habit.stats.lastCompleted)}
         </span>
       </div>
     </div>

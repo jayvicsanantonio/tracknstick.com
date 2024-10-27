@@ -12,12 +12,12 @@ export default function HabitForm({
   isDarkMode,
   habit,
   setHabit,
-  toggleShowAddHabitDialog,
+  toggleShowHabitDialog,
 }: {
   isDarkMode: boolean;
   habit?: Habit | null;
   setHabit?: (habit: Habit) => void;
-  toggleShowAddHabitDialog: () => void;
+  toggleShowHabitDialog: () => void;
 }) {
   return (
     <div className="h-[608px] sm:h-[508px] grid gap-4 py-4">
@@ -75,12 +75,14 @@ export default function HabitForm({
           <ToggleGroup
             type="multiple"
             className="flex flex-wrap gap-2 justify-start"
+            aria-label="Select days of the week"
           >
             {daysOfWeek.map((day) => (
               <ToggleGroupItem
                 key={day}
                 value={day}
-                aria-label={`Toggle ${day}`}
+                aria-label={day}
+                title={day}
                 className={`w-10 h-10 rounded-full data-[state=off]:hover:text-white ${
                   isDarkMode
                     ? "data-[state=on]:bg-purple-400 data-[state=on]:text-white data-[state=off]:bg-gray-700 data-[state=off]:text-gray-300 data-[state=off]:hover:bg-purple-300"
@@ -100,7 +102,7 @@ export default function HabitForm({
         <div className="flex flex-row gap-2">
           <Button
             variant="outline"
-            onClick={toggleShowAddHabitDialog}
+            onClick={toggleShowHabitDialog}
             className={
               isDarkMode
                 ? "border-gray-600 hover:bg-gray-700 hover:text-white"

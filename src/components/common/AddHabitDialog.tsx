@@ -17,10 +17,10 @@ export default function AddHabitDialog({
       isOpen={showAddHabitDialog}
       toggleIsOpen={toggleShowAddHabitDialog}
     >
-      <HabitDialogHeader isDarkMode={isDarkMode} />
+      <HabitDialogHeader isDarkMode={isDarkMode} isEditMode={false} />
       <HabitForm
         isDarkMode={isDarkMode}
-        toggleShowAddHabitDialog={toggleShowAddHabitDialog}
+        toggleShowHabitDialog={toggleShowAddHabitDialog}
       />
     </HabitDialog>
   );

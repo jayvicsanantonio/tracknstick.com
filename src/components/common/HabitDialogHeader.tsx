@@ -1,24 +1,19 @@
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import AddHabitDialogHeaderTitle from "@/components/common/AddHabitDialogHeaderTitle";
+import EditHabitDialogHeaderTitle from "@/components/common/EditHabitDialogHeaderTitle";
+import { Habit } from "@/types/habit";
 
 export default function HabitDialogHeader({
   isDarkMode,
+  isEditMode,
+  habit,
 }: {
   isDarkMode: boolean;
+  isEditMode: boolean;
+  habit?: Habit | null;
 }) {
-  return (
-    <DialogHeader>
-      <DialogTitle
-        className={`text-2xl font-bold ${
-          isDarkMode ? "text-purple-200" : "text-purple-800"
-        }`}
-      >
-        Add New Habit
-      </DialogTitle>
-      <DialogDescription>Add a new habit to your list.</DialogDescription>
-    </DialogHeader>
-  );
+  if (isEditMode) {
+    return <EditHabitDialogHeaderTitle isDarkMode={isDarkMode} habit={habit} />;
+  }
+
+  return <AddHabitDialogHeaderTitle isDarkMode={isDarkMode} />;
 }

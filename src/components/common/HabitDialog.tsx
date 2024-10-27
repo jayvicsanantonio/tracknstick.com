@@ -1,11 +1,5 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { type ReactNode } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function HabitDialog({
   isDarkMode,
@@ -16,7 +10,7 @@ export default function HabitDialog({
   isDarkMode: boolean;
   isOpen: boolean;
   toggleIsOpen: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={toggleIsOpen}>

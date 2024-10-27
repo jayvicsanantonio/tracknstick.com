@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import StreakDisplayDays from "@/components/common/StreakDisplayDays";
 import {
   Dialog,
   DialogContent,
@@ -219,24 +220,8 @@ export default function ProgressOverview({
               isDarkMode ? "text-purple-200" : "text-purple-800"
             }`}
           >
-            <div className="flex items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
-              <span className="text-4xl font-bold mr-2">{currentStreak}</span>
-              <div className="flex flex-col">
-                <span className="text-sm">Current Streak</span>
-                <span className="text-xs text-purple-600 dark:text-purple-300">
-                  days
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
-              <span className="text-4xl font-bold mr-2">{longestStreak}</span>
-              <div className="flex flex-col">
-                <span className="text-sm">Longest Streak</span>
-                <span className="text-xs text-purple-600 dark:text-purple-300">
-                  days
-                </span>
-              </div>
-            </div>
+            <StreakDisplayDays value={currentStreak} label="Current Streak" />
+            <StreakDisplayDays value={longestStreak} label="Longest Streak" />
           </div>
         </div>
         <Tabs defaultValue="calendar" className="w-full">

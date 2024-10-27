@@ -24,7 +24,11 @@ export default function EditHabitDialog({
       isOpen={showEditHabitDialog}
       toggleIsOpen={toggleShowEditHabitDialog}
     >
-      <HabitDialogHeader isDarkMode={isDarkMode} />
+      <HabitDialogHeader
+        isDarkMode={isDarkMode}
+        isEditMode={true}
+        habit={habit}
+      />
       <Tabs defaultValue="edit" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger
@@ -53,7 +57,7 @@ export default function EditHabitDialog({
             isDarkMode={isDarkMode}
             habit={habit}
             setHabit={setHabit}
-            toggleShowAddHabitDialog={toggleShowEditHabitDialog}
+            toggleShowHabitDialog={toggleShowEditHabitDialog}
           />
         </TabsContent>
         <TabsContent value="stats" className="h-[496px]">

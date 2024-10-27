@@ -38,13 +38,15 @@ export default function Welcome({
             onClick={toggleShowAddHabitDialog}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Add your first habit"
+            role="button"
             className={`${
               isDarkMode
                 ? "bg-purple-700 hover:bg-purple-600"
                 : "bg-purple-600 hover:bg-purple-700"
             } text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300 shadow-lg`}
           >
-            <Plus className="h-5 w-5 mr-2 inline-block" />
+            <Plus className="h-5 w-5 mr-2 inline-block" aria-hidden="true" />
             Add Your First Habit
           </motion.button>
         </motion.div>

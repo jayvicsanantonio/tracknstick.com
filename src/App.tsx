@@ -3,9 +3,7 @@ import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import Header from "@/components/common/Header";
 import Body from "@/components/common/Body";
-import Welcome from "@/components/common/Welcome";
 import AddHabitDialog from "@/components/common/AddHabitDialog";
-import DailyHabitTracker from "@/components/common/DailyHabitTracker";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "./components/common/EditHabitDialog";
@@ -239,7 +237,9 @@ function App() {
       <EditHabitDialog
         isDarkMode={isDarkMode}
         habit={editingHabit}
-        setHabit={(habit) => setHabits([...habits, habit])}
+        setHabit={(habit) =>
+          setHabits(habits.map((h) => (h.id === habit.id ? habit : h)))
+        }
         showEditHabitDialog={showEditHabitDialog}
         toggleShowEditHabitDialog={toggleShowEditHabitDialog}
       />
