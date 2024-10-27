@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import Header from "@/components/common/Header";
+import Body from "@/components/common/Body";
 import Welcome from "@/components/common/Welcome";
-import HabitDetailsDialog from "@/components/common/HabitDetailsDialog";
+import AddHabitDialog from "@/components/common/AddHabitDialog";
 import DailyHabitTracker from "@/components/common/DailyHabitTracker";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
+import EditHabitDialog from "./components/common/EditHabitDialog";
 
 const data: Habit[] = [
   {
@@ -196,7 +198,8 @@ function App() {
   const [habits, setHabits] = useState<Habit[]>(data);
   const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [isDarkMode, toggleDarkMode] = useToggle(false);
-  const [isEditingHabit, toggleIsEditingHabit] = useToggle(false);
+  const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
+  const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
   const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
   const isNewUser = habits === null;
 
@@ -211,32 +214,34 @@ function App() {
           isNewUser={isNewUser}
           isDarkMode={isDarkMode}
           isEditMode={isEditMode}
+          toggleShowAddHabitDialog={toggleShowAddHabitDialog}
           toggleIsEditMode={toggleIsEditMode}
           toggleIsOverviewMode={toggleIsOverviewMode}
           toggleDarkMode={toggleDarkMode}
         />
-        <div className="flex-1">
-          {isNewUser ? (
-            <Welcome isDarkMode={isDarkMode} />
-          ) : (
-            <DailyHabitTracker
-              isDarkMode={isDarkMode}
-              isEditMode={isEditMode}
-              habits={habits}
-              setHabits={setHabits}
-              toggleIsEditingHabit={toggleIsEditingHabit}
-              setEditingHabit={setEditingHabit}
-            />
-          )}
-        </div>
+        <Body
+          isNewUser={isNewUser}
+          isDarkMode={isDarkMode}
+          isEditMode={isEditMode}
+          habits={habits}
+          setHabits={setHabits}
+          toggleShowAddHabitDialog={toggleShowAddHabitDialog}
+          toggleShowEditHabitDialog={toggleShowEditHabitDialog}
+          setEditingHabit={setEditingHabit}
+        />
         <Footer isDarkMode={isDarkMode} />
       </div>
-      <HabitDetailsDialog
+      <AddHabitDialog
+        isDarkMode={isDarkMode}
+        showAddHabitDialog={showAddHabitDialog}
+        toggleShowAddHabitDialog={toggleShowAddHabitDialog}
+      />
+      <EditHabitDialog
+        isDarkMode={isDarkMode}
         habit={editingHabit}
         setHabit={(habit) => setHabits([...habits, habit])}
-        isDarkMode={isDarkMode}
-        isEditingHabit={isEditingHabit}
-        toggleIsEditingHabit={toggleIsEditingHabit}
+        showEditHabitDialog={showEditHabitDialog}
+        toggleShowEditHabitDialog={toggleShowEditHabitDialog}
       />
       <ProgressOverview
         isDarkMode={isDarkMode}

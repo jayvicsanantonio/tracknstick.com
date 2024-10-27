@@ -219,19 +219,23 @@ export default function ProgressOverview({
               isDarkMode ? "text-purple-200" : "text-purple-800"
             }`}
           >
-            <div className="flex flex-col items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
-              <span className="text-4xl font-bold">{currentStreak}</span>
-              <span className="text-sm">Current Streak</span>
-              <span className="text-xs text-purple-600 dark:text-purple-300">
-                days
-              </span>
+            <div className="flex items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
+              <span className="text-4xl font-bold mr-2">{currentStreak}</span>
+              <div className="flex flex-col">
+                <span className="text-sm">Current Streak</span>
+                <span className="text-xs text-purple-600 dark:text-purple-300">
+                  days
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
-              <span className="text-4xl font-bold">{longestStreak}</span>
-              <span className="text-sm">Longest Streak</span>
-              <span className="text-xs text-purple-600 dark:text-purple-300">
-                days
-              </span>
+            <div className="flex items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
+              <span className="text-4xl font-bold mr-2">{longestStreak}</span>
+              <div className="flex flex-col">
+                <span className="text-sm">Longest Streak</span>
+                <span className="text-xs text-purple-600 dark:text-purple-300">
+                  days
+                </span>
+              </div>
             </div>
           </div>
         </div>
