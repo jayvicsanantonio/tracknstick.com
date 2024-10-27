@@ -63,30 +63,32 @@ export default function DailyHabitTracker({
   };
 
   return (
-    <Card
-      className={`min-w-[400px] ${
-        isDarkMode ? "border-gray-700 bg-gray-800" : "border-purple-200"
-      }
+    <div className="flex-1">
+      <Card
+        className={`min-w-[400px] ${
+          isDarkMode ? "border-gray-700 bg-gray-800" : "border-purple-200"
+        }
       `}
-    >
-      <CardHeader>
-        <DailyHabitDate isDarkMode={isDarkMode} />
-      </CardHeader>
-      <CardContent>
-        <DailyHabitProgressIndicator
-          completionRate={completionRate}
-          isDarkMode={isDarkMode}
-        />
-        <DailyHabitList
-          isDarkMode={isDarkMode}
-          isEditMode={isEditMode}
-          habits={habits}
-          toggleHabit={toggleHabit}
-          animatingHabitId={animatingHabitId}
-          toggleIsEditingHabit={toggleIsEditingHabit}
-          setEditingHabit={setEditingHabit}
-        />
-      </CardContent>
-    </Card>
+      >
+        <CardHeader>
+          <DailyHabitDate isDarkMode={isDarkMode} />
+        </CardHeader>
+        <CardContent>
+          <DailyHabitProgressIndicator
+            completionRate={completionRate}
+            isDarkMode={isDarkMode}
+          />
+          <DailyHabitList
+            isDarkMode={isDarkMode}
+            isEditMode={isEditMode}
+            habits={habits}
+            toggleHabit={toggleHabit}
+            animatingHabitId={animatingHabitId}
+            toggleIsEditingHabit={toggleIsEditingHabit}
+            setEditingHabit={setEditingHabit}
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 }
