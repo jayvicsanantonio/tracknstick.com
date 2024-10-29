@@ -3,6 +3,7 @@ import StreakDisplayDays from "@/components/common/StreakDisplayDays";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -18,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import VisuallyHidden from "@/components/common/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const {
@@ -213,6 +215,9 @@ export default function ProgressOverview({
           >
             Progress Overview
           </DialogTitle>
+          <VisuallyHidden>
+            <DialogDescription>Overview of your progress.</DialogDescription>
+          </VisuallyHidden>
         </DialogHeader>
         <div className="flex justify-center items-center mb-4">
           <div

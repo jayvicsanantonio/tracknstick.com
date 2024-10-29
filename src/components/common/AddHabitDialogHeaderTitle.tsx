@@ -3,6 +3,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import VisuallyHidden from "@/components/common/VisuallyHidden";
 
 export default function AddHabitDialogHeaderTitle({
   isDarkMode,
@@ -18,7 +19,9 @@ export default function AddHabitDialogHeaderTitle({
       >
         Add New Habit
       </DialogTitle>
-      <DialogDescription>Add a new habit to your list.</DialogDescription>
+      <VisuallyHidden>
+        <DialogDescription>Add a new habit to your list.</DialogDescription>
+      </VisuallyHidden>
     </DialogHeader>
   );
 }
