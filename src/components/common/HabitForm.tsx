@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -7,18 +8,19 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { daysOfWeek } from "@/constants";
 import HabitsIcons from "@/icons/habits";
 import { Habit } from "@/types/habit";
+import { ThemeContext } from "@/context/ThemeContext";
 
 export default function HabitForm({
-  isDarkMode,
   habit,
   setHabit,
   toggleShowHabitDialog,
 }: {
-  isDarkMode: boolean;
   habit?: Habit | null;
   setHabit?: (habit: Habit) => void;
   toggleShowHabitDialog: () => void;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <div className="h-[608px] sm:h-[508px] grid gap-4 py-4">
       <div className="space-y-4">

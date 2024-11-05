@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeContext } from "@/context/ThemeContext";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { Check, Trophy } = MiscellaneousIcons;
 
 export default function DailyHabitProgressIndicator({
   completionRate,
-  isDarkMode,
 }: {
   completionRate: number;
-  isDarkMode: boolean;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
   const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
 
   useEffect(() => {

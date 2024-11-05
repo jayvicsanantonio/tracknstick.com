@@ -3,17 +3,15 @@ import EditHabitDialogHeaderTitle from "@/components/common/EditHabitDialogHeade
 import { Habit } from "@/types/habit";
 
 export default function HabitDialogHeader({
-  isDarkMode,
   isEditMode,
   habit,
 }: {
-  isDarkMode: boolean;
   isEditMode: boolean;
   habit?: Habit | null;
 }) {
   if (isEditMode) {
-    return <EditHabitDialogHeaderTitle isDarkMode={isDarkMode} habit={habit} />;
+    return <EditHabitDialogHeaderTitle habit={habit} />;
   }
 
-  return <AddHabitDialogHeaderTitle isDarkMode={isDarkMode} />;
+  return <AddHabitDialogHeaderTitle />;
 }

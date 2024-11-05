@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useContext, useState, useMemo } from "react";
 import StreakDisplayDays from "@/components/common/StreakDisplayDays";
+import { ThemeContext } from "@/context/ThemeContext";
 import {
   Dialog,
   DialogContent,
@@ -81,18 +82,16 @@ const achievements = [
 ];
 
 export default function ProgressOverview({
-  isDarkMode,
   isOverviewMode,
   toggleIsOverviewMode,
 }: {
-  isDarkMode: boolean;
   isOverviewMode: boolean;
   toggleIsOverviewMode: () => void;
 }) {
   const currentStreak = 7;
   const longestStreak = 14;
   const [currentDate, setCurrentDate] = useState(new Date());
-
+  const { isDarkMode } = useContext(ThemeContext);
   const insightData = useMemo(
     () => generateMockData(currentDate.getFullYear(), currentDate.getMonth()),
     [currentDate]

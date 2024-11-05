@@ -1,15 +1,15 @@
+import { useContext } from "react";
 import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { ThemeContext } from "@/context/ThemeContext";
 import VisuallyHidden from "@/components/common/VisuallyHidden";
 
-export default function AddHabitDialogHeaderTitle({
-  isDarkMode,
-}: {
-  isDarkMode: boolean;
-}) {
+export default function AddHabitDialogHeaderTitle() {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <DialogHeader>
       <DialogTitle

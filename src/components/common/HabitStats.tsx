@@ -1,16 +1,14 @@
+import { useContext } from "react";
 import { Habit } from "@/types/habit";
+import { ThemeContext } from "@/context/ThemeContext";
 import formatDate from "@/lib/formatDate";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { Trophy } = MiscellaneousIcons;
 
-export default function HabitStats({
-  habit,
-  isDarkMode,
-}: {
-  habit: Habit | null;
-  isDarkMode: boolean;
-}) {
+export default function HabitStats({ habit }: { habit: Habit | null }) {
+  const { isDarkMode } = useContext(ThemeContext);
+
   if (!habit) return null;
 
   return (

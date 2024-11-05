@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import HabitsIcons from "@/icons/habits";
 import { Button } from "@/components/ui/button";
+import { ThemeContext } from "@/context/ThemeContext";
 import StarAnimation from "@/components/common/StarAnimation";
 import { Habit } from "@/types/habit";
 import frequencyLabel from "@/lib/frequencyLabel";
@@ -9,7 +11,6 @@ const { Edit } = MiscellaneousIcons;
 
 export default function DailyHabitItem({
   habit,
-  isDarkMode,
   isEditMode,
   animatingHabitId,
   toggleHabit,
@@ -17,13 +18,13 @@ export default function DailyHabitItem({
   setEditingHabit,
 }: {
   habit: Habit;
-  isDarkMode: boolean;
   isEditMode: boolean;
   animatingHabitId: string | null;
   toggleHabit: (id: string) => Promise<void>;
   toggleIsEditingHabit: () => void;
   setEditingHabit: (habit: Habit | null) => void;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
   const Icon = HabitsIcons[habit.icon];
 
   return (

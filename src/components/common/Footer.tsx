@@ -1,4 +1,9 @@
-export default function Footer({ isDarkMode }: { isDarkMode: boolean }) {
+import { useContext } from "react";
+import { ThemeContext } from "@/context/ThemeContext";
+
+export default function Footer() {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <footer
       className={`mt-auto py-6 ${isDarkMode ? "bg-gray-900" : "bg-purple-100"}`}

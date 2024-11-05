@@ -3,25 +3,19 @@ import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 
 export default function AddHabitDialog({
-  isDarkMode,
   showAddHabitDialog,
   toggleShowAddHabitDialog,
 }: {
-  isDarkMode: boolean;
   showAddHabitDialog: boolean;
   toggleShowAddHabitDialog: () => void;
 }) {
   return (
     <HabitDialog
-      isDarkMode={isDarkMode}
       isOpen={showAddHabitDialog}
       toggleIsOpen={toggleShowAddHabitDialog}
     >
-      <HabitDialogHeader isDarkMode={isDarkMode} isEditMode={false} />
-      <HabitForm
-        isDarkMode={isDarkMode}
-        toggleShowHabitDialog={toggleShowAddHabitDialog}
-      />
+      <HabitDialogHeader isEditMode={false} />
+      <HabitForm toggleShowHabitDialog={toggleShowAddHabitDialog} />
     </HabitDialog>
   );
 }

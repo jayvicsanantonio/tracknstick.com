@@ -1,25 +1,24 @@
+import { useContext } from "react";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { Button } from "@/components/ui/button";
-
+import { ThemeContext } from "@/context/ThemeContext";
 const { BarChart2, CheckCircle2, Edit, Moon, Plus, Sun } = MiscellaneousIcons;
 
 export default function Header({
   isNewUser,
-  isDarkMode,
   isEditMode,
   toggleShowAddHabitDialog,
   toggleIsEditMode,
   toggleIsOverviewMode,
-  toggleDarkMode,
 }: {
   isNewUser: boolean;
-  isDarkMode: boolean;
   isEditMode: boolean;
   toggleShowAddHabitDialog: () => void;
   toggleIsEditMode: () => void;
   toggleIsOverviewMode: () => void;
-  toggleDarkMode: () => void;
 }) {
+  const { isDarkMode, toggleDarkMode } = useContext(ThemeContext);
+
   return (
     <div className="flex items-center justify-between mb-8">
       <div className="flex items-center">
