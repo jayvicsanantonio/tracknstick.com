@@ -1,34 +1,31 @@
+import { useContext } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HabitDialog from "@/components/common/HabitDialog";
 import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 import HabitStats from "@/components/common/HabitStats";
+import { ThemeContext } from "@/context/ThemeContext";
 import { Habit } from "@/types/habit";
 
 export default function EditHabitDialog({
-  isDarkMode,
   habit,
   setHabit,
   showEditHabitDialog,
   toggleShowEditHabitDialog,
 }: {
-  isDarkMode: boolean;
   habit: Habit | null;
   setHabit: (habit: Habit) => void;
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <HabitDialog
-      isDarkMode={isDarkMode}
       isOpen={showEditHabitDialog}
       toggleIsOpen={toggleShowEditHabitDialog}
     >
-      <HabitDialogHeader
-        isDarkMode={isDarkMode}
-        isEditMode={true}
-        habit={habit}
-      />
+      <HabitDialogHeader isEditMode={true} habit={habit} />
       <Tabs defaultValue="edit" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger
@@ -54,14 +51,13 @@ export default function EditHabitDialog({
         </TabsList>
         <TabsContent value="edit" className="h-[600px] sm:h-[496px]">
           <HabitForm
-            isDarkMode={isDarkMode}
             habit={habit}
             setHabit={setHabit}
             toggleShowHabitDialog={toggleShowEditHabitDialog}
           />
         </TabsContent>
         <TabsContent value="stats" className="h-[496px]">
-          <HabitStats habit={habit} isDarkMode={isDarkMode} />
+          <HabitStats habit={habit} />
         </TabsContent>
       </Tabs>
     </HabitDialog>

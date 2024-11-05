@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import {
   DialogHeader,
   DialogTitle,
@@ -5,19 +6,19 @@ import {
 } from "@/components/ui/dialog";
 import frequencyLabel from "@/lib/frequencyLabel";
 import HabitsIcons from "@/icons/habits";
+import { ThemeContext } from "@/context/ThemeContext";
 import { Habit } from "@/types/habit";
 
 export default function EditHabitDialogHeaderTitle({
-  isDarkMode,
   habit,
 }: {
-  isDarkMode: boolean;
   habit?: Habit | null;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
+
   if (!habit) {
     return null;
   }
-
   const HabitIcon = habit && HabitsIcons[habit.icon];
 
   return (

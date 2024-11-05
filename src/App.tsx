@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
+import { ThemeContext } from "@/context/ThemeContext";
 import Header from "@/components/common/Header";
 import Body from "@/components/common/Body";
 import AddHabitDialog from "@/components/common/AddHabitDialog";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
-import EditHabitDialog from "./components/common/EditHabitDialog";
+import EditHabitDialog from "@/components/common/EditHabitDialog";
 
 const data: Habit[] = [
   {
@@ -192,10 +193,10 @@ const data: Habit[] = [
 ];
 
 function App() {
+  const { isDarkMode } = useContext(ThemeContext);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [habits, setHabits] = useState<Habit[]>(data);
   const [isEditMode, toggleIsEditMode] = useToggle(false);
-  const [isDarkMode, toggleDarkMode] = useToggle(false);
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
   const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
@@ -210,16 +211,13 @@ function App() {
       <div className="min-w-[400px] max-w-7xl mx-auto flex flex-col min-h-screen">
         <Header
           isNewUser={isNewUser}
-          isDarkMode={isDarkMode}
           isEditMode={isEditMode}
           toggleShowAddHabitDialog={toggleShowAddHabitDialog}
           toggleIsEditMode={toggleIsEditMode}
           toggleIsOverviewMode={toggleIsOverviewMode}
-          toggleDarkMode={toggleDarkMode}
         />
         <Body
           isNewUser={isNewUser}
-          isDarkMode={isDarkMode}
           isEditMode={isEditMode}
           habits={habits}
           setHabits={setHabits}
@@ -227,15 +225,13 @@ function App() {
           toggleShowEditHabitDialog={toggleShowEditHabitDialog}
           setEditingHabit={setEditingHabit}
         />
-        <Footer isDarkMode={isDarkMode} />
+        <Footer />
       </div>
       <AddHabitDialog
-        isDarkMode={isDarkMode}
         showAddHabitDialog={showAddHabitDialog}
         toggleShowAddHabitDialog={toggleShowAddHabitDialog}
       />
       <EditHabitDialog
-        isDarkMode={isDarkMode}
         habit={editingHabit}
         setHabit={(habit) =>
           setHabits(habits.map((h) => (h.id === habit.id ? habit : h)))
@@ -244,7 +240,6 @@ function App() {
         toggleShowEditHabitDialog={toggleShowEditHabitDialog}
       />
       <ProgressOverview
-        isDarkMode={isDarkMode}
         isOverviewMode={isOverviewMode}
         toggleIsOverviewMode={toggleIsOverviewMode}
       />

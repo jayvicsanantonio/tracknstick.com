@@ -2,7 +2,6 @@ import DailyHabitItem from "@/components/common/DailyHabitItem";
 import { DailyHabitListProps } from "@/types/dailyhabitlist";
 
 export default function DailyHabitList({
-  isDarkMode,
   isEditMode,
   habits,
   toggleHabit,
@@ -16,7 +15,6 @@ export default function DailyHabitList({
         <DailyHabitItem
           key={habit.id}
           habit={habit}
-          isDarkMode={isDarkMode}
           isEditMode={isEditMode}
           animatingHabitId={animatingHabitId}
           toggleHabit={toggleHabit}

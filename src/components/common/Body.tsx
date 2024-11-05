@@ -4,7 +4,6 @@ import { Habit } from "@/types/habit";
 
 export default function Body({
   isNewUser,
-  isDarkMode,
   isEditMode,
   habits,
   setHabits,
@@ -13,7 +12,6 @@ export default function Body({
   setEditingHabit,
 }: {
   isNewUser: boolean;
-  isDarkMode: boolean;
   isEditMode: boolean;
   habits: Habit[];
   setHabits: (habits: Habit[]) => void;
@@ -22,17 +20,11 @@ export default function Body({
   setEditingHabit: (habit: Habit | null) => void;
 }) {
   if (isNewUser) {
-    return (
-      <Welcome
-        isDarkMode={isDarkMode}
-        toggleShowAddHabitDialog={toggleShowAddHabitDialog}
-      />
-    );
+    return <Welcome toggleShowAddHabitDialog={toggleShowAddHabitDialog} />;
   }
 
   return (
     <DailyHabitTracker
-      isDarkMode={isDarkMode}
       isEditMode={isEditMode}
       habits={habits}
       setHabits={setHabits}

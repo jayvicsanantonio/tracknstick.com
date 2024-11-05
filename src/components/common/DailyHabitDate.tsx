@@ -1,14 +1,12 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ThemeContext } from "@/context/ThemeContext";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
-export default function DailyHabitDate({
-  isDarkMode,
-}: {
-  isDarkMode: boolean;
-}) {
+export default function DailyHabitDate() {
+  const { isDarkMode } = useContext(ThemeContext);
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const formattedDate = useMemo(() => {

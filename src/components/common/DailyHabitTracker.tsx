@@ -1,28 +1,28 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Habit } from "@/types/habit";
 import DailyHabitDate from "@/components/common/DailyHabitDate";
 import DailyHabitProgressIndicator from "@/components/common/DailyHabitProgressIndicator";
 import DailyHabitList from "@/components/common/DailyHabitList";
+import { ThemeContext } from "@/context/ThemeContext";
 import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
 import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
 import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
 
 export default function DailyHabitTracker({
-  isDarkMode,
   isEditMode,
   habits,
   setHabits,
   toggleIsEditingHabit,
   setEditingHabit,
 }: {
-  isDarkMode: boolean;
   isEditMode: boolean;
   habits: Habit[];
   setHabits: (habits: Habit[]) => void;
   toggleIsEditingHabit: () => void;
   setEditingHabit: (habit: Habit | null) => void;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
 
   const completionRate = useMemo(() => {
@@ -71,15 +71,11 @@ export default function DailyHabitTracker({
       `}
       >
         <CardHeader>
-          <DailyHabitDate isDarkMode={isDarkMode} />
+          <DailyHabitDate />
         </CardHeader>
         <CardContent>
-          <DailyHabitProgressIndicator
-            completionRate={completionRate}
-            isDarkMode={isDarkMode}
-          />
+          <DailyHabitProgressIndicator completionRate={completionRate} />
           <DailyHabitList
-            isDarkMode={isDarkMode}
             isEditMode={isEditMode}
             habits={habits}
             toggleHabit={toggleHabit}

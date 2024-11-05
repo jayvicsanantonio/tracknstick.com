@@ -1,15 +1,17 @@
+import { useContext } from "react";
 import { motion } from "framer-motion";
+import { ThemeContext } from "@/context/ThemeContext";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { Plus } = MiscellaneousIcons;
 
 export default function Welcome({
-  isDarkMode,
   toggleShowAddHabitDialog,
 }: {
-  isDarkMode: boolean;
   toggleShowAddHabitDialog: () => void;
 }) {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <div className="flex-1">
       <div className="flex flex-col items-center justify-center min-h-[60vh] relative overflow-hidden">
