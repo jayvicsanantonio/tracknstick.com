@@ -1,6 +1,6 @@
 # Habit Hub
 
-**Habit Hub** is a web application designed to help you track and build healthy habits. Built with a modern tech stack (Next.js, TypeScript, Tailwind CSS), it provides a clean and user-friendly interface for managing your daily routines and achieving your goals.
+**Habit Hub** is a web application designed to help you track and build healthy habits. Built with a modern tech stack (Vite, TypeScript, Tailwind CSS), it provides a clean and user-friendly interface for managing your daily routines and achieving your goals.
 
 ## Features
 
@@ -13,7 +13,7 @@
 
 ## Tech Stack
 
-- **Next.js:** React framework for server-side rendering and improved performance.
+- **Vite:** A fast and modern build tool that provides a smoother development experience.
 - **TypeScript:** Static typing for enhanced code maintainability and scalability.
 - **Tailwind CSS:** Utility-first CSS framework for rapid UI development.
 
