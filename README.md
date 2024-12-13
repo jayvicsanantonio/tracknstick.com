@@ -1,6 +1,6 @@
-# Habit Hub
+# Track N' Stick
 
-**Habit Hub** is a web application designed to help you track and build healthy habits. Built with a modern tech stack (Vite, TypeScript, Tailwind CSS), it provides a clean and user-friendly interface for managing your daily routines and achieving your goals.
+**Track N' Stick** is a web application designed to help you track and build healthy habits. Built with a modern tech stack (Vite, TypeScript, Tailwind CSS), it provides a clean and user-friendly interface for managing your daily routines and achieving your goals.
 
 ## Features
 
@@ -9,7 +9,7 @@
 - **Streaks & Rewards:** Stay motivated with streak tracking and reward systems.
 - **Customizable Goals:** Set personalized goals for each habit.
 - **Reminders & Notifications:** Receive timely reminders to keep you on track.
-- **Responsive Design:** Access and use Habit Hub seamlessly across all your devices.
+- **Responsive Design:** Access and use Track N' Stick seamlessly across all your devices.
 
 ## Tech Stack
 
@@ -21,11 +21,11 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone git@github.com:jayvicsanantonio/habit-hub.git
+   git clone git@github.com:jayvicsanantonio/tracknstick.com.git
    ```
 2. **Install dependencies:**
    ```bash
-   cd habit-hub
+   cd tracknstick.com
    npm install
    ```
 3. **Start the development server:**
