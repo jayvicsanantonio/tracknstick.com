@@ -35,9 +35,14 @@ export default function HabitForm({
             id="edit-name"
             value={habit?.name}
             onChange={(e) => {
-              if (setHabit) {
-                setHabit({ ...habit, name: e.target.value });
-              }
+              if (!habit || !setHabit) return;
+
+              const newHabit: Habit = {
+                ...habit,
+                name: e.target.value,
+              };
+
+              setHabit(newHabit);
             }}
             className={`w-full ${
               isDarkMode
