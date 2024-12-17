@@ -32,7 +32,7 @@ export default function Header({
             isDarkMode ? "text-purple-200" : "text-purple-800"
           }`}
         >
-          Track N' Stick
+          Track N&apos; Stick
         </span>
       </div>
       <div className="flex items-center space-x-4">
