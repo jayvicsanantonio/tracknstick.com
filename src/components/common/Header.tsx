@@ -32,7 +32,7 @@ export default function Header({
             isDarkMode ? "text-purple-200" : "text-purple-800"
           }`}
         >
-          HabitHub
+          Track N' Stick
         </span>
       </div>
       <div className="flex items-center space-x-4">
