@@ -39,7 +39,7 @@ export default function DailyHabitItem({
               : isDarkMode
               ? "bg-gray-700"
               : "bg-purple-200"
-          } transition duration-300 ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 focus:outline-none ${
+          } hover:-translate-y-1 hover:scale-110 focus:outline-none ${
             isDarkMode ? "focus:ring-purple-400" : "focus:ring-purple-600"
           } focus:ring-opacity-50`}
           onClick={() => toggleHabit(habit.id)}
