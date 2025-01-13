@@ -1,15 +1,9 @@
+import { SignInButton } from "@clerk/clerk-react";
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { ThemeContext } from "@/context/ThemeContext";
-import MiscellaneousIcons from "@/icons/miscellaneous";
 
-const { Plus } = MiscellaneousIcons;
-
-export default function Welcome({
-  toggleShowAddHabitDialog,
-}: {
-  toggleShowAddHabitDialog: () => void;
-}) {
+export default function Welcome() {
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
@@ -36,21 +30,13 @@ export default function Welcome({
             Embark on your journey to better habits and personal growth. Start
             by adding your first habit and watch your progress unfold.
           </p>
-          <motion.button
-            onClick={toggleShowAddHabitDialog}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Add your first habit"
-            role="button"
+          <SignInButton
             className={`${
               isDarkMode
                 ? "bg-purple-700 hover:bg-purple-600"
                 : "bg-purple-600 hover:bg-purple-700"
             } text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300 shadow-lg`}
-          >
-            <Plus className="h-5 w-5 mr-2 inline-block" aria-hidden="true" />
-            Add Your First Habit
-          </motion.button>
+          />
         </motion.div>
       </div>
     </div>
