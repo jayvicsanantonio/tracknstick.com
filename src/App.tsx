@@ -200,7 +200,6 @@ function App() {
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
   const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
-  const isNewUser = habits === null;
 
   return (
     <div
@@ -210,14 +209,12 @@ function App() {
     >
       <div className="min-w-[400px] max-w-7xl mx-auto flex flex-col min-h-screen">
         <Header
-          isNewUser={isNewUser}
           isEditMode={isEditMode}
           toggleShowAddHabitDialog={toggleShowAddHabitDialog}
           toggleIsEditMode={toggleIsEditMode}
           toggleIsOverviewMode={toggleIsOverviewMode}
         />
         <Body
-          isNewUser={isNewUser}
           isEditMode={isEditMode}
           habits={habits}
           setHabits={setHabits}

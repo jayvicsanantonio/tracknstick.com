@@ -1,17 +1,16 @@
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+
 import Welcome from "@/components/common/Welcome";
 import DailyHabitTracker from "@/components/common/DailyHabitTracker";
 import { Habit } from "@/types/habit";
 
 export default function Body({
-  isNewUser,
   isEditMode,
   habits,
   setHabits,
-  toggleShowAddHabitDialog,
   toggleShowEditHabitDialog,
   setEditingHabit,
 }: {
-  isNewUser: boolean;
   isEditMode: boolean;
   habits: Habit[];
   setHabits: (habits: Habit[]) => void;
@@ -19,17 +18,20 @@ export default function Body({
   toggleShowEditHabitDialog: () => void;
   setEditingHabit: (habit: Habit | null) => void;
 }) {
-  if (isNewUser) {
-    return <Welcome toggleShowAddHabitDialog={toggleShowAddHabitDialog} />;
-  }
-
   return (
-    <DailyHabitTracker
-      isEditMode={isEditMode}
-      habits={habits}
-      setHabits={setHabits}
-      toggleIsEditingHabit={toggleShowEditHabitDialog}
-      setEditingHabit={setEditingHabit}
-    />
+    <>
+      <SignedOut>
+        <Welcome />
+      </SignedOut>
+      <SignedIn>
+        <DailyHabitTracker
+          isEditMode={isEditMode}
+          habits={habits}
+          setHabits={setHabits}
+          toggleIsEditingHabit={toggleShowEditHabitDialog}
+          setEditingHabit={setEditingHabit}
+        />
+      </SignedIn>
+    </>
   );
 }
