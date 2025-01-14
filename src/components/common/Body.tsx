@@ -11,7 +11,6 @@ export default function Body({
   toggleShowEditHabitDialog,
   setEditingHabit,
 }: {
-  isLoggedIn: boolean;
   isEditMode: boolean;
   habits: Habit[];
   setHabits: (habits: Habit[]) => void;

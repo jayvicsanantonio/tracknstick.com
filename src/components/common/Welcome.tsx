@@ -1,4 +1,4 @@
-import { SignInButton } from "@clerk/clerk-react";
+import { SignIn } from "@clerk/clerk-react";
 import { useContext } from "react";
 import { motion } from "framer-motion";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -8,7 +8,7 @@ export default function Welcome() {
 
   return (
     <div className="flex-1">
-      <div className="flex flex-col items-center justify-center min-h-[60vh] relative overflow-hidden">
+      <div className="flex flex-col items-center justify-center min-h-[78vh] relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -20,7 +20,7 @@ export default function Welcome() {
               isDarkMode ? "text-purple-200" : "text-purple-800"
             } mb-6`}
           >
-            Welcome to HabitHub
+            Welcome to Track N&apos; Stick
           </h2>
           <p
             className={`text-xl ${
@@ -30,13 +30,19 @@ export default function Welcome() {
             Embark on your journey to better habits and personal growth. Start
             by adding your first habit and watch your progress unfold.
           </p>
-          <SignInButton
-            className={`${
-              isDarkMode
-                ? "bg-purple-700 hover:bg-purple-600"
-                : "bg-purple-600 hover:bg-purple-700"
-            } text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300 shadow-lg`}
-          />
+          <div className="flex flex-col items-center space-y-4 z-10">
+            <SignIn
+              appearance={{
+                elements: {
+                  formButtonPrimary: `${
+                    isDarkMode
+                      ? "bg-purple-700 hover:bg-purple-600"
+                      : "bg-purple-600 hover:bg-purple-700"
+                  } text-white rounded-full font-semibold transition-colors duration-300 shadow-lg`,
+                },
+              }}
+            />
+          </div>
         </motion.div>
       </div>
     </div>
