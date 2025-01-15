@@ -22,12 +22,12 @@ export default function Header({
     <header className="flex items-center justify-between mb-8">
       <div className="flex items-center">
         <CheckCircle2
-          className={`h-8 w-8 ${
+          className={`h-10 w-10 ${
             isDarkMode ? "text-purple-400" : "text-purple-600"
           } mr-2`}
         />
         <span
-          className={`text-2xl font-bold ${
+          className={`hidden md:inline-block text-2xl font-bold ${
             isDarkMode ? "text-purple-200" : "text-purple-800"
           }`}
         >
