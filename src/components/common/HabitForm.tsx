@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,40 +10,66 @@ import { daysOfWeek } from "@/constants";
 import HabitsIcons from "@/icons/habits";
 import { Habit } from "@/types/habit";
 import { ThemeContext } from "@/context/ThemeContext";
+import { Frequency } from "@/types/frequency";
 
 export default function HabitForm({
   habit,
-  setHabit,
-  toggleShowHabitDialog,
+  handleSubmit,
 }: {
   habit?: Habit | null;
-  setHabit?: (habit: Habit) => void;
-  toggleShowHabitDialog: () => void;
+  handleSubmit: (habit: Habit) => Promise<void>;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
+  const [name, setName] = useState<string | undefined>(habit?.name);
+  const [frequency, setFrequency] = useState<Frequency[]>(
+    habit?.frequency ?? []
+  );
+  const [icon, setIcon] = useState<keyof typeof HabitsIcons | undefined>(
+    habit?.icon
+  );
 
   return (
-    <div className="h-[608px] sm:h-[508px] grid gap-4 py-4">
+    <form
+      onSubmit={
+        (async (event) => {
+          event.preventDefault();
+
+          if (!name || !icon || !frequency) {
+            return;
+          }
+
+          const newHabit: Habit = {
+            ...habit,
+            name,
+            icon,
+            frequency,
+            completed: false,
+            stats: {
+              streak: 0,
+              totalCompletions: 0,
+              lastCompleted: "",
+            },
+          };
+
+          await handleSubmit(newHabit);
+        }) as React.FormEventHandler<HTMLFormElement>
+      }
+      className="h-[608px] sm:h-[508px] grid gap-4 py-4"
+    >
       <div className="space-y-4">
         <div className="space-y-2">
           <Label
-            htmlFor="edit-name"
+            htmlFor="habit-name"
             className={`${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
           >
             Name
           </Label>
           <Input
-            id="edit-name"
-            value={habit?.name}
+            id="habit-name"
+            value={name}
             onChange={(e) => {
-              if (!habit || !setHabit) return;
-
-              const newHabit: Habit = {
-                ...habit,
-                name: e.target.value,
-              };
-
-              setHabit(newHabit);
+              setName(e.target.value);
+              console.log(e.target.value);
             }}
             className={`w-full ${
               isDarkMode
@@ -57,7 +84,13 @@ export default function HabitForm({
           >
             Icon
           </Label>
-          <RadioGroup className="grid grid-cols-5 sm:grid-cols-9 gap-2">
+          <RadioGroup
+            className="grid grid-cols-5 sm:grid-cols-9 gap-2"
+            value={icon}
+            onValueChange={(value) => {
+              setIcon(value as keyof typeof HabitsIcons);
+            }}
+          >
             {Object.entries(HabitsIcons).map(([name, Icon]) => (
               <Label
                 key={name}
@@ -83,6 +116,10 @@ export default function HabitForm({
             type="multiple"
             className="flex flex-wrap gap-2 justify-start"
             aria-label="Select days of the week"
+            value={frequency}
+            onValueChange={(value) => {
+              setFrequency(value as Frequency[]);
+            }}
           >
             {daysOfWeek.map((day) => (
               <ToggleGroupItem
@@ -107,17 +144,19 @@ export default function HabitForm({
       />
       <div className="flex justify-end sm:justify-end items-center flex-row gap-2">
         <div className="flex flex-row gap-2">
-          <Button
-            variant="outline"
-            onClick={toggleShowHabitDialog}
+          <DialogClose
+            asChild
             className={
               isDarkMode
                 ? "border-gray-600 hover:bg-gray-700 hover:text-white"
                 : "border-purple-300 hover:bg-purple-100"
             }
           >
-            Cancel
-          </Button>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
+
           <Button
             className={`${
               isDarkMode
@@ -129,6 +168,6 @@ export default function HabitForm({
           </Button>
         </div>
       </div>
-    </div>
+    </form>
   );
 }

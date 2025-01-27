@@ -2,7 +2,7 @@ import HabitsIcons from "@/icons/habits";
 import { Frequency } from "@/types/frequency";
 
 export interface Habit {
-  id: string;
+  id?: string;
   name: string;
   icon: keyof typeof HabitsIcons;
   frequency: Frequency[];

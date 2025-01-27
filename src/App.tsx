@@ -256,6 +256,7 @@ function App() {
         <Footer />
       </div>
       <AddHabitDialog
+        setHabit={(habit) => setHabits((prevHabits) => [...prevHabits, habit])}
         showAddHabitDialog={showAddHabitDialog}
         toggleShowAddHabitDialog={toggleShowAddHabitDialog}
       />
