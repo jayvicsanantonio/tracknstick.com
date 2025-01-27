@@ -42,7 +42,13 @@ export default function DailyHabitItem({
           } hover:-translate-y-1 hover:scale-110 focus:outline-none ${
             isDarkMode ? "focus:ring-purple-400" : "focus:ring-purple-600"
           } focus:ring-opacity-50`}
-          onClick={() => toggleHabit(habit.id)}
+          onClick={() => {
+            if (habit.id) {
+              toggleHabit(habit.id).catch((error) => {
+                console.error("Failed to toggle habit:", error);
+              });
+            }
+          }}
         >
           <Icon
             className={`h-14 w-14 ${
