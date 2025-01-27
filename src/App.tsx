@@ -215,15 +215,9 @@ function App() {
   async function fetcher(endpoint: string): Promise<Habit[]> {
     try {
       const response = await client.get<Habit[]>(`${endpoint}`);
-      const data = response.data;
+      const fetchedData = response.data;
 
-      if (data.length === 0) {
-        setHabits(defaultData);
-        return defaultData;
-      } else {
-        setHabits(data);
-        return data;
-      }
+      return fetchedData.length === 0 ? defaultData : fetchedData;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error;
