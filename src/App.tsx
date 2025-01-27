@@ -10,6 +10,7 @@ import AddHabitDialog from "@/components/common/AddHabitDialog";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "@/components/common/EditHabitDialog";
+import getConfig from "@/lib/getConfig";
 
 const defaultData: Habit[] = [
   {
@@ -194,12 +195,10 @@ const defaultData: Habit[] = [
   },
 ];
 
-const X_API_KEY: string = import.meta.env.VITE_X_API_KEY as string;
-const API_HOST: string = import.meta.env.VITE_API_HOST as string;
-
+const { apiKey, apiHost } = getConfig();
 const client = axios.create({
-  baseURL: `${API_HOST}`,
-  headers: { "X-API-Key": X_API_KEY },
+  baseURL: `${apiHost}`,
+  headers: { "X-API-Key": apiKey },
 });
 
 function App() {
@@ -215,9 +214,15 @@ function App() {
   async function fetcher(endpoint: string): Promise<Habit[]> {
     try {
       const response = await client.get<Habit[]>(`${endpoint}`);
-      const fetchedData = response.data;
+      const data = response.data;
 
-      return fetchedData.length === 0 ? defaultData : fetchedData;
+      if (data.length === 0) {
+        setHabits(defaultData);
+        return defaultData;
+      } else {
+        setHabits(data);
+        return data;
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error;

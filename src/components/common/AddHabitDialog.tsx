@@ -3,13 +3,12 @@ import HabitDialog from "@/components/common/HabitDialog";
 import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 import { Habit } from "@/types/habit";
+import getConfig from "@/lib/getConfig";
 
-const X_API_KEY: string = import.meta.env.VITE_X_API_KEY as string;
-const API_HOST: string = import.meta.env.VITE_API_HOST as string;
-
+const { apiKey, apiHost } = getConfig();
 const client = axios.create({
-  baseURL: `${API_HOST}`,
-  headers: { "X-API-Key": X_API_KEY },
+  baseURL: `${apiHost}`,
+  headers: { "X-API-Key": apiKey },
 });
 
 export default function AddHabitDialog({
