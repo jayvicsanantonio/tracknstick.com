@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import useSWR from "swr";
-import axios from "axios";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -10,7 +9,7 @@ import AddHabitDialog from "@/components/common/AddHabitDialog";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "@/components/common/EditHabitDialog";
-import getConfig from "@/lib/getConfig";
+import { apiClient } from "@/services/api";
 
 const defaultData: Habit[] = [
   {
@@ -195,12 +194,6 @@ const defaultData: Habit[] = [
   },
 ];
 
-const { apiKey, apiHost } = getConfig();
-const client = axios.create({
-  baseURL: `${apiHost}`,
-  headers: { "X-API-Key": apiKey },
-});
-
 function App() {
   const { data = [], isLoading } = useSWR<Habit[]>("/habits", fetcher);
   const { isDarkMode } = useContext(ThemeContext);
@@ -213,7 +206,7 @@ function App() {
 
   async function fetcher(endpoint: string): Promise<Habit[]> {
     try {
-      const response = await client.get<Habit[]>(`${endpoint}`);
+      const response = await apiClient.get<Habit[]>(`${endpoint}`);
       const data = response.data;
 
       if (data.length === 0) {

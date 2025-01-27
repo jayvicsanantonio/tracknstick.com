@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import axios from "axios";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HabitDialog from "@/components/common/HabitDialog";
 import HabitDialogHeader from "@/components/common/HabitDialogHeader";
@@ -7,13 +6,7 @@ import HabitForm from "@/components/common/HabitForm";
 import HabitStats from "@/components/common/HabitStats";
 import { ThemeContext } from "@/context/ThemeContext";
 import { Habit } from "@/types/habit";
-import getConfig from "@/lib/getConfig";
-
-const { apiKey, apiHost } = getConfig();
-const client = axios.create({
-  baseURL: `${apiHost}`,
-  headers: { "X-API-Key": apiKey },
-});
+import { apiClient } from "@/services/api";
 
 export default function EditHabitDialog({
   habit,
@@ -30,7 +23,7 @@ export default function EditHabitDialog({
 
   async function handleSubmit(habit: Habit): Promise<void> {
     try {
-      await client.put<{ message: string; habitId: string }>(
+      await apiClient.put<{ message: string; habitId: string }>(
         `/habits/${habit.id}`,
         habit
       );

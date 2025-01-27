@@ -1,15 +1,8 @@
-import axios from "axios";
 import HabitDialog from "@/components/common/HabitDialog";
 import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 import { Habit } from "@/types/habit";
-import getConfig from "@/lib/getConfig";
-
-const { apiKey, apiHost } = getConfig();
-const client = axios.create({
-  baseURL: `${apiHost}`,
-  headers: { "X-API-Key": apiKey },
-});
+import { apiClient } from "@/services/api";
 
 export default function AddHabitDialog({
   setHabit,
@@ -22,10 +15,10 @@ export default function AddHabitDialog({
 }) {
   async function handleSubmit(habit: Habit): Promise<void> {
     try {
-      const response = await client.post<{ message: string; habitId: string }>(
-        "/habits",
-        habit
-      );
+      const response = await apiClient.post<{
+        message: string;
+        habitId: string;
+      }>("/habits", habit);
       const { habitId } = response.data;
       const newHabit = { ...habit, id: habitId };
 
