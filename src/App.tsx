@@ -1,4 +1,6 @@
 import { useContext, useState } from "react";
+import useSWR from "swr";
+import axios from "axios";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -9,7 +11,7 @@ import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "@/components/common/EditHabitDialog";
 
-const data: Habit[] = [
+const defaultData: Habit[] = [
   {
     id: "1",
     name: "Read",
@@ -192,7 +194,16 @@ const data: Habit[] = [
   },
 ];
 
+const X_API_KEY: string = import.meta.env.VITE_X_API_KEY as string;
+const API_HOST: string = import.meta.env.VITE_API_HOST as string;
+
+const client = axios.create({
+  baseURL: `${API_HOST}`,
+  headers: { "X-API-Key": X_API_KEY },
+});
+
 function App() {
+  const { data = [], isLoading } = useSWR<Habit[]>("/habits", fetcher);
   const { isDarkMode } = useContext(ThemeContext);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [habits, setHabits] = useState<Habit[]>(data);
@@ -200,6 +211,26 @@ function App() {
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
   const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
+
+  async function fetcher(endpoint: string): Promise<Habit[]> {
+    try {
+      const response = await client.get<Habit[]>(`${endpoint}`);
+      const data = response.data;
+
+      if (data.length === 0) {
+        setHabits(defaultData);
+        return defaultData;
+      } else {
+        setHabits(data);
+        return data;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  }
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div
