@@ -18,12 +18,12 @@ export default function HabitForm({
   toggleDialog,
 }: {
   habit?: Habit | null;
-  handleSubmit: (habit: Habit) => Promise<void>;
+  handleSubmit: (habit: Habit, willDelete: boolean) => Promise<void>;
   toggleDialog: () => void;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [name, setName] = useState<string | undefined>(habit?.name);
+  const [name, setName] = useState<string>(habit?.name ?? "");
   const [frequency, setFrequency] = useState<Frequency[]>(
     habit?.frequency ?? []
   );
@@ -55,7 +55,7 @@ export default function HabitForm({
               },
             };
 
-            await handleSubmit(newHabit);
+            await handleSubmit(newHabit, false);
           } finally {
             setIsSubmitting(false);
             toggleDialog();
@@ -149,7 +149,30 @@ export default function HabitForm({
       <Separator
         className={`my-2 ${isDarkMode ? "bg-gray-600" : "bg-purple-200"}`}
       />
-      <div className="flex justify-end sm:justify-end items-center flex-row gap-2">
+      <div className="flex items-center flex-row gap-2">
+        <div className="flex-1">
+          {habit && (
+            <Button
+              type="button"
+              variant="outline"
+              className={`border-red-500 text-red-500 hover:bg-red-500 hover:text-white ${
+                isDarkMode ? "hover:bg-red-600" : "hover:bg-red-400"
+              }`}
+              onClick={
+                (async () => {
+                  try {
+                    await handleSubmit(habit, true);
+                  } finally {
+                    toggleDialog();
+                  }
+                }) as React.MouseEventHandler<HTMLButtonElement>
+              }
+              disabled={isSubmitting}
+            >
+              Delete
+            </Button>
+          )}
+        </div>
         <div className="flex flex-row gap-2">
           <DialogClose
             asChild
@@ -163,7 +186,6 @@ export default function HabitForm({
               Cancel
             </Button>
           </DialogClose>
-
           <Button
             className={`w-32 ${
               isDarkMode

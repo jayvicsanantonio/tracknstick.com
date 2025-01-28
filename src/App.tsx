@@ -254,9 +254,13 @@ function App() {
       />
       <EditHabitDialog
         habit={editingHabit}
-        setHabit={(habit) =>
-          setHabits(habits.map((h) => (h.id === habit.id ? habit : h)))
-        }
+        setHabit={(habit, willDelete) => {
+          if (willDelete) {
+            setHabits(habits.filter((h) => h.id !== habit.id));
+          } else {
+            setHabits(habits.map((h) => (h.id === habit.id ? habit : h)));
+          }
+        }}
         showEditHabitDialog={showEditHabitDialog}
         toggleShowEditHabitDialog={toggleShowEditHabitDialog}
       />

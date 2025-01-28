@@ -15,17 +15,13 @@ export default function EditHabitDialog({
   toggleShowEditHabitDialog,
 }: {
   habit: Habit | null;
-  setHabit: (habit: Habit) => void;
+  setHabit: (habit: Habit, willDelete?: boolean) => void;
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
 
-  async function handleSubmit(habit: Habit): Promise<void> {
-    if (!habit.id) {
-      throw new Error("Cannot update habit without ID");
-    }
-
+  async function updateHabit(habit: Habit): Promise<void> {
     const previousHabit = { ...habit };
     try {
       const newHabit = { ...habit };
@@ -39,6 +35,34 @@ export default function EditHabitDialog({
     } catch (error) {
       setHabit(previousHabit);
       throw error;
+    }
+  }
+
+  async function deleteHabit(habit: Habit): Promise<void> {
+    try {
+      setHabit(habit, true);
+
+      await apiClient.delete<{ message: string; habitId: string }>(
+        `/habits/${habit.id}`
+      );
+    } catch (error) {
+      setHabit(habit);
+      throw error;
+    }
+  }
+
+  async function handleSubmit(
+    habit: Habit,
+    willDelete: boolean
+  ): Promise<void> {
+    if (!habit.id) {
+      throw new Error("Cannot update habit without ID");
+    }
+
+    if (willDelete) {
+      await deleteHabit(habit);
+    } else {
+      await updateHabit(habit);
     }
   }
 
