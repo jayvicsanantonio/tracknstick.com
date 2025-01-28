@@ -22,20 +22,24 @@ export default function EditHabitDialog({
   const { isDarkMode } = useContext(ThemeContext);
 
   async function handleSubmit(habit: Habit): Promise<void> {
+    if (!habit.id) {
+      throw new Error("Cannot update habit without ID");
+    }
+
+    const previousHabit = { ...habit };
     try {
+      const newHabit = { ...habit };
+
+      setHabit(newHabit);
+
       await apiClient.put<{ message: string; habitId: string }>(
         `/habits/${habit.id}`,
         habit
       );
-      const newHabit = { ...habit };
-
-      setHabit(newHabit);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      setHabit(previousHabit);
       throw error;
     }
-
-    toggleShowEditHabitDialog();
   }
 
   return (
@@ -68,7 +72,11 @@ export default function EditHabitDialog({
           </TabsTrigger>
         </TabsList>
         <TabsContent value="edit" className="h-[600px] sm:h-[496px]">
-          <HabitForm habit={habit} handleSubmit={handleSubmit} />
+          <HabitForm
+            habit={habit}
+            handleSubmit={handleSubmit}
+            toggleDialog={toggleShowEditHabitDialog}
+          />
         </TabsContent>
         <TabsContent value="stats" className="h-[496px]">
           <HabitStats habit={habit} />

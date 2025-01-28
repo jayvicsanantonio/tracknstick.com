@@ -15,11 +15,14 @@ import { Frequency } from "@/types/frequency";
 export default function HabitForm({
   habit,
   handleSubmit,
+  toggleDialog,
 }: {
   habit?: Habit | null;
   handleSubmit: (habit: Habit) => Promise<void>;
+  toggleDialog: () => void;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState<string | undefined>(habit?.name);
   const [frequency, setFrequency] = useState<Frequency[]>(
     habit?.frequency ?? []
@@ -27,6 +30,7 @@ export default function HabitForm({
   const [icon, setIcon] = useState<keyof typeof HabitsIcons | undefined>(
     habit?.icon
   );
+  const isValid = name && icon && frequency.length > 0;
 
   return (
     <form
@@ -34,24 +38,28 @@ export default function HabitForm({
         (async (event) => {
           event.preventDefault();
 
-          if (!name || !icon || !frequency) {
-            return;
+          if (!isValid) return;
+
+          setIsSubmitting(true);
+          try {
+            const newHabit: Habit = {
+              ...habit,
+              name,
+              icon,
+              frequency,
+              completed: false,
+              stats: {
+                streak: 0,
+                totalCompletions: 0,
+                lastCompleted: "",
+              },
+            };
+
+            await handleSubmit(newHabit);
+          } finally {
+            setIsSubmitting(false);
+            toggleDialog();
           }
-
-          const newHabit: Habit = {
-            ...habit,
-            name,
-            icon,
-            frequency,
-            completed: false,
-            stats: {
-              streak: 0,
-              totalCompletions: 0,
-              lastCompleted: "",
-            },
-          };
-
-          await handleSubmit(newHabit);
         }) as React.FormEventHandler<HTMLFormElement>
       }
       className="h-[608px] sm:h-[508px] grid gap-4 py-4"
@@ -151,19 +159,20 @@ export default function HabitForm({
                 : "border-purple-300 hover:bg-purple-100"
             }
           >
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" disabled={isSubmitting}>
               Cancel
             </Button>
           </DialogClose>
 
           <Button
-            className={`${
+            className={`w-32 ${
               isDarkMode
                 ? "bg-purple-700 hover:bg-purple-600"
                 : "bg-purple-600 hover:bg-purple-700"
             }`}
+            disabled={isSubmitting}
           >
-            Save Changes
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>

@@ -27,8 +27,6 @@ export default function AddHabitDialog({
       console.error("Error fetching data:", error);
       throw error;
     }
-
-    toggleShowAddHabitDialog();
   }
 
   return (
@@ -37,7 +35,10 @@ export default function AddHabitDialog({
       toggleIsOpen={toggleShowAddHabitDialog}
     >
       <HabitDialogHeader isEditMode={false} />
-      <HabitForm handleSubmit={handleSubmit} />
+      <HabitForm
+        handleSubmit={handleSubmit}
+        toggleDialog={toggleShowAddHabitDialog}
+      />
     </HabitDialog>
   );
 }
