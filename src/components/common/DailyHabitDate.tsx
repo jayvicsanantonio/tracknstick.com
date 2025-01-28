@@ -1,13 +1,14 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
+import { DateContext } from "@/context/DateContext";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 export default function DailyHabitDate() {
   const { isDarkMode } = useContext(ThemeContext);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const { date, handlePreviousDate, handleNextDate } = useContext(DateContext);
 
   const formattedDate = useMemo(() => {
     const options: Intl.DateTimeFormatOptions = {
@@ -15,31 +16,23 @@ export default function DailyHabitDate() {
       month: "long",
       day: "numeric",
     };
-    return currentDate.toLocaleDateString("en-US", options);
-  }, [currentDate]);
+    return date.toLocaleDateString("en-US", options);
+  }, [date]);
 
   const dayLabel = useMemo(() => {
     const today = new Date();
-    const isToday = currentDate.toDateString() === today.toDateString();
+    const isToday = date.toDateString() === today.toDateString();
     if (isToday) {
       return "Today";
     } else {
-      return currentDate.toLocaleDateString("en-US", { weekday: "long" });
+      return date.toLocaleDateString("en-US", { weekday: "long" });
     }
-  }, [currentDate]);
-
-  const changeDay = (increment: number) => {
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setDate(newDate.getDate() + increment);
-      return newDate;
-    });
-  };
+  }, [date]);
 
   return (
     <div className="flex items-center justify-between">
       <Button
-        onClick={() => changeDay(-1)}
+        onClick={handlePreviousDate}
         variant="outline"
         size="icon"
         className={
@@ -67,7 +60,7 @@ export default function DailyHabitDate() {
         </p>
       </div>
       <Button
-        onClick={() => changeDay(1)}
+        onClick={handleNextDate}
         variant="outline"
         size="icon"
         className={

@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import { ThemeContext } from "@/context/ThemeContext";
+import { DateContext } from "@/context/DateContext";
 import Header from "@/components/common/Header";
 import Body from "@/components/common/Body";
 import AddHabitDialog from "@/components/common/AddHabitDialog";
@@ -10,193 +11,15 @@ import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "@/components/common/EditHabitDialog";
 import { apiClient } from "@/services/api";
-
-const defaultData: Habit[] = [
-  {
-    id: "1",
-    name: "Read",
-    completed: false,
-    icon: "Book",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "2",
-    name: "Exercise",
-    completed: false,
-    icon: "Dumbbell",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "3",
-    name: "Meditate",
-    completed: false,
-    icon: "Brain",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "4",
-    name: "Drink Water",
-    completed: false,
-    icon: "Coffee",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "5",
-    name: "Cycle",
-    completed: false,
-    icon: "Bike",
-    frequency: ["Tue", "Thu"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "6",
-    name: "Code",
-    completed: false,
-    icon: "Code",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "7",
-    name: "Paint",
-    completed: false,
-    icon: "Palette",
-    frequency: ["Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "8",
-    name: "Listen to Music",
-    completed: false,
-    icon: "Music",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "9",
-    name: "Practice Instrument",
-    completed: false,
-    icon: "Music",
-    frequency: ["Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "10",
-    name: "Journal",
-    completed: false,
-    icon: "Pencil",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "11",
-    name: "Take Photos",
-    completed: false,
-    icon: "Camera",
-    frequency: ["Sat"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "12",
-    name: "Learn Language",
-    completed: false,
-    icon: "Book",
-    frequency: ["Wed"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "13",
-    name: "Work on Project",
-    completed: false,
-    icon: "Briefcase",
-    frequency: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "14",
-    name: "Listen to Podcast",
-    completed: false,
-    icon: "Headphones",
-    frequency: ["Sat", "Sun"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-  {
-    id: "15",
-    name: "Yoga",
-    completed: false,
-    icon: "Heart",
-    frequency: ["Mon", "Wed", "Fri"],
-    stats: {
-      streak: 7,
-      totalCompletions: 14,
-      lastCompleted: "2023-01-01T00:00:00.000Z",
-    },
-  },
-];
+import { Frequency } from "./types/frequency";
 
 function App() {
-  const { data = [], isLoading } = useSWR<Habit[]>("/habits", fetcher);
   const { isDarkMode } = useContext(ThemeContext);
+  const { date } = useContext(DateContext);
+  const { data = [], isLoading } = useSWR<Habit[]>(
+    `/habits?date=${date.toISOString()}`,
+    fetcher
+  );
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [habits, setHabits] = useState<Habit[]>(data);
   const [isEditMode, toggleIsEditMode] = useToggle(false);
@@ -206,16 +29,11 @@ function App() {
 
   async function fetcher(endpoint: string): Promise<Habit[]> {
     try {
-      const response = await apiClient.get<Habit[]>(`${endpoint}`);
+      const response = await apiClient.get<Habit[]>(endpoint);
       const data = response.data;
 
-      if (data.length === 0) {
-        setHabits(defaultData);
-        return defaultData;
-      } else {
-        setHabits(data);
-        return data;
-      }
+      setHabits(data);
+      return data;
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error;
@@ -258,7 +76,25 @@ function App() {
           if (willDelete) {
             setHabits(habits.filter((h) => h.id !== habit.id));
           } else {
-            setHabits(habits.map((h) => (h.id === habit.id ? habit : h)));
+            const newHabits = habits.map((h) =>
+              h.id === habit.id ? habit : h
+            );
+
+            const daysOfWeek: Frequency[] = [
+              "Sun",
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri",
+              "Sat",
+            ];
+            const day = daysOfWeek[new Date(date).getDay()];
+            const filteredHabits = newHabits.filter((h) =>
+              h.frequency.includes(day)
+            );
+
+            setHabits(filteredHabits);
           }
         }}
         showEditHabitDialog={showEditHabitDialog}

@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import ThemeProvider from "@/context/ThemeProvider";
+import DateProvider from "@/context/DateProvider.tsx";
 import { ClerkProvider } from "@clerk/clerk-react";
 import App from "./App.tsx";
 import "./index.css";
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-        <App />
+        <DateProvider>
+          <App />
+        </DateProvider>
       </ClerkProvider>
     </ThemeProvider>
   </StrictMode>
