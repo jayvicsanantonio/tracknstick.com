@@ -11,17 +11,15 @@ import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "@/components/common/EditHabitDialog";
 import { apiClient } from "@/services/api";
-import { Frequency } from "./types/frequency";
 
 function App() {
   const { isDarkMode } = useContext(ThemeContext);
   const { date } = useContext(DateContext);
-  const { data = [], isLoading } = useSWR<Habit[]>(
+  const { data: habits = [], isLoading } = useSWR<Habit[]>(
     `/habits?date=${date.toISOString()}`,
     fetcher
   );
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
-  const [habits, setHabits] = useState<Habit[]>(data);
   const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
@@ -32,7 +30,6 @@ function App() {
       const response = await apiClient.get<Habit[]>(endpoint);
       const data = response.data;
 
-      setHabits(data);
       return data;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -58,7 +55,6 @@ function App() {
         <Body
           isEditMode={isEditMode}
           habits={habits}
-          setHabits={setHabits}
           toggleShowAddHabitDialog={toggleShowAddHabitDialog}
           toggleShowEditHabitDialog={toggleShowEditHabitDialog}
           setEditingHabit={setEditingHabit}
@@ -66,37 +62,11 @@ function App() {
         <Footer />
       </div>
       <AddHabitDialog
-        setHabit={(habit) => setHabits((prevHabits) => [...prevHabits, habit])}
         showAddHabitDialog={showAddHabitDialog}
         toggleShowAddHabitDialog={toggleShowAddHabitDialog}
       />
       <EditHabitDialog
         habit={editingHabit}
-        setHabit={(habit, willDelete) => {
-          if (willDelete) {
-            setHabits(habits.filter((h) => h.id !== habit.id));
-          } else {
-            const newHabits = habits.map((h) =>
-              h.id === habit.id ? habit : h
-            );
-
-            const daysOfWeek: Frequency[] = [
-              "Sun",
-              "Mon",
-              "Tue",
-              "Wed",
-              "Thu",
-              "Fri",
-              "Sat",
-            ];
-            const day = daysOfWeek[new Date(date).getDay()];
-            const filteredHabits = newHabits.filter((h) =>
-              h.frequency.includes(day)
-            );
-
-            setHabits(filteredHabits);
-          }
-        }}
         showEditHabitDialog={showEditHabitDialog}
         toggleShowEditHabitDialog={toggleShowEditHabitDialog}
       />

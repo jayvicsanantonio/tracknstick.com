@@ -12,13 +12,11 @@ import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
 export default function DailyHabitTracker({
   isEditMode,
   habits,
-  setHabits,
   toggleIsEditingHabit,
   setEditingHabit,
 }: {
   isEditMode: boolean;
   habits: Habit[];
-  setHabits: (habits: Habit[]) => void;
   toggleIsEditingHabit: () => void;
   setEditingHabit: (habit: Habit | null) => void;
 }) {
@@ -31,20 +29,21 @@ export default function DailyHabitTracker({
   }, [habits]);
 
   const toggleHabit = async (id: string) => {
-    setHabits(
-      habits.map((habit) => {
-        if (habit.id === id) {
-          const newCompleted = !habit.completed;
-          if (newCompleted) {
-            setAnimatingHabitId(id);
-            setTimeout(() => setAnimatingHabitId(null), 1000);
-          }
+    // TODO: use mutate
+    // setHabits(
+    //   habits.map((habit) => {
+    //     if (habit.id === id) {
+    //       const newCompleted = !habit.completed;
+    //       if (newCompleted) {
+    //         setAnimatingHabitId(id);
+    //         setTimeout(() => setAnimatingHabitId(null), 1000);
+    //       }
 
-          return { ...habit, completed: newCompleted };
-        }
-        return habit;
-      })
-    );
+    //       return { ...habit, completed: newCompleted };
+    //     }
+    //     return habit;
+    //   })
+    // );
 
     const habit = habits.find((habit) => habit.id === id);
     const allHabitsCompleted =
