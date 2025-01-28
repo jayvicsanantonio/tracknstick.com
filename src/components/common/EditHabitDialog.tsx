@@ -6,6 +6,7 @@ import HabitForm from "@/components/common/HabitForm";
 import HabitStats from "@/components/common/HabitStats";
 import { ThemeContext } from "@/context/ThemeContext";
 import { Habit } from "@/types/habit";
+import { apiClient } from "@/services/api";
 
 export default function EditHabitDialog({
   habit,
@@ -14,11 +15,56 @@ export default function EditHabitDialog({
   toggleShowEditHabitDialog,
 }: {
   habit: Habit | null;
-  setHabit: (habit: Habit) => void;
+  setHabit: (habit: Habit, willDelete?: boolean) => void;
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
+
+  async function updateHabit(habit: Habit): Promise<void> {
+    const previousHabit = { ...habit };
+    try {
+      const newHabit = { ...habit };
+
+      setHabit(newHabit);
+
+      await apiClient.put<{ message: string; habitId: string }>(
+        `/habits/${habit.id}`,
+        habit
+      );
+    } catch (error) {
+      setHabit(previousHabit);
+      throw error;
+    }
+  }
+
+  async function deleteHabit(habit: Habit): Promise<void> {
+    try {
+      setHabit(habit, true);
+
+      await apiClient.delete<{ message: string; habitId: string }>(
+        `/habits/${habit.id}`
+      );
+    } catch (error) {
+      setHabit(habit);
+      throw error;
+    }
+  }
+
+  async function handleSubmit(
+    habit: Habit,
+    willDelete: boolean
+  ): Promise<void> {
+    if (!habit.id) {
+      throw new Error("Cannot update habit without ID");
+    }
+
+    if (willDelete) {
+      await deleteHabit(habit);
+    } else {
+      await updateHabit(habit);
+    }
+  }
 
   return (
     <HabitDialog
@@ -52,8 +98,8 @@ export default function EditHabitDialog({
         <TabsContent value="edit" className="h-[600px] sm:h-[496px]">
           <HabitForm
             habit={habit}
-            setHabit={setHabit}
-            toggleShowHabitDialog={toggleShowEditHabitDialog}
+            handleSubmit={handleSubmit}
+            toggleDialog={toggleShowEditHabitDialog}
           />
         </TabsContent>
         <TabsContent value="stats" className="h-[496px]">

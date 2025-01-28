@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import useSWR from "swr";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -8,8 +9,9 @@ import AddHabitDialog from "@/components/common/AddHabitDialog";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
 import EditHabitDialog from "@/components/common/EditHabitDialog";
+import { apiClient } from "@/services/api";
 
-const data: Habit[] = [
+const defaultData: Habit[] = [
   {
     id: "1",
     name: "Read",
@@ -193,6 +195,7 @@ const data: Habit[] = [
 ];
 
 function App() {
+  const { data = [], isLoading } = useSWR<Habit[]>("/habits", fetcher);
   const { isDarkMode } = useContext(ThemeContext);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [habits, setHabits] = useState<Habit[]>(data);
@@ -200,6 +203,26 @@ function App() {
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
   const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
+
+  async function fetcher(endpoint: string): Promise<Habit[]> {
+    try {
+      const response = await apiClient.get<Habit[]>(`${endpoint}`);
+      const data = response.data;
+
+      if (data.length === 0) {
+        setHabits(defaultData);
+        return defaultData;
+      } else {
+        setHabits(data);
+        return data;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  }
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div
@@ -225,14 +248,19 @@ function App() {
         <Footer />
       </div>
       <AddHabitDialog
+        setHabit={(habit) => setHabits((prevHabits) => [...prevHabits, habit])}
         showAddHabitDialog={showAddHabitDialog}
         toggleShowAddHabitDialog={toggleShowAddHabitDialog}
       />
       <EditHabitDialog
         habit={editingHabit}
-        setHabit={(habit) =>
-          setHabits(habits.map((h) => (h.id === habit.id ? habit : h)))
-        }
+        setHabit={(habit, willDelete) => {
+          if (willDelete) {
+            setHabits(habits.filter((h) => h.id !== habit.id));
+          } else {
+            setHabits(habits.map((h) => (h.id === habit.id ? habit : h)));
+          }
+        }}
         showEditHabitDialog={showEditHabitDialog}
         toggleShowEditHabitDialog={toggleShowEditHabitDialog}
       />
