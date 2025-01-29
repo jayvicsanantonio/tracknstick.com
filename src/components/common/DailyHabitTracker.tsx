@@ -21,7 +21,7 @@ export default function DailyHabitTracker({
   setEditingHabit: (habit: Habit | null) => void;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
-  const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
+  const [animatingHabitId] = useState<string | null>(null);
 
   const completionRate = useMemo(() => {
     const completedHabits = habits.filter((habit) => habit.completed).length;
