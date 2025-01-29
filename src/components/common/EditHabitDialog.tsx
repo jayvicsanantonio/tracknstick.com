@@ -1,52 +1,47 @@
 import { useContext } from "react";
+import { useSWRConfig } from "swr";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HabitDialog from "@/components/common/HabitDialog";
 import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 import HabitStats from "@/components/common/HabitStats";
 import { ThemeContext } from "@/context/ThemeContext";
+import { DateContext } from "@/context/DateContext";
 import { Habit } from "@/types/habit";
 import { apiClient } from "@/services/api";
 
 export default function EditHabitDialog({
   habit,
-  setHabit,
   showEditHabitDialog,
   toggleShowEditHabitDialog,
 }: {
   habit: Habit | null;
-  setHabit: (habit: Habit, willDelete?: boolean) => void;
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
 }) {
+  const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
+  const { date } = useContext(DateContext);
 
   async function updateHabit(habit: Habit): Promise<void> {
-    const previousHabit = { ...habit };
     try {
-      const newHabit = { ...habit };
-
-      setHabit(newHabit);
-
       await apiClient.put<{ message: string; habitId: string }>(
         `/habits/${habit.id}`,
         habit
       );
     } catch (error) {
-      setHabit(previousHabit);
+      console.error("Error updating habit:", error);
       throw error;
     }
   }
 
   async function deleteHabit(habit: Habit): Promise<void> {
     try {
-      setHabit(habit, true);
-
       await apiClient.delete<{ message: string; habitId: string }>(
         `/habits/${habit.id}`
       );
     } catch (error) {
-      setHabit(habit);
+      console.error("Error deleting habit:", error);
       throw error;
     }
   }
@@ -64,6 +59,8 @@ export default function EditHabitDialog({
     } else {
       await updateHabit(habit);
     }
+
+    await mutate(`/habits?date=${date.toISOString()}`);
   }
 
   return (
