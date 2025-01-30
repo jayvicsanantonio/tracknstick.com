@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useSWRConfig } from "swr";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Habit } from "@/types/habit";
@@ -26,7 +26,16 @@ export default function DailyHabitTracker({
   const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
 
   const completionRate = useMemo(() => {
     const completedHabits = habits.filter((habit) => habit.completed).length;
@@ -56,8 +65,18 @@ export default function DailyHabitTracker({
               const newCompleted = !habit.completed;
 
               if (newCompleted) {
+                if (timeoutId) {
+                  clearTimeout(timeoutId);
+                }
+
                 setAnimatingHabitId(id);
-                setTimeout(() => setAnimatingHabitId(null), 1000);
+
+                const newTimeoutId = setTimeout(
+                  () => setAnimatingHabitId(null),
+                  1000
+                );
+
+                setTimeoutId(newTimeoutId);
               }
               return { ...habit, completed: newCompleted };
             }
@@ -66,7 +85,7 @@ export default function DailyHabitTracker({
         );
       }
     },
-    [habits, date, timeZone, mutate]
+    [habits, date, timeZone, timeoutId, mutate]
   );
 
   const toggleHabit = async (id: string) => {
