@@ -14,9 +14,9 @@ import { apiClient } from "@/services/api";
 
 function App() {
   const { isDarkMode } = useContext(ThemeContext);
-  const { date } = useContext(DateContext);
+  const { date, timeZone } = useContext(DateContext);
   const { data: habits = [], isLoading } = useSWR<Habit[]>(
-    `/habits?date=${date.toISOString()}`,
+    `/habits?date=${date.toISOString()}&timeZone=${timeZone}`,
     fetcher
   );
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
