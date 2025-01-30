@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useSWRConfig } from "swr";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HabitDialog from "@/components/common/HabitDialog";
@@ -21,9 +21,9 @@ export default function EditHabitDialog({
 }) {
   const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
-  const { date } = useContext(DateContext);
+  const { date, timeZone } = useContext(DateContext);
 
-  async function updateHabit(habit: Habit): Promise<void> {
+  const updateHabit = useCallback(async (habit: Habit): Promise<void> => {
     try {
       await apiClient.put<{ message: string; habitId: string }>(
         `/habits/${habit.id}`,
@@ -33,9 +33,9 @@ export default function EditHabitDialog({
       console.error("Error updating habit:", error);
       throw error;
     }
-  }
+  }, []);
 
-  async function deleteHabit(habit: Habit): Promise<void> {
+  const deleteHabit = useCallback(async (habit: Habit): Promise<void> => {
     try {
       await apiClient.delete<{ message: string; habitId: string }>(
         `/habits/${habit.id}`
@@ -44,24 +44,24 @@ export default function EditHabitDialog({
       console.error("Error deleting habit:", error);
       throw error;
     }
-  }
+  }, []);
 
-  async function handleSubmit(
-    habit: Habit,
-    willDelete: boolean
-  ): Promise<void> {
-    if (!habit.id) {
-      throw new Error("Cannot update habit without ID");
-    }
+  const handleSubmit = useCallback(
+    async (habit: Habit, willDelete: boolean): Promise<void> => {
+      if (!habit.id) {
+        throw new Error("Cannot update habit without ID");
+      }
 
-    if (willDelete) {
-      await deleteHabit(habit);
-    } else {
-      await updateHabit(habit);
-    }
+      if (willDelete) {
+        await deleteHabit(habit);
+      } else {
+        await updateHabit(habit);
+      }
 
-    await mutate(`/habits?date=${date.toISOString()}`);
-  }
+      await mutate(`/habits?date=${date.toISOString()}&timeZone=${timeZone}`);
+    },
+    [date, timeZone, deleteHabit, mutate, updateHabit]
+  );
 
   return (
     <HabitDialog

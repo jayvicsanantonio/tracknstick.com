@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useSWRConfig } from "swr";
 import { DateContext } from "@/context/DateContext";
 import HabitDialog from "@/components/common/HabitDialog";
@@ -15,21 +15,24 @@ export default function AddHabitDialog({
   toggleShowAddHabitDialog: () => void;
 }) {
   const { mutate } = useSWRConfig();
-  const { date } = useContext(DateContext);
+  const { date, timeZone } = useContext(DateContext);
 
-  async function handleSubmit(habit: Habit): Promise<void> {
-    try {
-      await apiClient.post<{
-        message: string;
-        habitId: string;
-      }>("/habits", habit);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error;
-    } finally {
-      await mutate(`/habits?date=${date.toISOString()}`);
-    }
-  }
+  const handleSubmit = useCallback(
+    async (habit: Habit): Promise<void> => {
+      try {
+        await apiClient.post<{
+          message: string;
+          habitId: string;
+        }>("/habits", habit);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+      } finally {
+        await mutate(`/habits?date=${date.toISOString()}&timeZone=${timeZone}`);
+      }
+    },
+    [date, timeZone, mutate]
+  );
 
   return (
     <HabitDialog

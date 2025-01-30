@@ -8,16 +8,18 @@ const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 export default function DailyHabitDate() {
   const { isDarkMode } = useContext(ThemeContext);
-  const { date, handlePreviousDate, handleNextDate } = useContext(DateContext);
+  const { date, handlePreviousDate, handleNextDate, timeZone } =
+    useContext(DateContext);
 
   const formattedDate = useMemo(() => {
     const options: Intl.DateTimeFormatOptions = {
+      timeZone,
       year: "numeric",
       month: "long",
       day: "numeric",
     };
     return date.toLocaleDateString("en-US", options);
-  }, [date]);
+  }, [date, timeZone]);
 
   const dayLabel = useMemo(() => {
     const today = new Date();
@@ -25,9 +27,9 @@ export default function DailyHabitDate() {
     if (isToday) {
       return "Today";
     } else {
-      return date.toLocaleDateString("en-US", { weekday: "long" });
+      return date.toLocaleDateString("en-US", { timeZone, weekday: "long" });
     }
-  }, [date]);
+  }, [date, timeZone]);
 
   return (
     <div className="flex items-center justify-between">
