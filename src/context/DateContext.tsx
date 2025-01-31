@@ -5,6 +5,8 @@ interface DateContextProps {
   setDate: (date: Date) => void;
   handlePreviousDate: () => void;
   handleNextDate: () => void;
+  previousDate: Date;
+  nextDate: Date;
   timeZone: string;
 }
 
@@ -13,5 +15,7 @@ export const DateContext = createContext<DateContextProps>({
   setDate: () => {},
   handlePreviousDate: () => {},
   handleNextDate: () => {},
+  previousDate: new Date(),
+  nextDate: new Date(),
   timeZone: "America/Los_Angeles",
 });
