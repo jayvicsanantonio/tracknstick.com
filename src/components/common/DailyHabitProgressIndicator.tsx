@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useContext } from "react";
+import { motion } from "framer-motion";
 import { ThemeContext } from "@/context/ThemeContext";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
-const { Check, Trophy } = MiscellaneousIcons;
+const { Check } = MiscellaneousIcons;
 
 export default function DailyHabitProgressIndicator({
   completionRate,
@@ -11,15 +11,6 @@ export default function DailyHabitProgressIndicator({
   completionRate: number;
 }) {
   const { isDarkMode } = useContext(ThemeContext);
-  const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
-
-  useEffect(() => {
-    if (completionRate === 100) {
-      setShowCompletionAnimation(true);
-      const timer = setTimeout(() => setShowCompletionAnimation(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [completionRate]);
 
   return (
     <div className="flex flex-col items-center justify-center mb-12">
@@ -79,69 +70,6 @@ export default function DailyHabitProgressIndicator({
           </div>
         </div>
       </div>
-      <AnimatePresence>
-        {showCompletionAnimation && (
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center bg-purple-500 bg-opacity-50 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className={`${
-                isDarkMode ? "bg-gray-800" : "bg-white"
-              } p-8 rounded-lg shadow-lg`}
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                duration: 0.5,
-              }}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h2
-                  className={`text-4xl font-bold ${
-                    isDarkMode ? "text-purple-200" : "text-purple-800"
-                  } mb-4`}
-                >
-                  Congratulations!
-                </h2>
-                <p
-                  className={`text-xl ${
-                    isDarkMode ? "text-purple-300" : "text-purple-600"
-                  } mb-4`}
-                >
-                  {`You've completed all your habits for today!`}
-                </p>
-              </motion.div>
-              <motion.div
-                className="mt-6 flex justify-center"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{
-                  delay: 0.5,
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 30,
-                }}
-              >
-                <Trophy
-                  className={`w-16 h-16 ${
-                    isDarkMode ? "text-yellow-400" : "text-yellow-500"
-                  }`}
-                />
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
