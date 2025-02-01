@@ -6,6 +6,7 @@ import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 import { Habit } from "@/types/habit";
 import { apiClient } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AddHabitDialog({
   showAddHabitDialog,
@@ -14,6 +15,7 @@ export default function AddHabitDialog({
   showAddHabitDialog: boolean;
   toggleShowAddHabitDialog: () => void;
 }) {
+  const { toast } = useToast();
   const { mutate } = useSWRConfig();
   const { date, timeZone } = useContext(DateContext);
 
@@ -24,14 +26,20 @@ export default function AddHabitDialog({
           message: string;
           habitId: string;
         }>("/habits", habit);
+
+        toast({
+          description: `The habit "${habit.name}" has been added.`,
+        });
       } catch (error) {
-        console.error("Error fetching data:", error);
-        throw error;
+        console.error(error);
+        toast({
+          description: `An error occurred while adding the habit: ${habit.name}`,
+        });
       } finally {
         await mutate(`/habits?date=${date.toISOString()}&timeZone=${timeZone}`);
       }
     },
-    [date, timeZone, mutate]
+    [date, timeZone, mutate, toast]
   );
 
   return (
