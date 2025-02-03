@@ -9,6 +9,7 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { DateContext } from "@/context/DateContext";
 import { Habit } from "@/types/habit";
 import { apiClient } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
 
 export default function EditHabitDialog({
   habit,
@@ -19,21 +20,31 @@ export default function EditHabitDialog({
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
 }) {
+  const { toast } = useToast();
   const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
 
-  const updateHabit = useCallback(async (habit: Habit): Promise<void> => {
-    try {
-      await apiClient.put<{ message: string; habitId: string }>(
-        `/habits/${habit.id}`,
-        habit
-      );
-    } catch (error) {
-      console.error("Error updating habit:", error);
-      throw error;
-    }
-  }, []);
+  const updateHabit = useCallback(
+    async (habit: Habit): Promise<void> => {
+      try {
+        await apiClient.put<{ message: string; habitId: string }>(
+          `/habits/${habit.id}`,
+          habit
+        );
+
+        toast({
+          description: `The habit "${habit.name}" has been updated.`,
+        });
+      } catch (error) {
+        console.error("Error updating habit:", error);
+        toast({
+          description: `An error occurred while updating the habit: ${habit.name}`,
+        });
+      }
+    },
+    [toast]
+  );
 
   const deleteHabit = useCallback(async (habit: Habit): Promise<void> => {
     try {
