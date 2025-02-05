@@ -46,16 +46,25 @@ export default function EditHabitDialog({
     [toast]
   );
 
-  const deleteHabit = useCallback(async (habit: Habit): Promise<void> => {
-    try {
-      await apiClient.delete<{ message: string; habitId: string }>(
-        `/habits/${habit.id}`
-      );
-    } catch (error) {
-      console.error("Error deleting habit:", error);
-      throw error;
-    }
-  }, []);
+  const deleteHabit = useCallback(
+    async (habit: Habit): Promise<void> => {
+      try {
+        await apiClient.delete<{ message: string; habitId: string }>(
+          `/habits/${habit.id}`
+        );
+
+        toast({
+          description: `The habit "${habit.name}" has been deleted.`,
+        });
+      } catch (error) {
+        console.error("Error deleting habit:", error);
+        toast({
+          description: `An error occurred while deleting the habit: ${habit.name}`,
+        });
+      }
+    },
+    [toast]
+  );
 
   const handleSubmit = useCallback(
     async (habit: Habit, willDelete: boolean): Promise<void> => {
