@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import useSWR from "swr";
+import { useToast } from "@/hooks/use-toast";
 import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/types/habit";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -13,6 +14,7 @@ import EditHabitDialog from "@/components/common/EditHabitDialog";
 import { apiClient } from "@/services/api";
 
 function App() {
+  const { toast } = useToast();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
   const { data: habits = [], isLoading } = useSWR<Habit[]>(
@@ -33,6 +35,9 @@ function App() {
       return data;
     } catch (error) {
       console.error("Error fetching data:", error);
+      toast({
+        description: "Failed to fetch habits. Please reload the page.",
+      });
       throw error;
     }
   }
