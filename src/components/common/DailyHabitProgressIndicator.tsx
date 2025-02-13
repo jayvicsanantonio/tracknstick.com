@@ -64,7 +64,7 @@ export default function DailyHabitProgressIndicator({
                   isDarkMode ? "text-purple-200" : "text-purple-800"
                 }`}
               >
-                {completionRate}%
+                {Number.isNaN(completionRate) ? 0 : completionRate}%
               </span>
             )}
           </div>
