@@ -1,11 +1,11 @@
-import { useContext } from "react";
-import HabitsIcons from "@/icons/habits";
-import { Button } from "@/components/ui/button";
-import { ThemeContext } from "@/context/ThemeContext";
-import StarAnimation from "@/components/common/StarAnimation";
-import { Habit } from "@/types/habit";
-import frequencyLabel from "@/lib/frequencyLabel";
-import MiscellaneousIcons from "@/icons/miscellaneous";
+import { useContext } from 'react';
+import HabitsIcons from '@/icons/habits';
+import { Button } from '@/components/ui/button';
+import { ThemeContext } from '@/context/ThemeContext';
+import StarAnimation from '@/components/common/StarAnimation';
+import { Habit } from '@/types/habit';
+import frequencyLabel from '@/lib/frequencyLabel';
+import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { Edit } = MiscellaneousIcons;
 
@@ -26,7 +26,6 @@ export default function DailyHabitItem({
 }) {
   const { isDarkMode } = useContext(ThemeContext);
   const Icon = HabitsIcons[habit.icon];
-
   return (
     <div key={habit.id} className="flex flex-col items-center">
       <div className="relative mb-2">
@@ -34,18 +33,20 @@ export default function DailyHabitItem({
           className={`relative flex items-center justify-center w-28 h-28 rounded-full ${
             habit.completed
               ? isDarkMode
-                ? "bg-purple-700"
-                : "bg-purple-600"
+                ? 'bg-purple-700'
+                : 'bg-purple-600'
               : isDarkMode
-              ? "bg-gray-700"
-              : "bg-purple-200"
+              ? 'bg-gray-700'
+              : 'bg-purple-200'
           } hover:-translate-y-1 hover:scale-110 focus:outline-none ${
-            isDarkMode ? "focus:ring-purple-400" : "focus:ring-purple-600"
+            isDarkMode
+              ? 'focus:ring-purple-400'
+              : 'focus:ring-purple-600'
           } focus:ring-opacity-50`}
           onClick={() => {
             if (habit.id) {
               toggleHabit(habit.id).catch((error) => {
-                console.error("Failed to toggle habit:", error);
+                console.error('Failed to toggle habit:', error);
               });
             }
           }}
@@ -53,10 +54,10 @@ export default function DailyHabitItem({
           <Icon
             className={`h-14 w-14 ${
               habit.completed
-                ? "text-white"
+                ? 'text-white'
                 : isDarkMode
-                ? "text-purple-400"
-                : "text-purple-600"
+                ? 'text-purple-400'
+                : 'text-purple-600'
             }`}
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />
@@ -75,14 +76,14 @@ export default function DailyHabitItem({
       </div>
       <span
         className={`text-sm font-medium ${
-          isDarkMode ? "text-purple-200" : "text-purple-800"
+          isDarkMode ? 'text-purple-200' : 'text-purple-800'
         }`}
       >
         {habit.name}
       </span>
       <span
         className={`text-xs ${
-          isDarkMode ? "text-purple-300" : "text-purple-600"
+          isDarkMode ? 'text-purple-300' : 'text-purple-600'
         }`}
       >
         {frequencyLabel(habit.frequency)}
