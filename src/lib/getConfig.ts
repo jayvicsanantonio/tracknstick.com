@@ -4,7 +4,7 @@ export default function getConfig() {
 
   if (!apiKey || !apiHost) {
     throw new Error(
-      "Missing required environment variables: VITE_X_API_KEY, VITE_API_HOST"
+      'Missing required environment variables: VITE_X_API_KEY, VITE_API_HOST'
     );
   }
 

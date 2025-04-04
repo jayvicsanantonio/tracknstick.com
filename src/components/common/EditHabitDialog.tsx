@@ -1,15 +1,20 @@
-import { useCallback, useContext } from "react";
-import { useSWRConfig } from "swr";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import HabitDialog from "@/components/common/HabitDialog";
-import HabitDialogHeader from "@/components/common/HabitDialogHeader";
-import HabitForm from "@/components/common/HabitForm";
-import HabitStats from "@/components/common/HabitStats";
-import { ThemeContext } from "@/context/ThemeContext";
-import { DateContext } from "@/context/DateContext";
-import { Habit } from "@/types/habit";
-import { apiClient } from "@/services/api";
-import { useToast } from "@/hooks/use-toast";
+import { useCallback, useContext } from 'react';
+import { useSWRConfig } from 'swr';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
+import HabitDialog from '@/components/common/HabitDialog';
+import HabitDialogHeader from '@/components/common/HabitDialogHeader';
+import HabitForm from '@/components/common/HabitForm';
+import HabitStats from '@/components/common/HabitStats';
+import { ThemeContext } from '@/context/ThemeContext';
+import { DateContext } from '@/context/DateContext';
+import { Habit } from '@/types/habit';
+import { apiClient } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
 
 export default function EditHabitDialog({
   habit,
@@ -29,7 +34,7 @@ export default function EditHabitDialog({
     async (habit: Habit): Promise<void> => {
       try {
         await apiClient.put<{ message: string; habitId: string }>(
-          `/habits/${habit.id}`,
+          `/api/v1/habits/${habit.id}`,
           habit
         );
 
@@ -37,7 +42,7 @@ export default function EditHabitDialog({
           description: `The habit "${habit.name}" has been updated.`,
         });
       } catch (error) {
-        console.error("Error updating habit:", error);
+        console.error('Error updating habit:', error);
         toast({
           description: `An error occurred while updating the habit: ${habit.name}`,
         });
@@ -50,14 +55,14 @@ export default function EditHabitDialog({
     async (habit: Habit): Promise<void> => {
       try {
         await apiClient.delete<{ message: string; habitId: string }>(
-          `/habits/${habit.id}`
+          `/api/v1/habits/${habit.id}`
         );
 
         toast({
           description: `The habit "${habit.name}" has been deleted.`,
         });
       } catch (error) {
-        console.error("Error deleting habit:", error);
+        console.error('Error deleting habit:', error);
         toast({
           description: `An error occurred while deleting the habit: ${habit.name}`,
         });
@@ -69,7 +74,7 @@ export default function EditHabitDialog({
   const handleSubmit = useCallback(
     async (habit: Habit, willDelete: boolean): Promise<void> => {
       if (!habit.id) {
-        throw new Error("Cannot update habit without ID");
+        throw new Error('Cannot update habit without ID');
       }
 
       if (willDelete) {
@@ -78,7 +83,9 @@ export default function EditHabitDialog({
         await updateHabit(habit);
       }
 
-      await mutate(`/habits?date=${date.toISOString()}&timeZone=${timeZone}`);
+      await mutate(
+        `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`
+      );
     },
     [date, timeZone, deleteHabit, mutate, updateHabit]
   );
@@ -95,8 +102,8 @@ export default function EditHabitDialog({
             value="edit"
             className={`text-sm ${
               isDarkMode
-                ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
-                : "data-[state=active]:bg-purple-200"
+                ? 'data-[state=active]:bg-purple-700 data-[state=active]:text-white'
+                : 'data-[state=active]:bg-purple-200'
             }`}
           >
             Edit
@@ -105,8 +112,8 @@ export default function EditHabitDialog({
             value="stats"
             className={`text-sm ${
               isDarkMode
-                ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
-                : "data-[state=active]:bg-purple-200"
+                ? 'data-[state=active]:bg-purple-700 data-[state=active]:text-white'
+                : 'data-[state=active]:bg-purple-200'
             }`}
           >
             Stats

@@ -1,16 +1,22 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSWRConfig } from "swr";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Habit } from "@/types/habit";
-import DailyHabitDate from "@/components/common/DailyHabitDate";
-import DailyHabitProgressIndicator from "@/components/common/DailyHabitProgressIndicator";
-import DailyHabitList from "@/components/common/DailyHabitList";
-import { ThemeContext } from "@/context/ThemeContext";
-import { DateContext } from "@/context/DateContext";
-import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
-import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
-import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
-import { apiClient } from "@/services/api";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useSWRConfig } from 'swr';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Habit } from '@/types/habit';
+import DailyHabitDate from '@/components/common/DailyHabitDate';
+import DailyHabitProgressIndicator from '@/components/common/DailyHabitProgressIndicator';
+import DailyHabitList from '@/components/common/DailyHabitList';
+import { ThemeContext } from '@/context/ThemeContext';
+import { DateContext } from '@/context/DateContext';
+import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
+import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
+import completedAllHabits from '@/assets/audio/completed-all-habits.mp3';
+import { apiClient } from '@/services/api';
 
 export default function DailyHabitTracker({
   isEditMode,
@@ -26,8 +32,12 @@ export default function DailyHabitTracker({
   const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(
+    null
+  );
+  const [animatingHabitId, setAnimatingHabitId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     return () => {
@@ -38,7 +48,9 @@ export default function DailyHabitTracker({
   }, [timeoutId]);
 
   const completionRate = useMemo(() => {
-    const completedHabits = habits.filter((habit) => habit.completed).length;
+    const completedHabits = habits.filter(
+      (habit) => habit.completed
+    ).length;
     return Math.round((completedHabits / habits.length) * 100);
   }, [habits]);
 
@@ -50,16 +62,16 @@ export default function DailyHabitTracker({
         await apiClient.post<{
           message: string;
           trackerId: string;
-        }>(`/habits/${id}/trackers`, {
+        }>(`/api/v1/habits/${id}/trackers`, {
           timeZone,
           timestamp: dateString,
         });
       } catch (error) {
-        console.error("Error adding tracker:", error);
+        console.error('Error adding tracker:', error);
         throw error;
       } finally {
         await mutate(
-          `/habits?date=${dateString}&timeZone=${timeZone}`,
+          `/api/v1/habits?date=${dateString}&timeZone=${timeZone}`,
           habits.map((habit) => {
             if (habit.id === id) {
               const newCompleted = !habit.completed;
@@ -92,8 +104,8 @@ export default function DailyHabitTracker({
     await addTracker(id);
     const habit = habits.find((habit) => habit.id === id);
     const allHabitsCompleted =
-      habits.filter((habit) => habit.completed).length === habits.length - 1 &&
-      !habit?.completed;
+      habits.filter((habit) => habit.completed).length ===
+        habits.length - 1 && !habit?.completed;
 
     if (allHabitsCompleted) {
       const audio = new Audio(completedAllHabits);
@@ -110,7 +122,9 @@ export default function DailyHabitTracker({
     <div className="flex-1">
       <Card
         className={`min-w-[400px] ${
-          isDarkMode ? "border-gray-700 bg-gray-800" : "border-purple-200"
+          isDarkMode
+            ? 'border-gray-700 bg-gray-800'
+            : 'border-purple-200'
         }
       `}
       >
@@ -118,7 +132,9 @@ export default function DailyHabitTracker({
           <DailyHabitDate />
         </CardHeader>
         <CardContent>
-          <DailyHabitProgressIndicator completionRate={completionRate} />
+          <DailyHabitProgressIndicator
+            completionRate={completionRate}
+          />
           <DailyHabitList
             isEditMode={isEditMode}
             habits={habits}
