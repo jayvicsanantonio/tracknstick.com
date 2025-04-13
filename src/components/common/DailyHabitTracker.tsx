@@ -8,6 +8,7 @@ import {
 import { useSWRConfig } from 'swr';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Habit } from '@/types/habit';
+import NoHabits from '@/components/common/NoHabits';
 import DailyHabitDate from '@/components/common/DailyHabitDate';
 import DailyHabitProgressIndicator from '@/components/common/DailyHabitProgressIndicator';
 import DailyHabitList from '@/components/common/DailyHabitList';
@@ -23,11 +24,13 @@ export default function DailyHabitTracker({
   habits,
   toggleIsEditingHabit,
   setEditingHabit,
+  onAddHabitClick,
 }: {
   isEditMode: boolean;
   habits: Habit[];
   toggleIsEditingHabit: () => void;
   setEditingHabit: (habit: Habit | null) => void;
+  onAddHabitClick: () => void;
 }) {
   const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
@@ -132,17 +135,23 @@ export default function DailyHabitTracker({
           <DailyHabitDate />
         </CardHeader>
         <CardContent>
-          <DailyHabitProgressIndicator
-            completionRate={completionRate}
-          />
-          <DailyHabitList
-            isEditMode={isEditMode}
-            habits={habits}
-            toggleHabit={toggleHabit}
-            animatingHabitId={animatingHabitId}
-            toggleIsEditingHabit={toggleIsEditingHabit}
-            setEditingHabit={setEditingHabit}
-          />
+          {habits.length === 0 ? (
+            <NoHabits onAddHabitClick={onAddHabitClick} />
+          ) : (
+            <>
+              <DailyHabitProgressIndicator
+                completionRate={completionRate}
+              />
+              <DailyHabitList
+                isEditMode={isEditMode}
+                habits={habits}
+                toggleHabit={toggleHabit}
+                animatingHabitId={animatingHabitId}
+                toggleIsEditingHabit={toggleIsEditingHabit}
+                setEditingHabit={setEditingHabit}
+              />
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
