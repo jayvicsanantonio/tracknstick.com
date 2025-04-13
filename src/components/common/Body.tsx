@@ -1,12 +1,13 @@
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { SignedIn, SignedOut } from '@clerk/clerk-react';
 
-import Welcome from "@/components/common/Welcome";
-import DailyHabitTracker from "@/components/common/DailyHabitTracker";
-import { Habit } from "@/types/habit";
+import Welcome from '@/components/common/Welcome';
+import DailyHabitTracker from '@/components/common/DailyHabitTracker';
+import { Habit } from '@/types/habit';
 
 export default function Body({
   isEditMode,
   habits,
+  toggleShowAddHabitDialog,
   toggleShowEditHabitDialog,
   setEditingHabit,
 }: {
@@ -27,6 +28,7 @@ export default function Body({
           habits={habits}
           toggleIsEditingHabit={toggleShowEditHabitDialog}
           setEditingHabit={setEditingHabit}
+          onAddHabitClick={toggleShowAddHabitDialog}
         />
       </SignedIn>
     </>
