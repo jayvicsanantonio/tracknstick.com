@@ -1,6 +1,6 @@
-import { type ReactNode, useContext } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ThemeContext } from "@/context/ThemeContext";
+import { type ReactNode, useContext } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ThemeContext } from '@/context/ThemeContext';
 
 export default function HabitDialog({
   isOpen,
@@ -16,10 +16,10 @@ export default function HabitDialog({
   return (
     <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
       <DialogContent
-        className={`sm:max-w-[525px] ${
+        className={`sm:max-w-3xl ${
           isDarkMode
-            ? "bg-gray-800 border-gray-700"
-            : "bg-purple-50 border-purple-200"
+            ? 'bg-gray-800 border-gray-700'
+            : 'bg-purple-50 border-purple-200'
         }`}
       >
         {children}
