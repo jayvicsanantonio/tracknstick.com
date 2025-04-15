@@ -5,8 +5,11 @@ import HabitDialog from '@/components/common/HabitDialog';
 import HabitDialogHeader from '@/components/common/HabitDialogHeader';
 import HabitForm from '@/components/common/HabitForm';
 import { Habit } from '@/types/habit';
-import { apiClient } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
+import getConfig from '@/lib/getConfig';
+const { apiHost } = getConfig();
 
 export default function AddHabitDialog({
   showAddHabitDialog,
@@ -16,16 +19,23 @@ export default function AddHabitDialog({
   toggleShowAddHabitDialog: () => void;
 }) {
   const { toast } = useToast();
+  const { getToken } = useAuth();
   const { mutate } = useSWRConfig();
   const { date, timeZone } = useContext(DateContext);
 
   const handleSubmit = useCallback(
     async (habit: Habit): Promise<void> => {
       try {
-        await apiClient.post<{
+        const token = await getToken();
+
+        await axios.post<{
           message: string;
           habitId: string;
-        }>('/api/v1/habits', habit);
+        }>(`${apiHost}/api/v1/habits`, habit, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         toast({
           description: `The habit "${habit.name}" has been added.`,
@@ -41,7 +51,7 @@ export default function AddHabitDialog({
         );
       }
     },
-    [date, timeZone, mutate, toast]
+    [date, timeZone, mutate, toast, getToken]
   );
 
   return (
