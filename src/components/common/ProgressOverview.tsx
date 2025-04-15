@@ -1,26 +1,16 @@
-import { useContext, useState, useMemo } from "react";
-import StreakDisplayDays from "@/components/common/StreakDisplayDays";
-import { ThemeContext } from "@/context/ThemeContext";
+import { useContext, useState, useMemo, useCallback } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AppContext } from "@/context/AppContext";
 import VisuallyHidden from "@/components/common/VisuallyHidden";
+import CompletionChart from "@/components/common/CompletionChart";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const {
@@ -36,19 +26,20 @@ const {
   Target,
 } = MiscellaneousIcons;
 
-// Mock data for insights
-const generateMockData = (year: number, month: number) => {
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  return Array.from({ length: daysInMonth }, (_, i) => ({
-    date: `${year}-${String(month + 1).padStart(2, "0")}-${String(
-      i + 1
-    ).padStart(2, "0")}`,
-    completionRate: Math.floor(Math.random() * 101),
-  }));
-};
+// IconProps interface
+interface IconProps {
+  className?: string;
+}
 
-// Mock data for achievements
-const achievements = [
+// Achievement data structure
+interface Achievement {
+  id: number;
+  name: string;
+  description: string;
+  icon: React.ComponentType<IconProps>;
+}
+
+const achievements: Achievement[] = [
   {
     id: 1,
     name: "Early Bird",
@@ -88,116 +79,118 @@ export default function ProgressOverview({
   isOverviewMode: boolean;
   toggleIsOverviewMode: () => void;
 }) {
-  const currentStreak = 7;
-  const longestStreak = 14;
+  const { isDarkMode } = useContext(AppContext);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { isDarkMode } = useContext(ThemeContext);
-  const insightData = useMemo(
-    () => generateMockData(currentDate.getFullYear(), currentDate.getMonth()),
-    [currentDate]
-  );
+  const currentStreak = 7; // TODO: Replace with actual data
+  const longestStreak = 14; // TODO: Replace with actual data
 
-  const changeMonth = (increment: number) => {
+  const changeMonth = useCallback((increment: number) => {
     setCurrentDate((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setMonth(newDate.getMonth() + increment);
       return newDate;
     });
-  };
+  }, []);
 
-  const renderCalendar = () => {
+  const monthData = useMemo(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    
+    return Array.from({ length: daysInMonth }, (_, i) => ({
+      date: new Date(year, month, i + 1).toISOString().split('T')[0],
+      completionRate: Math.floor(Math.random() * 101), // TODO: Replace with actual data
+    }));
+  }, [currentDate]);
+
+  const calendarDays = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
 
-    const calendarDays = Array.from({ length: daysInMonth }, (_, i) => {
+    return Array.from({ length: daysInMonth }, (_, i) => {
       const dayOfMonth = i + 1;
       const date = new Date(year, month, dayOfMonth);
       const isPast = date < today;
       const isToday = date.toDateString() === today.toDateString();
-      const dayData = insightData.find(
-        (d) => parseInt(d.date.split("-")[2]) === dayOfMonth
+      const dayData = monthData.find(
+        (d) => parseInt(d.date.split('-')[2]) === dayOfMonth
       );
 
       return { dayOfMonth, isPast, isToday, date, dayData };
     });
+  }, [currentDate, monthData]);
 
-    return (
-      <div className="grid grid-cols-7 gap-1">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div
-            key={day}
-            className="text-center font-bold text-purple-800 dark:text-purple-200 text-xs"
-          >
-            {day}
-          </div>
-        ))}
-        {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-          <div key={`empty-${index}`} className="aspect-square"></div>
-        ))}
-        {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }, index) => (
-          <div
-            key={index}
-            className={`aspect-square flex flex-col items-center justify-center p-1 ${
-              isPast
-                ? "bg-white dark:bg-gray-800"
-                : "bg-gray-100 dark:bg-gray-700"
+  const renderCalendar = () => (
+    <div className="grid grid-cols-7 gap-1">
+      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        <div
+          key={day}
+          className="text-center font-bold text-purple-800 dark:text-purple-200 text-xs"
+        >
+          {day}
+        </div>
+      ))}
+      {Array.from({ length: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay() }).map((_, index) => (
+        <div key={`empty-${index}`} className="aspect-square"></div>
+      ))}
+      {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }, index) => (
+        <div
+          key={index}
+          className={`aspect-square flex flex-col items-center justify-center p-1 ${
+            isPast
+              ? "bg-white dark:bg-gray-800"
+              : "bg-gray-100 dark:bg-gray-700"
+          }`}
+        >
+          <span
+            className={`text-xs font-medium mb-1 ${
+              isPast || isToday
+                ? "text-purple-800 dark:text-purple-200"
+                : "text-gray-400 dark:text-gray-500"
             }`}
           >
-            <span
-              className={`text-xs font-medium mb-1 ${
-                isPast || isToday
-                  ? "text-purple-800 dark:text-purple-200"
-                  : "text-gray-400 dark:text-gray-500"
-              }`}
-            >
-              {dayOfMonth}
-            </span>
-            {(isPast || isToday) && (
-              <div className="relative w-full h-full">
-                <svg className="w-full h-full" viewBox="0 0 36 36">
-                  <circle
-                    className="text-purple-200 dark:text-purple-800"
-                    strokeWidth="3"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r="16"
-                    cx="18"
-                    cy="18"
-                  />
-                  {dayData && (
-                    <circle
-                      className="text-purple-600 dark:text-purple-400"
-                      strokeWidth="3"
-                      strokeDasharray={16 * 2 * Math.PI}
-                      strokeDashoffset={
-                        16 * 2 * Math.PI * (1 - dayData.completionRate / 100)
-                      }
-                      strokeLinecap="round"
-                      stroke="currentColor"
-                      fill="transparent"
-                      r="16"
-                      cx="18"
-                      cy="18"
-                    />
-                  )}
-                </svg>
-                {dayData && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[0.6rem] font-medium text-purple-800 dark:text-purple-200">
-                      {dayData.completionRate}%
-                    </span>
-                  </div>
-                )}
+            {dayOfMonth}
+          </span>
+          {(isPast || isToday) && dayData && (
+            <div className="relative w-full h-full">
+              <svg className="w-full h-full" viewBox="0 0 36 36">
+                <circle
+                  className="text-purple-200 dark:text-purple-800"
+                  strokeWidth="3"
+                  stroke="currentColor"
+                  fill="transparent"
+                  r="16"
+                  cx="18"
+                  cy="18"
+                />
+                <circle
+                  className="text-purple-600 dark:text-purple-400"
+                  strokeWidth="3"
+                  strokeDasharray={16 * 2 * Math.PI}
+                  strokeDashoffset={
+                    16 * 2 * Math.PI * (1 - dayData.completionRate / 100)
+                  }
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="transparent"
+                  r="16"
+                  cx="18"
+                  cy="18"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[0.6rem] font-medium text-purple-800 dark:text-purple-200">
+                  {dayData.completionRate}%
+                </span>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <Dialog open={isOverviewMode} onOpenChange={toggleIsOverviewMode}>
@@ -214,20 +207,32 @@ export default function ProgressOverview({
           >
             Progress Overview
           </DialogTitle>
-          <VisuallyHidden>
-            <DialogDescription>Overview of your progress.</DialogDescription>
-          </VisuallyHidden>
+          <VisuallyHidden>Overview of your progress.</VisuallyHidden>
         </DialogHeader>
+
         <div className="flex justify-center items-center mb-4">
-          <div
-            className={`flex items-center space-x-8 ${
-              isDarkMode ? "text-purple-200" : "text-purple-800"
-            }`}
-          >
-            <StreakDisplayDays value={currentStreak} label="Current Streak" />
-            <StreakDisplayDays value={longestStreak} label="Longest Streak" />
+          <div className="flex items-center space-x-8">
+            <div className="flex items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
+              <span className="text-4xl font-bold mr-2">{currentStreak}</span>
+              <div className="flex flex-col">
+                <span className="text-sm">Current Streak</span>
+                <span className="text-xs text-purple-600 dark:text-purple-300">
+                  days
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center bg-purple-100 dark:bg-purple-800 rounded-lg p-4 shadow-md">
+              <span className="text-4xl font-bold mr-2">{longestStreak}</span>
+              <div className="flex flex-col">
+                <span className="text-sm">Longest Streak</span>
+                <span className="text-xs text-purple-600 dark:text-purple-300">
+                  days
+                </span>
+              </div>
+            </div>
           </div>
         </div>
+
         <Tabs defaultValue="calendar" className="w-full">
           <TabsList
             className={`grid w-full grid-cols-3 ${
@@ -268,6 +273,7 @@ export default function ProgressOverview({
               Achievements
             </TabsTrigger>
           </TabsList>
+
           <TabsContent value="calendar">
             <Card
               className={isDarkMode ? "border-gray-700" : "border-purple-200"}
@@ -315,6 +321,7 @@ export default function ProgressOverview({
               </CardContent>
             </Card>
           </TabsContent>
+
           <TabsContent value="graph">
             <Card
               className={isDarkMode ? "border-gray-700" : "border-purple-200"}
@@ -329,57 +336,11 @@ export default function ProgressOverview({
                 </h3>
               </CardHeader>
               <CardContent>
-                <div className="h-[400px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={insightData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke={isDarkMode ? "#4B5563" : "#d8b4fe"}
-                      />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(value) =>
-                          new Date(value).getDate().toString()
-                        }
-                        label={{
-                          value: "Day of Month",
-                          position: "insideBottom",
-                          offset: -5,
-                        }}
-                        stroke={isDarkMode ? "#E9D5FF" : "#7e22ce"}
-                      />
-                      <YAxis
-                        label={{
-                          value: "Completion Rate (%)",
-                          angle: -90,
-                          position: "insideLeft",
-                        }}
-                        stroke={isDarkMode ? "#E9D5FF" : "#7e22ce"}
-                      />
-                      <Tooltip
-                        formatter={(value: number) => [
-                          `${value}%`,
-                          "Completion Rate",
-                        ]}
-                        labelFormatter={(label) =>
-                          `Date: ${new Date(label).toLocaleDateString()}`
-                        }
-                        contentStyle={{
-                          backgroundColor: isDarkMode ? "#1F2937" : "#faf5ff",
-                          borderColor: isDarkMode ? "#4B5563" : "#d8b4fe",
-                        }}
-                      />
-                      <Bar
-                        dataKey="completionRate"
-                        fill={isDarkMode ? "#9333EA" : "#9333ea"}
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <CompletionChart data={monthData} />
               </CardContent>
             </Card>
           </TabsContent>
+
           <TabsContent value="achievements">
             <Card
               className={isDarkMode ? "border-gray-700" : "border-purple-200"}
