@@ -17,7 +17,10 @@ import { DateContext } from '@/context/DateContext';
 import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
 import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
 import completedAllHabits from '@/assets/audio/completed-all-habits.mp3';
-import { apiClient } from '@/services/api';
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
+import getConfig from '@/lib/getConfig';
+const { apiHost } = getConfig();
 
 export default function DailyHabitTracker({
   isEditMode,
@@ -33,6 +36,7 @@ export default function DailyHabitTracker({
   onAddHabitClick: () => void;
 }) {
   const { mutate } = useSWRConfig();
+  const { getToken } = useAuth();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(
@@ -62,13 +66,22 @@ export default function DailyHabitTracker({
       const dateString = date.toISOString();
 
       try {
-        await apiClient.post<{
+        const token = await getToken();
+        await axios.post<{
           message: string;
           trackerId: string;
-        }>(`/api/v1/habits/${id}/trackers`, {
-          timeZone,
-          timestamp: dateString,
-        });
+        }>(
+          `${apiHost}/api/v1/habits/${id}/trackers`,
+          {
+            timeZone,
+            timestamp: dateString,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       } catch (error) {
         console.error('Error adding tracker:', error);
         throw error;
@@ -100,7 +113,7 @@ export default function DailyHabitTracker({
         );
       }
     },
-    [habits, date, timeZone, timeoutId, mutate]
+    [habits, date, timeZone, timeoutId, mutate, getToken]
   );
 
   const toggleHabit = async (id: string) => {

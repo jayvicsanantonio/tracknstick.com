@@ -11,10 +11,14 @@ import AddHabitDialog from '@/components/common/AddHabitDialog';
 import ProgressOverview from '@/components/common/ProgressOverview';
 import Footer from '@/components/common/Footer';
 import EditHabitDialog from '@/components/common/EditHabitDialog';
-import { apiClient } from '@/services/api';
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
+import getConfig from '@/lib/getConfig';
+const { apiHost } = getConfig();
 
 function App() {
   const { toast } = useToast();
+  const { getToken } = useAuth();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
   const { data: habits = [], isLoading } = useSWR<Habit[]>(
@@ -33,7 +37,15 @@ function App() {
 
   async function fetcher(endpoint: string): Promise<Habit[]> {
     try {
-      const response = await apiClient.get<Habit[]>(endpoint);
+      const token = await getToken();
+      const response = await axios.get<Habit[]>(
+        `${apiHost}${endpoint}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = response.data;
 
       return data;

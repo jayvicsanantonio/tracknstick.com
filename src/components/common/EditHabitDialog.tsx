@@ -13,8 +13,11 @@ import HabitStats from '@/components/common/HabitStats';
 import { ThemeContext } from '@/context/ThemeContext';
 import { DateContext } from '@/context/DateContext';
 import { Habit } from '@/types/habit';
-import { apiClient } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
+import getConfig from '@/lib/getConfig';
+const { apiHost } = getConfig();
 
 export default function EditHabitDialog({
   habit,
@@ -26,6 +29,7 @@ export default function EditHabitDialog({
   toggleShowEditHabitDialog: () => void;
 }) {
   const { toast } = useToast();
+  const { getToken } = useAuth();
   const { mutate } = useSWRConfig();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
@@ -33,9 +37,15 @@ export default function EditHabitDialog({
   const updateHabit = useCallback(
     async (habit: Habit): Promise<void> => {
       try {
-        await apiClient.put<{ message: string; habitId: string }>(
-          `/api/v1/habits/${habit.id}`,
-          habit
+        const token = await getToken();
+        await axios.put<{ message: string; habitId: string }>(
+          `${apiHost}/api/v1/habits/${habit.id}`,
+          habit,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         toast({
@@ -48,14 +58,21 @@ export default function EditHabitDialog({
         });
       }
     },
-    [toast]
+    [toast, getToken]
   );
 
   const deleteHabit = useCallback(
     async (habit: Habit): Promise<void> => {
       try {
-        await apiClient.delete<{ message: string; habitId: string }>(
-          `/api/v1/habits/${habit.id}`
+        const token = await getToken();
+
+        await axios.delete<{ message: string; habitId: string }>(
+          `${apiHost}/api/v1/habits/${habit.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         toast({
@@ -68,7 +85,7 @@ export default function EditHabitDialog({
         });
       }
     },
-    [toast]
+    [toast, getToken]
   );
 
   const handleSubmit = useCallback(
@@ -119,14 +136,14 @@ export default function EditHabitDialog({
             Stats
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="edit" className="h-[600px] sm:h-[496px]">
+        <TabsContent value="edit">
           <HabitForm
             habit={habit}
             handleSubmit={handleSubmit}
             toggleDialog={toggleShowEditHabitDialog}
           />
         </TabsContent>
-        <TabsContent value="stats" className="h-[496px]">
+        <TabsContent value="stats">
           <HabitStats habit={habit} />
         </TabsContent>
       </Tabs>
