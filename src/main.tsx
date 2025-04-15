@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import ThemeProvider from "@/context/ThemeProvider";
-import DateProvider from "@/context/DateProvider.tsx";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { Toaster } from "@/components/ui/toaster.tsx";
+import AppProvider from "@/context/AppContext";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -15,13 +15,13 @@ if (!PUBLISHABLE_KEY) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-        <DateProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
           <App />
           <Toaster />
-        </DateProvider>
-      </ClerkProvider>
-    </ThemeProvider>
+        </ClerkProvider>
+      </AppProvider>
+    </ErrorBoundary>
   </StrictMode>
 );
