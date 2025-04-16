@@ -181,6 +181,14 @@ The application utilizes a modern tech stack:
 
   - **Justification:** Prevents unnecessary re-renders, improving UI responsiveness, especially in lists. Profile before and after applying.
 
+- **Recommendation 5: Improve Loading State Handling (Medium Priority)**
+  - **Assessment:** The top-level `isLoading` check in `App.tsx` causes the entire page content to be replaced by a "Loading..." message when the date changes and `useSWR` refetches data.
+  - **Strategy:**
+    - Remove the top-level `if (isLoading)` check from `App.tsx`.
+    - Pass the `isLoading` state down through props (`App` -> `Body` -> `DailyHabitTracker`).
+    - Handle the loading state within the component directly responsible for displaying the data (`DailyHabitTracker`). Conditionally render a localized loading indicator (e.g., skeleton screen, spinner) within that component's content area instead of rendering the actual list/content.
+  - **Justification:** Prevents the jarring full-page flash during data refetches triggered by date changes, improving the user experience by showing loading state only where the data is changing.
+
 ### 3.3. State Management
 
 - **Assessment:** Good use of SWR for server state. Context for global concerns. `useState`/`useToggle` used heavily in `App.tsx` for UI state, leading to centralization and prop drilling.
