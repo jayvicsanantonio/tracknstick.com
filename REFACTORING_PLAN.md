@@ -188,6 +188,19 @@ The application utilizes a modern tech stack:
     - Pass the `isLoading` state down through props (`App` -> `Body` -> `DailyHabitTracker`).
     - Handle the loading state within the component directly responsible for displaying the data (`DailyHabitTracker`). Conditionally render a localized loading indicator (e.g., skeleton screen, spinner) within that component's content area instead of rendering the actual list/content.
   - **Justification:** Prevents the jarring full-page flash during data refetches triggered by date changes, improving the user experience by showing loading state only where the data is changing.
+- **Recommendation 6: Refine Specific `common/` Components (Ongoing with Phases)**
+  - **Assessment Summary (`src/components/common/`):**
+    - **Prop Drilling:** Widespread issue affecting `Header`, `Body`, `DailyHabitTracker`, `DailyHabitList`, `DailyHabitItem`, `NoHabits`, `AddHabitDialog`, `EditHabitDialog`, `HabitDialogHeader`, `EditHabitDialogHeaderTitle`, `HabitStats`. State and functions originate from `App.tsx` and are passed down multiple levels.
+    - **Logic Placement:** Core API interaction and mutation logic is located within UI components (`DailyHabitTracker`, `AddHabitDialog`, `EditHabitDialog`). Date formatting logic is within `DailyHabitDate`.
+    - **Styling:** Repetitive conditional dark mode classes (`isDarkMode ? '...' : '...'`) are common across most components. Complex conditional styling exists in `DailyHabitItem`. Clerk component styling is customized inline in `Welcome`.
+    - **Accessibility:** `DailyHabitProgressIndicator` lacks ARIA attributes. `VisuallyHidden` uses inline styles instead of the `sr-only` class.
+    - **Component Structure:** `HabitDialogHeader` and its title components (`Add/Edit...Title`) are potential candidates for consolidation into their parent dialogs.
+  - **Strategy & Justification (Referencing Plan Sections):**
+    - **Address Prop Drilling & Logic Placement (Phase 1 & 2):** Implement feature-based state management (`useHabits` hook/context) and the API service layer (Plan 3.7.1, 3.7.2). Refactor components to consume the hook/context directly, removing passthrough props and internal API logic (Plan 3.2.2, 3.3.1). This is the highest priority for improving maintainability and testability.
+    - **Refactor Styling (Phase 3):** Define semantic theme colors (Plan 3.5.1) and update all components to use them. Leverage CVA in base UI components (`src/components/ui/`) or specific common components (`DailyHabitItem`) to handle variants like dark mode or completion state more cleanly (Plan 3.5.2). Standardize Clerk component styling in `Welcome`.
+    - **Improve Accessibility (Phase 3 or Ongoing):** Add ARIA attributes to `DailyHabitProgressIndicator`. Update `VisuallyHidden` to use the `sr-only` class.
+    - **Refine Component Structure (Low Priority):** Consider consolidating `HabitDialogHeader` and its children into `Add/EditHabitDialog` if it simplifies the structure.
+    - **Extract Utilities (Low Priority):** Move date formatting logic from `DailyHabitDate` to `src/lib/formatDate.ts` (Plan 3.7 - Minor).
 
 ### 3.3. State Management
 
@@ -242,6 +255,19 @@ The application utilizes a modern tech stack:
 - **Recommendation 3: Consider Lightweight Client State Library (Low Priority)**
   - **Strategy:** If managing shared client state with Context and hooks becomes overly complex or leads to performance issues due to context re-renders, evaluate libraries like Zustand or Jotai.
   - **Justification:** Offers more optimized solutions for complex global client state, but adds another dependency. Assess need based on complexity growth.
+- **Recommendation 4: Refine `ThemeProvider` (Medium Priority)**
+  - **Assessment:** Manages `isDarkMode` state but lacks persistence, system preference integration, and doesn't apply the theme class to the document.
+  - **Strategy:**
+    - **Persistence:** Use `localStorage` to store and retrieve the user's theme preference. Initialize state from `localStorage`.
+    - **System Preference:** Optionally, check `window.matchMedia('(prefers-color-scheme: dark)')` for initial state fallback.
+    - **Apply Class:** Use a `useEffect` hook within `ThemeProvider` to add/remove the `dark` class on `document.documentElement` based on `isDarkMode` state.
+  - **Justification:** Improves user experience by remembering theme choice and correctly integrating with Tailwind's `darkMode: "class"` strategy.
+- **Recommendation 5: Refine `DateProvider` (Medium Priority)**
+  - **Assessment:** Manages date state and navigation. Uses `useMemo`/`useCallback` internally but creates a new context `value` object on every render and exposes raw `setDate`.
+  - **Strategy:**
+    - **Memoize Context Value:** Wrap the `value` object passed to `DateContext.Provider` in `useMemo` to stabilize its reference.
+    - **Encapsulate Updates:** Consider removing direct `setDate` exposure from the context value. If arbitrary date setting is needed, provide a specific `goToDate(newDate)` function instead.
+  - **Justification:** Prevents unnecessary re-renders of context consumers and improves state encapsulation.
 
 ### 3.4. TypeScript Implementation
 
@@ -273,8 +299,14 @@ The application utilizes a modern tech stack:
     ```
 
   - **Justification:** Improves readability, reusability, and maintainability of prop definitions.
+  - **Note (`HabitForm.tsx`):** The form uses an inline object type for its props; refactor this to a named `HabitFormProps` interface.
 
-- **Recommendation 3: Explore Advanced Types (Low Priority)**
+- **Recommendation 3: Review Type Assertions (Low Priority)**
+
+  - **Strategy:** Review usage of type assertions (`as ...`), such as those found in `HabitForm.tsx`'s event handlers and state setters. Explore if stricter typing from libraries or helper functions can minimize their necessity.
+  - **Justification:** Reduces potential runtime errors hidden by assertions and improves type safety.
+
+- **Recommendation 4: Explore Advanced Types (Low Priority)**
   - **Strategy:** As the codebase evolves, look for opportunities to use TypeScript Utility Types (e.g., `Pick`, `Omit`, `Partial`) and Generics to create more robust and reusable types, especially within utility functions (`lib/`) or complex hooks.
   - **Justification:** Can reduce type duplication and improve type safety in complex scenarios.
 
@@ -330,6 +362,7 @@ The application utilizes a modern tech stack:
 - **Recommendation 3: Ensure Consistent Token Usage (Medium Priority)**
   - **Strategy:** Consistently use the defined theme tokens (colors, spacing, border-radius, fonts) throughout the application. Avoid hardcoding pixel values or arbitrary color shades where theme tokens exist.
   - **Justification:** Maintains visual consistency and simplifies design updates.
+  - **Note (`HabitForm.tsx`):** The form contains repetitive conditional dark mode classes (e.g., `isDarkMode ? '...' : '...'`). Refactoring theme colors (Rec. 3.5.1) and potentially using CVA in base UI components will simplify styling here.
 
 ### 3.6. Performance Optimization
 
@@ -533,6 +566,7 @@ The application utilizes a modern tech stack:
     - Potentially defining custom error types or checking error statuses/codes for more specific handling.
     - Handling errors for mutations (add, update, delete) as well as fetches.
   - **Justification:** Ensures errors are handled robustly and consistently across the application.
+  - **Note (`HabitForm.tsx`):** The form delegates submission/deletion logic via the `handleSubmit` prop. Ensure the parent component implementing this prop provides clear user feedback (e.g., toasts) on API success or failure. Consider if specific error handling for deletion within the form itself is needed.
 
 ### 3.10. Testing Strategy
 
