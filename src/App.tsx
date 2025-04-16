@@ -18,11 +18,14 @@ const { apiHost } = getConfig();
 
 function App() {
   const { toast } = useToast();
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
   const { isDarkMode } = useContext(ThemeContext);
   const { date, timeZone } = useContext(DateContext);
+  const habitsEndpointKey = isSignedIn
+    ? `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`
+    : null;
   const { data: habits = [], isLoading } = useSWR<Habit[]>(
-    `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`,
+    habitsEndpointKey,
     fetcher
   );
   const [editingHabit, setEditingHabit] = useState<Habit | null>(
