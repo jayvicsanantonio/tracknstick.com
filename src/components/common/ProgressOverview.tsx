@@ -358,7 +358,6 @@ export default function ProgressOverview() {
                           `${value}%`,
                           "Completion Rate",
                         ]}
-                        // Revert to simpler formatter, but keep type annotation
                         labelFormatter={(label: string | number) =>
                           `Date: ${new Date(String(label)).toLocaleDateString()}`
                         }
