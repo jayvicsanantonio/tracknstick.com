@@ -10,6 +10,7 @@ import {
   deleteHabit as apiDeleteHabit,
   toggleHabitCompletion as apiToggleHabitCompletion,
 } from "@/features/habits/api";
+import { useAuth } from "@clerk/clerk-react"; // Import useAuth
 
 interface UseHabitsReturn {
   habits: Habit[];
@@ -29,10 +30,12 @@ interface UseHabitsReturn {
 export function useHabits(): UseHabitsReturn {
   const { toast } = useToast();
   const { date, timeZone } = useContext(DateContext);
+  const { isSignedIn } = useAuth();
 
-  const habitsEndpointKey = date
-    ? `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`
-    : null;
+  const habitsEndpointKey =
+    date && isSignedIn
+      ? `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`
+      : null;
 
   const {
     data: fetchedHabits,

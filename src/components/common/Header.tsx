@@ -3,20 +3,17 @@ import { useContext } from "react";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 const { BarChart2, CheckCircle2, Edit, Moon, Plus, Sun } = MiscellaneousIcons;
 
-export default function Header({
-  isEditMode,
-  toggleShowAddHabitDialog,
-  toggleIsEditMode,
-  toggleIsOverviewMode,
-}: {
-  isEditMode: boolean;
-  toggleShowAddHabitDialog: () => void;
-  toggleIsEditMode: () => void;
-  toggleIsOverviewMode: () => void;
-}) {
+export default function Header() {
   const { isDarkMode, toggleDarkMode } = useContext(ThemeContext);
+  const {
+    isEditMode,
+    toggleShowAddHabitDialog,
+    toggleIsEditMode,
+    toggleIsOverviewMode,
+  } = useHabitsState();
 
   return (
     <header className="flex items-center justify-between mb-8">
@@ -51,8 +48,8 @@ export default function Header({
               isEditMode
                 ? "bg-purple-400"
                 : isDarkMode
-                ? "bg-purple-700 hover:bg-purple-600"
-                : "bg-purple-600 hover:bg-purple-700"
+                  ? "bg-purple-700 hover:bg-purple-600"
+                  : "bg-purple-600 hover:bg-purple-700"
             }`}
             onClick={toggleIsEditMode}
             aria-label="Toggle Edit Mode"
