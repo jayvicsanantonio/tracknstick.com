@@ -4,12 +4,11 @@ import {
   useContext,
   ReactNode,
   useCallback,
-  useMemo, // Add useMemo import
+  useMemo,
 } from "react";
-import { useToggle } from "@/hooks/use-toggle"; // Assuming shared hook
+import { useToggle } from "@/hooks/use-toggle";
 import { Habit } from "@/features/habits/types";
 
-// Define the shape of the context state
 interface HabitsStateContextValue {
   isEditMode: boolean;
   toggleIsEditMode: () => void;
@@ -21,14 +20,11 @@ interface HabitsStateContextValue {
   toggleShowEditHabitDialog: () => void;
   isOverviewMode: boolean;
   toggleIsOverviewMode: () => void;
-  // Add convenience functions to open specific dialogs
   openEditDialog: (habit: Habit) => void;
 }
 
-// Create the context with a default value (null or throw error)
 const HabitsStateContext = createContext<HabitsStateContextValue | null>(null);
 
-// Create the provider component
 export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
@@ -36,22 +32,17 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
   const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
 
-  // Convenience function to open the edit dialog and set the habit
   const openEditDialog = useCallback(
     (habit: Habit) => {
       setEditingHabit(habit);
-      // Ensure dialog is shown - use the 'true' state setter from useToggle if available,
-      // otherwise just call the toggle (might need adjustment based on useToggle implementation)
-      // Assuming toggleShowEditHabitDialog() toggles, we might need a setShowEditHabitDialog(true)
-      // For now, just toggle, assuming it opens if closed. Refine if useToggle provides explicit setters.
+
       if (!showEditHabitDialog) {
         toggleShowEditHabitDialog();
       }
     },
-    [showEditHabitDialog, toggleShowEditHabitDialog], // Add dependencies
+    [showEditHabitDialog, toggleShowEditHabitDialog],
   );
 
-  // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(
     () => ({
       isEditMode,
@@ -70,7 +61,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       isEditMode,
       toggleIsEditMode,
       editingHabit,
-      setEditingHabit, // Include setter if needed by consumers, otherwise omit
+      setEditingHabit,
       showAddHabitDialog,
       toggleShowAddHabitDialog,
       showEditHabitDialog,
@@ -88,7 +79,6 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Create a custom hook for consuming the context
 export function useHabitsState() {
   const context = useContext(HabitsStateContext);
   if (context === null) {
