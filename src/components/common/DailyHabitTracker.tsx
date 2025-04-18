@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Habit } from "@/types/habit";
 import NoHabits from "@/components/common/NoHabits";
 import DailyHabitDate from "@/components/common/DailyHabitDate";
 import DailyHabitProgressIndicator from "@/components/common/DailyHabitProgressIndicator";
@@ -10,18 +9,9 @@ import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
 import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
 import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
 import { useHabits } from "@/features/habits/hooks/useHabits";
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 
-export default function DailyHabitTracker({
-  isEditMode,
-  toggleIsEditingHabit,
-  setEditingHabit,
-  onAddHabitClick,
-}: {
-  isEditMode: boolean;
-  toggleIsEditingHabit: () => void;
-  setEditingHabit: (habit: Habit | null) => void;
-  onAddHabitClick: () => void;
-}) {
+export default function DailyHabitTracker() {
   const { isDarkMode } = useContext(ThemeContext);
   const {
     habits,
@@ -29,6 +19,7 @@ export default function DailyHabitTracker({
     error,
     toggleHabit: toggleHabitCompletion,
   } = useHabits();
+  const { toggleShowAddHabitDialog } = useHabitsState();
 
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
@@ -98,17 +89,14 @@ export default function DailyHabitTracker({
         </CardHeader>
         <CardContent>
           {habits.length === 0 ? (
-            <NoHabits onAddHabitClick={onAddHabitClick} />
+            <NoHabits onAddHabitClick={toggleShowAddHabitDialog} />
           ) : (
             <>
               <DailyHabitProgressIndicator completionRate={completionRate} />
               <DailyHabitList
-                isEditMode={isEditMode}
                 habits={habits}
                 toggleHabit={handleToggleHabit}
                 animatingHabitId={animatingHabitId}
-                toggleIsEditingHabit={toggleIsEditingHabit}
-                setEditingHabit={setEditingHabit}
               />
             </>
           )}

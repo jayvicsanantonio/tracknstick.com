@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VisuallyHidden from "@/components/common/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext"; // Import state hook
 
 const {
   Award,
@@ -36,18 +37,16 @@ const {
   Target,
 } = MiscellaneousIcons;
 
-// Mock data for insights
 const generateMockData = (year: number, month: number) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   return Array.from({ length: daysInMonth }, (_, i) => ({
     date: `${year}-${String(month + 1).padStart(2, "0")}-${String(
-      i + 1
+      i + 1,
     ).padStart(2, "0")}`,
     completionRate: Math.floor(Math.random() * 101),
   }));
 };
 
-// Mock data for achievements
 const achievements = [
   {
     id: 1,
@@ -81,20 +80,16 @@ const achievements = [
   },
 ];
 
-export default function ProgressOverview({
-  isOverviewMode,
-  toggleIsOverviewMode,
-}: {
-  isOverviewMode: boolean;
-  toggleIsOverviewMode: () => void;
-}) {
-  const currentStreak = 7;
-  const longestStreak = 14;
+export default function ProgressOverview() {
+  const { isOverviewMode, toggleIsOverviewMode } = useHabitsState();
+
+  const currentStreak = 7; // TODO: Replace with actual data later
+  const longestStreak = 14; // TODO: Replace with actual data later
   const [currentDate, setCurrentDate] = useState(new Date());
   const { isDarkMode } = useContext(ThemeContext);
   const insightData = useMemo(
     () => generateMockData(currentDate.getFullYear(), currentDate.getMonth()),
-    [currentDate]
+    [currentDate],
   );
 
   const changeMonth = (increment: number) => {
@@ -118,7 +113,7 @@ export default function ProgressOverview({
       const isPast = date < today;
       const isToday = date.toDateString() === today.toDateString();
       const dayData = insightData.find(
-        (d) => parseInt(d.date.split("-")[2]) === dayOfMonth
+        (d) => parseInt(d.date.split("-")[2]) === dayOfMonth,
       );
 
       return { dayOfMonth, isPast, isToday, date, dayData };
@@ -338,8 +333,10 @@ export default function ProgressOverview({
                       />
                       <XAxis
                         dataKey="date"
-                        tickFormatter={(value) =>
-                          new Date(value).getDate().toString()
+                        tickFormatter={
+                          (
+                            value: string | number, // Add type annotation
+                          ) => new Date(String(value)).getDate().toString() // Cast value to string
                         }
                         label={{
                           value: "Day of Month",
@@ -361,8 +358,9 @@ export default function ProgressOverview({
                           `${value}%`,
                           "Completion Rate",
                         ]}
-                        labelFormatter={(label) =>
-                          `Date: ${new Date(label).toLocaleDateString()}`
+                        // Revert to simpler formatter, but keep type annotation
+                        labelFormatter={(label: string | number) =>
+                          `Date: ${new Date(String(label)).toLocaleDateString()}`
                         }
                         contentStyle={{
                           backgroundColor: isDarkMode ? "#1F2937" : "#faf5ff",

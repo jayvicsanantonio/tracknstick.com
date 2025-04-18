@@ -1,7 +1,6 @@
-import { useContext, useState } from "react";
-import { useToggle } from "@/hooks/use-toggle";
-import { Habit } from "@/features/habits/types";
+import { useContext } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
+import { HabitsStateProvider } from "@/features/habits/context/HabitsStateContext";
 import Header from "@/components/common/Header";
 import Body from "@/components/common/Body";
 import AddHabitDialog from "@/components/common/AddHabitDialog";
@@ -11,11 +10,6 @@ import EditHabitDialog from "@/components/common/EditHabitDialog";
 
 function App() {
   const { isDarkMode } = useContext(ThemeContext);
-  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
-  const [isEditMode, toggleIsEditMode] = useToggle(false);
-  const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
-  const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
-  const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
 
   return (
     <div
@@ -24,34 +18,15 @@ function App() {
       } p-4 sm:p-8`}
     >
       <div className="min-w-[400px] max-w-7xl mx-auto flex flex-col min-h-screen">
-        <Header
-          isEditMode={isEditMode}
-          toggleShowAddHabitDialog={toggleShowAddHabitDialog}
-          toggleIsEditMode={toggleIsEditMode}
-          toggleIsOverviewMode={toggleIsOverviewMode}
-        />
-
-        <Body
-          isEditMode={isEditMode}
-          toggleShowAddHabitDialog={toggleShowAddHabitDialog}
-          toggleShowEditHabitDialog={toggleShowEditHabitDialog}
-          setEditingHabit={setEditingHabit}
-        />
-        <Footer />
+        <HabitsStateProvider>
+          <Header />
+          <Body />
+          <Footer />
+          <AddHabitDialog />
+          <EditHabitDialog />
+          <ProgressOverview />
+        </HabitsStateProvider>
       </div>
-      <AddHabitDialog
-        showAddHabitDialog={showAddHabitDialog}
-        toggleShowAddHabitDialog={toggleShowAddHabitDialog}
-      />
-      <EditHabitDialog
-        habit={editingHabit}
-        showEditHabitDialog={showEditHabitDialog}
-        toggleShowEditHabitDialog={toggleShowEditHabitDialog}
-      />
-      <ProgressOverview
-        isOverviewMode={isOverviewMode}
-        toggleIsOverviewMode={toggleIsOverviewMode}
-      />
     </div>
   );
 }

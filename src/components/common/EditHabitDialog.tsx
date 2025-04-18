@@ -1,126 +1,52 @@
-import { useCallback, useContext } from 'react';
-import { useSWRConfig } from 'swr';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import HabitDialog from '@/components/common/HabitDialog';
-import HabitDialogHeader from '@/components/common/HabitDialogHeader';
-import HabitForm from '@/components/common/HabitForm';
-import HabitStats from '@/components/common/HabitStats';
-import { ThemeContext } from '@/context/ThemeContext';
-import { DateContext } from '@/context/DateContext';
-import { Habit } from '@/types/habit';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@clerk/clerk-react';
-import axios from 'axios';
-import getConfig from '@/lib/getConfig';
-const { apiHost } = getConfig();
+import { useContext } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import HabitDialog from "@/components/common/HabitDialog";
+import HabitDialogHeader from "@/components/common/HabitDialogHeader";
+import HabitForm from "@/components/common/HabitForm";
+import HabitStats from "@/components/common/HabitStats";
+import { ThemeContext } from "@/context/ThemeContext";
+import { Habit } from "@/features/habits/types";
+import { useHabits } from "@/features/habits/hooks/useHabits";
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 
-export default function EditHabitDialog({
-  habit,
-  showEditHabitDialog,
-  toggleShowEditHabitDialog,
-}: {
-  habit: Habit | null;
-  showEditHabitDialog: boolean;
-  toggleShowEditHabitDialog: () => void;
-}) {
-  const { toast } = useToast();
-  const { getToken } = useAuth();
-  const { mutate } = useSWRConfig();
+export default function EditHabitDialog() {
   const { isDarkMode } = useContext(ThemeContext);
-  const { date, timeZone } = useContext(DateContext);
+  const { editingHabit, showEditHabitDialog, toggleShowEditHabitDialog } =
+    useHabitsState();
+  const { updateHabit, deleteHabit } = useHabits();
 
-  const updateHabit = useCallback(
-    async (habit: Habit): Promise<void> => {
-      try {
-        const token = await getToken();
-        await axios.put<{ message: string; habitId: string }>(
-          `${apiHost}/api/v1/habits/${habit.id}`,
-          habit,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  const handleFormSubmit = async (
+    habitDataFromForm: Habit,
+    willDelete: boolean,
+  ): Promise<void> => {
+    const habitId = editingHabit?.id;
+    if (!habitId) {
+      console.error("Cannot update/delete habit without an ID.");
+      return;
+    }
 
-        toast({
-          description: `The habit "${habit.name}" has been updated.`,
-        });
-      } catch (error) {
-        console.error('Error updating habit:', error);
-        toast({
-          description: `An error occurred while updating the habit: ${habit.name}`,
-        });
-      }
-    },
-    [toast, getToken]
-  );
-
-  const deleteHabit = useCallback(
-    async (habit: Habit): Promise<void> => {
-      try {
-        const token = await getToken();
-
-        await axios.delete<{ message: string; habitId: string }>(
-          `${apiHost}/api/v1/habits/${habit.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        toast({
-          description: `The habit "${habit.name}" has been deleted.`,
-        });
-      } catch (error) {
-        console.error('Error deleting habit:', error);
-        toast({
-          description: `An error occurred while deleting the habit: ${habit.name}`,
-        });
-      }
-    },
-    [toast, getToken]
-  );
-
-  const handleSubmit = useCallback(
-    async (habit: Habit, willDelete: boolean): Promise<void> => {
-      if (!habit.id) {
-        throw new Error('Cannot update habit without ID');
-      }
-
-      if (willDelete) {
-        await deleteHabit(habit);
-      } else {
-        await updateHabit(habit);
-      }
-
-      await mutate(
-        `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`
-      );
-    },
-    [date, timeZone, deleteHabit, mutate, updateHabit]
-  );
+    if (willDelete) {
+      await deleteHabit(habitId, habitDataFromForm.name);
+    } else {
+      const { name, icon, frequency } = habitDataFromForm;
+      await updateHabit(habitId, { name, icon, frequency });
+    }
+  };
 
   return (
     <HabitDialog
       isOpen={showEditHabitDialog}
       toggleIsOpen={toggleShowEditHabitDialog}
     >
-      <HabitDialogHeader isEditMode={true} habit={habit} />
+      <HabitDialogHeader isEditMode={true} habit={editingHabit} />
       <Tabs defaultValue="edit" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger
             value="edit"
             className={`text-sm ${
               isDarkMode
-                ? 'data-[state=active]:bg-purple-700 data-[state=active]:text-white'
-                : 'data-[state=active]:bg-purple-200'
+                ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
+                : "data-[state=active]:bg-purple-200"
             }`}
           >
             Edit
@@ -129,8 +55,8 @@ export default function EditHabitDialog({
             value="stats"
             className={`text-sm ${
               isDarkMode
-                ? 'data-[state=active]:bg-purple-700 data-[state=active]:text-white'
-                : 'data-[state=active]:bg-purple-200'
+                ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
+                : "data-[state=active]:bg-purple-200"
             }`}
           >
             Stats
@@ -138,13 +64,13 @@ export default function EditHabitDialog({
         </TabsList>
         <TabsContent value="edit">
           <HabitForm
-            habit={habit}
-            handleSubmit={handleSubmit}
+            habit={editingHabit}
+            handleSubmit={handleFormSubmit}
             toggleDialog={toggleShowEditHabitDialog}
           />
         </TabsContent>
         <TabsContent value="stats">
-          <HabitStats habit={habit} />
+          <HabitStats habit={editingHabit} />{" "}
         </TabsContent>
       </Tabs>
     </HabitDialog>
