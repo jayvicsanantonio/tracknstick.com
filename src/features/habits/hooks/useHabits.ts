@@ -1,7 +1,11 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { useToast } from "@/hooks/use-toast";
 import { DateContext } from "@/context/DateContext";
+
+import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
+import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
+import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
 import { Habit } from "@/features/habits/types";
 import {
   fetchHabits,
@@ -10,12 +14,13 @@ import {
   deleteHabit as apiDeleteHabit,
   toggleHabitCompletion as apiToggleHabitCompletion,
 } from "@/features/habits/api";
-import { useAuth } from "@clerk/clerk-react"; // Import useAuth
+import { useAuth } from "@clerk/clerk-react";
 
 interface UseHabitsReturn {
   habits: Habit[];
   isLoading: boolean;
   error: unknown;
+  animatingHabitId: string | null;
   mutateHabits: () => Promise<Habit[] | undefined>;
   addHabit: (
     habitData: Omit<Habit, "id" | "completed" | "stats">,
@@ -29,6 +34,8 @@ interface UseHabitsReturn {
 }
 export function useHabits(): UseHabitsReturn {
   const { toast } = useToast();
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
   const { date, timeZone } = useContext(DateContext);
   const { isSignedIn } = useAuth();
 
@@ -47,6 +54,14 @@ export function useHabits(): UseHabitsReturn {
     () => (date ? fetchHabits(date, timeZone) : Promise.resolve([])),
     {},
   );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
 
   const addHabit = useCallback(
     async (habitData: Omit<Habit, "id" | "completed" | "stats">) => {
@@ -67,7 +82,7 @@ export function useHabits(): UseHabitsReturn {
     [mutateHabits, toast],
   );
 
-  const habits = fetchedHabits ?? [];
+  const habits = useMemo(() => fetchedHabits ?? [], [fetchedHabits]);
 
   const updateHabit = useCallback(
     async (
@@ -125,7 +140,7 @@ export function useHabits(): UseHabitsReturn {
     [mutateHabits, toast],
   );
 
-  const toggleHabit = useCallback(
+  const internalToggleHabitCompletion = useCallback(
     async (habitId: string) => {
       void mutateHabits(
         (currentHabits = []) =>
@@ -138,23 +153,56 @@ export function useHabits(): UseHabitsReturn {
       try {
         if (!date) throw new Error("Date context is not available");
         await apiToggleHabitCompletion(habitId, date, timeZone);
+        void mutateHabits();
       } catch (err) {
         console.error("Failed to toggle habit completion:", err);
         toast({
           variant: "destructive",
           description: "Failed to update habit status. Reverting change.",
         });
-      } finally {
         void mutateHabits();
       }
     },
     [date, timeZone, mutateHabits, toast],
   );
 
+  const toggleHabit = useCallback(
+    async (id: string) => {
+      const habit = habits.find((h) => h.id === id);
+
+      if (habit && !habit.completed) {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        setAnimatingHabitId(id);
+        const newTimeoutId = setTimeout(() => setAnimatingHabitId(null), 1000);
+        setTimeoutId(newTimeoutId);
+      }
+
+      await internalToggleHabitCompletion(id);
+
+      const allHabitsWereCompletedBeforeToggle =
+        habits.filter((h) => h.completed).length === habits.length - 1 &&
+        !habit?.completed;
+
+      if (allHabitsWereCompletedBeforeToggle) {
+        const audio = new Audio(completedAllHabits);
+        await audio.play().catch((e) => console.error("Audio play failed:", e));
+      } else if (habit) {
+        const audio = !habit.completed
+          ? new Audio(toggleOnSound)
+          : new Audio(toggleOffSound);
+        await audio.play().catch((e) => console.error("Audio play failed:", e));
+      }
+    },
+    [habits, timeoutId, internalToggleHabitCompletion],
+  );
+
   return {
     habits,
     isLoading,
     error,
+    animatingHabitId,
     mutateHabits,
     addHabit,
     updateHabit,

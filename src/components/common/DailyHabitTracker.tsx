@@ -1,36 +1,17 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import NoHabits from "@/components/common/NoHabits";
 import DailyHabitDate from "@/components/common/DailyHabitDate";
 import DailyHabitProgressIndicator from "@/components/common/DailyHabitProgressIndicator";
 import DailyHabitList from "@/components/common/DailyHabitList";
 import { ThemeContext } from "@/context/ThemeContext";
-import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
-import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
-import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 
 export default function DailyHabitTracker() {
   const { isDarkMode } = useContext(ThemeContext);
-  const {
-    habits,
-    isLoading,
-    error,
-    toggleHabit: toggleHabitCompletion,
-  } = useHabits();
+  const { habits, isLoading, error } = useHabits();
   const { toggleShowAddHabitDialog } = useHabitsState();
-
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [timeoutId]);
 
   const completionRate = useMemo(() => {
     const completedHabits = habits.filter((habit) => habit.completed).length;
@@ -39,34 +20,6 @@ export default function DailyHabitTracker() {
       ? Math.round((completedHabits / totalHabits) * 100)
       : 0;
   }, [habits]);
-
-  const handleToggleHabit = async (id: string) => {
-    const habit = habits.find((h) => h.id === id);
-    if (habit && !habit.completed) {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      setAnimatingHabitId(id);
-      const newTimeoutId = setTimeout(() => setAnimatingHabitId(null), 1000);
-      setTimeoutId(newTimeoutId);
-    }
-
-    await toggleHabitCompletion(id);
-
-    const allHabitsCompleted =
-      habits.filter((h) => h.completed).length === habits.length - 1 &&
-      !habit?.completed;
-
-    if (allHabitsCompleted) {
-      const audio = new Audio(completedAllHabits);
-      await audio.play();
-    } else {
-      const audio = !habit?.completed
-        ? new Audio(toggleOnSound)
-        : new Audio(toggleOffSound);
-      await audio.play();
-    }
-  };
 
   if (isLoading) {
     return <div>Loading habits...</div>;
@@ -93,11 +46,7 @@ export default function DailyHabitTracker() {
           ) : (
             <>
               <DailyHabitProgressIndicator completionRate={completionRate} />
-              <DailyHabitList
-                habits={habits}
-                toggleHabit={handleToggleHabit}
-                animatingHabitId={animatingHabitId}
-              />
+              <DailyHabitList />
             </>
           )}
         </CardContent>

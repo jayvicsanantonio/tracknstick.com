@@ -7,22 +7,18 @@ import { Habit } from "@/features/habits/types";
 import frequencyLabel from "@/lib/frequencyLabel";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabits } from "@/features/habits/hooks/useHabits";
 
 const { Edit } = MiscellaneousIcons;
 
 interface DailyHabitItemProps {
   habit: Habit;
-  animatingHabitId: string | null;
-  toggleHabit: (id: string) => Promise<void>;
 }
 
-export default function DailyHabitItem({
-  habit,
-  animatingHabitId,
-  toggleHabit,
-}: DailyHabitItemProps) {
+export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
   const { isDarkMode } = useContext(ThemeContext);
   const { isEditMode, openEditDialog } = useHabitsState();
+  const { toggleHabit, animatingHabitId } = useHabits();
   const Icon = HabitsIcons[habit.icon];
   return (
     <div key={habit.id} className="flex flex-col items-center">
