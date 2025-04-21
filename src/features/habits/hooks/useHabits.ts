@@ -34,7 +34,9 @@ interface UseHabitsReturn {
 }
 export function useHabits(): UseHabitsReturn {
   const { toast } = useToast();
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
   const { date, timeZone } = useContext(DateContext);
   const { isSignedIn } = useAuth();
