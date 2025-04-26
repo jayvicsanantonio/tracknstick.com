@@ -22,7 +22,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VisuallyHidden from "@/components/common/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext"; // Import state hook
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 
 const {
   Award,
@@ -83,8 +83,8 @@ const achievements = [
 export default function ProgressOverview() {
   const { isOverviewMode, toggleIsOverviewMode } = useHabitsState();
 
-  const currentStreak = 7; // TODO: Replace with actual data later
-  const longestStreak = 14; // TODO: Replace with actual data later
+  const currentStreak = 7;
+  const longestStreak = 14;
   const [currentDate, setCurrentDate] = useState(new Date());
   const { isDarkMode } = useContext(ThemeContext);
   const insightData = useMemo(
@@ -333,10 +333,8 @@ export default function ProgressOverview() {
                       />
                       <XAxis
                         dataKey="date"
-                        tickFormatter={
-                          (
-                            value: string | number, // Add type annotation
-                          ) => new Date(String(value)).getDate().toString() // Cast value to string
+                        tickFormatter={(value: string | number) =>
+                          new Date(String(value)).getDate().toString()
                         }
                         label={{
                           value: "Day of Month",

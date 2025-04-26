@@ -12,13 +12,12 @@ export default function DailyHabitDate() {
     useContext(DateContext);
 
   const formattedDate = useMemo(() => {
-    const options: Intl.DateTimeFormatOptions = {
+    return date.toLocaleDateString("en-US", {
       timeZone,
       year: "numeric",
       month: "long",
       day: "numeric",
-    };
-    return date.toLocaleDateString("en-US", options);
+    });
   }, [date, timeZone]);
 
   const dayLabel = useMemo(() => {

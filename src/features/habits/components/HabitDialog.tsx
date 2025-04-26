@@ -1,19 +1,18 @@
-import { useContext } from "react";
+import { type ReactNode, useContext } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ThemeContext } from "@/context/ThemeContext";
-
-interface HabitDialogProps {
-  isOpen: boolean;
-  toggleIsOpen: () => void;
-  children: React.ReactNode;
-}
 
 export default function HabitDialog({
   isOpen,
   toggleIsOpen,
   children,
-}: HabitDialogProps) {
+}: {
+  isOpen: boolean;
+  toggleIsOpen: () => void;
+  children: ReactNode;
+}) {
   const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
       <DialogContent

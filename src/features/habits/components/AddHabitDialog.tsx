@@ -1,4 +1,4 @@
-import HabitDialog from "@/components/common/HabitDialog";
+import HabitDialog from "./HabitDialog";
 import HabitDialogHeader from "@/components/common/HabitDialogHeader";
 import HabitForm from "@/components/common/HabitForm";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
