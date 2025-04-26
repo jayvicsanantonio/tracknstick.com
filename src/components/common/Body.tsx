@@ -1,7 +1,7 @@
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
 import Welcome from "@/components/common/Welcome";
-import DailyHabitTracker from "@/components/common/DailyHabitTracker";
+import DailyHabitTracker from "@/features/habits/components/DailyHabitTracker";
 
 export default function Body() {
   return (

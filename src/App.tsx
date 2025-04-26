@@ -3,10 +3,10 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { HabitsStateProvider } from "@/features/habits/context/HabitsStateContext";
 import Header from "@/components/common/Header";
 import Body from "@/components/common/Body";
-import AddHabitDialog from "@/components/common/AddHabitDialog";
+import AddHabitDialog from "@/features/habits/components/AddHabitDialog";
 import ProgressOverview from "@/components/common/ProgressOverview";
 import Footer from "@/components/common/Footer";
-import EditHabitDialog from "@/components/common/EditHabitDialog";
+import EditHabitDialog from "@/features/habits/components/EditHabitDialog";
 
 function App() {
   const { isDarkMode } = useContext(ThemeContext);

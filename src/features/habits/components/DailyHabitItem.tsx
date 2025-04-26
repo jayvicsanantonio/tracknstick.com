@@ -1,0 +1,82 @@
+import { useContext } from "react";
+import HabitsIcons from "@/icons/habits";
+import { Button } from "@/components/ui/button";
+import { ThemeContext } from "@/context/ThemeContext";
+import StarAnimation from "@/components/common/StarAnimation";
+import { Habit } from "@/features/habits/types";
+import frequencyLabel from "@/lib/frequencyLabel";
+import MiscellaneousIcons from "@/icons/miscellaneous";
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabits } from "@/features/habits/hooks/useHabits";
+
+const { Edit } = MiscellaneousIcons;
+
+interface DailyHabitItemProps {
+  habit: Habit;
+}
+
+export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
+  const { isDarkMode } = useContext(ThemeContext);
+  const { isEditMode, openEditDialog } = useHabitsState();
+  const { toggleHabit, animatingHabitId } = useHabits();
+  const Icon = HabitsIcons[habit.icon];
+  return (
+    <div key={habit.id} className="flex flex-col items-center">
+      <div className="relative mb-2">
+        <button
+          className={`relative flex items-center justify-center w-28 h-28 rounded-full ${
+            habit.completed
+              ? isDarkMode
+                ? "bg-purple-700"
+                : "bg-purple-600"
+              : isDarkMode
+                ? "bg-gray-700"
+                : "bg-purple-200"
+          } hover:-translate-y-1 hover:scale-110 focus:outline-none ${
+            isDarkMode ? "focus:ring-purple-400" : "focus:ring-purple-600"
+          } focus:ring-opacity-50`}
+          onClick={() => {
+            if (habit.id) {
+              toggleHabit(habit.id).catch((error) => {
+                console.error("Failed to toggle habit:", error);
+              });
+            }
+          }}
+        >
+          <Icon
+            className={`h-14 w-14 ${
+              habit.completed
+                ? "text-white"
+                : isDarkMode
+                  ? "text-purple-400"
+                  : "text-purple-600"
+            }`}
+          />
+          <StarAnimation isVisible={animatingHabitId === habit.id} />
+        </button>
+        {isEditMode && (
+          <Button
+            className="absolute top-0 right-0 rounded-full w-8 h-8 p-0 bg-purple-400 hover:bg-purple-500"
+            onClick={() => openEditDialog(habit)}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+      <span
+        className={`text-sm font-medium ${
+          isDarkMode ? "text-purple-200" : "text-purple-800"
+        }`}
+      >
+        {habit.name}
+      </span>
+      <span
+        className={`text-xs ${
+          isDarkMode ? "text-purple-300" : "text-purple-600"
+        }`}
+      >
+        {frequencyLabel(habit.frequency)}
+      </span>
+    </div>
+  );
+}

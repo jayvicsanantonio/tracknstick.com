@@ -48,7 +48,7 @@ export default function EditHabitDialog() {
           />
         </TabsContent>
         <TabsContent value="stats">
-          <HabitStats habit={editingHabit} />
+          <HabitStats habit={editingHabit} />{" "}
         </TabsContent>
       </Tabs>
     </HabitDialog>
