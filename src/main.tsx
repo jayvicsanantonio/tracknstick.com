@@ -4,8 +4,8 @@ import ThemeProvider from "@/context/ThemeProvider";
 import DateProvider from "@/context/DateProvider.tsx";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { Toaster } from "@/components/ui/toaster.tsx";
-import App from "./App.tsx";
-import "./index.css";
+import App from "@/App.tsx";
+import "@/index.css";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -23,5 +23,5 @@ createRoot(document.getElementById("root")!).render(
         </DateProvider>
       </ClerkProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );

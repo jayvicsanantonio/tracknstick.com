@@ -1,4 +1,4 @@
-import { Frequency } from "@/types/frequency";
+import { Frequency } from "@/features/habits/types";
 
 export default function frequencyLabel(frequency: Frequency[]) {
   if (frequency.length === 7) {

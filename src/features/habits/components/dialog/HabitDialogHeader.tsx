@@ -1,5 +1,5 @@
-import AddHabitDialogHeaderTitle from "@/components/common/AddHabitDialogHeaderTitle";
-import EditHabitDialogHeaderTitle from "@/components/common/EditHabitDialogHeaderTitle";
+import AddHabitDialogHeaderTitle from "@/features/habits/components/dialog/AddHabitDialogHeaderTitle";
+import EditHabitDialogHeaderTitle from "@/features/habits/components/dialog/EditHabitDialogHeaderTitle";
 import { Habit } from "@/features/habits/types";
 
 export default function HabitDialogHeader({

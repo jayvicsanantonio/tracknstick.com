@@ -1,6 +1,6 @@
-import HabitDialog from "./HabitDialog";
-import HabitDialogHeader from "@/components/common/HabitDialogHeader";
-import HabitForm from "@/components/common/HabitForm";
+import HabitDialog from "@/features/habits/components/HabitDialog";
+import HabitDialogHeader from "@/features/habits/components/dialog/HabitDialogHeader";
+import HabitForm from "@/features/habits/components/HabitForm";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 
 export default function AddHabitDialog() {
