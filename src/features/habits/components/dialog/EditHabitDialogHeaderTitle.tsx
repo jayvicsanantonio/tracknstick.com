@@ -7,7 +7,7 @@ import {
 import frequencyLabel from "@/lib/frequencyLabel";
 import HabitsIcons from "@/icons/habits";
 import { ThemeContext } from "@/context/ThemeContext";
-import { Habit } from "@/types/habit";
+import { Habit } from "@/features/habits/types";
 
 export default function EditHabitDialogHeaderTitle({
   habit,

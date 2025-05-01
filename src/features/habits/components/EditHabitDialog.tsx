@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import HabitDialog from "@/components/common/HabitDialog";
-import HabitDialogHeader from "@/components/common/HabitDialogHeader";
-import HabitForm from "@/components/common/HabitForm";
-import HabitStats from "@/components/common/HabitStats";
+import HabitDialog from "@/features/habits/components/HabitDialog";
+import HabitDialogHeader from "@/features/habits/components/dialog/HabitDialogHeader";
+import HabitForm from "@/features/habits/components/HabitForm";
+import HabitStats from "@/features/habits/components/HabitStats";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 

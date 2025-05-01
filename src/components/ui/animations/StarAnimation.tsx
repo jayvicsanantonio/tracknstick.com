@@ -8,7 +8,7 @@ export default function StarAnimation({ isVisible }: { isVisible: boolean }) {
     <AnimatePresence>
       {isVisible && (
         <>
-          {[...Array(5)].map((_, i) => (
+          {[1, 2, 3, 4, 5].map((_, i) => (
             <motion.div
               key={i}
               initial={{ scale: 0, x: 0, y: 0, rotate: 0 }}

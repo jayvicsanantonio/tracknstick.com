@@ -1,9 +1,9 @@
 import { useContext, useMemo } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import NoHabits from "@/components/common/NoHabits";
-import DailyHabitDate from "@/components/common/DailyHabitDate";
-import DailyHabitProgressIndicator from "@/components/common/DailyHabitProgressIndicator";
-import DailyHabitList from "./DailyHabitList";
+import NoHabits from "@/features/habits/components/NoHabits";
+import DailyHabitDate from "@/features/habits/components/DailyHabitDate";
+import DailyHabitProgressIndicator from "@/features/habits/components/DailyHabitProgressIndicator";
+import DailyHabitList from "@/features/habits/components/DailyHabitList";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";

@@ -1,4 +1,4 @@
-import DailyHabitItem from "./DailyHabitItem";
+import DailyHabitItem from "@/features/habits/components/DailyHabitItem";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 
 export default function DailyHabitList() {

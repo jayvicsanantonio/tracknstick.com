@@ -1,4 +1,4 @@
-import { Frequency } from "@/types/frequency";
+import { Frequency } from "@/features/habits/types";
 
 export const getDaysOfWeek = (locale = "en-US"): Frequency[] => {
   return Array.from({ length: 7 }, (_, i) => {

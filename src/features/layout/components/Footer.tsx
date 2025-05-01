@@ -16,7 +16,8 @@ export default function Footer() {
             isDarkMode ? "text-gray-400" : "text-gray-600"
           }`}
         >
-          © {new Date().getFullYear()} Track N&apos; Stick. All rights reserved.
+          © {new Date().getFullYear()} Track N&apos; Stick. All rights
+          reserved.
         </p>
       </div>
     </footer>

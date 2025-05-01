@@ -2,7 +2,7 @@ import { useContext } from "react";
 import HabitsIcons from "@/icons/habits";
 import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
-import StarAnimation from "@/components/common/StarAnimation";
+import StarAnimation from "@/components/ui/animations/StarAnimation";
 import { Habit } from "@/features/habits/types";
 import frequencyLabel from "@/lib/frequencyLabel";
 import MiscellaneousIcons from "@/icons/miscellaneous";

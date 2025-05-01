@@ -1,5 +1,5 @@
 import { useContext, useState, useMemo } from "react";
-import StreakDisplayDays from "@/components/common/StreakDisplayDays";
+import StreakDisplayDays from "@/features/progress/components/StreakDisplayDays";
 import { ThemeContext } from "@/context/ThemeContext";
 import {
   Dialog,
@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import VisuallyHidden from "@/components/common/VisuallyHidden";
+import VisuallyHidden from "@/components/ui/accessibility/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 

@@ -8,9 +8,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { daysOfWeek } from "@/constants";
 import HabitsIcons from "@/icons/habits";
-import { Habit } from "@/features/habits/types";
+import { Habit, Frequency } from "@/features/habits/types";
 import { ThemeContext } from "@/context/ThemeContext";
-import { Frequency } from "@/types/frequency";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 
 export default function HabitForm({

@@ -1,6 +1,6 @@
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
-import Welcome from "@/components/common/Welcome";
+import Welcome from "@/features/layout/components/Welcome";
 import DailyHabitTracker from "@/features/habits/components/DailyHabitTracker";
 
 export default function Body() {
