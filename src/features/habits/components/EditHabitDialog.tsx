@@ -5,12 +5,12 @@ import HabitDialogHeader from "@/features/habits/components/HabitDialogHeader";
 import HabitForm from "@/features/habits/components/HabitForm";
 import HabitStats from "@/features/habits/components/HabitStats";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
 
 export default function EditHabitDialog() {
   const { isDarkMode } = useContext(ThemeContext);
   const { editingHabit, showEditHabitDialog, toggleShowEditHabitDialog } =
-    useHabitsState();
+    useHabitsContext();
 
   return (
     <HabitDialog

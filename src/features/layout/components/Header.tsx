@@ -3,7 +3,7 @@ import { useContext } from "react";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
 const { BarChart2, CheckCircle2, Edit, Moon, Plus, Sun } = MiscellaneousIcons;
 
 export default function Header() {
@@ -13,7 +13,7 @@ export default function Header() {
     toggleShowAddHabitDialog,
     toggleIsEditMode,
     toggleIsOverviewMode,
-  } = useHabitsState();
+  } = useHabitsContext();
 
   return (
     <header className="flex items-center justify-between mb-8">

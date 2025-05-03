@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
 import { CalendarX2, PlusCircle } from "lucide-react";
 
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
 
 export default function NoHabits() {
-  const { toggleShowAddHabitDialog } = useHabitsState();
+  const { toggleShowAddHabitDialog } = useHabitsContext();
   const { isDarkMode } = useContext(ThemeContext);
 
   return (

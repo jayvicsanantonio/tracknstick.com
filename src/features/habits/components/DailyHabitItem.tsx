@@ -6,7 +6,7 @@ import StarAnimation from "@/components/ui/animations/StarAnimation";
 import { Habit } from "@/features/habits/types";
 import frequencyLabel from "@/lib/frequencyLabel";
 import MiscellaneousIcons from "@/icons/miscellaneous";
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 
 const { Edit } = MiscellaneousIcons;
@@ -17,7 +17,7 @@ interface DailyHabitItemProps {
 
 export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
   const { isDarkMode } = useContext(ThemeContext);
-  const { isEditMode, openEditDialog } = useHabitsState();
+  const { isEditMode, openEditDialog } = useHabitsContext();
   const { toggleHabit, animatingHabitId } = useHabits();
   const Icon = HabitsIcons[habit.icon];
   return (

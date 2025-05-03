@@ -22,7 +22,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VisuallyHidden from "@/components/ui/accessibility/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
 
 const {
   Award,
@@ -81,7 +81,7 @@ const achievements = [
 ];
 
 export default function ProgressOverview() {
-  const { isOverviewMode, toggleIsOverviewMode } = useHabitsState();
+  const { isOverviewMode, toggleIsOverviewMode } = useHabitsContext();
 
   const currentStreak = 7;
   const longestStreak = 14;
