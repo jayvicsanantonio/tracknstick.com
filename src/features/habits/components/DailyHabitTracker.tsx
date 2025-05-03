@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import NoHabits from "@/features/habits/components/NoHabits";
 import DailyHabitDate from "@/features/habits/components/DailyHabitDate";
@@ -6,20 +6,10 @@ import DailyHabitProgressIndicator from "@/features/habits/components/DailyHabit
 import DailyHabitList from "@/features/habits/components/DailyHabitList";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useHabits } from "@/features/habits/hooks/useHabits";
-import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
 
 export default function DailyHabitTracker() {
   const { isDarkMode } = useContext(ThemeContext);
-  const { habits, isLoading, error } = useHabits();
-  const { toggleShowAddHabitDialog } = useHabitsState();
-
-  const completionRate = useMemo(() => {
-    const completedHabits = habits.filter((habit) => habit.completed).length;
-    const totalHabits = habits.length;
-    return totalHabits > 0
-      ? Math.round((completedHabits / totalHabits) * 100)
-      : 0;
-  }, [habits]);
+  const { habits, isLoading, error, completionRate } = useHabits();
 
   if (isLoading) {
     return <div>Loading habits...</div>;
@@ -42,7 +32,7 @@ export default function DailyHabitTracker() {
         </CardHeader>
         <CardContent>
           {habits.length === 0 ? (
-            <NoHabits onAddHabitClick={toggleShowAddHabitDialog} />
+            <NoHabits />
           ) : (
             <>
               <DailyHabitProgressIndicator completionRate={completionRate} />
