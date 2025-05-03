@@ -79,10 +79,12 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useHabitsState() {
+export function useHabitsContext() {
   const context = useContext(HabitsStateContext);
   if (context === null) {
-    throw new Error("useHabitsState must be used within a HabitsStateProvider");
+    throw new Error(
+      "useHabitsContext must be used within a HabitsStateProvider",
+    );
   }
   return context;
 }
