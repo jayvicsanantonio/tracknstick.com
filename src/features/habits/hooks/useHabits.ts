@@ -31,6 +31,7 @@ interface UseHabitsReturn {
   ) => Promise<void>;
   deleteHabit: (habitId: string, habitName: string) => Promise<void>;
   toggleHabit: (habitId: string) => Promise<void>;
+  completionRate: number;
 }
 export function useHabits(): UseHabitsReturn {
   const { toast } = useToast();
@@ -168,6 +169,14 @@ export function useHabits(): UseHabitsReturn {
     [date, timeZone, mutateHabits, toast],
   );
 
+  const completionRate = useMemo(() => {
+    const completedHabits = habits.filter((habit) => habit.completed).length;
+    const totalHabits = habits.length;
+    return totalHabits > 0
+      ? Math.round((completedHabits / totalHabits) * 100)
+      : 0;
+  }, [habits]);
+
   const toggleHabit = useCallback(
     async (id: string) => {
       const habit = habits.find((h) => h.id === id);
@@ -210,5 +219,6 @@ export function useHabits(): UseHabitsReturn {
     updateHabit,
     deleteHabit,
     toggleHabit,
+    completionRate,
   };
 }

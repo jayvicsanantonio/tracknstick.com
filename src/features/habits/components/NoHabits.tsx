@@ -3,11 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
 import { CalendarX2, PlusCircle } from "lucide-react";
 
-export default function NoHabits({
-  onAddHabitClick,
-}: {
-  onAddHabitClick: () => void;
-}) {
+import { useHabitsState } from "@/features/habits/context/HabitsStateContext";
+
+export default function NoHabits() {
+  const { toggleShowAddHabitDialog } = useHabitsState();
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
@@ -36,7 +35,7 @@ export default function NoHabits({
         first step towards achieving your goals!
       </p>
       <Button
-        onClick={onAddHabitClick}
+        onClick={toggleShowAddHabitDialog}
         className={`${
           isDarkMode
             ? "bg-purple-700 hover:bg-purple-600"
