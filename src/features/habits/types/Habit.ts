@@ -1,5 +1,4 @@
-export type Frequency = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
-
+import { Frequency } from "@/features/habits/types/Frequency";
 import HabitsIcons from "@/icons/habits";
 
 export interface Habit {
