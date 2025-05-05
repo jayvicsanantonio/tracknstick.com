@@ -1,17 +1,6 @@
 import { useMemo } from "react";
-
-export interface InsightData {
-  date: string;
-  completionRate: number;
-}
-
-export interface CalendarDay {
-  dayOfMonth: number;
-  isPast: boolean;
-  isToday: boolean;
-  date: Date;
-  dayData?: InsightData;
-}
+import { InsightData } from "@/features/progress/types/InsightData";
+import { CalendarDay } from "@/features/progress/types/CalendarDay";
 
 export function useProgressCalendar(
   insightData: InsightData[],
