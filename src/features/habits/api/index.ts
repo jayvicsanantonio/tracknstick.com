@@ -1,5 +1,5 @@
 import axiosInstance from "@/services/api/axiosInstance";
-import { Habit } from "@/features/habits/types";
+import { Habit } from "@/features/habits/types/Habit";
 
 export const fetchHabits = async (
   date: Date,

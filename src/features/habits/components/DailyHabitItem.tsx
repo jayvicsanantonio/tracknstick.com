@@ -3,7 +3,7 @@ import HabitsIcons from "@/icons/habits";
 import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
 import StarAnimation from "@/components/ui/animations/StarAnimation";
-import { Habit } from "@/features/habits/types";
+import { Habit } from "@/features/habits/types/Habit";
 import frequencyLabel from "@/lib/frequencyLabel";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";

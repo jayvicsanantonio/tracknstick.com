@@ -6,7 +6,7 @@ import { DateContext } from "@/context/DateContext";
 import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
 import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
 import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
-import { Habit } from "@/features/habits/types";
+import { Habit } from "@/features/habits/types/Habit";
 import {
   fetchHabits,
   addHabit as apiAddHabit,

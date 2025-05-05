@@ -7,7 +7,7 @@ import {
   useMemo,
 } from "react";
 import { useToggle } from "@/hooks/use-toggle";
-import { Habit } from "@/features/habits/types";
+import { Habit } from "@/features/habits/types/Habit";
 
 interface HabitsStateContextValue {
   isEditMode: boolean;

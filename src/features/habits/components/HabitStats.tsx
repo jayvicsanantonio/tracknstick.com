@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Habit } from "@/features/habits/types";
+import { Habit } from "@/features/habits/types/Habit";
 import { ThemeContext } from "@/context/ThemeContext";
 import formatDate from "@/lib/formatDate";
 import MiscellaneousIcons from "@/icons/miscellaneous";

@@ -8,7 +8,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { daysOfWeek } from "@/constants";
 import HabitsIcons from "@/icons/habits";
-import { Habit, Frequency } from "@/features/habits/types";
+import { Habit } from "@/features/habits/types/Habit";
+import { Frequency } from "@/features/habits/types/Frequency";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 
