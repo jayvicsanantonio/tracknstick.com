@@ -3,12 +3,12 @@ import { Habit } from "@/features/habits/types/Habit";
 import { ThemeContext } from "@/context/ThemeContext";
 import formatDate from "@/lib/formatDate";
 import MiscellaneousIcons from "@/icons/miscellaneous";
-import useHabit from "@/features/habits/hooks/useHabit";
+import useHabitStats from "@/features/habits/hooks/useHabitStats";
 
 const { Trophy } = MiscellaneousIcons;
 
 export default function HabitStats({ habit }: { habit: Habit | null }) {
-  const habitStats = useHabit(habit?.id ?? "");
+  const habitStats = useHabitStats(habit?.id ?? "");
   const { isDarkMode } = useContext(ThemeContext);
 
   if (!habit) return null;
