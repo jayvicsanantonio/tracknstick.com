@@ -3,10 +3,12 @@ import { Habit } from "@/features/habits/types/Habit";
 import { ThemeContext } from "@/context/ThemeContext";
 import formatDate from "@/lib/formatDate";
 import MiscellaneousIcons from "@/icons/miscellaneous";
+import useHabitStats from "@/features/habits/hooks/useHabitStats";
 
 const { Trophy } = MiscellaneousIcons;
 
 export default function HabitStats({ habit }: { habit: Habit | null }) {
+  const habitStats = useHabitStats(habit?.id ?? "");
   const { isDarkMode } = useContext(ThemeContext);
 
   if (!habit) return null;
@@ -28,7 +30,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
               isDarkMode ? "text-purple-200" : "text-purple-800"
             }`}
           >
-            {habit.stats.streak}
+            {habitStats.streak}
           </span>
           <span
             className={`ml-1 text-sm ${
@@ -49,7 +51,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
               isDarkMode ? "text-purple-200" : "text-purple-800"
             }`}
           >
-            {habit.stats.totalCompletions}
+            {habitStats.total_completions}
           </span>
         </div>
       </div>
@@ -62,7 +64,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
             isDarkMode ? "text-purple-200" : "text-purple-800"
           }`}
         >
-          {formatDate(habit.stats.lastCompleted)}
+          {formatDate(habitStats?.last_completed)}
         </span>
       </div>
     </div>

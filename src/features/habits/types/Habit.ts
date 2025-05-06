@@ -9,7 +9,7 @@ export interface Habit {
   completed: boolean;
   stats: {
     streak: number;
-    totalCompletions: number;
-    lastCompleted: string | null;
+    total_completions: number;
+    last_completed: string | null;
   };
 }

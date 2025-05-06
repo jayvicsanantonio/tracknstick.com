@@ -1,5 +1,6 @@
 import axiosInstance from "@/services/api/axiosInstance";
 import { Habit } from "@/features/habits/types/Habit";
+import { HabitStats } from "@/features/habits/types/HabitStats";
 
 export const fetchHabits = async (
   date: Date,
@@ -8,6 +9,19 @@ export const fetchHabits = async (
   const response = await axiosInstance.get<Habit[]>("/api/v1/habits", {
     params: { date: date.toISOString(), timeZone },
   });
+  return response.data;
+};
+
+export const fetchHabitStats = async (
+  habitId: string,
+  timeZone: string,
+): Promise<HabitStats> => {
+  const response = await axiosInstance.get<HabitStats>(
+    `/api/v1/habits/${habitId}/stats`,
+    {
+      params: { timeZone },
+    },
+  );
   return response.data;
 };
 
