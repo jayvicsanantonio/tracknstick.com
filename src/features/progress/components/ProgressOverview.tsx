@@ -16,19 +16,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VisuallyHidden from "@/components/ui/accessibility/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
+import useProgressOverview from "../hooks/useProgressOverview";
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
-
-const generateMockData = (year: number, month: number) => {
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  return Array.from({ length: daysInMonth }, (_, i) => ({
-    date: `${year}-${String(month + 1).padStart(2, "0")}-${String(
-      i + 1,
-    ).padStart(2, "0")}`,
-    completionRate: Math.floor(Math.random() * 101),
-  }));
-};
 
 const achievements = [
   {
@@ -66,14 +57,8 @@ const achievements = [
 export default function ProgressOverview() {
   const { isOverviewMode, toggleIsOverviewMode } = useHabitsContext();
 
-  const currentStreak = 7;
-  const longestStreak = 14;
   const { isDarkMode } = useContext(ThemeContext);
-  const currentDate = new Date();
-  const insightData = generateMockData(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-  );
+  const { currentStreak, longestStreak, insightData } = useProgressOverview();
 
   return (
     <Dialog open={isOverviewMode} onOpenChange={toggleIsOverviewMode}>
