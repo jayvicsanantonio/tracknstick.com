@@ -4,7 +4,6 @@ import { HabitsStateProvider } from "@/features/habits/context/HabitsStateContex
 import Header from "@/features/layout/components/Header";
 import Body from "@/features/layout/components/Body";
 import AddHabitDialog from "@/features/habits/components/AddHabitDialog";
-import ProgressOverview from "@/features/progress/components/ProgressOverview";
 import Footer from "@/features/layout/components/Footer";
 import EditHabitDialog from "@/features/habits/components/EditHabitDialog";
 
@@ -24,7 +23,6 @@ function App() {
           <Footer />
           <AddHabitDialog />
           <EditHabitDialog />
-          <ProgressOverview />
         </HabitsStateProvider>
       </div>
     </div>
