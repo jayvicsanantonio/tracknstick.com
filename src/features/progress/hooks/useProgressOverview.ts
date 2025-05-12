@@ -4,8 +4,10 @@ import { fetchProgressOverview } from "@/features/habits/api";
 import { useContext } from "react";
 import { DateContext } from "@/context/DateContext";
 
-export default function useProgressOverview() {
-  const { date, timeZone } = useContext(DateContext);
+export default function useProgressOverview(selectedDate?: Date) {
+  const { currentDate, timeZone } = useContext(DateContext);
+  const date = selectedDate ?? currentDate;
+
   const progressOverviewEndpointKey = timeZone
     ? `/api/v1/habits/progress/overview?date=${date.toISOString()}&timeZone=${timeZone}`
     : null;

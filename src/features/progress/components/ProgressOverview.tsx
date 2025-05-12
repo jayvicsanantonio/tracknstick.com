@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import ProgressCalendar from "@/features/progress/components/ProgressCalendar";
 import ProgressChart from "@/features/progress/components/ProgressChart";
 import ProgressAchievements from "@/features/progress/components/ProgressAchievements";
@@ -56,9 +56,10 @@ const achievements = [
 
 export default function ProgressOverview() {
   const { isOverviewMode, toggleIsOverviewMode } = useHabitsContext();
-
   const { isDarkMode } = useContext(ThemeContext);
-  const { currentStreak, longestStreak, insightData } = useProgressOverview();
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const { currentStreak, longestStreak, insightData } =
+    useProgressOverview(selectedMonth);
 
   return (
     <Dialog open={isOverviewMode} onOpenChange={toggleIsOverviewMode}>
@@ -144,6 +145,8 @@ export default function ProgressOverview() {
                 <ProgressCalendar
                   insightData={insightData}
                   isDarkMode={isDarkMode}
+                  selectedMonth={selectedMonth}
+                  setSelectedMonth={setSelectedMonth}
                 />
               </CardContent>
             </Card>

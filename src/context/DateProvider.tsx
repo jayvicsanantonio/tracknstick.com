@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { DateContext } from "@/context/DateContext";
 
 export default function DateProvider({ children }: { children: ReactNode }) {
@@ -14,6 +14,18 @@ export default function DateProvider({ children }: { children: ReactNode }) {
     value.setDate(value.getDate() - 1);
     return value;
   }, [date]);
+
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        setCurrentDate(new Date());
+      },
+      1000 * 60 * 60,
+    );
+    return () => clearInterval(interval);
+  }, []);
 
   const handlePreviousDate = useCallback(() => {
     setDate(previousDate);
@@ -33,6 +45,7 @@ export default function DateProvider({ children }: { children: ReactNode }) {
         previousDate,
         nextDate,
         timeZone,
+        currentDate,
       }}
     >
       {children}
