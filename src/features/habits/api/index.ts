@@ -1,6 +1,7 @@
 import axiosInstance from "@/services/api/axiosInstance";
 import { Habit } from "@/features/habits/types/Habit";
 import { HabitStats } from "@/features/habits/types/HabitStats";
+import { ProgressOverview } from "@/features/progress/types/ProgressOverview";
 
 export const fetchHabits = async (
   date: Date,
@@ -69,5 +70,18 @@ export const toggleHabitCompletion = async (
     timeZone,
   });
 
+  return response.data;
+};
+
+export const fetchProgressOverview = async (
+  date: Date,
+  timeZone: string,
+): Promise<ProgressOverview> => {
+  const response = await axiosInstance.get<ProgressOverview>(
+    "/api/v1/habits/progress/overview",
+    {
+      params: { date: date.toISOString(), timeZone },
+    },
+  );
   return response.data;
 };

@@ -2,6 +2,7 @@ import { SignedIn, SignedOut } from "@clerk/clerk-react";
 
 import Welcome from "@/features/layout/components/Welcome";
 import DailyHabitTracker from "@/features/habits/components/DailyHabitTracker";
+import ProgressOverview from "@/features/progress/components/ProgressOverview";
 
 export default function Body() {
   return (
@@ -11,6 +12,7 @@ export default function Body() {
       </SignedOut>
       <SignedIn>
         <DailyHabitTracker />
+        <ProgressOverview />
       </SignedIn>
     </>
   );

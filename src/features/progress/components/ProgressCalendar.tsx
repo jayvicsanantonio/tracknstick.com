@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { useProgressCalendar } from "@/features/progress/hooks/useProgressCalendar";
 import MonthNavButton from "@/features/progress/components/MonthNavButton";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { InsightData } from "@/features/progress/types/InsightData";
 import CalendarDayCircle from "@/features/progress/components/CalendarDayCircle";
+import { Dispatch, SetStateAction } from "react";
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -11,15 +11,18 @@ const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export default function ProgressCalendar({
   insightData,
   isDarkMode,
+  selectedMonth,
+  setSelectedMonth,
 }: {
   insightData: InsightData[];
   isDarkMode: boolean;
+  selectedMonth: Date;
+  setSelectedMonth: Dispatch<SetStateAction<Date>>;
 }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
   const { changeMonth, firstDayOfMonth, calendarDays } = useProgressCalendar(
     insightData,
-    currentDate,
-    setCurrentDate,
+    selectedMonth,
+    setSelectedMonth,
   );
 
   return (
@@ -37,7 +40,7 @@ export default function ProgressCalendar({
             isDarkMode ? "text-purple-200" : "text-purple-800"
           }`}
         >
-          {currentDate.toLocaleString("default", {
+          {selectedMonth.toLocaleString("default", {
             month: "long",
             year: "numeric",
           })}

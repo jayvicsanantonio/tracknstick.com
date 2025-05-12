@@ -22,13 +22,14 @@ export function useProgressCalendar(
 
   const calendarDays: CalendarDay[] = useMemo(() => {
     const today = new Date();
+
     return Array.from({ length: daysInMonth }, (_, i) => {
       const dayOfMonth = i + 1;
       const date = new Date(year, month, dayOfMonth);
       const isPast = date < today;
       const isToday = date.toDateString() === today.toDateString();
       const dayData = insightData.find(
-        (d) => parseInt(d.date.split("-")[2]) === dayOfMonth,
+        (d) => parseInt(d.date.split("/")[1]) === dayOfMonth,
       );
       return { dayOfMonth, isPast, isToday, date, dayData };
     });
