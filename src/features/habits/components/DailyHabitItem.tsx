@@ -32,7 +32,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
               : isDarkMode
                 ? "bg-gray-700"
                 : "bg-purple-200"
-          } hover:-translate-y-1 hover:scale-110 focus:outline-none ${
+          } hover:-translate-y-1 hover:scale-110 focus:outline-hidden ${
             isDarkMode ? "focus:ring-purple-400" : "focus:ring-purple-600"
           } focus:ring-opacity-50`}
           onClick={() => {
