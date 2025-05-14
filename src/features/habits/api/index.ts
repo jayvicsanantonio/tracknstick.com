@@ -27,7 +27,7 @@ export const fetchHabitStats = async (
 };
 
 export const addHabit = async (
-  habitData: Omit<Habit, "id" | "completed" | "stats">,
+  habitData: Omit<Habit, "id" | "completed">,
 ): Promise<{ message: string; habitId: string }> => {
   const response = await axiosInstance.post<{
     message: string;
@@ -38,7 +38,7 @@ export const addHabit = async (
 
 export const updateHabit = async (
   habitId: string,
-  habitData: Partial<Omit<Habit, "id" | "completed" | "stats">>,
+  habitData: Partial<Omit<Habit, "id" | "completed">>,
 ): Promise<{ message: string; habitId: string }> => {
   const response = await axiosInstance.put<{
     message: string;

@@ -22,12 +22,10 @@ interface UseHabitsReturn {
   error: unknown;
   animatingHabitId: string | null;
   mutateHabits: () => Promise<Habit[] | undefined>;
-  addHabit: (
-    habitData: Omit<Habit, "id" | "completed" | "stats">,
-  ) => Promise<void>;
+  addHabit: (habitData: Omit<Habit, "id" | "completed">) => Promise<void>;
   updateHabit: (
     habitId: string,
-    habitData: Partial<Omit<Habit, "id" | "completed" | "stats">>,
+    habitData: Partial<Omit<Habit, "id" | "completed">>,
   ) => Promise<void>;
   deleteHabit: (habitId: string, habitName: string) => Promise<void>;
   toggleHabit: (habitId: string) => Promise<void>;
@@ -67,7 +65,7 @@ export function useHabits(): UseHabitsReturn {
   }, [timeoutId]);
 
   const addHabit = useCallback(
-    async (habitData: Omit<Habit, "id" | "completed" | "stats">) => {
+    async (habitData: Omit<Habit, "id" | "completed">) => {
       try {
         await apiAddHabit(habitData);
         toast({
@@ -90,7 +88,7 @@ export function useHabits(): UseHabitsReturn {
   const updateHabit = useCallback(
     async (
       habitId: string,
-      habitData: Partial<Omit<Habit, "id" | "completed" | "stats">>,
+      habitData: Partial<Omit<Habit, "id" | "completed">>,
     ) => {
       void mutateHabits(
         (currentHabits) =>

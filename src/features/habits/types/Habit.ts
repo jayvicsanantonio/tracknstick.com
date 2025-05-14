@@ -1,5 +1,5 @@
-import { Frequency } from '@/features/habits/types/Frequency';
-import HabitsIcons from '@/icons/habits';
+import { Frequency } from "@/features/habits/types/Frequency";
+import HabitsIcons from "@/icons/habits";
 
 export interface Habit {
   id?: string;
@@ -7,9 +7,4 @@ export interface Habit {
   icon: keyof typeof HabitsIcons;
   frequency: Frequency[];
   completed: boolean;
-  stats: {
-    streak: number;
-    totalCompletions: number;
-    lastCompleted: string | null;
-  };
 }
