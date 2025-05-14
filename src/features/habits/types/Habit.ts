@@ -7,4 +7,6 @@ export interface Habit {
   icon: keyof typeof HabitsIcons;
   frequency: Frequency[];
   completed: boolean;
+  startDate?: Date;
+  endDate?: Date;
 }
