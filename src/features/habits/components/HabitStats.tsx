@@ -1,40 +1,52 @@
-import { useContext } from "react";
-import { Habit } from "@/features/habits/types/Habit";
-import { ThemeContext } from "@/context/ThemeContext";
-import formatDate from "@/lib/formatDate";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import useHabitStats from "@/features/habits/hooks/useHabitStats";
+import { useContext } from 'react';
+import { Habit } from '@/features/habits/types/Habit';
+import { ThemeContext } from '@/context/ThemeContext';
+import formatDate from '@/lib/formatDate';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import useHabitStats from '@/features/habits/hooks/useHabitStats';
 
 const { Trophy } = MiscellaneousIcons;
 
-export default function HabitStats({ habit }: { habit: Habit | null }) {
-  const habitStats = useHabitStats(habit?.id ?? "");
+export default function HabitStats({
+  habit,
+}: {
+  habit: Habit | null;
+}) {
+  const habitStats = useHabitStats(habit?.id ?? '');
   const { isDarkMode } = useContext(ThemeContext);
 
   if (!habit) return null;
 
   return (
-    <div className="space-y-6" role="group" aria-label="Habit Statistics">
+    <div
+      className="space-y-6"
+      role="group"
+      aria-label="Habit Statistics"
+    >
       <div className="flex items-center justify-between">
-        <span className={isDarkMode ? "text-purple-300" : "text-purple-700"}>
+        <span
+          className={
+            isDarkMode ? 'text-purple-300' : 'text-purple-700'
+          }
+        >
           Current Streak
         </span>
         <div className="flex items-center">
           <Trophy
             className={`w-6 h-6 mr-2 ${
-              isDarkMode ? "text-yellow-500" : "text-yellow-600"
+              isDarkMode ? 'text-yellow-500' : 'text-yellow-600'
             }`}
           />
           <span
             className={`text-3xl font-bold ${
-              isDarkMode ? "text-purple-200" : "text-purple-800"
+              isDarkMode ? 'text-purple-200' : 'text-purple-800'
             }`}
           >
             {habitStats.streak}
           </span>
           <span
             className={`ml-1 text-sm ${
-              isDarkMode ? "text-purple-400" : "text-purple-600"
+              isDarkMode ? 'text-purple-400' : 'text-purple-600'
             }`}
           >
             days
@@ -43,28 +55,36 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
       </div>
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <span className={isDarkMode ? "text-purple-300" : "text-purple-700"}>
+          <span
+            className={
+              isDarkMode ? 'text-purple-300' : 'text-purple-700'
+            }
+          >
             Total Completions
           </span>
           <span
             className={`text-2xl font-semibold ${
-              isDarkMode ? "text-purple-200" : "text-purple-800"
+              isDarkMode ? 'text-purple-200' : 'text-purple-800'
             }`}
           >
-            {habitStats.total_completions}
+            {habitStats.totalCompletions}
           </span>
         </div>
       </div>
       <div className="flex items-center justify-between">
-        <span className={isDarkMode ? "text-purple-300" : "text-purple-700"}>
+        <span
+          className={
+            isDarkMode ? 'text-purple-300' : 'text-purple-700'
+          }
+        >
           Last Completed
         </span>
         <span
           className={`font-semibold ${
-            isDarkMode ? "text-purple-200" : "text-purple-800"
+            isDarkMode ? 'text-purple-200' : 'text-purple-800'
           }`}
         >
-          {formatDate(habitStats?.last_completed)}
+          {formatDate(habitStats?.lastCompleted)}
         </span>
       </div>
     </div>
