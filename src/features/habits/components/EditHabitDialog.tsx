@@ -19,10 +19,10 @@ export default function EditHabitDialog() {
     >
       <HabitDialogHeader isEditMode={true} habit={editingHabit} />
       <Tabs defaultValue="edit" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
+        <TabsList className="grid w-full grid-cols-2 mb-2 sm:mb-4 rounded-md overflow-hidden">
           <TabsTrigger
             value="edit"
-            className={`text-sm ${
+            className={`text-xs sm:text-sm py-1.5 sm:py-2 ${
               isDarkMode
                 ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
                 : "data-[state=active]:bg-purple-200"
@@ -32,7 +32,7 @@ export default function EditHabitDialog() {
           </TabsTrigger>
           <TabsTrigger
             value="stats"
-            className={`text-sm ${
+            className={`text-xs sm:text-sm py-1.5 sm:py-2 ${
               isDarkMode
                 ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
                 : "data-[state=active]:bg-purple-200"
@@ -41,14 +41,14 @@ export default function EditHabitDialog() {
             Stats
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="edit">
+        <TabsContent value="edit" className="pt-1 sm:pt-2">
           <HabitForm
             habit={editingHabit}
             toggleDialog={toggleShowEditHabitDialog}
           />
         </TabsContent>
-        <TabsContent value="stats">
-          <HabitStats habit={editingHabit} />{" "}
+        <TabsContent value="stats" className="pt-1 sm:pt-2">
+          <HabitStats habit={editingHabit} />
         </TabsContent>
       </Tabs>
     </HabitDialog>
