@@ -13,10 +13,12 @@ function App() {
   return (
     <div
       className={`min-h-screen ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-purple-100"
-      } p-4 sm:p-8`}
+        isDarkMode
+          ? "bg-gray-900 text-white bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.05),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(124,58,237,0.08),transparent_40%)]"
+          : "bg-purple-50 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.1),transparent_40%)]"
+      } p-2 sm:p-4 md:p-8 bg-fixed`}
     >
-      <div className="min-w-[400px] max-w-7xl mx-auto flex flex-col min-h-screen">
+      <div className="w-full max-w-7xl mx-auto flex flex-col min-h-screen">
         <HabitsStateProvider>
           <Header />
           <Body />

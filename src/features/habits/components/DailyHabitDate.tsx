@@ -26,7 +26,10 @@ export default function DailyHabitDate() {
     if (isToday) {
       return "Today";
     } else {
-      return date.toLocaleDateString("en-US", { timeZone, weekday: "long" });
+      return date.toLocaleDateString("en-US", {
+        timeZone,
+        weekday: "long",
+      });
     }
   }, [date, timeZone]);
 
@@ -36,40 +39,47 @@ export default function DailyHabitDate() {
         onClick={handlePreviousDate}
         variant="outline"
         size="icon"
-        className={
+        className={`rounded-full shadow-sm transition-all duration-300 ${
           isDarkMode
-            ? "border-gray-600 text-purple-700 hover:bg-purple-300"
-            : "border-purple-200 text-purple-400 hover:bg-purple-100 hover:text-purple-500 shadow-sm"
-        }
+            ? "border-gray-700 text-purple-400 bg-gray-800 hover:bg-gray-800 hover:shadow-md hover:text-purple-300 hover:border-purple-500"
+            : "border-purple-200 text-purple-500 hover:bg-purple-100/50 hover:text-purple-600 hover:border-purple-400 hover:shadow-md"
+        }`}
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <div>
+      <div className="text-center relative">
         <h2
-          className={`text-3xl font-bold ${
+          className={`text-2xl sm:text-3xl font-bold ${
             isDarkMode ? "text-purple-200" : "text-purple-800"
-          } text-center`}
+          } mb-1 transition-colors`}
         >
           {dayLabel}
         </h2>
         <p
-          className={`text-center ${
-            isDarkMode ? "text-purple-300" : "text-purple-600"
-          } mt-2`}
+          className={`text-sm sm:text-base ${
+            isDarkMode ? "text-purple-300/80" : "text-purple-600/90"
+          } transition-colors`}
         >
           {formattedDate}
         </p>
+        <div
+          className={`h-0.5 w-24 sm:w-32 mx-auto mt-1.5 rounded-full ${
+            isDarkMode
+              ? "bg-gradient-to-r from-purple-800/80 via-purple-600/80 to-purple-800/80"
+              : "bg-gradient-to-r from-purple-300/60 via-purple-500/60 to-purple-300/60"
+          }`}
+        ></div>
       </div>
       <Button
         disabled={new Date().toDateString() === date.toDateString()}
         onClick={handleNextDate}
         variant="outline"
         size="icon"
-        className={
+        className={`rounded-full shadow-sm transition-all duration-300 ${
           isDarkMode
-            ? "border-gray-600 text-purple-700 hover:bg-purple-300"
-            : "border-purple-200 text-purple-400 hover:bg-purple-100 hover:text-purple-500 shadow-sm"
-        }
+            ? "border-gray-700 text-purple-400 bg-gray-800 hover:bg-gray-800 hover:shadow-md hover:text-purple-300 hover:border-purple-500 disabled:cursor-not-allowed"
+            : "border-purple-200 text-purple-500 hover:bg-purple-100/50 hover:text-purple-600 hover:border-purple-400 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+        }`}
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

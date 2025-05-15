@@ -19,15 +19,15 @@ export default function FrequencySelector({
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1 sm:space-y-2">
       <Label
-        className={`${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
+        className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
       >
         {label}
       </Label>
       <ToggleGroup
         type="multiple"
-        className="flex flex-wrap gap-2 justify-start"
+        className="flex justify-between sm:justify-start sm:flex-wrap sm:gap-2"
         aria-label="Select days of the week"
         value={selectedDays}
         onValueChange={(value) => {
@@ -40,7 +40,7 @@ export default function FrequencySelector({
             value={day}
             aria-label={day}
             title={day}
-            className={`w-10 h-10 rounded-full data-[state=off]:hover:text-white ${
+            className={`w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm rounded-full transition-all duration-200 data-[state=off]:hover:text-white ${
               isDarkMode
                 ? "data-[state=on]:bg-purple-400 data-[state=on]:text-white data-[state=off]:bg-gray-700 data-[state=off]:text-gray-300 data-[state=off]:hover:bg-purple-300"
                 : "data-[state=on]:bg-purple-500 data-[state=on]:text-white data-[state=off]:bg-gray-100 data-[state=off]:text-gray-600 data-[state=off]:hover:bg-purple-400"

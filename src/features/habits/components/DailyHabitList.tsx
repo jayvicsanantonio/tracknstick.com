@@ -1,13 +1,39 @@
 import DailyHabitItem from "@/features/habits/components/DailyHabitItem";
 import { useHabits } from "@/features/habits/hooks/useHabits";
+import { motion } from "framer-motion";
 
 export default function DailyHabitList() {
   const { habits } = useHabits();
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+    <motion.div
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {habits.map((habit) => (
-        <DailyHabitItem key={habit.id} habit={habit} />
+        <motion.div
+          key={habit.id}
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+          }}
+        >
+          <DailyHabitItem habit={habit} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

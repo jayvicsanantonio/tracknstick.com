@@ -101,14 +101,14 @@ export default function HabitForm({
       <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
-        className="min-h-fit sm:h-[508px] grid gap-4 py-4"
+        className="min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4"
       >
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Name Input */}
-          <div className="space-y-2">
+          <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className={`${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
+              className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
             >
               Name
             </Label>
@@ -118,11 +118,12 @@ export default function HabitForm({
               onChange={(e) => {
                 setName(e.target.value);
               }}
-              className={`w-full ${
+              className={`w-full text-sm sm:text-base ${
                 isDarkMode
                   ? "bg-gray-700 border-gray-600 focus:border-purple-400 text-purple-300"
                   : "bg-white border-purple-300 focus:border-purple-500"
               }`}
+              placeholder="Enter habit name"
             />
           </div>
 
@@ -131,7 +132,7 @@ export default function HabitForm({
             onIconChange={(selectedIcon) => setIcon(selectedIcon)}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             <DatePickerField
               id="start-date"
               label="Start Date"
@@ -139,7 +140,7 @@ export default function HabitForm({
               onChange={setStartDate}
               placeholder="Select start date"
               isRequired={true}
-              heightClass="h-16"
+              heightClass="h-14 sm:h-16"
             />
             <DatePickerField
               id="end-date"
@@ -148,7 +149,7 @@ export default function HabitForm({
               onChange={setEndDate}
               placeholder="mm / dd / yyyy"
               isClearable={true}
-              heightClass="h-16"
+              heightClass="h-14 sm:h-16"
             />
           </div>
 
