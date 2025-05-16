@@ -93,6 +93,7 @@ export default function HabitForm({
     addHabit,
     setIsSubmitting,
     toggleDialog,
+    timeZone,
   ]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {

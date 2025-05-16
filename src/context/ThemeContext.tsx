@@ -7,5 +7,7 @@ interface ThemeContextProps {
 
 export const ThemeContext = createContext<ThemeContextProps>({
   isDarkMode: false,
-  toggleDarkMode: () => {},
+  toggleDarkMode: () => {
+    // This is intentionally empty as it will be implemented by the provider
+  },
 });
