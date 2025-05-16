@@ -16,7 +16,7 @@ export default function Header() {
   } = useHabitsContext();
 
   return (
-    <header className="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 py-2 sm:py-4">
+    <header className="flex items-center justify-between py-4 sm:py-8">
       <div className="flex items-center">
         <CheckCircle2
           className={`h-8 w-8 sm:h-10 sm:w-10 mr-2 transition-transform duration-300 hover:scale-110 ${

@@ -40,13 +40,13 @@ export default function DailyHabitTracker() {
 
   return (
     <motion.div
-      className="flex-1"
+      className="flex-1 flex flex-col h-full"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <Card
-        className={`w-full overflow-hidden shadow-xl ${
+        className={`w-full flex-1 flex flex-col overflow-hidden shadow-xl ${
           isDarkMode
             ? "border-gray-700 bg-gray-800/90 shadow-purple-900/10"
             : "border-purple-100 bg-white shadow-purple-200/50"
@@ -55,7 +55,7 @@ export default function DailyHabitTracker() {
         <CardHeader className="px-3 sm:px-6 pt-6">
           <DailyHabitDate />
         </CardHeader>
-        <CardContent className="px-3 sm:px-6 pb-8">
+        <CardContent className="px-3 sm:px-6 pb-8 flex-1">
           {habits.length === 0 ? (
             <NoHabits />
           ) : (
