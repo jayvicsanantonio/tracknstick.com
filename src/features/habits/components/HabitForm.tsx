@@ -12,7 +12,8 @@ import DatePickerField, { datePickerStyles } from "./DatePickerField";
 import IconPicker from "./IconPicker";
 import FrequencySelector from "./FrequencySelector";
 import FormActions from "./FormActions";
-
+import { DateContext } from "@/context/DateContext";
+import { getLocalEndOfDayUTC, getLocalStartofDayUTC } from "@/lib/formatDate";
 export default function HabitForm({
   habit,
   toggleDialog,
@@ -20,6 +21,7 @@ export default function HabitForm({
   habit?: Habit | null;
   toggleDialog: () => void;
 }) {
+  const { timeZone } = useContext(DateContext);
   const { isDarkMode } = useContext(ThemeContext);
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,10 +33,14 @@ export default function HabitForm({
     habit?.icon,
   );
   const [startDate, setStartDate] = useState<Date | null>(
-    habit?.startDate ? new Date(habit.startDate) : new Date(),
+    habit?.startDate
+      ? getLocalStartofDayUTC(new Date(habit.startDate), timeZone)
+      : getLocalStartofDayUTC(new Date(), timeZone),
   );
   const [endDate, setEndDate] = useState<Date | null>(
-    habit?.endDate ? new Date(habit.endDate) : null,
+    habit?.endDate
+      ? getLocalEndOfDayUTC(new Date(habit.endDate), timeZone)
+      : null,
   );
   const isValid = name && icon && frequency.length > 0 && startDate;
 
@@ -61,8 +67,8 @@ export default function HabitForm({
         name,
         icon,
         frequency,
-        startDate,
-        ...(endDate ? { endDate } : {}),
+        startDate: getLocalStartofDayUTC(startDate, timeZone),
+        ...(endDate ? { endDate: getLocalEndOfDayUTC(endDate, timeZone) } : {}),
       };
 
       if (habit?.id) {
