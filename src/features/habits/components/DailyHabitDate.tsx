@@ -71,7 +71,6 @@ export default function DailyHabitDate() {
         ></div>
       </div>
       <Button
-        disabled={new Date().toDateString() === date.toDateString()}
         onClick={handleNextDate}
         variant="outline"
         size="icon"
