@@ -32,7 +32,6 @@ export const fetchProgressHistory = async (
       "/api/v1/progress/history",
       { params },
     );
-    console.log("API Response (fetchProgressHistory):", response.data);
 
     // Check if response.data contains a 'history' property
     if (response.data?.history) {
