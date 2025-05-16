@@ -68,8 +68,6 @@ export default defineConfig({
       },
       strategies: "generateSW",
       filename: "sw.js",
-      navigateFallbackDenylist: [/^\/api/],
-      navigateFallback: "index.html",
     }),
   ],
   resolve: {
