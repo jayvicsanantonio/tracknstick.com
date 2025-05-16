@@ -37,7 +37,7 @@ export function useHabits(): UseHabitsReturn {
     typeof setTimeout
   > | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
-  const { date, timeZone } = useContext(DateContext);
+  const { date, setDate, timeZone } = useContext(DateContext);
   const { isSignedIn } = useAuth();
 
   const habitsEndpointKey =
@@ -71,6 +71,7 @@ export function useHabits(): UseHabitsReturn {
         toast({
           description: `Habit "${habitData.name}" added successfully.`,
         });
+        setDate(new Date());
         void mutateHabits();
       } catch (err) {
         console.error("Failed to add habit:", err);
@@ -80,7 +81,7 @@ export function useHabits(): UseHabitsReturn {
         });
       }
     },
-    [mutateHabits, toast],
+    [mutateHabits, toast, setDate],
   );
 
   const habits = useMemo(() => fetchedHabits ?? [], [fetchedHabits]);
