@@ -16,7 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VisuallyHidden from "@/components/ui/accessibility/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
-import useProgressOverview from "../hooks/useProgressOverview";
+import useProgressHistory from "../hooks/useProgressHistory";
+import useProgressStreaks from "../hooks/useProgressStreaks";
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
@@ -58,8 +59,18 @@ export default function ProgressOverview() {
   const { isOverviewMode, toggleIsOverviewMode } = useHabitsContext();
   const { isDarkMode } = useContext(ThemeContext);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
-  const { currentStreak, longestStreak, insightData } =
-    useProgressOverview(/*selectedMonth*/);
+
+  // Use separate hooks for history and streaks
+  const { historyData, isLoading: isHistoryLoading } =
+    useProgressHistory(selectedMonth);
+  const {
+    currentStreak,
+    longestStreak,
+    isLoading: isStreaksLoading,
+  } = useProgressStreaks();
+
+  // Combine loading states
+  const isLoading = isHistoryLoading || isStreaksLoading;
 
   return (
     <Dialog open={isOverviewMode} onOpenChange={toggleIsOverviewMode}>
@@ -142,12 +153,24 @@ export default function ProgressOverview() {
                 </h3>
               </CardHeader>
               <CardContent className="h-[400px] overflow-y-auto">
-                <ProgressCalendar
-                  insightData={insightData}
-                  isDarkMode={isDarkMode}
-                  selectedMonth={selectedMonth}
-                  setSelectedMonth={setSelectedMonth}
-                />
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-full">
+                    <p
+                      className={
+                        isDarkMode ? "text-purple-200" : "text-purple-800"
+                      }
+                    >
+                      Loading calendar data...
+                    </p>
+                  </div>
+                ) : (
+                  <ProgressCalendar
+                    insightData={historyData}
+                    isDarkMode={isDarkMode}
+                    selectedMonth={selectedMonth}
+                    setSelectedMonth={setSelectedMonth}
+                  />
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -163,7 +186,19 @@ export default function ProgressOverview() {
                 </h3>
               </CardHeader>
               <CardContent className="min-h-80">
-                <ProgressChart data={insightData} isDarkMode={isDarkMode} />
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-full">
+                    <p
+                      className={
+                        isDarkMode ? "text-purple-200" : "text-purple-800"
+                      }
+                    >
+                      Loading chart data...
+                    </p>
+                  </div>
+                ) : (
+                  <ProgressChart data={historyData} isDarkMode={isDarkMode} />
+                )}
               </CardContent>
             </Card>
           </TabsContent>

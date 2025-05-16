@@ -14,7 +14,6 @@ export function useProgressCalendar(
       return newDate;
     });
   };
-
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -28,9 +27,10 @@ export function useProgressCalendar(
       const date = new Date(year, month, dayOfMonth);
       const isPast = date < today;
       const isToday = date.toDateString() === today.toDateString();
-      const dayData = insightData.find(
-        (d) => parseInt(d.date.split("/")[1]) === dayOfMonth,
-      );
+      const dayData = insightData.find((d) => {
+        return parseInt(d.date.split("-")[2]) === dayOfMonth;
+      });
+
       return { dayOfMonth, isPast, isToday, date, dayData };
     });
   }, [daysInMonth, year, month, insightData]);
