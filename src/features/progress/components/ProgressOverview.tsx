@@ -59,7 +59,7 @@ export default function ProgressOverview() {
   const { isDarkMode } = useContext(ThemeContext);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const { currentStreak, longestStreak, insightData } =
-    useProgressOverview(selectedMonth);
+    useProgressOverview(/*selectedMonth*/);
 
   return (
     <Dialog open={isOverviewMode} onOpenChange={toggleIsOverviewMode}>
