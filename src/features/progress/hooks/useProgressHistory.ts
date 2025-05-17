@@ -21,23 +21,17 @@ const getMonthBoundaryDates = (date: Date, timeZone: string) => {
 export default function useProgressHistory(selectedMonth: Date) {
   const { date, timeZone } = useContext(DateContext);
   const [monthStartDate, setMonthStartDate] = useState<Date>(() => {
-    const { startDate } = getMonthBoundaryDates(
-      selectedMonth || new Date(),
-      timeZone,
-    );
+    const { startDate } = getMonthBoundaryDates(selectedMonth, timeZone);
     return startDate;
   });
   const [monthEndDate, setMonthEndDate] = useState<Date>(() => {
-    const { endDate } = getMonthBoundaryDates(
-      selectedMonth || new Date(),
-      timeZone,
-    );
+    const { endDate } = getMonthBoundaryDates(selectedMonth, timeZone);
     return endDate;
   });
 
   useEffect(() => {
     const { startDate, endDate } = getMonthBoundaryDates(
-      selectedMonth || new Date(),
+      selectedMonth,
       timeZone,
     );
     setMonthStartDate(startDate);

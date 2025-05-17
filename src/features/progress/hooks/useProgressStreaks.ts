@@ -15,7 +15,9 @@ export default function useProgressStreaks() {
   }: SWRResponse<ProgressStreaksResponse, Error> = useSWR<
     ProgressStreaksResponse,
     Error
-  >("progressStreaks", () => fetchProgressStreaks(timeZone));
+  >(["progressStreaks", timeZone] as const, () =>
+    fetchProgressStreaks(timeZone),
+  );
 
   return {
     currentStreak: data?.currentStreak ?? 0,
