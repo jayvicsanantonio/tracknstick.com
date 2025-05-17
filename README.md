@@ -16,6 +16,7 @@
 - **Vite:** A fast and modern build tool that provides a smoother development experience.
 - **TypeScript:** Static typing for enhanced code maintainability and scalability.
 - **Tailwind CSS:** Utility-first CSS framework for rapid UI development.
+- **pnpm:** Fast, disk space efficient package manager with improved dependency management.
 
 ## Getting Started
 
@@ -26,16 +27,18 @@
 2. **Install dependencies:**
    ```bash
    cd tracknstick.com
-   npm install
+   pnpm install
    ```
 3. **Start the development server:**
    ```bash
-   npm run dev
+   pnpm dev
    ```
 4. **Access the application in your browser:**
    ```bash
    http://localhost:3000
    ```
+
+> **Note:** This project uses [pnpm](https://pnpm.io/) as package manager. See [PNPM_MIGRATION.md](PNPM_MIGRATION.md) for more details about why we migrated from npm to pnpm.
 
 ## Contributing
 
