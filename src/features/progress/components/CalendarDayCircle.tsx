@@ -10,7 +10,7 @@ export default function CalendarDayCircle({
   isToday: boolean;
 }) {
   const showCircle = isPast || isToday;
-  const percent = dayData ? dayData.completionRate : 0;
+  const percent = dayData ? Math.round(dayData.completionRate) : 0;
 
   return (
     <div className="relative w-1/2 h-1/2">
