@@ -18,12 +18,19 @@ export interface ProgressOverviewResponse {
 
 /**
  * Fetches user's progress history showing completion rates by day
+ * Includes user's timezone to ensure dates are calculated correctly
  */
 export const fetchProgressHistory = async (
-  startDate?: string,
-  endDate?: string,
+  timezone: string,
+  startDate?: Date | null,
+  endDate?: Date | null,
 ): Promise<HistoryDates[]> => {
-  const params: Record<string, string> = {};
+  const params: {
+    startDate?: Date;
+    endDate?: Date;
+    timezone?: string;
+  } = { timezone };
+
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
@@ -33,7 +40,6 @@ export const fetchProgressHistory = async (
       { params },
     );
 
-    // Check if response.data contains a 'history' property
     if (response.data?.history) {
       return response.data.history;
     } else {
@@ -48,23 +54,34 @@ export const fetchProgressHistory = async (
 
 /**
  * Fetches user's current and longest streaks
+ * Includes user's timezone for accurate day boundary calculations
  */
-export const fetchProgressStreaks =
-  async (): Promise<ProgressStreaksResponse> => {
-    const response = await axiosInstance.get<ProgressStreaksResponse>(
-      "/api/v1/progress/streaks",
-    );
-    return response.data;
-  };
+export const fetchProgressStreaks = async (
+  timezone: string,
+): Promise<ProgressStreaksResponse> => {
+  const params: Record<string, string> = { timezone };
+
+  const response = await axiosInstance.get<ProgressStreaksResponse>(
+    "/api/v1/progress/streaks",
+    { params },
+  );
+  return response.data;
+};
 
 /**
  * Fetches comprehensive progress data including history and streaks
+ * Includes user's timezone for consistent date calculations
  */
 export const fetchProgressOverview = async (
-  startDate?: string,
-  endDate?: string,
+  timezone: string,
+  startDate?: Date,
+  endDate?: Date,
 ): Promise<ProgressOverviewResponse> => {
-  const params: Record<string, string> = {};
+  const params: {
+    startDate?: Date;
+    endDate?: Date;
+    timezone?: string;
+  } = { timezone };
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 

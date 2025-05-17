@@ -1,38 +1,59 @@
 import useSWR, { SWRResponse } from "swr";
 import { fetchProgressHistory } from "@/features/progress/api";
-import { useState, useEffect } from "react";
-import { formatISO } from "date-fns";
+import { useState, useEffect, useContext } from "react";
 import { HistoryDates } from "@/features/progress/types/HistoryDates";
+import { getLocalStartofDayUTC, getLocalEndOfDayUTC } from "@/lib/formatDate";
+import { DateContext } from "@/context/DateContext";
 
-export default function useProgressHistory(selectedMonth?: Date) {
-  const [monthStartDate, setMonthStartDate] = useState<string>("");
-  const [monthEndDate, setMonthEndDate] = useState<string>("");
+const getMonthBoundaryDates = (date: Date, timeZone: string) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  return {
+    startDate: getLocalStartofDayUTC(firstDay, timeZone),
+    endDate: getLocalEndOfDayUTC(lastDay, timeZone),
+  };
+};
+
+export default function useProgressHistory(selectedMonth: Date) {
+  const { date, timeZone } = useContext(DateContext);
+  const [monthStartDate, setMonthStartDate] = useState<Date>(() => {
+    const { startDate } = getMonthBoundaryDates(selectedMonth, timeZone);
+    return startDate;
+  });
+  const [monthEndDate, setMonthEndDate] = useState<Date>(() => {
+    const { endDate } = getMonthBoundaryDates(selectedMonth, timeZone);
+    return endDate;
+  });
 
   useEffect(() => {
-    if (selectedMonth) {
-      const year = selectedMonth.getFullYear();
-      const month = selectedMonth.getMonth();
-
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-
-      setMonthStartDate(formatISO(firstDay, { representation: "date" }));
-      setMonthEndDate(formatISO(lastDay, { representation: "date" }));
-    } else {
-      setMonthStartDate("");
-      setMonthEndDate("");
-    }
-  }, [selectedMonth]);
+    const { startDate, endDate } = getMonthBoundaryDates(
+      selectedMonth,
+      timeZone,
+    );
+    setMonthStartDate(startDate);
+    setMonthEndDate(endDate);
+  }, [selectedMonth, timeZone]);
 
   const cacheKey =
     monthStartDate && monthEndDate
-      ? (["progressHistory", monthStartDate, monthEndDate] as const)
-      : (["progressHistory"] as const);
+      ? ([
+          "progressHistory",
+          date.toISOString(),
+          monthStartDate,
+          monthEndDate,
+        ] as const)
+      : (["progressHistory", date.toISOString()] as const);
 
   const { data, error, isLoading }: SWRResponse<HistoryDates[], Error> = useSWR<
     HistoryDates[],
     Error
-  >(cacheKey, () => fetchProgressHistory(monthStartDate, monthEndDate));
+  >(cacheKey, () =>
+    fetchProgressHistory(timeZone, monthStartDate, monthEndDate),
+  );
 
   return {
     historyData: data ?? [],
