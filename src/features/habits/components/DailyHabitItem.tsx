@@ -32,7 +32,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
                 ? "bg-purple-600/30"
                 : "bg-purple-500/30"
               : isDarkMode
-                ? "bg-purple-500/20"
+                ? "bg-purple-600/20"
                 : "bg-purple-400/20"
           }`}
         ></div>
@@ -41,10 +41,10 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
             ${
               habit.completed
                 ? isDarkMode
-                  ? "bg-gradient-to-br from-purple-700 to-purple-600 shadow-purple-700/30 border-none"
+                  ? "bg-gradient-to-br from-purple-600 to-purple-500 shadow-purple-600/30 border-none"
                   : "bg-gradient-to-br from-purple-600 to-purple-500 shadow-purple-500/30 border-none"
                 : isDarkMode
-                  ? "bg-gray-800 shadow-gray-900/20 hover:bg-gray-750 border-purple-400"
+                  ? "bg-[#121228] shadow-gray-900/20 hover:bg-gray-750 border-purple-500"
                   : "bg-white shadow-purple-300/40 hover:bg-purple-50 border-purple-600"
             } 
             transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 active:scale-95`}
@@ -62,7 +62,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
                 habit.completed
                   ? "text-white"
                   : isDarkMode
-                    ? "text-purple-400"
+                    ? "text-purple-500"
                     : "text-purple-600"
               }`}
           />
@@ -73,7 +73,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
             className={`absolute -top-1 -right-1 rounded-full w-6 h-6 sm:w-8 sm:h-8 p-0 
               ${
                 isDarkMode
-                  ? "bg-purple-500 hover:bg-purple-400 shadow-md shadow-purple-700/30"
+                  ? "bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30"
                   : "bg-purple-500 hover:bg-purple-400 shadow-md shadow-purple-500/30"
               } transition-all duration-300 z-10`}
             onClick={() => openEditDialog(habit)}
@@ -84,14 +84,14 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
       </div>
       <span
         className={`text-xs sm:text-sm font-semibold text-center ${
-          isDarkMode ? "text-purple-200" : "text-purple-800"
+          isDarkMode ? "text-purple-300" : "text-purple-800"
         } line-clamp-1 max-w-full px-1`}
       >
         {habit.name}
       </span>
       <span
         className={`text-xs ${
-          isDarkMode ? "text-purple-300/80" : "text-purple-600/80"
+          isDarkMode ? "text-purple-400" : "text-purple-600/80"
         } mt-0.5`}
       >
         {frequencyLabel(habit.frequency)}

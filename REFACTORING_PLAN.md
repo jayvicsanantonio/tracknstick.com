@@ -282,7 +282,7 @@ The application utilizes a modern tech stack:
 
     ```typescript
     // src/features/habits/components/DailyHabitItem.tsx
-    import { Habit } from '@/features/habits/types'; // Assuming type moved
+    import { Habit } from "@/features/habits/types"; // Assuming type moved
 
     interface DailyHabitItemProps {
       habit: Habit;
@@ -323,31 +323,31 @@ The application utilizes a modern tech stack:
       theme: {
         extend: {
           colors: {
-            border: 'hsl(var(--border))', // Example using CSS vars
-            input: 'hsl(var(--input))',
-            ring: 'hsl(var(--ring))',
-            background: 'hsl(var(--background))',
-            foreground: 'hsl(var(--foreground))',
+            border: "hsl(var(--border))", // Example using CSS vars
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
             primary: {
-              DEFAULT: 'hsl(var(--primary))',
-              foreground: 'hsl(var(--primary-foreground))',
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
               // Add shades if needed: e.g., 100, 200, ..., 900
             },
             secondary: {
-              DEFAULT: 'hsl(var(--secondary))',
-              foreground: 'hsl(var(--secondary-foreground))',
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
             },
             // ... other colors: destructive, muted, accent, etc.
           },
           borderRadius: {
-            lg: 'var(--radius)',
-            md: 'calc(var(--radius) - 2px)',
-            sm: 'calc(var(--radius) - 4px)',
+            lg: "var(--radius)",
+            md: "calc(var(--radius) - 2px)",
+            sm: "calc(var(--radius) - 4px)",
           },
           // ... other extensions
         },
       },
-      plugins: [require('tailwindcss-animate')],
+      plugins: [require("tailwindcss-animate")],
     };
     // Ensure corresponding CSS variables are defined in index.css
     ```
@@ -384,7 +384,7 @@ The application utilizes a modern tech stack:
       return (
         <div>
           {/* ... other components */}
-          {isOverviewMode && (
+          {isHabitsOverviewMode && (
             <Suspense fallback={<div>Loading Overview...</div>}>
               <ProgressOverview /* props */ />
             </Suspense>
@@ -418,20 +418,17 @@ The application utilizes a modern tech stack:
   - **Example (`src/features/habits/api/index.ts`):**
 
     ```typescript
-    import axiosInstance from '@/services/api/axiosInstance'; // Assuming a configured instance
-    import { Habit } from '@/features/habits/types';
+    import axiosInstance from "@/services/api/axiosInstance"; // Assuming a configured instance
+    import { Habit } from "@/features/habits/types";
 
     export const fetchHabits = async (
       date: Date,
-      timeZone: string
+      timeZone: string,
     ): Promise<Habit[]> => {
       // No need for getToken here if axiosInstance handles auth via interceptors
-      const response = await axiosInstance.get<Habit[]>(
-        `/api/v1/habits`,
-        {
-          params: { date: date.toISOString(), timeZone },
-        }
-      );
+      const response = await axiosInstance.get<Habit[]>(`/api/v1/habits`, {
+        params: { date: date.toISOString(), timeZone },
+      });
       return response.data;
     };
 
@@ -451,15 +448,15 @@ The application utilizes a modern tech stack:
   - **Example (`src/features/habits/hooks/useHabits.ts`):**
 
     ```typescript
-    import useSWR from 'swr';
+    import useSWR from "swr";
     import {
       fetchHabits,
       toggleHabit as apiToggleHabit,
-    } from '@/features/habits/api';
-    import { Habit } from '@/features/habits/types';
-    import { useCallback } from 'react';
-    import { useSWRConfig } from 'swr';
-    import { useToast } from '@/hooks/use-toast'; // Assuming shared hook
+    } from "@/features/habits/api";
+    import { Habit } from "@/features/habits/types";
+    import { useCallback } from "react";
+    import { useSWRConfig } from "swr";
+    import { useToast } from "@/hooks/use-toast"; // Assuming shared hook
 
     export function useHabits(date: Date, timeZone: string) {
       const { toast } = useToast();
@@ -472,7 +469,7 @@ The application utilizes a modern tech stack:
         isLoading,
       } = useSWR<Habit[]>(
         habitsEndpointKey,
-        () => fetchHabits(date, timeZone) // Pass the API call function
+        () => fetchHabits(date, timeZone), // Pass the API call function
       );
 
       const { mutate } = useSWRConfig();
@@ -484,9 +481,9 @@ The application utilizes a modern tech stack:
             habitsEndpointKey,
             (currentData: Habit[] | undefined = []) =>
               currentData.map((h) =>
-                h.id === id ? { ...h, completed: !h.completed } : h
+                h.id === id ? { ...h, completed: !h.completed } : h,
               ),
-            false
+            false,
           );
           try {
             await apiToggleHabit(id);
@@ -498,18 +495,18 @@ The application utilizes a modern tech stack:
               habitsEndpointKey,
               (currentData: Habit[] | undefined = []) =>
                 currentData.map((h) =>
-                  h.id === id ? { ...h, completed: !h.completed } : h
+                  h.id === id ? { ...h, completed: !h.completed } : h,
                 ),
-              false
+              false,
             );
-            console.error('Failed to toggle habit:', err);
+            console.error("Failed to toggle habit:", err);
             toast({
-              variant: 'destructive',
-              description: 'Failed to update habit.',
+              variant: "destructive",
+              description: "Failed to update habit.",
             });
           }
         },
-        [habitsEndpointKey, mutate, toast]
+        [habitsEndpointKey, mutate, toast],
       );
 
       // Add similar functions for add, update, delete

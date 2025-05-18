@@ -43,7 +43,7 @@ export default function FrequencySelector({
             title={day}
             className={`w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm rounded-full transition-all duration-200 data-[state=off]:hover:text-white ${
               isDarkMode
-                ? "data-[state=on]:bg-purple-400 data-[state=on]:text-white data-[state=off]:bg-gray-700 data-[state=off]:text-gray-300 data-[state=off]:hover:bg-purple-300"
+                ? "data-[state=on]:bg-purple-600 data-[state=on]:text-white data-[state=off]:bg-purple-900/50 data-[state=off]:text-purple-400 data-[state=off]:hover:bg-purple-500"
                 : "data-[state=on]:bg-purple-500 data-[state=on]:text-white data-[state=off]:bg-gray-100 data-[state=off]:text-gray-600 data-[state=off]:hover:bg-purple-400"
             }`}
           >

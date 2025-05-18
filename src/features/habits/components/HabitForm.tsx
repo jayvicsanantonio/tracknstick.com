@@ -109,7 +109,7 @@ export default function HabitForm({
       <form
         onSubmit={handleSubmit}
         className={`min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4 ${
-          isDarkMode ? "text-gray-100" : "text-gray-800"
+          isDarkMode ? "text-purple-300" : "text-gray-800"
         }`}
       >
         <div className="space-y-3 sm:space-y-4">
@@ -129,7 +129,11 @@ export default function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
-              className={isDarkMode ? "placeholder:text-gray-400" : ""}
+              className={
+                isDarkMode
+                  ? "bg-gray-800 border-purple-900 placeholder:text-purple-500/50"
+                  : ""
+              }
             />
           </div>
 
@@ -166,7 +170,7 @@ export default function HabitForm({
         </div>
 
         <Separator
-          className={`my-2 ${isDarkMode ? "bg-gray-600" : "bg-purple-200"}`}
+          className={`my-2 ${isDarkMode ? "bg-purple-900" : "bg-purple-200"}`}
         />
 
         <FormActions

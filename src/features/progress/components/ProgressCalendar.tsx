@@ -34,12 +34,12 @@ export default function ProgressCalendar({
           ariaLabel="Previous Month"
         >
           <ChevronLeft
-            className={`h-4 w-4 ${isDarkMode ? "text-white" : ""}`}
+            className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
           />
         </MonthNavButton>
         <h3
           className={`text-lg font-semibold ${
-            isDarkMode ? "text-white" : "text-purple-800"
+            isDarkMode ? "text-purple-300" : "text-purple-800"
           }`}
         >
           {selectedMonth.toLocaleString("default", {
@@ -53,7 +53,7 @@ export default function ProgressCalendar({
           ariaLabel="Next Month"
         >
           <ChevronRight
-            className={`h-4 w-4 ${isDarkMode ? "text-white" : ""}`}
+            className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
           />
         </MonthNavButton>
       </div>
@@ -62,7 +62,7 @@ export default function ProgressCalendar({
           <div
             key={day}
             className={`text-center font-bold text-xs ${
-              isDarkMode ? "text-gray-200" : "text-purple-800"
+              isDarkMode ? "text-purple-400" : "text-purple-800"
             }`}
           >
             {day}
@@ -80,10 +80,10 @@ export default function ProgressCalendar({
               className={`text-xs font-medium mb-1 ${
                 isPast || isToday
                   ? isDarkMode
-                    ? "text-gray-200"
+                    ? "text-purple-400"
                     : "text-purple-800"
                   : isDarkMode
-                    ? "text-gray-500"
+                    ? "text-purple-700"
                     : "text-gray-400"
               }`}
             >

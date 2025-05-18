@@ -47,7 +47,7 @@ export default function FormActions({
             disabled={isSubmitting}
             className={`text-sm sm:text-base ${
               isDarkMode
-                ? "border-purple-500 bg-gray-800 text-white hover:bg-gray-700 hover:text-purple-300 hover:border-purple-400"
+                ? "border-purple-600 bg-purple-900/50 text-purple-300 hover:bg-purple-800/60 hover:text-purple-300 hover:border-purple-500"
                 : "border-purple-300 hover:bg-purple-100 hover:text-purple-700"
             }`}
           >
@@ -58,7 +58,7 @@ export default function FormActions({
           type="submit"
           className={`flex-1 sm:flex-none sm:w-32 text-sm sm:text-base ${
             isDarkMode
-              ? "bg-purple-700 hover:bg-purple-600 text-white"
+              ? "bg-purple-600 hover:bg-purple-500 text-white"
               : "bg-purple-600 hover:bg-purple-700 text-white"
           }`}
           disabled={isSubmitting}
