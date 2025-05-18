@@ -23,7 +23,7 @@ export default function ProgressChart({
         <BarChart data={data}>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke={isDarkMode ? "#6B7280" : "#d8b4fe"}
+            stroke={isDarkMode ? "#581c87" : "#d8b4fe"}
           />
           <XAxis
             dataKey="date"
@@ -34,20 +34,20 @@ export default function ProgressChart({
               value: "Day of Month",
               position: "insideBottom",
               offset: -5,
-              fill: isDarkMode ? "#FFFFFF" : "#7e22ce",
+              fill: isDarkMode ? "#d8b4fe" : "#7e22ce",
             }}
-            stroke={isDarkMode ? "#FFFFFF" : "#7e22ce"}
-            tick={{ fill: isDarkMode ? "#FFFFFF" : "#7e22ce" }}
+            stroke={isDarkMode ? "#d8b4fe" : "#7e22ce"}
+            tick={{ fill: isDarkMode ? "#d8b4fe" : "#7e22ce" }}
           />
           <YAxis
             label={{
               value: "Completion Rate (%)",
               angle: -90,
               position: "insideLeft",
-              fill: isDarkMode ? "#FFFFFF" : "#7e22ce",
+              fill: isDarkMode ? "#d8b4fe" : "#7e22ce",
             }}
-            stroke={isDarkMode ? "#FFFFFF" : "#7e22ce"}
-            tick={{ fill: isDarkMode ? "#FFFFFF" : "#7e22ce" }}
+            stroke={isDarkMode ? "#d8b4fe" : "#7e22ce"}
+            tick={{ fill: isDarkMode ? "#d8b4fe" : "#7e22ce" }}
           />
           <Tooltip
             formatter={(value: number) => [`${value}%`, "Completion Rate"]}
@@ -55,14 +55,14 @@ export default function ProgressChart({
               `Date: ${new Date(String(label)).toLocaleDateString()}`
             }
             contentStyle={{
-              backgroundColor: isDarkMode ? "#1F2937" : "#faf5ff",
-              borderColor: isDarkMode ? "#6B7280" : "#d8b4fe",
-              color: isDarkMode ? "#FFFFFF" : "#000000",
+              backgroundColor: isDarkMode ? "#1e1b4b" : "#faf5ff",
+              borderColor: isDarkMode ? "#7e22ce" : "#d8b4fe",
+              color: isDarkMode ? "#d8b4fe" : "#000000",
             }}
           />
           <Bar
             dataKey="completionRate"
-            fill={isDarkMode ? "#A855F7" : "#9333ea"}
+            fill={isDarkMode ? "#9333ea" : "#9333ea"}
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

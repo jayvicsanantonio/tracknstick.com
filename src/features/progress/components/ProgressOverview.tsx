@@ -4,20 +4,14 @@ import ProgressChart from "@/features/progress/components/ProgressChart";
 import ProgressAchievements from "@/features/progress/components/ProgressAchievements";
 import StreakDisplayDays from "@/features/progress/components/StreakDisplayDays";
 import { ThemeContext } from "@/context/ThemeContext";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import VisuallyHidden from "@/components/ui/accessibility/VisuallyHidden";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
 import useProgressHistory from "../hooks/useProgressHistory";
 import useProgressStreaks from "../hooks/useProgressStreaks";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
@@ -56,7 +50,7 @@ const achievements = [
 ];
 
 export default function ProgressOverview() {
-  const { isOverviewMode, toggleIsOverviewMode } = useHabitsContext();
+  const { toggleisProgressOverviewMode } = useHabitsContext();
   const { isDarkMode } = useContext(ThemeContext);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
@@ -73,179 +67,218 @@ export default function ProgressOverview() {
   const isLoading = isHistoryLoading || isStreaksLoading;
 
   return (
-    <Dialog open={isOverviewMode} onOpenChange={toggleIsOverviewMode}>
-      <DialogContent
-        className={`sm:max-w-[90vw] sm:max-h-[90vh] overflow-y-auto ${
+    <motion.div
+      className="flex-1 flex flex-col h-full"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card
+        className={`w-full flex-1 flex flex-col overflow-hidden shadow-xl ${
           isDarkMode
-            ? "bg-gray-900 border-gray-800 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.05),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(124,58,237,0.08),transparent_40%)]"
-            : "bg-purple-50 border-purple-200 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.1),transparent_40%)]"
+            ? "border-purple-900 bg-[#121228] shadow-purple-900/20"
+            : "border-purple-100 bg-white shadow-purple-200/50"
         }`}
       >
-        <DialogHeader>
-          <DialogTitle
-            className={isDarkMode ? "text-white" : "text-purple-800"}
-          >
-            Progress Overview
-          </DialogTitle>
-          <VisuallyHidden>
-            <DialogDescription>Overview of your progress.</DialogDescription>
-          </VisuallyHidden>
-        </DialogHeader>
-        <div className="flex justify-center items-center mb-4">
-          <div
-            className={`flex items-center space-x-8 ${
-              isDarkMode ? "text-white" : "text-purple-800"
-            }`}
-          >
-            <StreakDisplayDays value={currentStreak} label="Current Streak" />
-            <StreakDisplayDays value={longestStreak} label="Longest Streak" />
-          </div>
-        </div>
-        <Tabs defaultValue="calendar" className="w-full">
-          <TabsList
-            className={`grid w-full grid-cols-3 ${
-              isDarkMode
-                ? "bg-gray-800 border border-gray-700"
-                : "bg-purple-200"
-            }`}
-          >
-            <TabsTrigger
-              value="calendar"
-              className={`${
-                isDarkMode
-                  ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-gray-200 hover:text-white"
-                  : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+        <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6">
+          <div>
+            <CardTitle
+              className={`text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 ${
+                isDarkMode ? "text-white" : ""
               }`}
             >
-              <Calendar className="w-4 h-4 mr-2" />
-              History
-            </TabsTrigger>
-            <TabsTrigger
-              value="graph"
-              className={`${
-                isDarkMode
-                  ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-gray-200 hover:text-white"
-                  : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-              }`}
-            >
-              <BarChart2 className="w-4 h-4 mr-2" />
-              Completion Rate
-            </TabsTrigger>
-            <TabsTrigger
-              value="achievements"
-              className={`${
-                isDarkMode
-                  ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-gray-200 hover:text-white"
-                  : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-              }`}
-            >
-              <Trophy className="w-4 h-4 mr-2" />
-              Achievements
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="calendar">
-            <Card
-              className={
-                isDarkMode
-                  ? "border-gray-700 bg-gray-800 shadow-lg shadow-purple-900/5"
-                  : "border-purple-200"
-              }
-            >
-              <CardHeader>
-                <h3
-                  className={`text-lg font-semibold ${
-                    isDarkMode ? "text-white" : "text-purple-800"
-                  }`}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleisProgressOverviewMode}
+                className={`mr-2 ${isDarkMode ? "text-white hover:bg-purple-900/70 hover:text-purple-300" : ""}`}
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  Calendar
-                </h3>
-              </CardHeader>
-              <CardContent className="h-[400px] overflow-y-auto">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <p
-                      className={
-                        isDarkMode ? "text-gray-200" : "text-purple-800"
-                      }
-                    >
-                      Loading calendar data...
-                    </p>
-                  </div>
-                ) : (
-                  <ProgressCalendar
-                    insightData={historyData}
-                    isDarkMode={isDarkMode}
-                    selectedMonth={selectedMonth}
-                    setSelectedMonth={setSelectedMonth}
+                  <path
+                    d="M19 12H5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="graph">
-            <Card
-              className={
-                isDarkMode
-                  ? "border-gray-700 bg-gray-800 shadow-lg shadow-purple-900/5"
-                  : "border-purple-200"
-              }
+                  <path
+                    d="M12 19L5 12L12 5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Button>
+              Progress Overview
+            </CardTitle>
+            <p
+              className={`text-sm ${isDarkMode ? "text-purple-400" : "text-gray-600"}`}
             >
-              <CardHeader>
-                <h3
-                  className={`text-lg font-semibold ${
-                    isDarkMode ? "text-white" : "text-purple-800"
-                  }`}
-                >
-                  Daily Completion Rates
-                </h3>
-              </CardHeader>
-              <CardContent className="min-h-80">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <p
-                      className={
-                        isDarkMode ? "text-gray-200" : "text-purple-800"
-                      }
-                    >
-                      Loading chart data...
-                    </p>
-                  </div>
-                ) : (
-                  <ProgressChart data={historyData} isDarkMode={isDarkMode} />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="achievements">
-            <Card
-              className={
-                isDarkMode
-                  ? "border-gray-700 bg-gray-800 shadow-lg shadow-purple-900/5"
-                  : "border-purple-200"
-              }
+              View your progress in one place
+            </p>
+          </div>
+        </CardHeader>
+        <CardContent className="px-3 sm:px-6 pb-6 sm:pb-8 flex-1 overflow-auto">
+          <div className="flex justify-center items-center mb-4">
+            <div
+              className={`flex items-center space-x-8 ${
+                isDarkMode ? "text-purple-300" : "text-purple-800"
+              }`}
             >
-              <CardHeader>
-                <h3
-                  className={`text-lg font-semibold ${
-                    isDarkMode ? "text-white" : "text-purple-800"
-                  }`}
-                >
-                  Achievements
-                </h3>
-              </CardHeader>
-              <CardContent>
-                <ProgressAchievements
-                  achievements={achievements.map((a) => ({
-                    ...a,
-                    id: String(a.id),
-                  }))}
-                  isDarkMode={isDarkMode}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+              <StreakDisplayDays value={currentStreak} label="Current Streak" />
+              <StreakDisplayDays value={longestStreak} label="Longest Streak" />
+            </div>
+          </div>
+          <Tabs defaultValue="calendar" className="w-full">
+            <TabsList
+              className={`grid w-full grid-cols-3 ${
+                isDarkMode ? "bg-gray-800" : "bg-purple-200"
+              }`}
+            >
+              <TabsTrigger
+                value="calendar"
+                className={`${
+                  isDarkMode
+                    ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-400 hover:text-white"
+                    : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                }`}
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                History
+              </TabsTrigger>
+              <TabsTrigger
+                value="graph"
+                className={`${
+                  isDarkMode
+                    ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-400 hover:text-white"
+                    : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                }`}
+              >
+                <BarChart2 className="w-4 h-4 mr-2" />
+                Completion Rate
+              </TabsTrigger>
+              <TabsTrigger
+                value="achievements"
+                className={`${
+                  isDarkMode
+                    ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-400 hover:text-white"
+                    : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                }`}
+              >
+                <Trophy className="w-4 h-4 mr-2" />
+                Achievements
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="calendar">
+              <Card
+                className={
+                  isDarkMode
+                    ? "border-purple-900 bg-[#121228] shadow-lg shadow-purple-900/5"
+                    : "border-purple-200"
+                }
+              >
+                <CardHeader>
+                  <h3
+                    className={`text-lg font-semibold ${
+                      isDarkMode ? "text-purple-300" : "text-purple-800"
+                    }`}
+                  >
+                    Calendar
+                  </h3>
+                </CardHeader>
+                <CardContent className="h-fit overflow-y-auto">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-full">
+                      <p
+                        className={
+                          isDarkMode ? "text-purple-400" : "text-purple-800"
+                        }
+                      >
+                        Loading calendar data...
+                      </p>
+                    </div>
+                  ) : (
+                    <ProgressCalendar
+                      insightData={historyData}
+                      isDarkMode={isDarkMode}
+                      selectedMonth={selectedMonth}
+                      setSelectedMonth={setSelectedMonth}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="graph">
+              <Card
+                className={
+                  isDarkMode
+                    ? "border-purple-900 bg-[#121228] shadow-lg shadow-purple-900/5"
+                    : "border-purple-200"
+                }
+              >
+                <CardHeader>
+                  <h3
+                    className={`text-lg font-semibold ${
+                      isDarkMode ? "text-purple-300" : "text-purple-800"
+                    }`}
+                  >
+                    Daily Completion Rates
+                  </h3>
+                </CardHeader>
+                <CardContent className="min-h-80">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-full">
+                      <p
+                        className={
+                          isDarkMode ? "text-purple-400" : "text-purple-800"
+                        }
+                      >
+                        Loading chart data...
+                      </p>
+                    </div>
+                  ) : (
+                    <ProgressChart data={historyData} isDarkMode={isDarkMode} />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="achievements">
+              <Card
+                className={
+                  isDarkMode
+                    ? "border-purple-900 bg-[#121228] shadow-lg shadow-purple-900/5"
+                    : "border-purple-200"
+                }
+              >
+                <CardHeader>
+                  <h3
+                    className={`text-lg font-semibold ${
+                      isDarkMode ? "text-purple-300" : "text-purple-800"
+                    }`}
+                  >
+                    Achievements
+                  </h3>
+                </CardHeader>
+                <CardContent>
+                  <ProgressAchievements
+                    achievements={achievements.map((a) => ({
+                      ...a,
+                      id: String(a.id),
+                    }))}
+                    isDarkMode={isDarkMode}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

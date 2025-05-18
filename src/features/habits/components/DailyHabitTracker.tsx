@@ -16,7 +16,7 @@ export default function DailyHabitTracker() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <motion.div
-          className={`rounded-full h-12 w-12 border-4 ${isDarkMode ? "border-purple-500" : "border-purple-600"} border-t-transparent`}
+          className={`rounded-full h-12 w-12 border-4 ${isDarkMode ? "border-purple-600" : "border-purple-600"} border-t-transparent`}
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -48,7 +48,7 @@ export default function DailyHabitTracker() {
       <Card
         className={`w-full flex-1 flex flex-col overflow-hidden shadow-xl ${
           isDarkMode
-            ? "border-gray-700 bg-gray-800/90 shadow-purple-900/10"
+            ? "border-purple-900 bg-[#121228] shadow-purple-900/20"
             : "border-purple-100 bg-white shadow-purple-200/50"
         }`}
       >

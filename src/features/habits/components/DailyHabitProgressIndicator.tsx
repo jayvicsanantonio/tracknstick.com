@@ -18,14 +18,16 @@ export default function DailyHabitProgressIndicator({
       <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64">
         {/* Drop shadow for the progress circle */}
         <div
-          className={`absolute inset-0 rounded-full  ${isDarkMode ? "bg-purple-700/20" : "bg-purple-400/30"}`}
+          className={`absolute inset-0 rounded-full  ${isDarkMode ? "bg-purple-600/20" : "bg-purple-400/30"}`}
         ></div>
 
         <div className="relative w-full h-full">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             {/* Background track */}
             <circle
-              className={isDarkMode ? "text-gray-700/80" : "text-purple-200/80"}
+              className={
+                isDarkMode ? "text-purple-900/80" : "text-purple-200/80"
+              }
               strokeWidth="10"
               stroke="currentColor"
               fill="transparent"
@@ -37,7 +39,7 @@ export default function DailyHabitProgressIndicator({
             {/* Glowing effect behind progress */}
             <motion.circle
               className={
-                isDarkMode ? "text-purple-500/30" : "text-purple-400/30"
+                isDarkMode ? "text-purple-600/30" : "text-purple-400/30"
               }
               strokeWidth="14"
               strokeDasharray={42 * 2 * Math.PI}
@@ -58,11 +60,7 @@ export default function DailyHabitProgressIndicator({
 
             {/* Main progress indicator */}
             <motion.circle
-              className={
-                isDarkMode
-                  ? `${displayRate === 100 ? "text-purple-400" : "text-purple-500"}`
-                  : `${displayRate === 100 ? "text-purple-600" : "text-purple-500"}`
-              }
+              className={isDarkMode ? "text-purple-600" : "text-purple-500"}
               strokeWidth="10"
               strokeDasharray={42 * 2 * Math.PI}
               strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
@@ -90,11 +88,7 @@ export default function DailyHabitProgressIndicator({
                 transition={{ duration: 0.7, ease: "easeOut" }}
               >
                 <div className={`rounded-full p-5 `}>
-                  <Check
-                    className={`w-32 h-32 ${
-                      isDarkMode ? "text-purple-400" : "text-purple-600"
-                    }`}
-                  />
+                  <Check className="w-32 h-32 text-purple-600" />
                 </div>
               </motion.div>
             ) : (
@@ -106,14 +100,14 @@ export default function DailyHabitProgressIndicator({
               >
                 <span
                   className={`text-5xl font-bold ${
-                    isDarkMode ? "text-purple-200" : "text-purple-800"
+                    isDarkMode ? "text-purple-300" : "text-purple-800"
                   }`}
                 >
                   {displayRate}%
                 </span>
                 <span
                   className={`text-sm mt-1 ${
-                    isDarkMode ? "text-purple-300/80" : "text-purple-600/80"
+                    isDarkMode ? "text-purple-400" : "text-purple-600/80"
                   }`}
                 >
                   Completed

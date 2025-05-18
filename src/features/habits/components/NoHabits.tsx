@@ -36,7 +36,7 @@ export default function NoHabits() {
         >
           <CalendarX2
             className={`${
-              isDarkMode ? "text-purple-400" : "text-purple-600"
+              isDarkMode ? "text-purple-500" : "text-purple-600"
             } h-10 w-10`}
           />
         </div>
@@ -51,7 +51,7 @@ export default function NoHabits() {
 
         <p
           className={`${
-            isDarkMode ? "text-purple-300/80" : "text-purple-600/90"
+            isDarkMode ? "text-purple-400" : "text-purple-600/90"
           } max-w-md mx-auto mb-4 text-sm sm:text-base`}
         >
           Try adding a new habit to start tracking your daily progress, or check
@@ -65,7 +65,7 @@ export default function NoHabits() {
             className={`
               ${
                 isDarkMode
-                  ? "bg-gradient-to-r from-purple-700 to-purple-600 hover:from-purple-600 hover:to-purple-500"
+                  ? "bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400"
                   : "bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400"
               } 
               text-white rounded-full font-semibold transition-all duration-300 

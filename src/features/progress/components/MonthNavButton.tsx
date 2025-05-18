@@ -19,7 +19,7 @@ export default function MonthNavButton({
       aria-label={ariaLabel}
       className={
         isDarkMode
-          ? "border-gray-600 bg-gray-700 hover:bg-gray-600 text-white"
+          ? "border-purple-900 bg-purple-900/50 hover:bg-purple-800/60 text-purple-300"
           : "border-purple-300 hover:bg-purple-100"
       }
     >

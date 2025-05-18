@@ -26,10 +26,10 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className={`rounded-lg ${isDarkMode ? "bg-gray-700/70" : "bg-white"} p-4 sm:p-6 shadow-md flex flex-col items-center justify-center text-center space-y-2 border ${isDarkMode ? "border-gray-600" : "border-purple-100"}`}
+          className={`rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} p-4 sm:p-6 shadow-md flex flex-col items-center justify-center text-center space-y-2 border ${isDarkMode ? "border-purple-900" : "border-purple-100"}`}
         >
           <div
-            className={`rounded-full p-2 sm:p-3 ${isDarkMode ? "bg-gray-600/60" : "bg-purple-100/60"}`}
+            className={`rounded-full p-2 sm:p-3 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
           >
             <Trophy
               className={`w-8 h-8 sm:w-10 sm:h-10 ${
@@ -44,7 +44,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           </h3>
           <div className="flex items-baseline justify-center">
             <span
-              className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+              className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-purple-300" : "text-purple-800"}`}
             >
               {habitStats.streak}
             </span>
@@ -61,14 +61,14 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className={`rounded-lg ${isDarkMode ? "bg-gray-700/70" : "bg-white"} p-4 sm:p-6 shadow-md flex flex-col items-center justify-center text-center space-y-2 border ${isDarkMode ? "border-gray-600" : "border-purple-100"}`}
+          className={`rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} p-4 sm:p-6 shadow-md flex flex-col items-center justify-center text-center space-y-2 border ${isDarkMode ? "border-purple-900" : "border-purple-100"}`}
         >
           <div
-            className={`rounded-full p-2 sm:p-3 ${isDarkMode ? "bg-gray-600/60" : "bg-purple-100/60"}`}
+            className={`rounded-full p-2 sm:p-3 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
           >
             <Award
               className={`w-8 h-8 sm:w-10 sm:h-10 ${
-                isDarkMode ? "text-purple-400" : "text-purple-600"
+                isDarkMode ? "text-purple-500" : "text-purple-600"
               }`}
             />
           </div>
@@ -79,7 +79,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           </h3>
           <div className="flex items-baseline justify-center">
             <span
-              className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+              className={`text-3xl sm:text-4xl font-bold ${isDarkMode ? "text-purple-300" : "text-purple-800"}`}
             >
               {habitStats.longestStreak}
             </span>
@@ -95,7 +95,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
       {/* Additional Stats */}
       <div className="mt-2">
         <div
-          className={`rounded-lg ${isDarkMode ? "bg-gray-700/70" : "bg-white"} p-4 sm:p-5 shadow-md space-y-4 border ${isDarkMode ? "border-gray-600" : "border-purple-100"}`}
+          className={`rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} p-4 sm:p-5 shadow-md space-y-4 border ${isDarkMode ? "border-purple-900" : "border-purple-100"}`}
         >
           <motion.div
             initial={{ opacity: 0, x: -10 }}
@@ -105,7 +105,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           >
             <div className="flex items-center space-x-3">
               <div
-                className={`rounded-full p-1.5 ${isDarkMode ? "bg-gray-600/60" : "bg-purple-100/60"}`}
+                className={`rounded-full p-1.5 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
               >
                 <CheckCircle2
                   className={`w-5 h-5 ${isDarkMode ? "text-green-400" : "text-green-500"}`}
@@ -118,7 +118,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
               </span>
             </div>
             <span
-              className={`text-xl sm:text-2xl font-semibold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+              className={`text-xl sm:text-2xl font-semibold ${isDarkMode ? "text-purple-300" : "text-purple-800"}`}
             >
               {habitStats.totalCompletions}
             </span>
@@ -132,7 +132,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           >
             <div className="flex items-center space-x-3">
               <div
-                className={`rounded-full p-1.5 ${isDarkMode ? "bg-gray-600/60" : "bg-purple-100/60"}`}
+                className={`rounded-full p-1.5 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
               >
                 <Calendar
                   className={`w-5 h-5 ${isDarkMode ? "text-blue-400" : "text-blue-500"}`}
@@ -145,7 +145,7 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
               </span>
             </div>
             <span
-              className={`text-sm sm:text-base font-medium ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+              className={`text-sm sm:text-base font-medium ${isDarkMode ? "text-purple-300" : "text-purple-800"}`}
             >
               {formatDate(habitStats?.lastCompleted)}
             </span>
@@ -158,10 +158,10 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.4 }}
-        className={`mt-2 text-center rounded-lg ${isDarkMode ? "bg-purple-900/20" : "bg-purple-50"} p-4 border ${isDarkMode ? "border-purple-800/30" : "border-purple-200/70"}`}
+        className={`mt-2 text-center rounded-lg ${isDarkMode ? "bg-purple-900/20" : "bg-purple-50"} p-4 border ${isDarkMode ? "border-purple-900/30" : "border-purple-200/70"}`}
       >
         <p
-          className={`text-xs sm:text-sm ${isDarkMode ? "text-purple-300" : "text-purple-600"}`}
+          className={`text-xs sm:text-sm ${isDarkMode ? "text-purple-400" : "text-purple-600"}`}
         >
           {habitStats.streak > 0
             ? `Great job! You've been consistent with "${habit.name}" for ${habitStats.streak} days.`

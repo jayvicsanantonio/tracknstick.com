@@ -18,8 +18,10 @@ interface HabitsStateContextValue {
   toggleShowAddHabitDialog: () => void;
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
-  isOverviewMode: boolean;
-  toggleIsOverviewMode: () => void;
+  isHabitsOverviewMode: boolean;
+  toggleisHabitsOverviewMode: () => void;
+  isProgressOverviewMode: boolean;
+  toggleisProgressOverviewMode: () => void;
   openEditDialog: (habit: Habit) => void;
 }
 
@@ -30,8 +32,9 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
-  const [isOverviewMode, toggleIsOverviewMode] = useToggle(false);
-
+  const [isHabitsOverviewMode, toggleisHabitsOverviewMode] = useToggle(false);
+  const [isProgressOverviewMode, toggleisProgressOverviewMode] =
+    useToggle(false);
   const openEditDialog = useCallback(
     (habit: Habit) => {
       setEditingHabit(habit);
@@ -53,9 +56,11 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       toggleShowAddHabitDialog,
       showEditHabitDialog,
       toggleShowEditHabitDialog,
-      isOverviewMode,
-      toggleIsOverviewMode,
+      isHabitsOverviewMode,
+      toggleisHabitsOverviewMode,
       openEditDialog,
+      isProgressOverviewMode,
+      toggleisProgressOverviewMode,
     }),
     [
       isEditMode,
@@ -66,9 +71,11 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       toggleShowAddHabitDialog,
       showEditHabitDialog,
       toggleShowEditHabitDialog,
-      isOverviewMode,
-      toggleIsOverviewMode,
+      isHabitsOverviewMode,
+      toggleisHabitsOverviewMode,
       openEditDialog,
+      isProgressOverviewMode,
+      toggleisProgressOverviewMode,
     ],
   );
 
