@@ -21,15 +21,15 @@ export interface ProgressOverviewResponse {
  * Includes user's timezone to ensure dates are calculated correctly
  */
 export const fetchProgressHistory = async (
-  timezone: string,
+  timeZone: string,
   startDate?: Date | null,
   endDate?: Date | null,
 ): Promise<HistoryDates[]> => {
   const params: {
     startDate?: Date;
     endDate?: Date;
-    timezone?: string;
-  } = { timezone };
+    timeZone?: string;
+  } = { timeZone };
 
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
@@ -57,9 +57,9 @@ export const fetchProgressHistory = async (
  * Includes user's timezone for accurate day boundary calculations
  */
 export const fetchProgressStreaks = async (
-  timezone: string,
+  timeZone: string,
 ): Promise<ProgressStreaksResponse> => {
-  const params: Record<string, string> = { timezone };
+  const params: Record<string, string> = { timeZone };
 
   const response = await axiosInstance.get<ProgressStreaksResponse>(
     "/api/v1/progress/streaks",
@@ -73,15 +73,15 @@ export const fetchProgressStreaks = async (
  * Includes user's timezone for consistent date calculations
  */
 export const fetchProgressOverview = async (
-  timezone: string,
+  timeZone: string,
   startDate?: Date,
   endDate?: Date,
 ): Promise<ProgressOverviewResponse> => {
   const params: {
     startDate?: Date;
     endDate?: Date;
-    timezone?: string;
-  } = { timezone };
+    timeZone?: string;
+  } = { timeZone };
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
