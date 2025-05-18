@@ -23,6 +23,7 @@ export default function IconPicker({
         className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
       >
         {label}
+        <span className="text-red-500">*</span>
       </Label>
       <div className="overflow-y-auto max-h-[7.5rem] sm:max-h-[9.5rem] pb-1">
         <RadioGroup

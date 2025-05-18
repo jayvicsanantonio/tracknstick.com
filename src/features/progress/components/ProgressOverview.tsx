@@ -77,13 +77,13 @@ export default function ProgressOverview() {
       <DialogContent
         className={`sm:max-w-[90vw] sm:max-h-[90vh] overflow-y-auto ${
           isDarkMode
-            ? "bg-gray-800 border-gray-700"
-            : "bg-purple-50 border-purple-200"
+            ? "bg-gray-900 border-gray-800 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.05),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(124,58,237,0.08),transparent_40%)]"
+            : "bg-purple-50 border-purple-200 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.1),transparent_40%)]"
         }`}
       >
         <DialogHeader>
           <DialogTitle
-            className={isDarkMode ? "text-purple-200" : "text-purple-800"}
+            className={isDarkMode ? "text-white" : "text-purple-800"}
           >
             Progress Overview
           </DialogTitle>
@@ -94,7 +94,7 @@ export default function ProgressOverview() {
         <div className="flex justify-center items-center mb-4">
           <div
             className={`flex items-center space-x-8 ${
-              isDarkMode ? "text-purple-200" : "text-purple-800"
+              isDarkMode ? "text-white" : "text-purple-800"
             }`}
           >
             <StreakDisplayDays value={currentStreak} label="Current Streak" />
@@ -104,14 +104,16 @@ export default function ProgressOverview() {
         <Tabs defaultValue="calendar" className="w-full">
           <TabsList
             className={`grid w-full grid-cols-3 ${
-              isDarkMode ? "bg-gray-700" : "bg-purple-200"
+              isDarkMode
+                ? "bg-gray-800 border border-gray-700"
+                : "bg-purple-200"
             }`}
           >
             <TabsTrigger
               value="calendar"
               className={`${
                 isDarkMode
-                  ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
+                  ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-gray-200 hover:text-white"
                   : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
               }`}
             >
@@ -122,7 +124,7 @@ export default function ProgressOverview() {
               value="graph"
               className={`${
                 isDarkMode
-                  ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
+                  ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-gray-200 hover:text-white"
                   : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
               }`}
             >
@@ -133,7 +135,7 @@ export default function ProgressOverview() {
               value="achievements"
               className={`${
                 isDarkMode
-                  ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
+                  ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-gray-200 hover:text-white"
                   : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
               }`}
             >
@@ -143,11 +145,17 @@ export default function ProgressOverview() {
           </TabsList>
           <TabsContent value="calendar">
             <Card
-              className={isDarkMode ? "border-gray-700" : "border-purple-200"}
+              className={
+                isDarkMode
+                  ? "border-gray-700 bg-gray-800 shadow-lg shadow-purple-900/5"
+                  : "border-purple-200"
+              }
             >
               <CardHeader>
                 <h3
-                  className={`text-lg font-semibold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+                  className={`text-lg font-semibold ${
+                    isDarkMode ? "text-white" : "text-purple-800"
+                  }`}
                 >
                   Calendar
                 </h3>
@@ -157,7 +165,7 @@ export default function ProgressOverview() {
                   <div className="flex justify-center items-center h-full">
                     <p
                       className={
-                        isDarkMode ? "text-purple-200" : "text-purple-800"
+                        isDarkMode ? "text-gray-200" : "text-purple-800"
                       }
                     >
                       Loading calendar data...
@@ -176,11 +184,17 @@ export default function ProgressOverview() {
           </TabsContent>
           <TabsContent value="graph">
             <Card
-              className={isDarkMode ? "border-gray-700" : "border-purple-200"}
+              className={
+                isDarkMode
+                  ? "border-gray-700 bg-gray-800 shadow-lg shadow-purple-900/5"
+                  : "border-purple-200"
+              }
             >
               <CardHeader>
                 <h3
-                  className={`text-lg font-semibold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+                  className={`text-lg font-semibold ${
+                    isDarkMode ? "text-white" : "text-purple-800"
+                  }`}
                 >
                   Daily Completion Rates
                 </h3>
@@ -190,7 +204,7 @@ export default function ProgressOverview() {
                   <div className="flex justify-center items-center h-full">
                     <p
                       className={
-                        isDarkMode ? "text-purple-200" : "text-purple-800"
+                        isDarkMode ? "text-gray-200" : "text-purple-800"
                       }
                     >
                       Loading chart data...
@@ -204,11 +218,17 @@ export default function ProgressOverview() {
           </TabsContent>
           <TabsContent value="achievements">
             <Card
-              className={isDarkMode ? "border-gray-700" : "border-purple-200"}
+              className={
+                isDarkMode
+                  ? "border-gray-700 bg-gray-800 shadow-lg shadow-purple-900/5"
+                  : "border-purple-200"
+              }
             >
               <CardHeader>
                 <h3
-                  className={`text-lg font-semibold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+                  className={`text-lg font-semibold ${
+                    isDarkMode ? "text-white" : "text-purple-800"
+                  }`}
                 >
                   Achievements
                 </h3>

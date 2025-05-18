@@ -24,8 +24,10 @@ export default function FormActions({
           <Button
             type="button"
             variant="outline"
-            className={`w-full sm:w-auto border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm sm:text-base ${
-              isDarkMode ? "hover:bg-red-600" : "hover:bg-red-400"
+            className={`w-full sm:w-auto  border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm sm:text-base ${
+              isDarkMode
+                ? "hover:bg-red-600 bg-transparent hover:border-red-600"
+                : "hover:bg-red-400 bg-white"
             }`}
             onClick={() => {
               if (!habit?.id) return;
@@ -38,19 +40,16 @@ export default function FormActions({
         )}
       </div>
       <div className="flex flex-row gap-2 w-full sm:w-auto">
-        <DialogClose
-          asChild
-          className={`flex-1 sm:flex-none ${
-            isDarkMode
-              ? "border-gray-600 hover:bg-gray-700 hover:text-white"
-              : "border-purple-300 hover:bg-purple-100"
-          }`}
-        >
+        <DialogClose asChild className={`flex-1 sm:flex-none`}>
           <Button
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="text-sm sm:text-base"
+            className={`text-sm sm:text-base ${
+              isDarkMode
+                ? "border-purple-500 bg-gray-800 text-white hover:bg-gray-700 hover:text-purple-300 hover:border-purple-400"
+                : "border-purple-300 hover:bg-purple-100 hover:text-purple-700"
+            }`}
           >
             Cancel
           </Button>
@@ -59,8 +58,8 @@ export default function FormActions({
           type="submit"
           className={`flex-1 sm:flex-none sm:w-32 text-sm sm:text-base ${
             isDarkMode
-              ? "bg-purple-700 hover:bg-purple-600"
-              : "bg-purple-600 hover:bg-purple-700"
+              ? "bg-purple-700 hover:bg-purple-600 text-white"
+              : "bg-purple-600 hover:bg-purple-700 text-white"
           }`}
           disabled={isSubmitting}
         >

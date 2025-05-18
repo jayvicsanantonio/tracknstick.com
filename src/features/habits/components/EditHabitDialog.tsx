@@ -19,14 +19,18 @@ export default function EditHabitDialog() {
     >
       <HabitDialogHeader isEditMode={true} habit={editingHabit} />
       <Tabs defaultValue="edit" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-2 sm:mb-4 rounded-md overflow-hidden">
+        <TabsList
+          className={`grid w-full grid-cols-2 mb-2 sm:mb-4 rounded-md overflow-hidden ${
+            isDarkMode ? "bg-gray-800" : "bg-gray-100"
+          }`}
+        >
           <TabsTrigger
             value="edit"
             className={`text-xs sm:text-sm py-1.5 sm:py-2 ${
               isDarkMode
-                ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
-                : "data-[state=active]:bg-purple-200"
-            }`}
+                ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-200 focus:ring-purple-400"
+                : "data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800"
+            } font-medium`}
           >
             Edit
           </TabsTrigger>
@@ -34,9 +38,9 @@ export default function EditHabitDialog() {
             value="stats"
             className={`text-xs sm:text-sm py-1.5 sm:py-2 ${
               isDarkMode
-                ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white"
-                : "data-[state=active]:bg-purple-200"
-            }`}
+                ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-200 focus:ring-purple-400"
+                : "data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800"
+            } font-medium`}
           >
             Stats
           </TabsTrigger>
