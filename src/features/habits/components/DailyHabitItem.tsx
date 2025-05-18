@@ -37,12 +37,12 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
           }`}
         ></div>
         <button
-          className={`relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full shadow-md border-2
+          className={`cursor-pointer relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full shadow-md border-2
             ${
               habit.completed
                 ? isDarkMode
-                  ? "bg-gradient-to-br from-purple-700 to-purple-600 shadow-purple-700/30"
-                  : "bg-gradient-to-br from-purple-600 to-purple-500 shadow-purple-500/30"
+                  ? "bg-gradient-to-br from-purple-700 to-purple-600 shadow-purple-700/30 border-none"
+                  : "bg-gradient-to-br from-purple-600 to-purple-500 shadow-purple-500/30 border-none"
                 : isDarkMode
                   ? "bg-gray-800 shadow-gray-900/20 hover:bg-gray-750 border-purple-400"
                   : "bg-white shadow-purple-300/40 hover:bg-purple-50 border-purple-600"

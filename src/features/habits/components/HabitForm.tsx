@@ -125,11 +125,6 @@ export default function HabitForm({
               onChange={(e) => {
                 setName(e.target.value);
               }}
-              className={`w-full text-sm sm:text-base ${
-                isDarkMode
-                  ? "bg-gray-700 border-gray-600 focus:border-purple-400 text-purple-300"
-                  : "bg-white border-purple-300 focus:border-purple-500"
-              }`}
               placeholder="Enter habit name"
             />
           </div>
