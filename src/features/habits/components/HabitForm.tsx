@@ -108,7 +108,9 @@ export default function HabitForm({
       <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
-        className="min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4"
+        className={`min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4 ${
+          isDarkMode ? "text-gray-100" : "text-gray-800"
+        }`}
       >
         <div className="space-y-3 sm:space-y-4">
           {/* Name Input */}
@@ -118,6 +120,7 @@ export default function HabitForm({
               className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
             >
               Name
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               id="habit-name"
@@ -126,6 +129,7 @@ export default function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
+              className={isDarkMode ? "placeholder:text-gray-400" : ""}
             />
           </div>
 

@@ -24,6 +24,7 @@ export default function FrequencySelector({
         className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
       >
         {label}
+        <span className="text-red-500">*</span>
       </Label>
       <ToggleGroup
         type="multiple"

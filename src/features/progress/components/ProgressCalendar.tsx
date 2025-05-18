@@ -33,11 +33,13 @@ export default function ProgressCalendar({
           isDarkMode={isDarkMode}
           ariaLabel="Previous Month"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft
+            className={`h-4 w-4 ${isDarkMode ? "text-white" : ""}`}
+          />
         </MonthNavButton>
         <h3
           className={`text-lg font-semibold ${
-            isDarkMode ? "text-purple-200" : "text-purple-800"
+            isDarkMode ? "text-white" : "text-purple-800"
           }`}
         >
           {selectedMonth.toLocaleString("default", {
@@ -50,14 +52,18 @@ export default function ProgressCalendar({
           isDarkMode={isDarkMode}
           ariaLabel="Next Month"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight
+            className={`h-4 w-4 ${isDarkMode ? "text-white" : ""}`}
+          />
         </MonthNavButton>
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 mt-4">
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-center font-bold text-purple-800 dark:text-purple-200 text-xs"
+            className={`text-center font-bold text-xs ${
+              isDarkMode ? "text-gray-200" : "text-purple-800"
+            }`}
           >
             {day}
           </div>
@@ -73,8 +79,12 @@ export default function ProgressCalendar({
             <span
               className={`text-xs font-medium mb-1 ${
                 isPast || isToday
-                  ? "text-purple-800 dark:text-purple-200"
-                  : "text-gray-400 dark:text-gray-500"
+                  ? isDarkMode
+                    ? "text-gray-200"
+                    : "text-purple-800"
+                  : isDarkMode
+                    ? "text-gray-500"
+                    : "text-gray-400"
               }`}
             >
               {dayOfMonth}
@@ -84,12 +94,14 @@ export default function ProgressCalendar({
                 dayData={dayData}
                 isPast={isPast}
                 isToday={isToday}
+                isDarkMode={isDarkMode}
               />
             ) : (
               <CalendarDayCircle
                 dayData={undefined}
                 isPast={false}
                 isToday={false}
+                isDarkMode={isDarkMode}
               />
             )}
           </div>

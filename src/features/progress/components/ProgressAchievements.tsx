@@ -24,20 +24,20 @@ export default function ProgressAchievements({
           className={`p-4 rounded-lg ${isDarkMode ? "bg-gray-700" : "bg-white"} shadow-md flex items-center space-x-4`}
         >
           <div
-            className={`p-2 rounded-full ${isDarkMode ? "bg-purple-700" : "bg-purple-100"}`}
+            className={`p-2 rounded-full ${isDarkMode ? "bg-purple-800" : "bg-purple-100"}`}
           >
             <achievement.icon
-              className={`h-6 w-6 ${isDarkMode ? "text-purple-200" : "text-purple-600"}`}
+              className={`h-6 w-6 ${isDarkMode ? "text-white" : "text-purple-600"}`}
             />
           </div>
           <div>
             <h4
-              className={`font-semibold ${isDarkMode ? "text-purple-200" : "text-purple-800"}`}
+              className={`font-semibold ${isDarkMode ? "text-white" : "text-purple-800"}`}
             >
               {achievement.name}
             </h4>
             <p
-              className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
+              className={`text-sm ${isDarkMode ? "text-gray-200" : "text-gray-600"}`}
             >
               {achievement.description}
             </p>
