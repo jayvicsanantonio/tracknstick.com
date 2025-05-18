@@ -38,7 +38,7 @@ export default function IconPicker({
               className={`flex items-center justify-center rounded-md border-2 ${
                 isDarkMode
                   ? "border-gray-600 bg-gray-700 hover:text-purple-200 hover:border-purple-200 [&:has([data-state=checked])]:border-purple-400 [&:has([data-state=checked])]:text-purple-400"
-                  : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600"
+                  : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 [&:has([data-state=checked])]:bg-purple-100 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600"
               } p-1.5 sm:p-2 transition-all cursor-pointer`}
             >
               <RadioGroupItem value={name} id={name} className="sr-only" />

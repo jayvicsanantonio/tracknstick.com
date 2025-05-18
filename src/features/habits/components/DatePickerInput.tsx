@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { Input } from "@/components/ui/input";
-import { ThemeContext } from "@/context/ThemeContext";
 
 export interface DatePickerInputProps {
   value?: string;
@@ -31,8 +29,6 @@ export default function DatePickerInput({
   placeholder,
   id,
 }: DatePickerInputProps) {
-  const { isDarkMode } = useContext(ThemeContext);
-
   return (
     <div className="date-picker-input-wrapper">
       <div className="date-picker-input-icon">
@@ -57,11 +53,7 @@ export default function DatePickerInput({
         onClick={onClick}
         placeholder={placeholder}
         readOnly
-        className={`w-full pl-10 cursor-pointer ${
-          isDarkMode
-            ? "bg-gray-700 border-gray-600 focus:border-purple-400 text-purple-300 focus-visible:ring-purple-400"
-            : "bg-white border-purple-300 focus:border-purple-500 focus-visible:ring-purple-300"
-        }`}
+        className="pl-10"
       />
     </div>
   );
