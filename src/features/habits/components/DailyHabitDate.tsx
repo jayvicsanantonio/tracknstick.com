@@ -39,10 +39,11 @@ export default function DailyHabitDate() {
         onClick={handlePreviousDate}
         variant="outline"
         size="icon"
-        className={`rounded-full shadow-sm transition-all duration-300 ${
+        aria-label="Previous Date"
+        className={`shadow-sm transition-all duration-300 ${
           isDarkMode
-            ? "border-gray-700 text-purple-400 bg-gray-800 hover:bg-gray-800 hover:shadow-md hover:text-purple-300 hover:border-purple-500"
-            : "border-purple-200 text-purple-500 hover:bg-purple-100/50 hover:text-purple-600 hover:border-purple-400 hover:shadow-md"
+            ? "border-purple-900 bg-purple-900/50 hover:bg-purple-800/60 text-purple-300"
+            : "border-purple-300 hover:bg-purple-100"
         }`}
       >
         <ChevronLeft className="h-4 w-4" />

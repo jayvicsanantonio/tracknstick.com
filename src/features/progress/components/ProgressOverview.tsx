@@ -179,7 +179,7 @@ export default function ProgressOverview() {
               <Card
                 className={
                   isDarkMode
-                    ? "border-purple-900 bg-[#121228] shadow-lg shadow-purple-900/5"
+                    ? "border-purple-900 bg-black/30 shadow-lg shadow-purple-900/5"
                     : "border-purple-200"
                 }
               >
@@ -218,7 +218,7 @@ export default function ProgressOverview() {
               <Card
                 className={
                   isDarkMode
-                    ? "border-purple-900 bg-[#121228] shadow-lg shadow-purple-900/5"
+                    ? "border-purple-900 bg-black/30 shadow-lg shadow-purple-900/5"
                     : "border-purple-200"
                 }
               >
@@ -252,7 +252,7 @@ export default function ProgressOverview() {
               <Card
                 className={
                   isDarkMode
-                    ? "border-purple-900 bg-[#121228] shadow-lg shadow-purple-900/5"
+                    ? "border-purple-900 bg-black/30 shadow-lg shadow-purple-900/5"
                     : "border-purple-200"
                 }
               >

@@ -26,7 +26,7 @@ export default function DailyHabitProgressIndicator({
             {/* Background track */}
             <circle
               className={
-                isDarkMode ? "text-purple-900/80" : "text-purple-200/80"
+                isDarkMode ? "text-purple-900/80" : "text-purple-900/20"
               }
               strokeWidth="10"
               stroke="currentColor"
