@@ -22,7 +22,9 @@ function App() {
       <div className="w-full max-w-7xl mx-auto flex flex-col min-h-screen">
         <HabitsStateProvider>
           <Header />
-          <Body />
+          <main>
+            <Body />
+          </main>
           <Footer />
           <AddHabitDialog />
           <EditHabitDialog />
