@@ -12,9 +12,17 @@ export default function Body() {
   return (
     <>
       <SignedOut>
+        <h1 className="sr-only">Welcome</h1>
         <Welcome />
       </SignedOut>
       <SignedIn>
+        {isHabitsOverviewMode ? (
+          <h1 className="sr-only">Habits Overview</h1>
+        ) : isProgressOverviewMode ? (
+          <h1 className="sr-only">Progress Overview</h1>
+        ) : (
+          <h1 className="sr-only">Daily Habit Tracker</h1>
+        )}
         {isHabitsOverviewMode ? (
           <HabitsOverview />
         ) : isProgressOverviewMode ? (

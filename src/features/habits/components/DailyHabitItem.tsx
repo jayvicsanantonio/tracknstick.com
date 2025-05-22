@@ -55,12 +55,21 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
               });
             }
           }}
+          aria-pressed={habit.completed}
+          aria-label={
+            habit.completed
+              ? `Mark ${habit.name} as incomplete`
+              : `Mark ${habit.name} as complete`
+          }
         >
           <Icon
+            aria-hidden="true"
             className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 transition-colors
               ${
                 habit.completed
-                  ? "text-white"
+                  ? isDarkMode
+                    ? "text-purple-100"
+                    : "text-purple-100" // Changed from text-white for better contrast on purple-500/600 gradient
                   : isDarkMode
                     ? "text-purple-500"
                     : "text-purple-600"
@@ -73,12 +82,16 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
             className={`absolute -top-1 -right-1 rounded-full w-6 h-6 sm:w-8 sm:h-8 p-0 
               ${
                 isDarkMode
-                  ? "bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30"
-                  : "bg-purple-500 hover:bg-purple-400 shadow-md shadow-purple-500/30"
+                  ? "bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 text-white" // Ensured text-white for icon
+                  : "bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 text-white" // Changed from purple-500 to purple-600 for light mode, ensured text-white
               } transition-all duration-300 z-10`}
             onClick={() => openEditDialog(habit)}
+            aria-label={`Edit ${habit.name}`}
           >
-            <Edit className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+            <Edit
+              aria-hidden="true"
+              className="h-3 w-3 sm:h-4 sm:w-4 text-white"
+            />
           </Button>
         )}
       </div>
@@ -91,7 +104,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
       </span>
       <span
         className={`text-xs ${
-          isDarkMode ? "text-purple-400" : "text-purple-600/80"
+          isDarkMode ? "text-purple-400" : "text-purple-700" // Changed from text-purple-600/80 for light mode
         } mt-0.5`}
       >
         {frequencyLabel(habit.frequency)}
