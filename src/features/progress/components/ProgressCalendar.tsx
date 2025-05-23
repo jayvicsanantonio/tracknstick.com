@@ -34,6 +34,7 @@ export default function ProgressCalendar({
           ariaLabel="Previous Month"
         >
           <ChevronLeft
+            aria-hidden="true"
             className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
           />
         </MonthNavButton>
@@ -53,30 +54,41 @@ export default function ProgressCalendar({
           ariaLabel="Next Month"
         >
           <ChevronRight
+            aria-hidden="true"
             className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
           />
         </MonthNavButton>
       </div>
-      <div className="grid grid-cols-7 gap-1 mt-4">
+      <div className="grid grid-cols-7 gap-1 mt-4" role="grid">
         {daysOfWeek.map((day) => (
           <div
             key={day}
             className={`text-center font-bold text-xs ${
               isDarkMode ? "text-purple-400" : "text-purple-800"
             }`}
+            role="columnheader"
+            aria-label={day}
           >
             {day}
           </div>
         ))}
         {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-          <div key={`empty-${index}`} className="aspect-square"></div>
+          <div
+            key={`empty-${index}`}
+            className="aspect-square"
+            role="gridcell"
+            aria-label="Empty day"
+          ></div>
         ))}
         {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }, index) => (
           <div
             key={index}
             className="aspect-square flex flex-col items-center justify-center p-1"
+            role="gridcell"
+            aria-label={`Day ${dayOfMonth}`}
           >
             <span
+              aria-hidden="true"
               className={`text-xs font-medium mb-1 ${
                 isPast || isToday
                   ? isDarkMode

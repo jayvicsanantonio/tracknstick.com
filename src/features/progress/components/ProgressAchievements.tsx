@@ -24,6 +24,7 @@ export default function ProgressAchievements({
           className={`p-4 rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} shadow-md flex items-center space-x-4`}
         >
           <div
+            aria-hidden="true"
             className={`p-2 rounded-full ${isDarkMode ? "bg-purple-600" : "bg-purple-100"}`}
           >
             <achievement.icon

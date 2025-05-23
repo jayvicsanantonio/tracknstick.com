@@ -20,6 +20,7 @@ export default function Header() {
     <header className="flex items-center justify-between py-4 sm:py-8">
       <div className="flex items-center">
         <CheckCircle2
+          aria-hidden="true"
           className={`h-8 w-8 sm:h-10 sm:w-10 mr-2 transition-transform duration-300 hover:scale-110 ${
             isDarkMode ? "text-purple-500" : "text-purple-600"
           }`}
@@ -34,7 +35,11 @@ export default function Header() {
       </div>
       <div className="flex items-center">
         <SignedIn>
-          <div className="flex space-x-2 sm:space-x-3 bg-opacity-20 rounded-full p-1 sm:p-2 transition-all duration-300 hover:bg-opacity-30">
+          <div
+            role="toolbar"
+            aria-label="User actions"
+            className="flex space-x-2 sm:space-x-3 bg-opacity-20 rounded-full p-1 sm:p-2 transition-all duration-300 hover:bg-opacity-30"
+          >
             <Button
               className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
                 isDarkMode
@@ -44,33 +49,33 @@ export default function Header() {
               onClick={toggleShowAddHabitDialog}
               aria-label="Add Habit"
             >
-              <Plus className="h-4 w-4 sm:h-6 sm:w-6" />
+              <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             <Button
               className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
                 isHabitsOverviewMode
-                  ? "bg-purple-500 shadow-purple-500/50"
+                  ? "bg-purple-700 shadow-purple-700/50 text-white" // Changed from purple-500, ensured text-white for icon
                   : isDarkMode
-                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50"
-                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50"
+                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
+                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
               }`}
               onClick={toggleisHabitsOverviewMode}
               aria-label="Toggle Edit Mode"
             >
-              <Edit className="h-4 w-4 sm:h-6 sm:w-6" />
+              <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             <Button
               className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
                 isProgressOverviewMode
-                  ? "bg-purple-500 shadow-purple-500/50"
+                  ? "bg-purple-700 shadow-purple-700/50 text-white" // Changed from purple-500, ensured text-white for icon
                   : isDarkMode
-                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50"
-                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50"
+                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
+                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
               }`}
               aria-label="Manage Habits"
               onClick={toggleisProgressOverviewMode}
             >
-              <BarChart2 className="h-4 w-4 sm:h-6 sm:w-6" />
+              <BarChart2 aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             <Button
               className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
@@ -82,9 +87,9 @@ export default function Header() {
               aria-label="Toggle Dark Mode"
             >
               {isDarkMode ? (
-                <Sun className="h-4 w-4 sm:h-6 sm:w-6" />
+                <Sun aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
               ) : (
-                <Moon className="h-4 w-4 sm:h-6 sm:w-6" />
+                <Moon aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
               )}
             </Button>
             <UserButton
@@ -108,9 +113,9 @@ export default function Header() {
             aria-label="Toggle Dark Mode"
           >
             {isDarkMode ? (
-              <Sun className="h-4 w-4 sm:h-6 sm:w-6" />
+              <Sun aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             ) : (
-              <Moon className="h-4 w-4 sm:h-6 sm:w-6" />
+              <Moon aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             )}
           </Button>
         </SignedOut>

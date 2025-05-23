@@ -38,12 +38,12 @@ export default function IconPicker({
               key={name}
               className={`flex items-center justify-center rounded-md border-2 ${
                 isDarkMode
-                  ? "border-purple-900 bg-purple-900/50 hover:text-purple-300 hover:border-purple-500 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-500"
-                  : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 [&:has([data-state=checked])]:bg-purple-100 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600"
+                  ? "border-purple-900 bg-purple-900/50 hover:text-purple-300 hover:border-purple-500 focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-500"
+                  : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:bg-purple-100 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600"
               } p-1.5 sm:p-2 transition-all cursor-pointer`}
             >
               <RadioGroupItem value={name} id={name} className="sr-only" />
-              <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+              <Icon aria-hidden="true" className="h-5 w-5 sm:h-6 sm:w-6" />
             </Label>
           ))}
         </RadioGroup>
