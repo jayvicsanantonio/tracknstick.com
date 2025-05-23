@@ -13,10 +13,14 @@ export default function CalendarDayCircle({
 }) {
   const showCircle = isPast || isToday;
   const percent = dayData ? Math.round(dayData.completionRate) : 0;
+  let ariaLabel = "Future day";
+  if (showCircle) {
+    ariaLabel = dayData ? `${percent}% completion` : "0% completion";
+  }
 
   return (
-    <div className="relative w-1/2 h-1/2">
-      <svg className="w-full h-full" viewBox="0 0 36 36">
+    <div className="relative w-1/2 h-1/2" role="img" aria-label={ariaLabel}>
+      <svg className="w-full h-full" viewBox="0 0 36 36" aria-hidden="true">
         <circle
           className={isDarkMode ? "text-purple-900/60" : "text-purple-200"}
           strokeWidth="4"

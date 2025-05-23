@@ -92,8 +92,10 @@ export default function ProgressOverview() {
                 size="icon"
                 onClick={toggleisProgressOverviewMode}
                 className={`mr-2 ${isDarkMode ? "text-white hover:bg-purple-900/70 hover:text-purple-300" : ""}`}
+                aria-label="Back to daily view"
               >
                 <svg
+                  aria-hidden="true"
                   className="h-5 w-5"
                   viewBox="0 0 24 24"
                   fill="none"
@@ -149,7 +151,7 @@ export default function ProgressOverview() {
                     : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
                 }`}
               >
-                <Calendar className="w-4 h-4 mr-2" />
+                <Calendar aria-hidden="true" className="w-4 h-4 mr-2" />
                 History
               </TabsTrigger>
               <TabsTrigger
@@ -160,7 +162,7 @@ export default function ProgressOverview() {
                     : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
                 }`}
               >
-                <BarChart2 className="w-4 h-4 mr-2" />
+                <BarChart2 aria-hidden="true" className="w-4 h-4 mr-2" />
                 Completion Rate
               </TabsTrigger>
               <TabsTrigger
@@ -171,7 +173,7 @@ export default function ProgressOverview() {
                     : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
                 }`}
               >
-                <Trophy className="w-4 h-4 mr-2" />
+                <Trophy aria-hidden="true" className="w-4 h-4 mr-2" />
                 Achievements
               </TabsTrigger>
             </TabsList>
