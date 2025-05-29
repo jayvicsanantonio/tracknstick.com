@@ -5,6 +5,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ThemeContext } from "@/context/ThemeContext";
+import VisuallyHidden from "@/components/ui/accessibility/VisuallyHidden";
 
 export default function AddHabitDialogHeaderTitle() {
   const { isDarkMode } = useContext(ThemeContext);
@@ -18,9 +19,9 @@ export default function AddHabitDialogHeaderTitle() {
       >
         Add New Habit
       </DialogTitle>
-      <DialogDescription className="sr-only">
-        Add a new habit to your list.
-      </DialogDescription>
+      <VisuallyHidden>
+        <DialogDescription>Add a new habit to your list.</DialogDescription>
+      </VisuallyHidden>
     </DialogHeader>
   );
 }

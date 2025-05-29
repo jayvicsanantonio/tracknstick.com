@@ -14,26 +14,17 @@ export default function DailyHabitProgressIndicator({
   const displayRate = Number.isNaN(completionRate) ? 0 : completionRate;
 
   return (
-    <div
-      className="flex flex-col items-center justify-center mb-12 mt-4"
-      aria-label={`Daily habit completion: ${displayRate}%`}
-    >
+    <div className="flex flex-col items-center justify-center mb-12 mt-4">
       <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64">
         {/* Drop shadow for the progress circle */}
         <div
-          aria-hidden="true"
           className={`absolute inset-0 rounded-full  ${isDarkMode ? "bg-purple-600/20" : "bg-purple-400/30"}`}
         ></div>
 
         <div className="relative w-full h-full">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 100 100"
-            aria-hidden="true"
-          >
+          <svg className="w-full h-full" viewBox="0 0 100 100">
             {/* Background track */}
             <circle
-              aria-hidden="true"
               className={
                 isDarkMode ? "text-purple-900/80" : "text-purple-900/20"
               }
@@ -47,7 +38,6 @@ export default function DailyHabitProgressIndicator({
 
             {/* Glowing effect behind progress */}
             <motion.circle
-              aria-hidden="true"
               className={
                 isDarkMode ? "text-purple-600/30" : "text-purple-400/30"
               }
@@ -70,7 +60,6 @@ export default function DailyHabitProgressIndicator({
 
             {/* Main progress indicator */}
             <motion.circle
-              aria-hidden="true"
               className={isDarkMode ? "text-purple-600" : "text-purple-500"}
               strokeWidth="10"
               strokeDasharray={42 * 2 * Math.PI}
@@ -98,7 +87,7 @@ export default function DailyHabitProgressIndicator({
                 animate={{ scale: [0, 1.2, 1], opacity: 1 }}
                 transition={{ duration: 0.7, ease: "easeOut" }}
               >
-                <div className={`rounded-full p-5 `} aria-hidden="true">
+                <div className={`rounded-full p-5 `}>
                   <Check className="w-32 h-32 text-purple-600" />
                 </div>
               </motion.div>

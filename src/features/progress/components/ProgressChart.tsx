@@ -18,11 +18,7 @@ export default function ProgressChart({
   isDarkMode,
 }: ProgressChartProps) {
   return (
-    <div
-      className="h-[400px]"
-      role="img"
-      aria-label="Bar chart showing daily completion rates for the selected month."
-    >
+    <div className="h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid
