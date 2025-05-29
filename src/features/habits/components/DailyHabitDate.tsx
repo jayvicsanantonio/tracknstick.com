@@ -46,7 +46,7 @@ export default function DailyHabitDate() {
             : "border-purple-300 hover:bg-purple-100"
         }`}
       >
-        <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
       <div className="text-center relative">
         <h2
@@ -75,14 +75,13 @@ export default function DailyHabitDate() {
         onClick={handleNextDate}
         variant="outline"
         size="icon"
-        aria-label="Next Date"
         className={`rounded-full shadow-sm transition-all duration-300 ${
           isDarkMode
             ? "border-gray-700 text-purple-400 bg-gray-800 hover:bg-gray-800 hover:shadow-md hover:text-purple-300 hover:border-purple-500 disabled:cursor-not-allowed"
             : "border-purple-200 text-purple-500 hover:bg-purple-100/50 hover:text-purple-600 hover:border-purple-400 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
         }`}
       >
-        <ChevronRight aria-hidden="true" className="h-4 w-4" />
+        <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
   );

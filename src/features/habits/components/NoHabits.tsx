@@ -32,7 +32,6 @@ export default function NoHabits() {
       {/* Content */}
       <div className="relative z-10">
         <div
-          aria-hidden="true"
           className={`mb-2 p-4 rounded-full inline-flex ${isDarkMode ? "bg-gray-700" : "bg-purple-50"}`}
         >
           <CalendarX2
@@ -74,8 +73,7 @@ export default function NoHabits() {
             `}
             aria-label="Add a new habit"
           >
-            <PlusCircle aria-hidden="true" className="mr-2 h-4 w-4" /> Add New
-            Habit
+            <PlusCircle className="mr-2 h-4 w-4" /> Add New Habit
           </Button>
         </motion.div>
       </div>

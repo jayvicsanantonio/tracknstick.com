@@ -29,7 +29,6 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           className={`rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} p-4 sm:p-6 shadow-md flex flex-col items-center justify-center text-center space-y-2 border ${isDarkMode ? "border-purple-900" : "border-purple-100"}`}
         >
           <div
-            aria-hidden="true"
             className={`rounded-full p-2 sm:p-3 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
           >
             <Trophy
@@ -65,7 +64,6 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           className={`rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} p-4 sm:p-6 shadow-md flex flex-col items-center justify-center text-center space-y-2 border ${isDarkMode ? "border-purple-900" : "border-purple-100"}`}
         >
           <div
-            aria-hidden="true"
             className={`rounded-full p-2 sm:p-3 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
           >
             <Award
@@ -107,7 +105,6 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           >
             <div className="flex items-center space-x-3">
               <div
-                aria-hidden="true"
                 className={`rounded-full p-1.5 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
               >
                 <CheckCircle2
@@ -135,7 +132,6 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
           >
             <div className="flex items-center space-x-3">
               <div
-                aria-hidden="true"
                 className={`rounded-full p-1.5 ${isDarkMode ? "bg-purple-800/60" : "bg-purple-100/60"}`}
               >
                 <Calendar
