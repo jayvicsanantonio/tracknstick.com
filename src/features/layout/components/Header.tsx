@@ -1,38 +1,56 @@
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { useContext } from "react";
+import { NavLink, Link } from "react-router-dom";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
+import { useHabitsContext } from "@/features/habits/context/HabitsStateContext"; // toggleShowAddHabitDialog is still used
+
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2 } = MiscellaneousIcons;
+
+// Define a reusable NavLink component for styling
+const StyledNavLink = ({ to, children, ariaLabel }: { to: string, children: React.ReactNode, ariaLabel: string }) => {
+  const { isDarkMode } = useContext(ThemeContext);
+  return (
+    <NavLink
+      to={to}
+      aria-label={ariaLabel}
+      className={({ isActive }) =>
+        `rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 flex items-center justify-center ${
+          isActive
+            ? "bg-purple-700 shadow-purple-700/50 text-white"
+            : isDarkMode
+              ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
+              : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
+        }`
+      }
+    >
+      {children}
+    </NavLink>
+  );
+};
 
 export default function Header() {
   const { isDarkMode, toggleDarkMode } = useContext(ThemeContext);
-  const {
-    toggleShowAddHabitDialog,
-    toggleisHabitsOverviewMode,
-    isHabitsOverviewMode,
-    isProgressOverviewMode,
-    toggleisProgressOverviewMode,
-  } = useHabitsContext();
+  const { toggleShowAddHabitDialog } = useHabitsContext(); // Removed unused context values
 
   return (
     <header className="flex items-center justify-between py-4 sm:py-8">
-      <div className="flex items-center">
+      <Link to="/" className="flex items-center group">
         <CheckCircle2
           aria-hidden="true"
-          className={`h-8 w-8 sm:h-10 sm:w-10 mr-2 transition-transform duration-300 hover:scale-110 ${
+          className={`h-8 w-8 sm:h-10 sm:w-10 mr-2 transition-transform duration-300 group-hover:scale-110 ${
             isDarkMode ? "text-purple-500" : "text-purple-600"
           }`}
         />
         <span
           className={`hidden sm:inline-block text-lg sm:text-xl md:text-2xl font-bold ${
             isDarkMode ? "text-purple-300" : "text-purple-800"
-          } pl-1`}
+          } pl-1 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors`}
         >
           Track N&apos; Stick
         </span>
-      </div>
+      </Link>
       <div className="flex items-center">
         <SignedIn>
           <div
@@ -51,32 +69,12 @@ export default function Header() {
             >
               <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
-            <Button
-              className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
-                isHabitsOverviewMode
-                  ? "bg-purple-700 shadow-purple-700/50 text-white" // Changed from purple-500, ensured text-white for icon
-                  : isDarkMode
-                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-              }`}
-              onClick={toggleisHabitsOverviewMode}
-              aria-label="Toggle Edit Mode"
-            >
+            <StyledNavLink to="/" ariaLabel="Habits Dashboard">
               <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-            </Button>
-            <Button
-              className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
-                isProgressOverviewMode
-                  ? "bg-purple-700 shadow-purple-700/50 text-white" // Changed from purple-500, ensured text-white for icon
-                  : isDarkMode
-                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-              }`}
-              aria-label="Manage Habits"
-              onClick={toggleisProgressOverviewMode}
-            >
+            </StyledNavLink>
+            <StyledNavLink to="/progress" ariaLabel="Progress Overview">
               <BarChart2 aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-            </Button>
+            </StyledNavLink>
             <Button
               className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
                 isDarkMode

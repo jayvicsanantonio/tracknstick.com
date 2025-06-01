@@ -1,0 +1,122 @@
+import { render, screen } from '@testing-library/react';
+import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { vi } from 'vitest';
+import { router as appRouter } from '@/App';
+import { ThemeContext } from '@/context/ThemeContext'; // Corrected import path
+import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext'; // Import the provider
+
+// Mock Clerk
+vi.mock('@clerk/clerk-react', () => ({
+  SignedIn: ({ children }: { children: React.ReactNode }) => (useAuthMock.isSignedIn ? <>{children}</> : null),
+  SignedOut: ({ children }: { children: React.ReactNode }) => (!useAuthMock.isSignedIn ? <>{children}</> : null),
+  UserButton: () => <div data-testid="user-button-mock"></div>,
+  useUser: () => useAuthMock.user, // Corresponds to { user: ... } part of useAuth
+  useAuth: () => useAuthMock,   // Corresponds to { isSignedIn, ... } part of useAuth
+  SignIn: () => <div data-testid="signin-mock">Sign In Mock</div>, // Mock for SignIn component
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+// Global mock state for Clerk auth, representing what useAuth() would return
+let useAuthMock = {
+  isSignedIn: false,
+  user: null, // থাকবে useUser এর জন্য
+  isLoaded: true, // useAuth থেকে isLoaded আসে
+  userId: null, // useAuth থেকে userId আসে
+  sessionId: null, // useAuth থেকে sessionId আসে
+  actor: null, // useAuth থেকে actor আসে
+  orgId: null, // useAuth থেকে orgId আসে
+  orgRole: null, // useAuth থেকে orgRole আসে
+  orgSlug: null, // useAuth থেকে orgSlug আসে
+  organization: null, // useAuth থেকে organization আসে
+  getToken: async () => 'mock-token', // useAuth থেকে getToken আসে
+};
+
+// Mock ThemeContext value (still needed for ThemeContext.Provider)
+const mockThemeContextValue = {
+  isDarkMode: false,
+  toggleDarkMode: vi.fn(),
+  // themeClass is not part of ThemeContextProps, remove if it causes issues
+};
+
+// Helper to render with router and providers
+const renderWithRouter = (initialEntries = ['/']) => {
+  const memoryRouter = createMemoryRouter(appRouter.routes, {
+    initialEntries: initialEntries,
+  });
+
+  // Note: HabitsStateProvider will use its own internal state (e.g., from useToggle).
+  // This might be fine for these routing tests. If specific states from HabitsContext
+  // are needed for a component to render correctly for a routing test,
+  // those hooks (like useToggle) within HabitsStateProvider might need to be mocked.
+  return render(
+    <ThemeContext.Provider value={mockThemeContextValue}>
+      <HabitsStateProvider>
+        {/* ClerkProvider mock is handled by vi.mock */}
+        <RouterProvider router={memoryRouter} />
+      </HabitsStateProvider>
+    </ThemeContext.Provider>
+  );
+};
+
+
+describe('App Routing', () => {
+  beforeEach(() => {
+    // Reset auth state before each test
+    useAuthMock = {
+      isSignedIn: false,
+      user: null,
+    };
+    vi.clearAllMocks();
+  });
+
+  describe('Root Path ("/")', () => {
+    it('renders Welcome content when signed out', async () => {
+      useAuthMock.isSignedIn = false;
+      renderWithRouter(['/']);
+      // HabitsOverview -> SignedOut -> Welcome
+      // Looking for text from Welcome.tsx
+      expect(await screen.findByText(/Welcome to Track N' Stick/i)).toBeInTheDocument();
+    });
+
+    it('renders Daily Habit Tracker content when signed in', async () => {
+      useAuthMock.isSignedIn = true;
+      useAuthMock.user = { id: 'user1', fullName: 'Test User' };
+      useAuthMock.userId = 'user1';
+      renderWithRouter(['/']);
+      // HabitsOverview -> SignedIn -> DailyHabitTracker
+      // Looking for the sr-only h1 text from HabitsOverview.tsx when SignedIn
+      expect(await screen.findByRole('heading', { name: /Daily Habit Tracker/i, hidden: true })).toBeInTheDocument();
+    });
+  });
+
+  describe('Progress Path ("/progress")', () => {
+    it('renders ProgressOverview component when signed in', async () => {
+      useAuthMock.isSignedIn = true;
+      useAuthMock.user = { id: 'user1', fullName: 'Test User' }; // Corrected typo: useAuthMocks -> useAuthMock
+      useAuthMock.userId = 'user1';
+      renderWithRouter(['/progress']);
+      // ProgressOverview should render its title
+      expect(await screen.findByText(/Progress Overview/i, { selector: 'h2, h3, div, span' })).toBeInTheDocument(); // CardTitle is a div
+      // And also specific tabs
+      expect(await screen.findByRole('tab', { name: /History/i })).toBeInTheDocument();
+      expect(await screen.findByRole('tab', { name: /Completion Rate/i })).toBeInTheDocument();
+      expect(await screen.findByRole('tab', { name: /Achievements/i })).toBeInTheDocument();
+    });
+
+    it('redirects or shows limited content for ProgressOverview when signed out (actual behavior may vary)', async () => {
+      useAuthMock.isSignedIn = false;
+      renderWithRouter(['/progress']);
+      // Depending on how ClerkProvider and SignedIn/Out components within ProgressOverview or its parent routes
+      // are structured, this might redirect to a sign-in page or show nothing, or show a limited view.
+      // For this test, we'll assume ProgressOverview itself is protected or shows minimal content.
+      // If it redirects, the URL might change. If it shows specific "please sign in" text, test for that.
+      // Given the current structure, AppLayout wraps everything, and ProgressOverview itself doesn't have SignedIn/Out directly.
+      // The <SignedIn> <UserButton/> etc. are in Header. So ProgressOverview will render.
+      // We will check if the main "Progress Overview" title is there.
+      // The actual data fetching inside might fail or show empty states, but the component itself should render.
+      expect(await screen.findByText(/Progress Overview/i, { selector: 'h2, h3, div, span' })).toBeInTheDocument();
+       // Check for tabs as well, they should be part of the structure
+      expect(await screen.findByRole('tab', { name: /History/i })).toBeInTheDocument();
+    });
+  });
+});
