@@ -1,10 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 import ThemeProvider from '@/context/ThemeProvider';
 import DateProvider from '@/context/DateProvider.tsx';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { Toaster } from '@/components/ui/toaster.tsx';
-import App from '@/App.tsx';
+import { router } from '@/App.tsx'; // Import the named router
 import '@/index.css';
 import { registerSW } from 'virtual:pwa-register';
 
@@ -34,7 +35,7 @@ createRoot(document.getElementById('root')!).render(
         afterSignOutUrl="/"
       >
         <DateProvider>
-          <App />
+          <RouterProvider router={router} />
           <Toaster />
         </DateProvider>
       </ClerkProvider>

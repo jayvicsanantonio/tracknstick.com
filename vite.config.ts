@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -74,5 +75,16 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.ts",
+    // you might want to disable css parsing when it's not needed
+    css: false,
+    env: {
+      VITE_API_HOST: "http://localhost:3001", // Mock value for testing
+      VITE_CLERK_PUBLISHABLE_KEY: "mock_clerk_key_for_test", // Mock value for testing
+    }
   },
 });

@@ -14,6 +14,7 @@ import {
   Target,
   Trophy,
   Moon,
+  ListChecks, // Added ListChecks
 } from "lucide-react";
 
 export default {
@@ -32,4 +33,5 @@ export default {
   Target,
   Trophy,
   Moon,
+  ListChecks, // Added ListChecks
 };
