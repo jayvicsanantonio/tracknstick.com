@@ -9,6 +9,7 @@ import EditHabitDialog from "@/features/habits/components/EditHabitDialog";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import HabitsOverview from "@/features/habits/components/HabitsOverview";
 import ProgressOverview from "@/features/progress/components/ProgressOverview";
+import AllHabitsOverview from "@/features/habits/components/AllHabitsOverview"; // Import the new component
 
 // Main application layout component
 function AppLayout() {
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
       {
         path: "progress",
         element: <ProgressOverview />,
+      },
+      {
+        path: "/habits/overview", // New route for all habits overview
+        element: <AllHabitsOverview />,
       },
     ],
   },

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useHabitsContext } from "@/features/habits/context/HabitsStateContext"; // toggleShowAddHabitDialog is still used
 
-const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2 } = MiscellaneousIcons;
+const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, ListChecks } = MiscellaneousIcons; // Added ListChecks
 
 // Define a reusable NavLink component for styling
 const StyledNavLink = ({ to, children, ariaLabel }: { to: string, children: React.ReactNode, ariaLabel: string }) => {
@@ -69,7 +69,10 @@ export default function Header() {
             >
               <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
-            <StyledNavLink to="/" ariaLabel="Habits Dashboard">
+            <StyledNavLink to="/habits/overview" ariaLabel="All Habits Overview">
+              <ListChecks aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
+            </StyledNavLink>
+            <StyledNavLink to="/" ariaLabel="Daily Habits Dashboard"> {/* Changed label for clarity */}
               <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </StyledNavLink>
             <StyledNavLink to="/progress" ariaLabel="Progress Overview">
