@@ -32,10 +32,10 @@ export default function ProgressCalendar({
         >
           <ChevronLeft
             aria-hidden="true"
-            className="h-4 w-4 text-gray-800 dark:text-purple-300"
+            className="h-4 w-4 text-[var(--color-text-primary)] dark:text-[var(--color-brand-text-light)]"
           />
         </MonthNavButton>
-        <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
+        <h3 className="text-lg font-semibold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
           {selectedMonth.toLocaleString("default", {
             month: "long",
             year: "numeric",
@@ -44,7 +44,7 @@ export default function ProgressCalendar({
         <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
-            className="h-4 w-4 text-gray-800 dark:text-purple-300"
+            className="h-4 w-4 text-[var(--color-text-primary)] dark:text-[var(--color-brand-text-light)]"
           />
         </MonthNavButton>
       </div>
@@ -52,7 +52,7 @@ export default function ProgressCalendar({
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-center font-bold text-xs text-purple-800 dark:text-purple-400"
+            className="text-center font-bold text-xs text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
             role="columnheader"
             aria-label={day}
           >
@@ -78,8 +78,8 @@ export default function ProgressCalendar({
               aria-hidden="true"
               className={`text-xs font-medium mb-1 ${
                 isPast || isToday
-                  ? "text-purple-800 dark:text-purple-400"
-                  : "text-zinc-400 dark:text-purple-700"
+                  ? "text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
+                  : "text-[var(--color-text-tertiary)] dark:text-[var(--color-brand-secondary)]"
               }`}
             >
               {dayOfMonth}

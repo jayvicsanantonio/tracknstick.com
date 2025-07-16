@@ -20,7 +20,7 @@ export default function CalendarDayCircle({
     <div className="relative w-1/2 h-1/2" role="img" aria-label={ariaLabel}>
       <svg className="w-full h-full" viewBox="0 0 36 36" aria-hidden="true">
         <circle
-          className="text-purple-200 dark:text-purple-900/60"
+          className="text-[var(--color-border-brand)] dark:text-[var(--color-brand-light)]"
           strokeWidth="4"
           stroke="currentColor"
           fill="transparent"
@@ -30,7 +30,7 @@ export default function CalendarDayCircle({
         />
         {showCircle && dayData && (
           <circle
-            className="text-purple-600"
+            className="text-[var(--color-brand-primary)]"
             strokeWidth="4"
             strokeDasharray={16 * 2 * Math.PI}
             strokeDashoffset={16 * 2 * Math.PI * (1 - percent / 100)}
@@ -44,7 +44,7 @@ export default function CalendarDayCircle({
         )}
       </svg>
       <div className="absolute inset-0 md:flex items-center justify-center hidden">
-        <span className="text-[0.6rem] font-medium text-purple-800 dark:text-purple-300">
+        <span className="text-[0.6rem] font-medium text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
           {percent}%
         </span>
       </div>

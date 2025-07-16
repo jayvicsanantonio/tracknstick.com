@@ -11,10 +11,10 @@ export default function Welcome() {
           transition={{ duration: 0.75 }}
           className="text-center max-w-2xl mx-auto"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-800 dark:text-purple-200 mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)] mb-4 sm:mb-6">
             Welcome to Track N&apos; Stick
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-purple-600 dark:text-purple-300 mb-8 sm:mb-12 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)] mb-8 sm:mb-12 leading-relaxed">
             Embark on your journey to better habits and personal growth. Start
             by adding your first habit and watch your progress unfold.
           </p>
@@ -23,7 +23,7 @@ export default function Welcome() {
               appearance={{
                 elements: {
                   formButtonPrimary:
-                    "bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white rounded-full font-semibold transition-colors duration-300 shadow-lg",
+                    "bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] dark:bg-[var(--color-brand-secondary)] dark:hover:bg-[var(--color-brand-primary)] text-[var(--color-text-inverse)] rounded-full font-semibold transition-colors duration-300 shadow-lg",
                 },
               }}
             />
