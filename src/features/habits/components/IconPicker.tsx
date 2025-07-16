@@ -1,8 +1,6 @@
-import { useContext } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import HabitsIcons from "@/icons/habits";
-import { ThemeContext } from "@/context/ThemeContext";
 
 interface IconPickerProps {
   selectedIcon: keyof typeof HabitsIcons | undefined;
@@ -15,13 +13,9 @@ export default function IconPicker({
   onIconChange,
   label = "Icon",
 }: IconPickerProps) {
-  const { isDarkMode } = useContext(ThemeContext);
-
   return (
     <div className="space-y-1 sm:space-y-2">
-      <Label
-        className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
-      >
+      <Label className="text-sm sm:text-base text-purple-700 dark:text-purple-300">
         {label}
         <span className="text-red-500">*</span>
       </Label>
@@ -36,11 +30,7 @@ export default function IconPicker({
           {Object.entries(HabitsIcons).map(([name, Icon]) => (
             <Label
               key={name}
-              className={`flex items-center justify-center rounded-md border-2 ${
-                isDarkMode
-                  ? "border-purple-900 bg-purple-900/50 hover:text-purple-300 hover:border-purple-500 focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-500"
-                  : "border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:bg-purple-100 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600"
-              } p-1.5 sm:p-2 transition-all cursor-pointer`}
+              className="flex items-center justify-center rounded-md border-2 border-purple-200 bg-white hover:bg-purple-100 hover:text-purple-800 dark:border-purple-900 dark:bg-purple-900/50 dark:hover:text-purple-300 dark:hover:border-purple-500 focus-visible:ring-2 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:bg-purple-100 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600 dark:[&:has([data-state=checked])]:border-purple-600 dark:[&:has([data-state=checked])]:text-purple-500 p-1.5 sm:p-2 transition-all cursor-pointer"
             >
               <RadioGroupItem value={name} id={name} className="sr-only" />
               <Icon aria-hidden="true" className="h-5 w-5 sm:h-6 sm:w-6" />

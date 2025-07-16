@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import {
   DialogHeader,
   DialogTitle,
@@ -6,7 +5,6 @@ import {
 } from "@/components/ui/dialog";
 import frequencyLabel from "@/lib/frequencyLabel";
 import HabitsIcons from "@/icons/habits";
-import { ThemeContext } from "@/context/ThemeContext";
 import { Habit } from "@/features/habits/types/Habit";
 
 export default function EditHabitDialogHeaderTitle({
@@ -14,8 +12,6 @@ export default function EditHabitDialogHeaderTitle({
 }: {
   habit?: Habit | null;
 }) {
-  const { isDarkMode } = useContext(ThemeContext);
-
   if (!habit) {
     return null;
   }
@@ -23,11 +19,7 @@ export default function EditHabitDialogHeaderTitle({
 
   return (
     <DialogHeader>
-      <DialogTitle
-        className={`text-2xl font-bold ${
-          isDarkMode ? "text-purple-200" : "text-purple-800"
-        }`}
-      >
+      <DialogTitle className="text-2xl font-bold text-purple-800 dark:text-purple-200">
         {HabitIcon && <HabitIcon className="inline-block mr-2 h-8 w-8" />}
         {habit.name}
       </DialogTitle>

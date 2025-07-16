@@ -6,7 +6,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Habit } from "@/features/habits/types/Habit";
 import { Frequency } from "@/features/habits/types/Frequency";
 import HabitsIcons from "@/icons/habits";
-import { ThemeContext } from "@/context/ThemeContext";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import DatePickerField, { datePickerStyles } from "./DatePickerField";
 import IconPicker from "./IconPicker";
@@ -22,7 +21,6 @@ export default function HabitForm({
   toggleDialog: () => void;
 }) {
   const { timeZone } = useContext(DateContext);
-  const { isDarkMode } = useContext(ThemeContext);
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState<string>(habit?.name ?? "");
@@ -108,16 +106,14 @@ export default function HabitForm({
       <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
-        className={`min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4 ${
-          isDarkMode ? "text-purple-300" : "text-gray-800"
-        }`}
+        className="min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4 text-foreground"
       >
         <div className="space-y-3 sm:space-y-4">
           {/* Name Input */}
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
+              className="text-sm sm:text-base text-purple-700 dark:text-purple-300"
             >
               Name
               <span className="text-red-500">*</span>
@@ -129,11 +125,7 @@ export default function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
-              className={
-                isDarkMode
-                  ? "bg-gray-800 border-purple-900 placeholder:text-purple-500/50"
-                  : ""
-              }
+              className="dark:bg-zinc-800 dark:border-purple-900 dark:placeholder:text-purple-500/50"
             />
           </div>
 
@@ -169,9 +161,7 @@ export default function HabitForm({
           />
         </div>
 
-        <Separator
-          className={`my-2 ${isDarkMode ? "bg-purple-900" : "bg-purple-200"}`}
-        />
+        <Separator className="my-2 bg-purple-200 dark:bg-purple-900" />
 
         <FormActions
           isSubmitting={isSubmitting}
