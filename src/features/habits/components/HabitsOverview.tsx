@@ -1,9 +1,8 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
-import { ThemeContext } from "@/context/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertDialog,
@@ -22,7 +21,6 @@ import HabitsIcons from "@/icons/habits";
 
 export default function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useHabits();
-  const { isDarkMode } = useContext(ThemeContext);
   const { toggleisHabitsOverviewMode, openEditDialog } = useHabitsContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTab, setSelectedTab] = useState("all");
@@ -44,7 +42,7 @@ export default function HabitsOverview() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <motion.div
-          className={`rounded-full h-12 w-12 border-4 ${isDarkMode ? "border-purple-400" : "border-purple-600"} border-t-transparent`}
+          className="rounded-full h-12 w-12 border-4 border-purple-600 dark:border-purple-400 border-t-transparent"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -58,9 +56,7 @@ export default function HabitsOverview() {
 
   if (error) {
     return (
-      <div
-        className={`p-8 text-center rounded-lg border ${isDarkMode ? "bg-red-900/30 border-red-700 text-red-100" : "bg-red-50 border-red-200 text-red-600"}`}
-      >
+      <div className="p-8 text-center rounded-lg border bg-red-50 border-red-200 text-red-600 dark:bg-red-900/30 dark:border-red-700 dark:text-red-100">
         Error loading habits. Please try again.
       </div>
     );
@@ -84,25 +80,15 @@ export default function HabitsOverview() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card
-        className={`w-full flex-1 flex flex-col overflow-hidden shadow-xl ${
-          isDarkMode
-            ? "border-purple-950 bg-[#121228] shadow-purple-900/20"
-            : "border-purple-100 bg-white shadow-purple-200/50"
-        }`}
-      >
+      <Card className="w-full flex-1 flex flex-col overflow-hidden shadow-xl border-purple-100 bg-white shadow-purple-200/50 dark:border-purple-950 dark:bg-[#121228] dark:shadow-purple-900/20">
         <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6">
           <div>
-            <CardTitle
-              className={`text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 ${
-                isDarkMode ? "text-white" : ""
-              }`}
-            >
+            <CardTitle className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleisHabitsOverviewMode}
-                className={`mr-2 ${isDarkMode ? "text-white hover:bg-purple-950/70 hover:text-purple-100" : ""}`}
+                className="mr-2 text-black hover:bg-purple-50 dark:text-white dark:hover:bg-purple-950/70 dark:hover:text-purple-100"
               >
                 <svg
                   className="h-5 w-5"
@@ -128,9 +114,7 @@ export default function HabitsOverview() {
               </Button>
               Habits Overview
             </CardTitle>
-            <p
-              className={`text-sm ${isDarkMode ? "text-purple-100" : "text-gray-600"}`}
-            >
+            <p className="text-sm text-gray-600 dark:text-purple-100">
               Manage all your habits in one place
             </p>
           </div>
@@ -138,7 +122,7 @@ export default function HabitsOverview() {
         <CardContent className="px-3 sm:px-6 pb-6 sm:pb-8 flex-1 overflow-auto">
           <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between">
             <Input
-              className={`w-full sm:max-w-[300px] ${isDarkMode ? "bg-gray-800 border-gray-700 text-white placeholder:text-gray-400" : ""}`}
+              className="w-full sm:max-w-[300px] bg-white border-gray-400 text-black placeholder:text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-400"
               placeholder="Search habits..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -148,35 +132,21 @@ export default function HabitsOverview() {
               onValueChange={setSelectedTab}
               className="w-full sm:max-w-[300px]"
             >
-              <TabsList
-                className={`grid w-full grid-cols-3 ${isDarkMode ? "bg-gray-800" : ""}`}
-              >
+              <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-gray-800">
                 <TabsTrigger
-                  className={
-                    isDarkMode
-                      ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white text-gray-200"
-                      : ""
-                  }
+                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white dark:text-gray-200"
                   value="all"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
-                  className={
-                    isDarkMode
-                      ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white text-gray-200"
-                      : ""
-                  }
+                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white dark:text-gray-200"
                   value="active"
                 >
                   Active
                 </TabsTrigger>
                 <TabsTrigger
-                  className={
-                    isDarkMode
-                      ? "data-[state=active]:bg-purple-700 data-[state=active]:text-white text-gray-200"
-                      : ""
-                  }
+                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white dark:text-gray-200"
                   value="completed"
                 >
                   Archived
@@ -193,54 +163,36 @@ export default function HabitsOverview() {
                 exit={{ opacity: 0 }}
                 className="text-center py-8 sm:py-12"
               >
-                <p
-                  className={`${isDarkMode ? "text-white" : "text-gray-600"} mb-2`}
-                >
+                <p className="text-gray-600 dark:text-white mb-2">
                   {searchTerm
                     ? "No habits match your search"
                     : "No habits found"}
                 </p>
               </motion.div>
             ) : (
-              <div
-                className={`rounded-lg border ${isDarkMode ? "border-purple-900" : "border-gray-200"} overflow-hidden`}
-              >
+              <div className="rounded-lg border border-gray-200 dark:border-purple-900 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead
-                      className={`text-left ${isDarkMode ? "bg-purple-950" : "bg-gray-50"}`}
-                    >
+                    <thead className="text-left bg-gray-50 dark:bg-purple-950">
                       <tr>
-                        <th
-                          className={`px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm ${isDarkMode ? "text-purple-100" : ""}`}
-                        >
+                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-gray-800 dark:text-purple-100">
                           Habit
                         </th>
-                        <th
-                          className={`px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm hidden sm:table-cell ${isDarkMode ? "text-purple-100" : ""}`}
-                        >
+                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm hidden sm:table-cell text-gray-800 dark:text-purple-100">
                           Frequency
                         </th>
-                        <th
-                          className={`px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm hidden md:table-cell ${isDarkMode ? "text-purple-100" : ""}`}
-                        >
+                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm hidden md:table-cell text-gray-800 dark:text-purple-100">
                           Start Date
                         </th>
-                        <th
-                          className={`px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm ${isDarkMode ? "text-purple-100" : ""}`}
-                        >
+                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-gray-800 dark:text-purple-100">
                           Status
                         </th>
-                        <th
-                          className={`px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-right ${isDarkMode ? "text-purple-100" : ""}`}
-                        >
+                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-right text-gray-800 dark:text-purple-100">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody
-                      className={`divide-y ${isDarkMode ? "divide-purple-900/70 text-white" : "divide-gray-200"}`}
-                    >
+                    <tbody className="divide-y divide-gray-200 text-gray-800 dark:divide-purple-900/70 dark:text-white">
                       {filteredHabits.map((habit) => {
                         const Icon = HabitsIcons[habit.icon];
                         return (
@@ -249,20 +201,14 @@ export default function HabitsOverview() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className={`${isDarkMode ? "hover:bg-purple-950/60" : "hover:bg-gray-50"}`}
+                            className="hover:bg-gray-50 dark:hover:bg-purple-950/60"
                           >
                             <td className="px-3 sm:px-4 py-3 sm:py-4">
                               <div className="flex items-center gap-2 sm:gap-3">
-                                <div
-                                  className={`p-1.5 sm:p-2 rounded-full flex items-center justify-center ${isDarkMode ? "bg-purple-800/70" : "bg-purple-100"}`}
-                                >
-                                  <Icon
-                                    className={`h-4 w-4 sm:h-5 sm:w-5 ${isDarkMode ? "text-purple-100" : "text-purple-600"}`}
-                                  />
+                                <div className="p-1.5 sm:p-2 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-800/70">
+                                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-100" />
                                 </div>
-                                <span
-                                  className={`font-medium text-sm sm:text-base line-clamp-1 ${isDarkMode ? "text-white" : ""}`}
-                                >
+                                <span className="font-medium text-sm sm:text-base line-clamp-1 text-gray-800 dark:text-white">
                                   {habit.name}
                                 </span>
                               </div>
@@ -272,32 +218,22 @@ export default function HabitsOverview() {
                                 {habit.frequency.map((day) => (
                                   <span
                                     key={day}
-                                    className={`text-xs px-2 py-0.5 rounded-full ${
-                                      isDarkMode
-                                        ? "bg-purple-800 text-white"
-                                        : "bg-purple-100 text-purple-700"
-                                    }`}
+                                    className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-white"
                                   >
                                     {day.substring(0, 3)}
                                   </span>
                                 ))}
                               </div>
                             </td>
-                            <td
-                              className={`px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm hidden md:table-cell ${isDarkMode ? "text-purple-100" : ""}`}
-                            >
+                            <td className="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm hidden md:table-cell text-gray-800 dark:text-purple-100">
                               {new Date(habit.startDate).toLocaleDateString()}
                             </td>
                             <td className="px-3 sm:px-4 py-3 sm:py-4">
                               <span
                                 className={`text-xs px-2 py-1 rounded-full ${
                                   habit.endDate
-                                    ? isDarkMode
-                                      ? "bg-gray-700 text-white"
-                                      : "bg-gray-200 text-gray-700"
-                                    : isDarkMode
-                                      ? "bg-green-700 text-white"
-                                      : "bg-green-100 text-green-700"
+                                    ? "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-white"
+                                    : "bg-green-100 text-green-700 dark:bg-green-700 dark:text-white"
                                 }`}
                               >
                                 {habit.endDate ? "Archived" : "Active"}
@@ -309,7 +245,7 @@ export default function HabitsOverview() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => openEditDialog(habit)}
-                                  className={`h-7 w-7 sm:h-8 sm:w-8 ${isDarkMode ? "bg-purple-900/70 hover:bg-purple-800 text-white" : "hover:bg-gray-100 text-purple-600"}`}
+                                  className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-gray-100 text-purple-600 dark:bg-purple-900/70 dark:hover:bg-purple-800 dark:text-white"
                                 >
                                   <svg
                                     className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -337,7 +273,7 @@ export default function HabitsOverview() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleDeleteHabit(habit)}
-                                  className={`h-7 w-7 sm:h-8 sm:w-8 ${isDarkMode ? "bg-red-900/70 hover:bg-red-800 text-white" : "hover:bg-red-100 text-red-600"}`}
+                                  className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-red-100 text-red-600 dark:bg-red-900/70 dark:hover:bg-red-800 dark:text-white"
                                 >
                                   <svg
                                     className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -393,35 +329,23 @@ export default function HabitsOverview() {
         open={!!habitToDelete}
         onOpenChange={(open) => !open && setHabitToDelete(null)}
       >
-        <AlertDialogContent
-          className={
-            isDarkMode ? "bg-gray-800 border-purple-900 text-white" : ""
-          }
-        >
+        <AlertDialogContent className="bg-white text-black dark:bg-gray-800 dark:border-purple-900 dark:text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className={isDarkMode ? "text-white" : ""}>
+            <AlertDialogTitle className="text-gray-800 dark:text-white">
               Delete Habit
             </AlertDialogTitle>
-            <AlertDialogDescription
-              className={isDarkMode ? "text-purple-100" : ""}
-            >
+            <AlertDialogDescription className="text-gray-800 dark:text-purple-100">
               Are you sure you want to delete &quot;
               {habitToDelete?.name}&quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              className={
-                isDarkMode
-                  ? "bg-gray-700 text-white hover:bg-gray-600 hover:text-gray-100"
-                  : ""
-              }
-            >
+            <AlertDialogCancel className="bg-gray-300 text-black hover:bg-gray-400 hover:text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:hover:text-gray-100">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className={`bg-red-600 hover:bg-red-700 text-white ${isDarkMode ? "focus:ring-purple-800" : ""}`}
+              className="bg-red-600 hover:bg-red-700 text-white focus:ring-purple-400 dark:focus:ring-purple-800"
             >
               Delete
             </AlertDialogAction>
