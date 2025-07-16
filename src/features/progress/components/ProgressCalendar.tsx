@@ -10,12 +10,10 @@ const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function ProgressCalendar({
   insightData,
-  isDarkMode,
   selectedMonth,
   setSelectedMonth,
 }: {
   insightData: InsightData[];
-  isDarkMode: boolean;
   selectedMonth: Date;
   setSelectedMonth: Dispatch<SetStateAction<Date>>;
 }) {
@@ -30,32 +28,23 @@ export default function ProgressCalendar({
       <div className="flex items-center justify-between">
         <MonthNavButton
           onClick={() => changeMonth(-1)}
-          isDarkMode={isDarkMode}
           ariaLabel="Previous Month"
         >
           <ChevronLeft
             aria-hidden="true"
-            className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
+            className="h-4 w-4 text-gray-800 dark:text-purple-300"
           />
         </MonthNavButton>
-        <h3
-          className={`text-lg font-semibold ${
-            isDarkMode ? "text-purple-300" : "text-purple-800"
-          }`}
-        >
+        <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
           {selectedMonth.toLocaleString("default", {
             month: "long",
             year: "numeric",
           })}
         </h3>
-        <MonthNavButton
-          onClick={() => changeMonth(1)}
-          isDarkMode={isDarkMode}
-          ariaLabel="Next Month"
-        >
+        <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
-            className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
+            className="h-4 w-4 text-gray-800 dark:text-purple-300"
           />
         </MonthNavButton>
       </div>
@@ -63,9 +52,7 @@ export default function ProgressCalendar({
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className={`text-center font-bold text-xs ${
-              isDarkMode ? "text-purple-400" : "text-purple-800"
-            }`}
+            className="text-center font-bold text-xs text-purple-800 dark:text-purple-400"
             role="columnheader"
             aria-label={day}
           >
@@ -91,12 +78,8 @@ export default function ProgressCalendar({
               aria-hidden="true"
               className={`text-xs font-medium mb-1 ${
                 isPast || isToday
-                  ? isDarkMode
-                    ? "text-purple-400"
-                    : "text-purple-800"
-                  : isDarkMode
-                    ? "text-purple-700"
-                    : "text-gray-400"
+                  ? "text-purple-800 dark:text-purple-400"
+                  : "text-zinc-400 dark:text-purple-700"
               }`}
             >
               {dayOfMonth}
@@ -106,14 +89,12 @@ export default function ProgressCalendar({
                 dayData={dayData}
                 isPast={isPast}
                 isToday={isToday}
-                isDarkMode={isDarkMode}
               />
             ) : (
               <CalendarDayCircle
                 dayData={undefined}
                 isPast={false}
                 isToday={false}
-                isDarkMode={isDarkMode}
               />
             )}
           </div>

@@ -10,13 +10,12 @@ import {
 
 interface ProgressChartProps {
   data: { date: string; completionRate: number }[];
-  isDarkMode: boolean;
 }
 
-export default function ProgressChart({
-  data,
-  isDarkMode,
-}: ProgressChartProps) {
+export default function ProgressChart({ data }: ProgressChartProps) {
+  // Check if dark mode is active by checking the document element
+  const isDarkMode = document.documentElement.classList.contains("dark");
+
   return (
     <div
       className="h-[400px]"
@@ -64,11 +63,7 @@ export default function ProgressChart({
               color: isDarkMode ? "#d8b4fe" : "#000000",
             }}
           />
-          <Bar
-            dataKey="completionRate"
-            fill={isDarkMode ? "#9333ea" : "#9333ea"}
-            radius={[4, 4, 0, 0]}
-          />
+          <Bar dataKey="completionRate" fill="#9333ea" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

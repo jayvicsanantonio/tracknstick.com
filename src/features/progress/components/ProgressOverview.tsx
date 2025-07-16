@@ -1,9 +1,9 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import ProgressCalendar from "@/features/progress/components/ProgressCalendar";
 import ProgressChart from "@/features/progress/components/ProgressChart";
 import ProgressAchievements from "@/features/progress/components/ProgressAchievements";
 import StreakDisplayDays from "@/features/progress/components/StreakDisplayDays";
-import { ThemeContext } from "@/context/ThemeContext";
+// import { ThemeContext } from "@/context/ThemeContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MiscellaneousIcons from "@/icons/miscellaneous";
@@ -51,7 +51,6 @@ const achievements = [
 
 export default function ProgressOverview() {
   const { toggleisProgressOverviewMode } = useHabitsContext();
-  const { isDarkMode } = useContext(ThemeContext);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   // Use separate hooks for history and streaks
@@ -73,25 +72,15 @@ export default function ProgressOverview() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card
-        className={`w-full flex-1 flex flex-col overflow-hidden shadow-xl ${
-          isDarkMode
-            ? "border-purple-900 bg-[#121228] shadow-purple-900/20"
-            : "border-purple-100 bg-white shadow-purple-200/50"
-        }`}
-      >
+      <Card className="w-full flex-1 flex flex-col overflow-hidden shadow-xl border-purple-100 bg-white shadow-purple-200/50 dark:border-purple-900 dark:bg-[#121228] dark:shadow-purple-900/20">
         <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6">
           <div>
-            <CardTitle
-              className={`text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 ${
-                isDarkMode ? "text-white" : ""
-              }`}
-            >
+            <CardTitle className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 dark:text-white">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleisProgressOverviewMode}
-                className={`mr-2 ${isDarkMode ? "text-white hover:bg-purple-900/70 hover:text-purple-300" : ""}`}
+                className="mr-2 dark:text-white dark:hover:bg-purple-900/70 dark:hover:text-purple-300"
                 aria-label="Back to daily view"
               >
                 <svg
@@ -119,96 +108,59 @@ export default function ProgressOverview() {
               </Button>
               Progress Overview
             </CardTitle>
-            <p
-              className={`text-sm ${isDarkMode ? "text-purple-400" : "text-gray-600"}`}
-            >
+            <p className="text-sm dark:text-purple-400 text-zinc-600">
               View your progress in one place
             </p>
           </div>
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-6 sm:pb-8 flex-1 overflow-auto">
           <div className="flex justify-center items-center mb-4">
-            <div
-              className={`flex items-center space-x-8 ${
-                isDarkMode ? "text-purple-300" : "text-purple-800"
-              }`}
-            >
+            <div className="flex items-center space-x-8 dark:text-purple-300 text-purple-800">
               <StreakDisplayDays value={currentStreak} label="Current Streak" />
               <StreakDisplayDays value={longestStreak} label="Longest Streak" />
             </div>
           </div>
           <Tabs defaultValue="calendar" className="w-full">
-            <TabsList
-              className={`grid w-full grid-cols-3 ${
-                isDarkMode ? "bg-gray-800" : "bg-purple-200"
-              }`}
-            >
+            <TabsList className="grid w-full grid-cols-3 dark:bg-zinc-800 bg-purple-200">
               <TabsTrigger
                 value="calendar"
-                className={`${
-                  isDarkMode
-                    ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-400 hover:text-white"
-                    : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                }`}
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:data-[state=inactive]:text-purple-400 dark:hover:text-white"
               >
                 <Calendar aria-hidden="true" className="w-4 h-4 mr-2" />
                 History
               </TabsTrigger>
               <TabsTrigger
                 value="graph"
-                className={`${
-                  isDarkMode
-                    ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-400 hover:text-white"
-                    : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                }`}
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:data-[state=inactive]:text-purple-400 dark:hover:text-white"
               >
                 <BarChart2 aria-hidden="true" className="w-4 h-4 mr-2" />
                 Completion Rate
               </TabsTrigger>
               <TabsTrigger
                 value="achievements"
-                className={`${
-                  isDarkMode
-                    ? "data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=inactive]:text-purple-400 hover:text-white"
-                    : "data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                }`}
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:data-[state=inactive]:text-purple-400 dark:hover:text-white"
               >
                 <Trophy aria-hidden="true" className="w-4 h-4 mr-2" />
                 Achievements
               </TabsTrigger>
             </TabsList>
             <TabsContent value="calendar">
-              <Card
-                className={
-                  isDarkMode
-                    ? "border-purple-900 bg-black/30 shadow-lg shadow-purple-900/5"
-                    : "border-purple-200"
-                }
-              >
+              <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
                 <CardHeader>
-                  <h3
-                    className={`text-lg font-semibold ${
-                      isDarkMode ? "text-purple-300" : "text-purple-800"
-                    }`}
-                  >
+                  <h3 className="text-lg font-semibold dark:text-purple-300 text-purple-800">
                     Calendar
                   </h3>
                 </CardHeader>
                 <CardContent className="h-fit overflow-y-auto">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-full">
-                      <p
-                        className={
-                          isDarkMode ? "text-purple-400" : "text-purple-800"
-                        }
-                      >
+                      <p className="dark:text-purple-400 text-purple-800">
                         Loading calendar data...
                       </p>
                     </div>
                   ) : (
                     <ProgressCalendar
                       insightData={historyData}
-                      isDarkMode={isDarkMode}
                       selectedMonth={selectedMonth}
                       setSelectedMonth={setSelectedMonth}
                     />
@@ -217,53 +169,29 @@ export default function ProgressOverview() {
               </Card>
             </TabsContent>
             <TabsContent value="graph">
-              <Card
-                className={
-                  isDarkMode
-                    ? "border-purple-900 bg-black/30 shadow-lg shadow-purple-900/5"
-                    : "border-purple-200"
-                }
-              >
+              <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
                 <CardHeader>
-                  <h3
-                    className={`text-lg font-semibold ${
-                      isDarkMode ? "text-purple-300" : "text-purple-800"
-                    }`}
-                  >
+                  <h3 className="text-lg font-semibold dark:text-purple-300 text-purple-800">
                     Daily Completion Rates
                   </h3>
                 </CardHeader>
                 <CardContent className="min-h-80">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-full">
-                      <p
-                        className={
-                          isDarkMode ? "text-purple-400" : "text-purple-800"
-                        }
-                      >
+                      <p className="dark:text-purple-400 text-purple-800">
                         Loading chart data...
                       </p>
                     </div>
                   ) : (
-                    <ProgressChart data={historyData} isDarkMode={isDarkMode} />
+                    <ProgressChart data={historyData} />
                   )}
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="achievements">
-              <Card
-                className={
-                  isDarkMode
-                    ? "border-purple-900 bg-black/30 shadow-lg shadow-purple-900/5"
-                    : "border-purple-200"
-                }
-              >
+              <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
                 <CardHeader>
-                  <h3
-                    className={`text-lg font-semibold ${
-                      isDarkMode ? "text-purple-300" : "text-purple-800"
-                    }`}
-                  >
+                  <h3 className="text-lg font-semibold dark:text-purple-300 text-purple-800">
                     Achievements
                   </h3>
                 </CardHeader>
@@ -273,7 +201,6 @@ export default function ProgressOverview() {
                       ...a,
                       id: String(a.id),
                     }))}
-                    isDarkMode={isDarkMode}
                   />
                 </CardContent>
               </Card>

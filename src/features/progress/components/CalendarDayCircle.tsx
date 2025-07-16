@@ -4,12 +4,10 @@ export default function CalendarDayCircle({
   dayData,
   isPast,
   isToday,
-  isDarkMode,
 }: {
   dayData?: InsightData;
   isPast: boolean;
   isToday: boolean;
-  isDarkMode: boolean;
 }) {
   const showCircle = isPast || isToday;
   const percent = dayData ? Math.round(dayData.completionRate) : 0;
@@ -22,7 +20,7 @@ export default function CalendarDayCircle({
     <div className="relative w-1/2 h-1/2" role="img" aria-label={ariaLabel}>
       <svg className="w-full h-full" viewBox="0 0 36 36" aria-hidden="true">
         <circle
-          className={isDarkMode ? "text-purple-900/60" : "text-purple-200"}
+          className="text-purple-200 dark:text-purple-900/60"
           strokeWidth="4"
           stroke="currentColor"
           fill="transparent"
@@ -32,7 +30,7 @@ export default function CalendarDayCircle({
         />
         {showCircle && dayData && (
           <circle
-            className={isDarkMode ? "text-purple-600" : "text-purple-600"}
+            className="text-purple-600"
             strokeWidth="4"
             strokeDasharray={16 * 2 * Math.PI}
             strokeDashoffset={16 * 2 * Math.PI * (1 - percent / 100)}
@@ -46,11 +44,7 @@ export default function CalendarDayCircle({
         )}
       </svg>
       <div className="absolute inset-0 md:flex items-center justify-center hidden">
-        <span
-          className={`text-[0.6rem] font-medium ${
-            isDarkMode ? "text-purple-300" : "text-purple-800"
-          }`}
-        >
+        <span className="text-[0.6rem] font-medium text-purple-800 dark:text-purple-300">
           {percent}%
         </span>
       </div>
