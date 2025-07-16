@@ -19,19 +19,19 @@ export default function ProgressAchievements({
       {achievements.map((achievement) => (
         <div
           key={achievement.id}
-          className="p-4 rounded-lg bg-white dark:bg-purple-900/50 shadow-md flex items-center space-x-4"
+          className="p-4 rounded-lg bg-[var(--color-surface)] dark:bg-[var(--color-brand-light)] shadow-md flex items-center space-x-4"
         >
           <div
             aria-hidden="true"
-            className="p-2 rounded-full bg-purple-100 dark:bg-purple-600"
+            className="p-2 rounded-full bg-[var(--color-brand-light)] dark:bg-[var(--color-brand-primary)]"
           >
-            <achievement.icon className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+            <achievement.icon className="h-6 w-6 text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)]" />
           </div>
           <div>
-            <h4 className="font-semibold text-purple-800 dark:text-purple-300">
+            <h4 className="font-semibold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
               {achievement.name}
             </h4>
-            <p className="text-sm text-zinc-600 dark:text-purple-400">
+            <p className="text-sm text-[var(--color-text-secondary)] dark:text-[var(--color-brand-text-light)]">
               {achievement.description}
             </p>
           </div>
