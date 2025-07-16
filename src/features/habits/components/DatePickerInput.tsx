@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { Input } from "@/components/ui/input";
-import { ThemeContext } from "@/context/ThemeContext";
 
 export interface DatePickerInputProps {
   value?: string;
@@ -23,16 +21,11 @@ export const datePickerInputStyles = `
     pointer-events: none;
     z-index: 1;
     transition: color 0.2s ease;
-  }
-  
-  /* Dark mode icon styling */
-  .date-picker-dark .date-picker-input-icon {
-    color: #d8b4fe;
-  }
-  
-  /* Light mode icon styling */
-  .date-picker-light .date-picker-input-icon {
     color: #9333ea;
+  }
+  
+  .dark .date-picker-input-icon {
+    color: #d8b4fe;
   }
   
   /* Icon pulse animation on focus */
@@ -56,11 +49,8 @@ export default function DatePickerInput({
   placeholder,
   id,
 }: DatePickerInputProps) {
-  const { isDarkMode } = useContext(ThemeContext);
-  const themeClass = isDarkMode ? "date-picker-dark" : "date-picker-light";
-
   return (
-    <div className={`date-picker-input-wrapper ${themeClass}`}>
+    <div className="date-picker-input-wrapper">
       <div className="date-picker-input-icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +74,7 @@ export default function DatePickerInput({
         onClick={onClick}
         placeholder={placeholder}
         readOnly
-        className={`pl-10 cursor-pointer ${isDarkMode ? "bg-gray-800 border-purple-900 placeholder:text-purple-500/50" : ""}`}
+        className="pl-10 cursor-pointer dark:bg-zinc-800 dark:border-purple-900 dark:placeholder:text-purple-500/50"
         aria-label={placeholder ?? "Select date"}
       />
     </div>
