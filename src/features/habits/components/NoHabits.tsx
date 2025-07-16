@@ -13,31 +13,31 @@ export default function NoHabits() {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="
         relative overflow-hidden
-        bg-white dark:bg-zinc-800/70
+        bg-[var(--color-surface)] dark:bg-[var(--color-surface-secondary)]
         flex flex-col items-center justify-center gap-4 py-10 px-8 sm:px-20 text-center rounded-xl shadow-lg
-        border border-purple-100 dark:border-purple-900/30
+        border border-[var(--color-border-brand)] dark:border-[var(--color-border-brand)]
       "
     >
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10 dark:opacity-5">
-        <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-purple-300"></div>
-        <div className="absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-purple-400"></div>
+        <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-[var(--color-brand-light)]"></div>
+        <div className="absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-[var(--color-brand-primary)]"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10">
         <div
           aria-hidden="true"
-          className="mb-2 p-4 rounded-full inline-flex bg-purple-50 dark:bg-zinc-700"
+          className="mb-2 p-4 rounded-full inline-flex bg-[var(--color-brand-lighter)] dark:bg-[var(--color-surface-tertiary)]"
         >
-          <CalendarX2 className="text-purple-600 dark:text-purple-500 h-10 w-10" />
+          <CalendarX2 className="text-[var(--color-brand-primary)] dark:text-[var(--color-brand-primary)] h-10 w-10" />
         </div>
 
-        <h3 className="text-purple-700 dark:text-purple-300 text-xl font-bold mb-2">
+        <h3 className="text-[var(--color-brand-text)] dark:text-[var(--color-brand-text-light)] text-xl font-bold mb-2">
           No Habits Found
         </h3>
 
-        <p className="text-purple-600/90 dark:text-purple-400 max-w-md mx-auto mb-4 text-sm sm:text-base">
+        <p className="text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)] max-w-md mx-auto mb-4 text-sm sm:text-base">
           Try adding a new habit to start tracking your daily progress, or check
           a different date to view existing habits. Building good habits is the
           first step towards achieving your goals!
@@ -47,8 +47,8 @@ export default function NoHabits() {
           <Button
             onClick={toggleShowAddHabitDialog}
             className="
-              bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400
-              text-white rounded-full font-semibold transition-all duration-300 
+              bg-gradient-to-r from-[var(--color-brand-primary)] to-[var(--color-brand-primary)] hover:from-[var(--color-brand-primary)] hover:to-[var(--color-brand-primary)]
+              text-[var(--color-text-inverse)] rounded-full font-semibold transition-all duration-300
               shadow-md hover:shadow-lg px-6 py-5 mt-2
             "
             aria-label="Add a new habit"
