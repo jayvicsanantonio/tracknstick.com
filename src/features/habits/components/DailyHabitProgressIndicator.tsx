@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { motion } from "framer-motion";
-import { ThemeContext } from "@/context/ThemeContext";
 import MiscellaneousIcons from "@/icons/miscellaneous";
 
 const { Check } = MiscellaneousIcons;
@@ -10,7 +8,6 @@ export default function DailyHabitProgressIndicator({
 }: {
   completionRate: number;
 }) {
-  const { isDarkMode } = useContext(ThemeContext);
   const displayRate = Number.isNaN(completionRate) ? 0 : completionRate;
 
   return (
@@ -22,7 +19,7 @@ export default function DailyHabitProgressIndicator({
         {/* Drop shadow for the progress circle */}
         <div
           aria-hidden="true"
-          className={`absolute inset-0 rounded-full  ${isDarkMode ? "bg-purple-600/20" : "bg-purple-400/30"}`}
+          className="absolute inset-0 rounded-full bg-purple-400/30 dark:bg-purple-600/20"
         ></div>
 
         <div className="relative w-full h-full">
@@ -34,9 +31,7 @@ export default function DailyHabitProgressIndicator({
             {/* Background track */}
             <circle
               aria-hidden="true"
-              className={
-                isDarkMode ? "text-purple-900/80" : "text-purple-900/20"
-              }
+              className="text-purple-900/20 dark:text-purple-900/80"
               strokeWidth="10"
               stroke="currentColor"
               fill="transparent"
@@ -48,9 +43,7 @@ export default function DailyHabitProgressIndicator({
             {/* Glowing effect behind progress */}
             <motion.circle
               aria-hidden="true"
-              className={
-                isDarkMode ? "text-purple-600/30" : "text-purple-400/30"
-              }
+              className="text-purple-400/30 dark:text-purple-600/30"
               strokeWidth="14"
               strokeDasharray={42 * 2 * Math.PI}
               strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
@@ -71,7 +64,7 @@ export default function DailyHabitProgressIndicator({
             {/* Main progress indicator */}
             <motion.circle
               aria-hidden="true"
-              className={isDarkMode ? "text-purple-600" : "text-purple-500"}
+              className="text-purple-500 dark:text-purple-600"
               strokeWidth="10"
               strokeDasharray={42 * 2 * Math.PI}
               strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
@@ -109,18 +102,10 @@ export default function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span
-                  className={`text-5xl font-bold ${
-                    isDarkMode ? "text-purple-300" : "text-purple-800"
-                  }`}
-                >
+                <span className="text-5xl font-bold text-purple-800 dark:text-purple-300">
                   {displayRate}%
                 </span>
-                <span
-                  className={`text-sm mt-1 ${
-                    isDarkMode ? "text-purple-400" : "text-purple-600/80"
-                  }`}
-                >
+                <span className="text-sm mt-1 text-purple-600/80 dark:text-purple-400">
                   Completed
                 </span>
               </motion.div>
