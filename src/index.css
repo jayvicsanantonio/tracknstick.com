@@ -14,59 +14,113 @@
 
   /* Custom breakpoints */
   --breakpoint-xs: 480px;
-
-  /* Custom color properties for consistent theming */
-  --color-background: theme(--color-white);
-  --color-foreground: theme(--color-zinc-950);
-  --color-card: theme(--color-white);
-  --color-card-foreground: theme(--color-zinc-950);
-  --color-primary: theme(--color-purple-600);
-  --color-primary-foreground: theme(--color-white);
-  --color-secondary: theme(--color-zinc-100);
-  --color-secondary-foreground: theme(--color-zinc-900);
-  --color-muted: theme(--color-zinc-100);
-  --color-muted-foreground: theme(--color-zinc-500);
-  --color-accent: theme(--color-purple-100);
-  --color-accent-foreground: theme(--color-purple-900);
-  --color-destructive: theme(--color-red-500);
-  --color-destructive-foreground: theme(--color-white);
-  --color-border: theme(--color-zinc-200);
-  --color-input: theme(--color-zinc-200);
-  --color-ring: theme(--color-purple-500);
-
-  /* Extended theme colors for comprehensive theming */
-  --color-brand-primary: theme(--color-purple-600);
-  --color-brand-secondary: theme(--color-purple-700);
-  --color-brand-tertiary: theme(--color-purple-800);
-  --color-brand-light: theme(--color-purple-100);
-  --color-brand-lighter: theme(--color-purple-50);
-  --color-brand-text: theme(--color-purple-700);
-  --color-brand-text-light: theme(--color-purple-300);
-  --color-surface: theme(--color-white);
-  --color-surface-secondary: theme(--color-gray-50);
-  --color-surface-tertiary: theme(--color-gray-100);
-  --color-text-primary: theme(--color-zinc-900);
-  --color-text-secondary: theme(--color-zinc-600);
-  --color-text-tertiary: theme(--color-zinc-500);
-  --color-text-inverse: theme(--color-white);
-  --color-border-primary: theme(--color-zinc-200);
-  --color-border-secondary: theme(--color-zinc-300);
-  --color-border-brand: theme(--color-purple-200);
-  --color-hover-surface: theme(--color-gray-100);
-  --color-hover-brand: theme(--color-purple-100);
-  --color-active-surface: theme(--color-gray-200);
-  --color-active-brand: theme(--color-purple-200);
-  --color-error: theme(--color-red-500);
-  --color-error-light: theme(--color-red-100);
-  --color-error-text: theme(--color-red-600);
-  --color-success: theme(--color-green-500);
-  --color-success-light: theme(--color-green-100);
-  --color-success-text: theme(--color-green-600);
 }
 
-/* Dark mode color overrides - moved outside @theme block */
-@media (prefers-color-scheme: dark) {
+/* Light mode color values - default */
+@layer base {
   :root {
+    --color-background: theme(--color-white);
+    --color-foreground: theme(--color-zinc-950);
+    --color-card: theme(--color-white);
+    --color-card-foreground: theme(--color-zinc-950);
+    --color-primary: theme(--color-purple-600);
+    --color-primary-foreground: theme(--color-white);
+    --color-secondary: theme(--color-zinc-100);
+    --color-secondary-foreground: theme(--color-zinc-900);
+    --color-muted: theme(--color-zinc-100);
+    --color-muted-foreground: theme(--color-zinc-500);
+    --color-accent: theme(--color-purple-100);
+    --color-accent-foreground: theme(--color-purple-900);
+    --color-destructive: theme(--color-red-500);
+    --color-destructive-foreground: theme(--color-white);
+    --color-border: theme(--color-zinc-200);
+    --color-input: theme(--color-zinc-200);
+    --color-ring: theme(--color-purple-500);
+
+    /* Extended theme colors */
+    --color-brand-primary: theme(--color-purple-600);
+    --color-brand-secondary: theme(--color-purple-700);
+    --color-brand-tertiary: theme(--color-purple-800);
+    --color-brand-light: theme(--color-purple-100);
+    --color-brand-lighter: theme(--color-purple-50);
+    --color-brand-text: theme(--color-purple-700);
+    --color-brand-text-light: theme(--color-purple-300);
+    --color-surface: theme(--color-white);
+    --color-surface-secondary: theme(--color-gray-50);
+    --color-surface-tertiary: theme(--color-gray-100);
+    --color-text-primary: theme(--color-zinc-900);
+    --color-text-secondary: theme(--color-zinc-600);
+    --color-text-tertiary: theme(--color-zinc-500);
+    --color-text-inverse: theme(--color-white);
+    --color-border-primary: theme(--color-zinc-200);
+    --color-border-secondary: theme(--color-zinc-300);
+    --color-border-brand: theme(--color-purple-200);
+    --color-hover-surface: theme(--color-gray-100);
+    --color-hover-brand: theme(--color-purple-100);
+    --color-active-surface: theme(--color-gray-200);
+    --color-active-brand: theme(--color-purple-200);
+    --color-error: theme(--color-red-500);
+    --color-error-light: theme(--color-red-100);
+    --color-error-text: theme(--color-red-600);
+    --color-success: theme(--color-green-500);
+    --color-success-light: theme(--color-green-100);
+    --color-success-text: theme(--color-green-600);
+  }
+}
+
+/* Dark mode color overrides - class-based */
+.dark {
+  --color-background: theme(--color-zinc-950);
+  --color-foreground: theme(--color-zinc-50);
+  --color-card: theme(--color-zinc-900);
+  --color-card-foreground: theme(--color-zinc-50);
+  --color-primary: theme(--color-purple-500);
+  --color-primary-foreground: theme(--color-white);
+  --color-secondary: theme(--color-zinc-800);
+  --color-secondary-foreground: theme(--color-zinc-50);
+  --color-muted: theme(--color-zinc-800);
+  --color-muted-foreground: theme(--color-zinc-400);
+  --color-accent: theme(--color-purple-950);
+  --color-accent-foreground: theme(--color-purple-50);
+  --color-destructive: theme(--color-red-900);
+  --color-destructive-foreground: theme(--color-red-50);
+  --color-border: theme(--color-zinc-800);
+  --color-input: theme(--color-zinc-800);
+  --color-ring: theme(--color-purple-400);
+
+  /* Extended dark mode colors */
+  --color-brand-primary: theme(--color-purple-500);
+  --color-brand-secondary: theme(--color-purple-600);
+  --color-brand-tertiary: theme(--color-purple-700);
+  --color-brand-light: theme(--color-purple-900);
+  --color-brand-lighter: theme(--color-purple-950);
+  --color-brand-text: theme(--color-purple-300);
+  --color-brand-text-light: theme(--color-purple-400);
+  --color-surface: theme(--color-zinc-900);
+  --color-surface-secondary: theme(--color-zinc-800);
+  --color-surface-tertiary: theme(--color-zinc-700);
+  --color-text-primary: theme(--color-zinc-100);
+  --color-text-secondary: theme(--color-zinc-400);
+  --color-text-tertiary: theme(--color-zinc-500);
+  --color-text-inverse: theme(--color-zinc-900);
+  --color-border-primary: theme(--color-zinc-800);
+  --color-border-secondary: theme(--color-zinc-700);
+  --color-border-brand: theme(--color-purple-900);
+  --color-hover-surface: theme(--color-zinc-800);
+  --color-hover-brand: theme(--color-purple-900);
+  --color-active-surface: theme(--color-zinc-700);
+  --color-active-brand: theme(--color-purple-800);
+  --color-error: theme(--color-red-600);
+  --color-error-light: theme(--color-red-900);
+  --color-error-text: theme(--color-red-400);
+  --color-success: theme(--color-green-600);
+  --color-success-light: theme(--color-green-900);
+  --color-success-text: theme(--color-green-400);
+}
+
+/* Dark mode color overrides - system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
     --color-background: theme(--color-zinc-950);
     --color-foreground: theme(--color-zinc-50);
     --color-card: theme(--color-zinc-900);
@@ -137,6 +191,12 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+  }
+
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }
 

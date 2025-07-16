@@ -56,7 +56,7 @@ export default function DailyHabitDate() {
         variant="outline"
         size="icon"
         aria-label="Next Date"
-        className="rounded-full shadow-sm transition-all duration-300 border-[var(--color-border-brand)] text-[var(--color-brand-primary)] hover:bg-[var(--color-hover-brand)] hover:text-[var(--color-brand-secondary)] hover:border-[var(--color-border-brand)] hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed dark:border-[var(--color-border-secondary)] dark:text-[var(--color-brand-text-light)] dark:bg-[var(--color-surface-secondary)] dark:hover:bg-[var(--color-hover-surface)] dark:hover:shadow-md dark:hover:text-[var(--color-brand-text-light)] dark:hover:border-[var(--color-border-brand)] dark:disabled:cursor-not-allowed"
+        className="shadow-sm transition-all duration-300 border-[var(--color-border-brand)] text-[var(--color-brand-primary)] hover:bg-[var(--color-hover-brand)] hover:text-[var(--color-brand-secondary)] hover:border-[var(--color-border-brand)] hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed dark:border-[var(--color-border-secondary)] dark:text-[var(--color-brand-text-light)] dark:bg-[var(--color-surface-secondary)] dark:hover:bg-[var(--color-hover-surface)] dark:hover:shadow-md dark:hover:text-[var(--color-brand-text-light)] dark:hover:border-[var(--color-border-brand)] dark:disabled:cursor-not-allowed"
       >
         <ChevronRight aria-hidden="true" className="h-4 w-4" />
       </Button>
