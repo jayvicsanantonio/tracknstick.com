@@ -37,7 +37,7 @@ export default function FormActions({
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="text-sm sm:text-base border-purple-300 hover:bg-purple-100 hover:text-purple-700 dark:border-purple-600 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-800/60 dark:hover:text-purple-300 dark:hover:border-purple-500"
+            className="text-sm sm:text-base border-purple-300 text-purple-600 hover:bg-purple-100 hover:text-purple-700 dark:border-purple-600 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-800/60 dark:hover:text-purple-300 dark:hover:border-purple-500"
           >
             Cancel
           </Button>
