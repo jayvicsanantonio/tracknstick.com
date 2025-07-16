@@ -15,9 +15,9 @@ export default function IconPicker({
 }: IconPickerProps) {
   return (
     <div className="space-y-1 sm:space-y-2">
-      <Label className="text-sm sm:text-base text-purple-700 dark:text-purple-300">
+      <Label className="text-sm sm:text-base text-[var(--color-brand-text)] dark:text-[var(--color-brand-text-light)]">
         {label}
-        <span className="text-red-500">*</span>
+        <span className="text-[var(--color-error)]">*</span>
       </Label>
       <div className="overflow-y-auto max-h-[7.5rem] sm:max-h-[9.5rem] pb-1">
         <RadioGroup
@@ -30,7 +30,7 @@ export default function IconPicker({
           {Object.entries(HabitsIcons).map(([name, Icon]) => (
             <Label
               key={name}
-              className="flex items-center justify-center rounded-md border-2 border-purple-200 bg-white text-purple-600 hover:bg-purple-100 hover:text-purple-800 dark:border-purple-900 dark:bg-purple-900/50 dark:text-purple-400 dark:hover:text-purple-300 dark:hover:border-purple-500 focus-visible:ring-2 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:bg-purple-100 [&:has([data-state=checked])]:border-purple-600 [&:has([data-state=checked])]:text-purple-600 dark:[&:has([data-state=checked])]:border-purple-600 dark:[&:has([data-state=checked])]:text-purple-500 p-1.5 sm:p-2 transition-all cursor-pointer"
+              className="flex items-center justify-center rounded-md border-2 border-[var(--color-border-brand)] bg-[var(--color-surface)] text-[var(--color-brand-primary)] hover:bg-[var(--color-hover-brand)] hover:text-[var(--color-brand-tertiary)] dark:border-[var(--color-border-brand)] dark:bg-[var(--color-brand-light)] dark:text-[var(--color-brand-text-light)] dark:hover:text-[var(--color-brand-text-light)] dark:hover:border-[var(--color-border-brand)] focus-visible:ring-2 focus-visible:ring-[var(--color-brand-primary)] dark:focus-visible:ring-[var(--color-brand-text-light)] focus-visible:ring-offset-2 focus-visible:ring-offset-background [&:has([data-state=checked])]:bg-[var(--color-hover-brand)] [&:has([data-state=checked])]:border-[var(--color-brand-primary)] [&:has([data-state=checked])]:text-[var(--color-brand-primary)] dark:[&:has([data-state=checked])]:border-[var(--color-brand-primary)] dark:[&:has([data-state=checked])]:text-[var(--color-brand-primary)] p-1.5 sm:p-2 transition-all cursor-pointer"
             >
               <RadioGroupItem value={name} id={name} className="sr-only" />
               <Icon aria-hidden="true" className="h-5 w-5 sm:h-6 sm:w-6" />
