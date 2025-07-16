@@ -2,13 +2,60 @@
 
 @plugin 'tailwindcss-animate';
 
+/* Dark mode variant for class-based dark mode */
 @custom-variant dark (&:is(.dark *));
 
+/* Theme configuration for TailwindCSS v4.1 */
 @theme {
+  /* Border radius values */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  /* Custom breakpoints */
   --breakpoint-xs: 480px;
+
+  /* Custom color properties for consistent theming */
+  --color-background: theme(--color-white);
+  --color-foreground: theme(--color-zinc-950);
+  --color-card: theme(--color-white);
+  --color-card-foreground: theme(--color-zinc-950);
+  --color-primary: theme(--color-purple-600);
+  --color-primary-foreground: theme(--color-white);
+  --color-secondary: theme(--color-zinc-100);
+  --color-secondary-foreground: theme(--color-zinc-900);
+  --color-muted: theme(--color-zinc-100);
+  --color-muted-foreground: theme(--color-zinc-500);
+  --color-accent: theme(--color-purple-100);
+  --color-accent-foreground: theme(--color-purple-900);
+  --color-destructive: theme(--color-red-500);
+  --color-destructive-foreground: theme(--color-white);
+  --color-border: theme(--color-zinc-200);
+  --color-input: theme(--color-zinc-200);
+  --color-ring: theme(--color-purple-500);
+}
+
+/* Dark mode color overrides - moved outside @theme block */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: theme(--color-zinc-950);
+    --color-foreground: theme(--color-zinc-50);
+    --color-card: theme(--color-zinc-900);
+    --color-card-foreground: theme(--color-zinc-50);
+    --color-primary: theme(--color-purple-500);
+    --color-primary-foreground: theme(--color-white);
+    --color-secondary: theme(--color-zinc-800);
+    --color-secondary-foreground: theme(--color-zinc-50);
+    --color-muted: theme(--color-zinc-800);
+    --color-muted-foreground: theme(--color-zinc-400);
+    --color-accent: theme(--color-purple-950);
+    --color-accent-foreground: theme(--color-purple-50);
+    --color-destructive: theme(--color-red-900);
+    --color-destructive-foreground: theme(--color-red-50);
+    --color-border: theme(--color-zinc-800);
+    --color-input: theme(--color-zinc-800);
+    --color-ring: theme(--color-purple-400);
+  }
 }
 
 /*
@@ -25,7 +72,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--color-zinc-200, currentcolor);
   }
 }
 
