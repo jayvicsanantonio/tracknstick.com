@@ -20,7 +20,7 @@ export default function FormActions({
           <Button
             type="button"
             variant="outline"
-            className="w-full sm:w-auto border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm sm:text-base bg-white hover:bg-red-400 dark:bg-transparent dark:hover:bg-red-600 dark:hover:border-red-600"
+            className="w-full sm:w-auto border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error)] hover:text-[var(--color-text-inverse)] text-sm sm:text-base bg-[var(--color-surface)] hover:bg-[var(--color-error)] dark:bg-transparent dark:hover:bg-[var(--color-error)] dark:hover:border-[var(--color-error)]"
             onClick={() => {
               if (!habit?.id) return;
               void onDelete(habit.id);
@@ -37,14 +37,14 @@ export default function FormActions({
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="text-sm sm:text-base border-purple-300 text-purple-600 hover:bg-purple-100 hover:text-purple-700 dark:border-purple-600 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-800/60 dark:hover:text-purple-300 dark:hover:border-purple-500"
+            className="text-sm sm:text-base border-[var(--color-border-brand)] text-[var(--color-brand-primary)] hover:bg-[var(--color-hover-brand)] hover:text-[var(--color-brand-secondary)] dark:border-[var(--color-border-brand)] dark:bg-[var(--color-brand-light)] dark:text-[var(--color-brand-text-light)] dark:hover:bg-[var(--color-hover-brand)] dark:hover:text-[var(--color-brand-text-light)] dark:hover:border-[var(--color-border-brand)]"
           >
             Cancel
           </Button>
         </DialogClose>
         <Button
           type="submit"
-          className="flex-1 sm:flex-none sm:w-32 text-sm sm:text-base bg-purple-600 hover:bg-purple-700 text-white dark:hover:bg-purple-500"
+          className="flex-1 sm:flex-none sm:w-32 text-sm sm:text-base bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] text-[var(--color-text-inverse)] dark:hover:bg-[var(--color-brand-primary)]"
           disabled={isSubmitting}
         >
           {isSubmitting ? "Saving..." : "Save Changes"}
