@@ -16,16 +16,16 @@ export default function EditHabitDialog() {
     >
       <HabitDialogHeader isEditMode={true} habit={editingHabit} />
       <Tabs defaultValue="edit" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-2 sm:mb-4 rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <TabsList className="grid w-full grid-cols-2 mb-2 sm:mb-4 rounded-md overflow-hidden bg-[var(--color-surface-tertiary)] dark:bg-[var(--color-surface-secondary)]">
           <TabsTrigger
             value="edit"
-            className="text-xs sm:text-sm py-1.5 sm:py-2 font-medium data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-600 dark:data-[state=active]:text-white dark:data-[state=inactive]:text-purple-200 dark:focus:ring-purple-400"
+            className="text-xs sm:text-sm py-1.5 sm:py-2 font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)] dark:focus:ring-[var(--color-brand-text-light)]"
           >
             Edit
           </TabsTrigger>
           <TabsTrigger
             value="stats"
-            className="text-xs sm:text-sm py-1.5 sm:py-2 font-medium data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-600 dark:data-[state=active]:text-white dark:data-[state=inactive]:text-purple-200 dark:focus:ring-purple-400"
+            className="text-xs sm:text-sm py-1.5 sm:py-2 font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)] dark:focus:ring-[var(--color-brand-text-light)]"
           >
             Stats
           </TabsTrigger>
