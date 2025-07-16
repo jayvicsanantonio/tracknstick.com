@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 export function PWAInstallPrompt() {
@@ -23,15 +23,12 @@ export function PWAInstallPrompt() {
       setIsVisible(true);
     };
 
-    window.addEventListener(
-      'beforeinstallprompt',
-      handleBeforeInstallPrompt
-    );
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
       window.removeEventListener(
-        'beforeinstallprompt',
-        handleBeforeInstallPrompt
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
       );
     };
   }, []);
@@ -45,10 +42,10 @@ export function PWAInstallPrompt() {
     // Wait for the user to respond to the prompt
     const choiceResult = await deferredPrompt.userChoice;
 
-    if (choiceResult.outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (choiceResult.outcome === "accepted") {
+      console.log("User accepted the install prompt");
     } else {
-      console.log('User dismissed the install prompt');
+      console.log("User dismissed the install prompt");
     }
 
     // Clear the saved prompt since it can't be used again
@@ -59,11 +56,9 @@ export function PWAInstallPrompt() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg z-50 max-w-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="font-semibold text-lg mb-2">
-        Install TrackNStick
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+    <div className="fixed bottom-4 right-4 bg-white dark:bg-zinc-800 p-4 rounded-lg shadow-lg z-50 max-w-sm border border-zinc-200 dark:border-zinc-700">
+      <h3 className="font-semibold text-lg mb-2">Install TrackNStick</h3>
+      <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-3">
         Install our app on your device for a better experience!
       </p>
       <div className="flex justify-end">
@@ -74,9 +69,7 @@ export function PWAInstallPrompt() {
         >
           Not now
         </Button>
-        <Button onClick={() => void handleInstallClick()}>
-          Install
-        </Button>
+        <Button onClick={() => void handleInstallClick()}>Install</Button>
       </div>
     </div>
   );
