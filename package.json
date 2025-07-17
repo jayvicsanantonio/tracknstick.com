@@ -47,7 +47,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
-    "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^22.15.18",
     "@types/react": "^19.1.4",
@@ -62,7 +61,6 @@
     "globals": "^16.1.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.0.0",
-    "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.11",
