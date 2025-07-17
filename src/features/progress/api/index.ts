@@ -1,5 +1,5 @@
-import axiosInstance from "@/services/api/axiosInstance";
-import { HistoryDates } from "@/features/progress/types/HistoryDates";
+import axiosInstance from '@/services/api/axiosInstance';
+import { HistoryDates } from '@/features/progress/types/HistoryDates';
 
 export interface ProgressHistoryResponse {
   history: HistoryDates[];
@@ -36,18 +36,18 @@ export const fetchProgressHistory = async (
 
   try {
     const response = await axiosInstance.get<ProgressHistoryResponse>(
-      "/api/v1/progress/history",
+      '/api/v1/progress/history',
       { params },
     );
 
     if (response.data?.history) {
       return response.data.history;
     } else {
-      console.error("Unexpected response format:", response.data);
+      console.error('Unexpected response format:', response.data);
       return [];
     }
   } catch (error) {
-    console.error("Error fetching progress history:", error);
+    console.error('Error fetching progress history:', error);
     return [];
   }
 };
@@ -62,7 +62,7 @@ export const fetchProgressStreaks = async (
   const params: Record<string, string> = { timeZone };
 
   const response = await axiosInstance.get<ProgressStreaksResponse>(
-    "/api/v1/progress/streaks",
+    '/api/v1/progress/streaks',
     { params },
   );
   return response.data;
@@ -86,7 +86,7 @@ export const fetchProgressOverview = async (
   if (endDate) params.endDate = endDate;
 
   const response = await axiosInstance.get<ProgressOverviewResponse>(
-    "/api/v1/progress/overview",
+    '/api/v1/progress/overview',
     { params },
   );
   return response.data;

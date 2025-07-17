@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/ui/input';
 
 export interface DatePickerInputProps {
   value?: string;
@@ -75,7 +75,7 @@ export default function DatePickerInput({
         placeholder={placeholder}
         readOnly
         className="cursor-pointer pl-10 dark:border-[var(--color-border-brand)] dark:bg-[var(--color-surface-secondary)] dark:placeholder:text-[var(--color-brand-text-light)]"
-        aria-label={placeholder ?? "Select date"}
+        aria-label={placeholder ?? 'Select date'}
       />
     </div>
   );

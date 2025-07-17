@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import MiscellaneousIcons from "@/icons/miscellaneous";
+import { motion } from 'framer-motion';
+import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { Check } = MiscellaneousIcons;
 
@@ -58,7 +58,7 @@ export default function DailyHabitProgressIndicator({
               animate={{
                 strokeDashoffset: 42 * 2 * Math.PI * (1 - displayRate / 100),
               }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
             />
 
             {/* Main progress indicator */}
@@ -79,7 +79,7 @@ export default function DailyHabitProgressIndicator({
               animate={{
                 strokeDashoffset: 42 * 2 * Math.PI * (1 - displayRate / 100),
               }}
-              transition={{ duration: 1, ease: "easeOut" }}
+              transition={{ duration: 1, ease: 'easeOut' }}
             />
           </svg>
 
@@ -89,7 +89,7 @@ export default function DailyHabitProgressIndicator({
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: [0, 1.2, 1], opacity: 1 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: 'easeOut' }}
               >
                 <div className={`rounded-full p-5`} aria-hidden="true">
                   <Check className="h-32 w-32 text-[var(--color-brand-primary)]" />

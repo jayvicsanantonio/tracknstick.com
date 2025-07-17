@@ -6,7 +6,7 @@ import {
   YAxis,
   Tooltip,
   Bar,
-} from "recharts";
+} from 'recharts';
 
 interface ProgressChartProps {
   data: { date: string; completionRate: number }[];
@@ -14,7 +14,7 @@ interface ProgressChartProps {
 
 export default function ProgressChart({ data }: ProgressChartProps) {
   // Check if dark mode is active by checking the document element
-  const isDarkMode = document.documentElement.classList.contains("dark");
+  const isDarkMode = document.documentElement.classList.contains('dark');
 
   return (
     <div
@@ -26,7 +26,7 @@ export default function ProgressChart({ data }: ProgressChartProps) {
         <BarChart data={data}>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke={isDarkMode ? "#581c87" : "#d8b4fe"}
+            stroke={isDarkMode ? '#581c87' : '#d8b4fe'}
           />
           <XAxis
             dataKey="date"
@@ -34,33 +34,33 @@ export default function ProgressChart({ data }: ProgressChartProps) {
               new Date(String(value)).getDate().toString()
             }
             label={{
-              value: "Day of Month",
-              position: "insideBottom",
+              value: 'Day of Month',
+              position: 'insideBottom',
               offset: -5,
-              fill: isDarkMode ? "#d8b4fe" : "#7e22ce",
+              fill: isDarkMode ? '#d8b4fe' : '#7e22ce',
             }}
-            stroke={isDarkMode ? "#d8b4fe" : "#7e22ce"}
-            tick={{ fill: isDarkMode ? "#d8b4fe" : "#7e22ce" }}
+            stroke={isDarkMode ? '#d8b4fe' : '#7e22ce'}
+            tick={{ fill: isDarkMode ? '#d8b4fe' : '#7e22ce' }}
           />
           <YAxis
             label={{
-              value: "Completion Rate (%)",
+              value: 'Completion Rate (%)',
               angle: -90,
-              position: "insideLeft",
-              fill: isDarkMode ? "#d8b4fe" : "#7e22ce",
+              position: 'insideLeft',
+              fill: isDarkMode ? '#d8b4fe' : '#7e22ce',
             }}
-            stroke={isDarkMode ? "#d8b4fe" : "#7e22ce"}
-            tick={{ fill: isDarkMode ? "#d8b4fe" : "#7e22ce" }}
+            stroke={isDarkMode ? '#d8b4fe' : '#7e22ce'}
+            tick={{ fill: isDarkMode ? '#d8b4fe' : '#7e22ce' }}
           />
           <Tooltip
-            formatter={(value: number) => [`${value}%`, "Completion Rate"]}
+            formatter={(value: number) => [`${value}%`, 'Completion Rate']}
             labelFormatter={(label: string | number) =>
               `Date: ${new Date(String(label)).toLocaleDateString()}`
             }
             contentStyle={{
-              backgroundColor: isDarkMode ? "#1e1b4b" : "#faf5ff",
-              borderColor: isDarkMode ? "#7e22ce" : "#d8b4fe",
-              color: isDarkMode ? "#d8b4fe" : "#000000",
+              backgroundColor: isDarkMode ? '#1e1b4b' : '#faf5ff',
+              borderColor: isDarkMode ? '#7e22ce' : '#d8b4fe',
+              color: isDarkMode ? '#d8b4fe' : '#000000',
             }}
           />
           <Bar dataKey="completionRate" fill="#9333ea" radius={[4, 4, 0, 0]} />

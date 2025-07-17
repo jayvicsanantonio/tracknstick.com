@@ -1,6 +1,6 @@
-import { DialogClose } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Habit } from "@/features/habits/types/Habit";
+import { DialogClose } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Habit } from '@/features/habits/types/Habit';
 
 interface FormActionsProps {
   isSubmitting: boolean;
@@ -47,7 +47,7 @@ export default function FormActions({
           className="flex-1 bg-[var(--color-brand-primary)] text-sm text-[var(--color-text-inverse)] hover:bg-[var(--color-brand-secondary)] sm:w-32 sm:flex-none sm:text-base dark:hover:bg-[var(--color-brand-primary)]"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : "Save Changes"}
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
     </div>

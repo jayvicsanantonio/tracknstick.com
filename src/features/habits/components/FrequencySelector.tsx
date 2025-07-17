@@ -1,7 +1,7 @@
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Label } from "@/components/ui/label";
-import { daysOfWeek } from "@/constants";
-import { Frequency } from "@/features/habits/types/Frequency";
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Label } from '@/components/ui/label';
+import { daysOfWeek } from '@/constants';
+import { Frequency } from '@/features/habits/types/Frequency';
 
 interface FrequencySelectorProps {
   selectedDays: Frequency[];
@@ -12,7 +12,7 @@ interface FrequencySelectorProps {
 export default function FrequencySelector({
   selectedDays,
   onFrequencyChange,
-  label = "Frequency",
+  label = 'Frequency',
 }: FrequencySelectorProps) {
   return (
     <div className="space-y-1 sm:space-y-2">

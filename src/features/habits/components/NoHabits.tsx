@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { CalendarX2, PlusCircle } from "lucide-react";
-import { motion } from "framer-motion";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
+import { Button } from '@/components/ui/button';
+import { CalendarX2, PlusCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
 
 export default function NoHabits() {
   const { toggleShowAddHabitDialog } = useHabitsContext();

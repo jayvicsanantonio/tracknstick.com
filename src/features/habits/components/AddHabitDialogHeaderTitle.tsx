@@ -2,7 +2,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 export default function AddHabitDialogHeaderTitle() {
   return (

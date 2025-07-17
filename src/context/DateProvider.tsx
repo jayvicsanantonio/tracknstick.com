@@ -1,5 +1,5 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { DateContext } from "@/context/DateContext";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { DateContext } from '@/context/DateContext';
 
 export default function DateProvider({ children }: { children: ReactNode }) {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;

@@ -80,7 +80,7 @@ import {
   WashingMachine,
   Wrench,
   Pencil,
-} from "lucide-react";
+} from 'lucide-react';
 
 const habits = {
   Activity,

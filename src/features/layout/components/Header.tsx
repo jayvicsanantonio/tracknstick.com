@@ -1,9 +1,9 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
-import { useContext } from "react";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { Button } from "@/components/ui/button";
-import { ThemeContext } from "@/context/ThemeContext";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { useContext } from 'react';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { Button } from '@/components/ui/button';
+import { ThemeContext } from '@/context/ThemeContext';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2 } = MiscellaneousIcons;
 
 export default function Header() {
@@ -47,29 +47,29 @@ export default function Header() {
             <Button
               className={`h-8 w-8 rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                 isHabitsOverviewMode
-                  ? "bg-[var(--color-brand-secondary)] shadow-lg hover:bg-[var(--color-brand-tertiary)] dark:bg-[var(--color-brand-primary)] dark:shadow-[var(--color-brand-secondary)]/20 dark:hover:bg-[var(--color-brand-secondary)]"
-                  : "bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] hover:shadow-lg dark:bg-[var(--color-surface-secondary)] dark:hover:bg-[var(--color-surface-tertiary)] dark:hover:shadow-[var(--color-brand-primary)]/20"
+                  ? 'bg-[var(--color-brand-secondary)] shadow-lg hover:bg-[var(--color-brand-tertiary)] dark:bg-[var(--color-brand-primary)] dark:shadow-[var(--color-brand-secondary)]/20 dark:hover:bg-[var(--color-brand-secondary)]'
+                  : 'bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] hover:shadow-lg dark:bg-[var(--color-surface-secondary)] dark:hover:bg-[var(--color-surface-tertiary)] dark:hover:shadow-[var(--color-brand-primary)]/20'
               }`}
               onClick={toggleisHabitsOverviewMode}
               aria-label="Toggle Edit Mode"
             >
               <Edit
                 aria-hidden="true"
-                className={`h-4 w-4 sm:h-6 sm:w-6 ${isHabitsOverviewMode ? "text-white" : "text-white dark:text-[var(--color-brand-primary)]"}`}
+                className={`h-4 w-4 sm:h-6 sm:w-6 ${isHabitsOverviewMode ? 'text-white' : 'text-white dark:text-[var(--color-brand-primary)]'}`}
               />
             </Button>
             <Button
               className={`h-8 w-8 rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                 isProgressOverviewMode
-                  ? "bg-[var(--color-brand-secondary)] shadow-lg hover:bg-[var(--color-brand-tertiary)] dark:bg-[var(--color-brand-primary)] dark:shadow-[var(--color-brand-secondary)]/20 dark:hover:bg-[var(--color-brand-secondary)]"
-                  : "bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] hover:shadow-lg dark:bg-[var(--color-surface-secondary)] dark:hover:bg-[var(--color-surface-tertiary)] dark:hover:shadow-[var(--color-brand-primary)]/20"
+                  ? 'bg-[var(--color-brand-secondary)] shadow-lg hover:bg-[var(--color-brand-tertiary)] dark:bg-[var(--color-brand-primary)] dark:shadow-[var(--color-brand-secondary)]/20 dark:hover:bg-[var(--color-brand-secondary)]'
+                  : 'bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] hover:shadow-lg dark:bg-[var(--color-surface-secondary)] dark:hover:bg-[var(--color-surface-tertiary)] dark:hover:shadow-[var(--color-brand-primary)]/20'
               }`}
               aria-label="Manage Habits"
               onClick={toggleisProgressOverviewMode}
             >
               <BarChart2
                 aria-hidden="true"
-                className={`h-4 w-4 sm:h-6 sm:w-6 ${isProgressOverviewMode ? "text-white" : "text-white dark:text-[var(--color-brand-primary)]"}`}
+                className={`h-4 w-4 sm:h-6 sm:w-6 ${isProgressOverviewMode ? 'text-white' : 'text-white dark:text-[var(--color-brand-primary)]'}`}
               />
             </Button>
             <Button
@@ -90,7 +90,7 @@ export default function Header() {
               appearance={{
                 elements: {
                   userButtonAvatarBox:
-                    "min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-[var(--color-brand-primary)]/20",
+                    'min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-[var(--color-brand-primary)]/20',
                 },
               }}
             />

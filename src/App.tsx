@@ -1,10 +1,10 @@
-import { HabitsStateProvider } from "@/features/habits/context/HabitsStateContext";
-import Header from "@/features/layout/components/Header";
-import Body from "@/features/layout/components/Body";
-import AddHabitDialog from "@/features/habits/components/AddHabitDialog";
-import Footer from "@/features/layout/components/Footer";
-import EditHabitDialog from "@/features/habits/components/EditHabitDialog";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
+import Header from '@/features/layout/components/Header';
+import Body from '@/features/layout/components/Body';
+import AddHabitDialog from '@/features/habits/components/AddHabitDialog';
+import Footer from '@/features/layout/components/Footer';
+import EditHabitDialog from '@/features/habits/components/EditHabitDialog';
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 
 function App() {
   return (

@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 interface DateContextProps {
   date: Date;
@@ -21,6 +21,6 @@ export const DateContext = createContext<DateContextProps>({
   handleNextDate: () => {},
   previousDate: new Date(),
   nextDate: new Date(),
-  timeZone: "America/Los_Angeles",
+  timeZone: 'America/Los_Angeles',
   currentDate: new Date(),
 });

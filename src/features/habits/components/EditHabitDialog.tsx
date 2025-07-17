@@ -1,9 +1,9 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import HabitDialog from "@/features/habits/components/HabitDialog";
-import HabitDialogHeader from "@/features/habits/components/HabitDialogHeader";
-import HabitForm from "@/features/habits/components/HabitForm";
-import HabitStats from "@/features/habits/components/HabitStats";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import HabitDialog from '@/features/habits/components/HabitDialog';
+import HabitDialogHeader from '@/features/habits/components/HabitDialogHeader';
+import HabitForm from '@/features/habits/components/HabitForm';
+import HabitStats from '@/features/habits/components/HabitStats';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
 
 export default function EditHabitDialog() {
   const { editingHabit, showEditHabitDialog, toggleShowEditHabitDialog } =

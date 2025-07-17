@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
 export function PWAInstallPrompt() {
@@ -23,11 +23,11 @@ export function PWAInstallPrompt() {
       setIsVisible(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
       window.removeEventListener(
-        "beforeinstallprompt",
+        'beforeinstallprompt',
         handleBeforeInstallPrompt,
       );
     };
@@ -42,10 +42,10 @@ export function PWAInstallPrompt() {
     // Wait for the user to respond to the prompt
     const choiceResult = await deferredPrompt.userChoice;
 
-    if (choiceResult.outcome === "accepted") {
-      console.log("User accepted the install prompt");
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
     } else {
-      console.log("User dismissed the install prompt");
+      console.log('User dismissed the install prompt');
     }
 
     // Clear the saved prompt since it can't be used again

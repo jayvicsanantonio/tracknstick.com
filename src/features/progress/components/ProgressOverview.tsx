@@ -1,17 +1,17 @@
-import { useState } from "react";
-import ProgressCalendar from "@/features/progress/components/ProgressCalendar";
-import ProgressChart from "@/features/progress/components/ProgressChart";
-import ProgressAchievements from "@/features/progress/components/ProgressAchievements";
-import StreakDisplayDays from "@/features/progress/components/StreakDisplayDays";
+import { useState } from 'react';
+import ProgressCalendar from '@/features/progress/components/ProgressCalendar';
+import ProgressChart from '@/features/progress/components/ProgressChart';
+import ProgressAchievements from '@/features/progress/components/ProgressAchievements';
+import StreakDisplayDays from '@/features/progress/components/StreakDisplayDays';
 // import { ThemeContext } from "@/context/ThemeContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
-import useProgressHistory from "../hooks/useProgressHistory";
-import useProgressStreaks from "../hooks/useProgressStreaks";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import useProgressHistory from '../hooks/useProgressHistory';
+import useProgressStreaks from '../hooks/useProgressStreaks';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
@@ -19,32 +19,32 @@ const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
 const achievements = [
   {
     id: 1,
-    name: "Early Bird",
-    description: "Complete all habits before 9 AM",
+    name: 'Early Bird',
+    description: 'Complete all habits before 9 AM',
     icon: Sun,
   },
   {
     id: 2,
-    name: "Consistency King",
-    description: "Maintain a 7-day streak",
+    name: 'Consistency King',
+    description: 'Maintain a 7-day streak',
     icon: Crown,
   },
   {
     id: 3,
-    name: "Habit Master",
-    description: "Complete all habits for 30 days straight",
+    name: 'Habit Master',
+    description: 'Complete all habits for 30 days straight',
     icon: Award,
   },
   {
     id: 4,
-    name: "Overachiever",
-    description: "Complete 150% of your daily goals",
+    name: 'Overachiever',
+    description: 'Complete 150% of your daily goals',
     icon: Target,
   },
   {
     id: 5,
-    name: "Night Owl",
-    description: "Complete all habits after 9 PM",
+    name: 'Night Owl',
+    description: 'Complete all habits after 9 PM',
     icon: Moon,
   },
 ];

@@ -1,13 +1,13 @@
-import axiosInstance from "@/services/api/axiosInstance";
-import { Habit } from "@/features/habits/types/Habit";
-import { HabitStats } from "@/features/habits/types/HabitStats";
-import { ProgressOverview } from "@/features/progress/types/ProgressOverview";
+import axiosInstance from '@/services/api/axiosInstance';
+import { Habit } from '@/features/habits/types/Habit';
+import { HabitStats } from '@/features/habits/types/HabitStats';
+import { ProgressOverview } from '@/features/progress/types/ProgressOverview';
 
 export const fetchHabits = async (
   date: Date,
   timeZone: string,
 ): Promise<Habit[]> => {
-  const response = await axiosInstance.get<Habit[]>("/api/v1/habits", {
+  const response = await axiosInstance.get<Habit[]>('/api/v1/habits', {
     params: { date: date.toISOString(), timeZone },
   });
   return response.data;
@@ -27,18 +27,18 @@ export const fetchHabitStats = async (
 };
 
 export const addHabit = async (
-  habitData: Omit<Habit, "id" | "completed">,
+  habitData: Omit<Habit, 'id' | 'completed'>,
 ): Promise<{ message: string; habitId: string }> => {
   const response = await axiosInstance.post<{
     message: string;
     habitId: string;
-  }>("/api/v1/habits", habitData);
+  }>('/api/v1/habits', habitData);
   return response.data;
 };
 
 export const updateHabit = async (
   habitId: string,
-  habitData: Partial<Omit<Habit, "id" | "completed">>,
+  habitData: Partial<Omit<Habit, 'id' | 'completed'>>,
 ): Promise<{ message: string; habitId: string }> => {
   const response = await axiosInstance.put<{
     message: string;
@@ -78,7 +78,7 @@ export const fetchProgressOverview = async (
   timeZone: string,
 ): Promise<ProgressOverview> => {
   const response = await axiosInstance.get<ProgressOverview>(
-    "/api/v1/habits/progress/overview",
+    '/api/v1/habits/progress/overview',
     {
       params: { date: date.toISOString(), timeZone },
     },

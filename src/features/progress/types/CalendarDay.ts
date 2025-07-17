@@ -1,4 +1,4 @@
-import { InsightData } from "./InsightData";
+import { InsightData } from './InsightData';
 
 export interface CalendarDay {
   dayOfMonth: number;

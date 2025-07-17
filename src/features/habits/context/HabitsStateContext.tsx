@@ -5,9 +5,9 @@ import {
   ReactNode,
   useCallback,
   useMemo,
-} from "react";
-import { useToggle } from "@/hooks/use-toggle";
-import { Habit } from "@/features/habits/types/Habit";
+} from 'react';
+import { useToggle } from '@/hooks/use-toggle';
+import { Habit } from '@/features/habits/types/Habit';
 
 interface HabitsStateContextValue {
   isEditMode: boolean;
@@ -90,7 +90,7 @@ export function useHabitsContext() {
   const context = useContext(HabitsStateContext);
   if (context === null) {
     throw new Error(
-      "useHabitsContext must be used within a HabitsStateProvider",
+      'useHabitsContext must be used within a HabitsStateProvider',
     );
   }
   return context;

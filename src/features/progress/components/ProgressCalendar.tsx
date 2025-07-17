@@ -1,12 +1,12 @@
-import { useProgressCalendar } from "@/features/progress/hooks/useProgressCalendar";
-import MonthNavButton from "@/features/progress/components/MonthNavButton";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { InsightData } from "@/features/progress/types/InsightData";
-import CalendarDayCircle from "@/features/progress/components/CalendarDayCircle";
-import { Dispatch, SetStateAction } from "react";
+import { useProgressCalendar } from '@/features/progress/hooks/useProgressCalendar';
+import MonthNavButton from '@/features/progress/components/MonthNavButton';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { InsightData } from '@/features/progress/types/InsightData';
+import CalendarDayCircle from '@/features/progress/components/CalendarDayCircle';
+import { Dispatch, SetStateAction } from 'react';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
-const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function ProgressCalendar({
   insightData,
@@ -36,9 +36,9 @@ export default function ProgressCalendar({
           />
         </MonthNavButton>
         <h3 className="text-lg font-semibold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
-          {selectedMonth.toLocaleString("default", {
-            month: "long",
-            year: "numeric",
+          {selectedMonth.toLocaleString('default', {
+            month: 'long',
+            year: 'numeric',
           })}
         </h3>
         <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
@@ -78,8 +78,8 @@ export default function ProgressCalendar({
               aria-hidden="true"
               className={`mb-1 text-xs font-medium ${
                 isPast || isToday
-                  ? "text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
-                  : "text-[var(--color-text-tertiary)] dark:text-[var(--color-brand-secondary)]"
+                  ? 'text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]'
+                  : 'text-[var(--color-text-tertiary)] dark:text-[var(--color-brand-secondary)]'
               }`}
             >
               {dayOfMonth}

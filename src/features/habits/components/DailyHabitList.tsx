@@ -1,6 +1,6 @@
-import DailyHabitItem from "@/features/habits/components/DailyHabitItem";
-import { useHabits } from "@/features/habits/hooks/useHabits";
-import { motion } from "framer-motion";
+import DailyHabitItem from '@/features/habits/components/DailyHabitItem';
+import { useHabits } from '@/features/habits/hooks/useHabits';
+import { motion } from 'framer-motion';
 
 export default function DailyHabitList() {
   const { habits } = useHabits();

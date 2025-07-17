@@ -1,5 +1,5 @@
-import { type ReactNode } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { type ReactNode } from 'react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 export default function HabitDialog({
   isOpen,

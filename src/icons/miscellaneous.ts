@@ -14,7 +14,7 @@ import {
   Target,
   Trophy,
   Moon,
-} from "lucide-react";
+} from 'lucide-react';
 
 export default {
   Award,

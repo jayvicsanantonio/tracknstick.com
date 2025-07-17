@@ -1,8 +1,8 @@
-declare module "vite-plugin-pwa" {
-  import type { Plugin } from "vite";
+declare module 'vite-plugin-pwa' {
+  import type { Plugin } from 'vite';
 
   export interface VitePWAOptions {
-    registerType?: "autoUpdate" | "prompt" | "skipWaiting";
+    registerType?: 'autoUpdate' | 'prompt' | 'skipWaiting';
     includeAssets?: string[];
     manifest?: {
       name?: string;

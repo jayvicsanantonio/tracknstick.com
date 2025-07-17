@@ -1,13 +1,13 @@
-import { Habit } from "@/features/habits/types/Habit";
-import formatDate from "@/lib/formatDate";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import useHabitStats from "@/features/habits/hooks/useHabitStats";
-import { motion } from "framer-motion";
+import { Habit } from '@/features/habits/types/Habit';
+import formatDate from '@/lib/formatDate';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import useHabitStats from '@/features/habits/hooks/useHabitStats';
+import { motion } from 'framer-motion';
 
 const { Trophy, Calendar, CheckCircle2, Award } = MiscellaneousIcons;
 
 export default function HabitStats({ habit }: { habit: Habit | null }) {
-  const habitStats = useHabitStats(habit?.id ?? "");
+  const habitStats = useHabitStats(habit?.id ?? '');
 
   if (!habit) return null;
 

@@ -2,10 +2,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import frequencyLabel from "@/lib/frequencyLabel";
-import HabitsIcons from "@/icons/habits";
-import { Habit } from "@/features/habits/types/Habit";
+} from '@/components/ui/dialog';
+import frequencyLabel from '@/lib/frequencyLabel';
+import HabitsIcons from '@/icons/habits';
+import { Habit } from '@/features/habits/types/Habit';
 
 export default function EditHabitDialogHeaderTitle({
   habit,

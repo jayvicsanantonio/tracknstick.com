@@ -1,11 +1,11 @@
-import HabitsIcons from "@/icons/habits";
-import { Button } from "@/components/ui/button";
-import StarAnimation from "@/components/ui/animations/StarAnimation";
-import { Habit } from "@/features/habits/types/Habit";
-import frequencyLabel from "@/lib/frequencyLabel";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
-import { useHabits } from "@/features/habits/hooks/useHabits";
+import HabitsIcons from '@/icons/habits';
+import { Button } from '@/components/ui/button';
+import StarAnimation from '@/components/ui/animations/StarAnimation';
+import { Habit } from '@/features/habits/types/Habit';
+import frequencyLabel from '@/lib/frequencyLabel';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import { useHabits } from '@/features/habits/hooks/useHabits';
 
 const { Edit } = MiscellaneousIcons;
 
@@ -24,20 +24,20 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
         <div
           className={`absolute -inset-1 rounded-full opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-70 ${
             habit.completed
-              ? "bg-[var(--color-brand-primary)]/30 dark:bg-[var(--color-brand-primary)]/30"
-              : "bg-[var(--color-brand-primary)]/20 dark:bg-[var(--color-brand-primary)]/20"
+              ? 'bg-[var(--color-brand-primary)]/30 dark:bg-[var(--color-brand-primary)]/30'
+              : 'bg-[var(--color-brand-primary)]/20 dark:bg-[var(--color-brand-primary)]/20'
           }`}
         ></div>
         <button
           className={`relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-2 shadow-md sm:h-24 sm:w-24 md:h-28 md:w-28 ${
             habit.completed
-              ? "border-none bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-primary)] shadow-[var(--color-brand-primary)]/30 dark:shadow-[var(--color-brand-primary)]/30"
-              : "border-[var(--color-brand-primary)] bg-[var(--color-surface)] shadow-[var(--color-brand-light)]/40 hover:bg-[var(--color-brand-lighter)] dark:border-[var(--color-brand-primary)] dark:bg-[var(--color-surface)] dark:shadow-[var(--color-surface-secondary)]/20 dark:hover:bg-[var(--color-surface-secondary)]"
+              ? 'border-none bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-primary)] shadow-[var(--color-brand-primary)]/30 dark:shadow-[var(--color-brand-primary)]/30'
+              : 'border-[var(--color-brand-primary)] bg-[var(--color-surface)] shadow-[var(--color-brand-light)]/40 hover:bg-[var(--color-brand-lighter)] dark:border-[var(--color-brand-primary)] dark:bg-[var(--color-surface)] dark:shadow-[var(--color-surface-secondary)]/20 dark:hover:bg-[var(--color-surface-secondary)]'
           } transform transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95`}
           onClick={() => {
             if (habit.id) {
               toggleHabit(habit.id).catch((error) => {
-                console.error("Failed to toggle habit:", error);
+                console.error('Failed to toggle habit:', error);
               });
             }
           }}
@@ -52,8 +52,8 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
             aria-hidden="true"
             className={`h-10 w-10 transition-colors sm:h-12 sm:w-12 md:h-14 md:w-14 ${
               habit.completed
-                ? "text-[var(--color-text-inverse)]"
-                : "text-[var(--color-brand-primary)] dark:text-[var(--color-brand-primary)]"
+                ? 'text-[var(--color-text-inverse)]'
+                : 'text-[var(--color-brand-primary)] dark:text-[var(--color-brand-primary)]'
             }`}
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />

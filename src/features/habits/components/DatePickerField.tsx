@@ -1,8 +1,8 @@
-import DatePicker from "react-datepicker";
-import { Label } from "@/components/ui/label";
+import DatePicker from 'react-datepicker';
+import { Label } from '@/components/ui/label';
 import DatePickerInput, {
   datePickerInputStyles,
-} from "@/features/habits/components/DatePickerInput";
+} from '@/features/habits/components/DatePickerInput';
 
 interface DatePickerFieldProps {
   id: string;
@@ -160,7 +160,7 @@ export default function DatePickerField({
   placeholder,
   isClearable = false,
   isRequired = false,
-  heightClass = "h-16",
+  heightClass = 'h-16',
 }: DatePickerFieldProps) {
   return (
     <div className={`space-y-2 ${heightClass}`}>

@@ -1,5 +1,5 @@
-import { SignIn } from "@clerk/clerk-react";
-import { motion } from "framer-motion";
+import { SignIn } from '@clerk/clerk-react';
+import { motion } from 'framer-motion';
 
 export default function Welcome() {
   return (
@@ -23,7 +23,7 @@ export default function Welcome() {
               appearance={{
                 elements: {
                   formButtonPrimary:
-                    "bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] dark:bg-[var(--color-brand-secondary)] dark:hover:bg-[var(--color-brand-primary)] text-[var(--color-text-inverse)] rounded-full font-semibold transition-colors duration-300 shadow-lg",
+                    'bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] dark:bg-[var(--color-brand-secondary)] dark:hover:bg-[var(--color-brand-primary)] text-[var(--color-text-inverse)] rounded-full font-semibold transition-colors duration-300 shadow-lg',
                 },
               }}
             />

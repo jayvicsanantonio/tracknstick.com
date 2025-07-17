@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useHabits } from "@/features/habits/hooks/useHabits";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useHabits } from '@/features/habits/hooks/useHabits';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,17 +13,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Habit } from "@/features/habits/types/Habit";
-import HabitsIcons from "@/icons/habits";
+} from '@/components/ui/alert-dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Habit } from '@/features/habits/types/Habit';
+import HabitsIcons from '@/icons/habits';
 
 export default function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useHabits();
   const { toggleisHabitsOverviewMode, openEditDialog } = useHabitsContext();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTab, setSelectedTab] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTab, setSelectedTab] = useState('all');
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
 
   // Filter habits based on search term and selected tab
@@ -32,9 +32,9 @@ export default function HabitsOverview() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    if (selectedTab === "all") return matchesSearch;
-    if (selectedTab === "active") return matchesSearch && !habit.endDate;
-    if (selectedTab === "completed") return matchesSearch && !!habit.endDate;
+    if (selectedTab === 'all') return matchesSearch;
+    if (selectedTab === 'active') return matchesSearch && !habit.endDate;
+    if (selectedTab === 'completed') return matchesSearch && !!habit.endDate;
     return matchesSearch;
   });
 
@@ -47,7 +47,7 @@ export default function HabitsOverview() {
           transition={{
             duration: 1,
             repeat: Infinity,
-            ease: "linear",
+            ease: 'linear',
           }}
         />
       </div>
@@ -165,8 +165,8 @@ export default function HabitsOverview() {
               >
                 <p className="mb-2 text-gray-600 dark:text-white">
                   {searchTerm
-                    ? "No habits match your search"
-                    : "No habits found"}
+                    ? 'No habits match your search'
+                    : 'No habits found'}
                 </p>
               </motion.div>
             ) : (
@@ -232,11 +232,11 @@ export default function HabitsOverview() {
                               <span
                                 className={`rounded-full px-2 py-1 text-xs ${
                                   habit.endDate
-                                    ? "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-white"
-                                    : "bg-green-100 text-green-700 dark:bg-green-700 dark:text-white"
+                                    ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-white'
+                                    : 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-white'
                                 }`}
                               >
-                                {habit.endDate ? "Archived" : "Active"}
+                                {habit.endDate ? 'Archived' : 'Active'}
                               </span>
                             </td>
                             <td className="px-3 py-3 text-right sm:px-4 sm:py-4">

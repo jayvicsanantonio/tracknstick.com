@@ -1,7 +1,7 @@
-import { useContext, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { DateContext } from "@/context/DateContext";
-import MiscellaneousIcons from "@/icons/miscellaneous";
+import { useContext, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
+import { DateContext } from '@/context/DateContext';
+import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
@@ -10,11 +10,11 @@ export default function DailyHabitDate() {
     useContext(DateContext);
 
   const formattedDate = useMemo(() => {
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString('en-US', {
       timeZone,
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   }, [date, timeZone]);
 
@@ -22,11 +22,11 @@ export default function DailyHabitDate() {
     const today = new Date();
     const isToday = date.toDateString() === today.toDateString();
     if (isToday) {
-      return "Today";
+      return 'Today';
     } else {
-      return date.toLocaleDateString("en-US", {
+      return date.toLocaleDateString('en-US', {
         timeZone,
-        weekday: "long",
+        weekday: 'long',
       });
     }
   }, [date, timeZone]);

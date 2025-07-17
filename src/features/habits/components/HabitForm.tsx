@@ -1,18 +1,18 @@
-import { useContext, useState, useCallback } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import "react-datepicker/dist/react-datepicker.css";
-import { Habit } from "@/features/habits/types/Habit";
-import { Frequency } from "@/features/habits/types/Frequency";
-import HabitsIcons from "@/icons/habits";
-import { useHabits } from "@/features/habits/hooks/useHabits";
-import DatePickerField, { datePickerStyles } from "./DatePickerField";
-import IconPicker from "./IconPicker";
-import FrequencySelector from "./FrequencySelector";
-import FormActions from "./FormActions";
-import { DateContext } from "@/context/DateContext";
-import { getLocalEndOfDayUTC, getLocalStartofDayUTC } from "@/lib/formatDate";
+import { useContext, useState, useCallback } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Habit } from '@/features/habits/types/Habit';
+import { Frequency } from '@/features/habits/types/Frequency';
+import HabitsIcons from '@/icons/habits';
+import { useHabits } from '@/features/habits/hooks/useHabits';
+import DatePickerField, { datePickerStyles } from './DatePickerField';
+import IconPicker from './IconPicker';
+import FrequencySelector from './FrequencySelector';
+import FormActions from './FormActions';
+import { DateContext } from '@/context/DateContext';
+import { getLocalEndOfDayUTC, getLocalStartofDayUTC } from '@/lib/formatDate';
 export default function HabitForm({
   habit,
   toggleDialog,
@@ -23,7 +23,7 @@ export default function HabitForm({
   const { timeZone } = useContext(DateContext);
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [name, setName] = useState<string>(habit?.name ?? "");
+  const [name, setName] = useState<string>(habit?.name ?? '');
   const [frequency, setFrequency] = useState<Frequency[]>(
     habit?.frequency ?? [],
   );
@@ -50,7 +50,7 @@ export default function HabitForm({
       try {
         await deleteHabit(habitId, habit.name);
       } catch (error) {
-        console.error("Failed to delete habit:", error);
+        console.error('Failed to delete habit:', error);
       } finally {
         toggleDialog();
       }
@@ -75,7 +75,7 @@ export default function HabitForm({
         await addHabit(habitData);
       }
     } catch (error) {
-      console.error("Failed to save habit:", error);
+      console.error('Failed to save habit:', error);
     } finally {
       setIsSubmitting(false);
       toggleDialog();

@@ -1,4 +1,4 @@
-import { HistoryDates } from "@/features/progress/types/HistoryDates";
+import { HistoryDates } from '@/features/progress/types/HistoryDates';
 
 export interface ProgressOverview {
   currentStreak: number;

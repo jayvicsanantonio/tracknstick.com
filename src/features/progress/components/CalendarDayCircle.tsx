@@ -1,4 +1,4 @@
-import { InsightData } from "@/features/progress/types/InsightData";
+import { InsightData } from '@/features/progress/types/InsightData';
 
 export default function CalendarDayCircle({
   dayData,
@@ -11,9 +11,9 @@ export default function CalendarDayCircle({
 }) {
   const showCircle = isPast || isToday;
   const percent = dayData ? Math.round(dayData.completionRate) : 0;
-  let ariaLabel = "Future day";
+  let ariaLabel = 'Future day';
   if (showCircle) {
-    ariaLabel = dayData ? `${percent}% completion` : "0% completion";
+    ariaLabel = dayData ? `${percent}% completion` : '0% completion';
   }
 
   return (

@@ -1,6 +1,6 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import HabitsIcons from "@/icons/habits";
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import HabitsIcons from '@/icons/habits';
 
 interface IconPickerProps {
   selectedIcon: keyof typeof HabitsIcons | undefined;
@@ -11,7 +11,7 @@ interface IconPickerProps {
 export default function IconPicker({
   selectedIcon,
   onIconChange,
-  label = "Icon",
+  label = 'Icon',
 }: IconPickerProps) {
   return (
     <div className="space-y-1 sm:space-y-2">

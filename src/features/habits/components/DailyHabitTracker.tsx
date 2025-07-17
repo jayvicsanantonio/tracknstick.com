@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import NoHabits from "@/features/habits/components/NoHabits";
-import DailyHabitDate from "@/features/habits/components/DailyHabitDate";
-import DailyHabitProgressIndicator from "@/features/habits/components/DailyHabitProgressIndicator";
-import DailyHabitList from "@/features/habits/components/DailyHabitList";
-import { useHabits } from "@/features/habits/hooks/useHabits";
-import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import NoHabits from '@/features/habits/components/NoHabits';
+import DailyHabitDate from '@/features/habits/components/DailyHabitDate';
+import DailyHabitProgressIndicator from '@/features/habits/components/DailyHabitProgressIndicator';
+import DailyHabitList from '@/features/habits/components/DailyHabitList';
+import { useHabits } from '@/features/habits/hooks/useHabits';
+import { motion } from 'framer-motion';
 
 export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate } = useHabits();
@@ -18,7 +18,7 @@ export default function DailyHabitTracker() {
           transition={{
             duration: 1,
             repeat: Infinity,
-            ease: "linear",
+            ease: 'linear',
           }}
         />
       </div>
