@@ -40,9 +40,9 @@ export default function HabitsOverview() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <motion.div
-          className="rounded-full h-12 w-12 border-4 border-purple-600 dark:border-purple-400 border-t-transparent"
+          className="h-12 w-12 rounded-full border-4 border-purple-600 border-t-transparent dark:border-purple-400"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -56,7 +56,7 @@ export default function HabitsOverview() {
 
   if (error) {
     return (
-      <div className="p-8 text-center rounded-lg border bg-red-50 border-red-200 text-red-600 dark:bg-red-900/30 dark:border-red-700 dark:text-red-100">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center text-red-600 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
         Error loading habits. Please try again.
       </div>
     );
@@ -75,15 +75,15 @@ export default function HabitsOverview() {
 
   return (
     <motion.div
-      className="flex-1 flex flex-col h-full"
+      className="flex h-full flex-1 flex-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full flex-1 flex flex-col overflow-hidden shadow-xl border-purple-100 bg-white shadow-purple-200/50 dark:border-purple-950 dark:bg-[#121228] dark:shadow-purple-900/20">
-        <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6">
+      <Card className="flex w-full flex-1 flex-col overflow-hidden border-purple-100 bg-white shadow-xl shadow-purple-200/50 dark:border-purple-950 dark:bg-[#121228] dark:shadow-purple-900/20">
+        <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
           <div>
-            <CardTitle className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white">
+            <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-black sm:text-2xl dark:text-white">
               <Button
                 variant="ghost"
                 size="icon"
@@ -119,10 +119,10 @@ export default function HabitsOverview() {
             </p>
           </div>
         </CardHeader>
-        <CardContent className="px-3 sm:px-6 pb-6 sm:pb-8 flex-1 overflow-auto">
-          <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between">
+        <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
+          <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
             <Input
-              className="w-full sm:max-w-[300px] bg-white border-gray-400 text-black placeholder:text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-400"
+              className="w-full border-gray-400 bg-white text-black placeholder:text-gray-500 sm:max-w-[300px] dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
               placeholder="Search habits..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -134,19 +134,19 @@ export default function HabitsOverview() {
             >
               <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-gray-800">
                 <TabsTrigger
-                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white dark:text-gray-200"
+                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:text-gray-200 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white"
                   value="all"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white dark:text-gray-200"
+                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:text-gray-200 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white"
                   value="active"
                 >
                   Active
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white dark:text-gray-200"
+                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:text-gray-200 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white"
                   value="completed"
                 >
                   Archived
@@ -161,33 +161,33 @@ export default function HabitsOverview() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-8 sm:py-12"
+                className="py-8 text-center sm:py-12"
               >
-                <p className="text-gray-600 dark:text-white mb-2">
+                <p className="mb-2 text-gray-600 dark:text-white">
                   {searchTerm
                     ? "No habits match your search"
                     : "No habits found"}
                 </p>
               </motion.div>
             ) : (
-              <div className="rounded-lg border border-gray-200 dark:border-purple-900 overflow-hidden">
+              <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-purple-900">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="text-left bg-gray-50 dark:bg-purple-950">
+                    <thead className="bg-gray-50 text-left dark:bg-purple-950">
                       <tr>
-                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-gray-800 dark:text-purple-100">
+                        <th className="px-3 py-3 text-xs font-medium text-gray-800 sm:px-4 sm:text-sm dark:text-purple-100">
                           Habit
                         </th>
-                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm hidden sm:table-cell text-gray-800 dark:text-purple-100">
+                        <th className="hidden px-3 py-3 text-xs font-medium text-gray-800 sm:table-cell sm:px-4 sm:text-sm dark:text-purple-100">
                           Frequency
                         </th>
-                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm hidden md:table-cell text-gray-800 dark:text-purple-100">
+                        <th className="hidden px-3 py-3 text-xs font-medium text-gray-800 sm:px-4 sm:text-sm md:table-cell dark:text-purple-100">
                           Start Date
                         </th>
-                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-gray-800 dark:text-purple-100">
+                        <th className="px-3 py-3 text-xs font-medium text-gray-800 sm:px-4 sm:text-sm dark:text-purple-100">
                           Status
                         </th>
-                        <th className="px-3 sm:px-4 py-3 font-medium text-xs sm:text-sm text-right text-gray-800 dark:text-purple-100">
+                        <th className="px-3 py-3 text-right text-xs font-medium text-gray-800 sm:px-4 sm:text-sm dark:text-purple-100">
                           Actions
                         </th>
                       </tr>
@@ -203,34 +203,34 @@ export default function HabitsOverview() {
                             exit={{ opacity: 0, y: -10 }}
                             className="hover:bg-gray-50 dark:hover:bg-purple-950/60"
                           >
-                            <td className="px-3 sm:px-4 py-3 sm:py-4">
+                            <td className="px-3 py-3 sm:px-4 sm:py-4">
                               <div className="flex items-center gap-2 sm:gap-3">
-                                <div className="p-1.5 sm:p-2 rounded-full flex items-center justify-center bg-purple-100 dark:bg-purple-800/70">
-                                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-100" />
+                                <div className="flex items-center justify-center rounded-full bg-purple-100 p-1.5 sm:p-2 dark:bg-purple-800/70">
+                                  <Icon className="h-4 w-4 text-purple-600 sm:h-5 sm:w-5 dark:text-purple-100" />
                                 </div>
-                                <span className="font-medium text-sm sm:text-base line-clamp-1 text-gray-800 dark:text-white">
+                                <span className="line-clamp-1 text-sm font-medium text-gray-800 sm:text-base dark:text-white">
                                   {habit.name}
                                 </span>
                               </div>
                             </td>
-                            <td className="px-3 sm:px-4 py-3 sm:py-4 hidden sm:table-cell">
+                            <td className="hidden px-3 py-3 sm:table-cell sm:px-4 sm:py-4">
                               <div className="flex flex-wrap gap-1">
                                 {habit.frequency.map((day) => (
                                   <span
                                     key={day}
-                                    className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-white"
+                                    className="rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700 dark:bg-purple-800 dark:text-white"
                                   >
                                     {day.substring(0, 3)}
                                   </span>
                                 ))}
                               </div>
                             </td>
-                            <td className="px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm hidden md:table-cell text-gray-800 dark:text-purple-100">
+                            <td className="hidden px-3 py-3 text-xs text-gray-800 sm:px-4 sm:py-4 sm:text-sm md:table-cell dark:text-purple-100">
                               {new Date(habit.startDate).toLocaleDateString()}
                             </td>
-                            <td className="px-3 sm:px-4 py-3 sm:py-4">
+                            <td className="px-3 py-3 sm:px-4 sm:py-4">
                               <span
-                                className={`text-xs px-2 py-1 rounded-full ${
+                                className={`rounded-full px-2 py-1 text-xs ${
                                   habit.endDate
                                     ? "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-white"
                                     : "bg-green-100 text-green-700 dark:bg-green-700 dark:text-white"
@@ -239,13 +239,13 @@ export default function HabitsOverview() {
                                 {habit.endDate ? "Archived" : "Active"}
                               </span>
                             </td>
-                            <td className="px-3 sm:px-4 py-3 sm:py-4 text-right">
+                            <td className="px-3 py-3 text-right sm:px-4 sm:py-4">
                               <div className="flex items-center justify-end gap-1 sm:gap-2">
                                 <Button
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => openEditDialog(habit)}
-                                  className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-gray-100 text-purple-600 dark:bg-purple-900/70 dark:hover:bg-purple-800 dark:text-white"
+                                  className="h-7 w-7 text-purple-600 hover:bg-gray-100 sm:h-8 sm:w-8 dark:bg-purple-900/70 dark:text-white dark:hover:bg-purple-800"
                                 >
                                   <svg
                                     className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -273,7 +273,7 @@ export default function HabitsOverview() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleDeleteHabit(habit)}
-                                  className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-red-100 text-red-600 dark:bg-red-900/70 dark:hover:bg-red-800 dark:text-white"
+                                  className="h-7 w-7 text-red-600 hover:bg-red-100 sm:h-8 sm:w-8 dark:bg-red-900/70 dark:text-white dark:hover:bg-red-800"
                                 >
                                   <svg
                                     className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -329,7 +329,7 @@ export default function HabitsOverview() {
         open={!!habitToDelete}
         onOpenChange={(open) => !open && setHabitToDelete(null)}
       >
-        <AlertDialogContent className="bg-white text-black dark:bg-gray-800 dark:border-purple-900 dark:text-white">
+        <AlertDialogContent className="bg-white text-black dark:border-purple-900 dark:bg-gray-800 dark:text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-gray-800 dark:text-white">
               Delete Habit
@@ -345,7 +345,7 @@ export default function HabitsOverview() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700 text-white focus:ring-purple-400 dark:focus:ring-purple-800"
+              className="bg-red-600 text-white hover:bg-red-700 focus:ring-purple-400 dark:focus:ring-purple-800"
             >
               Delete
             </AlertDialogAction>

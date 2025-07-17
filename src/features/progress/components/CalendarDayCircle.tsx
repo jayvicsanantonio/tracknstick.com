@@ -17,8 +17,8 @@ export default function CalendarDayCircle({
   }
 
   return (
-    <div className="relative w-1/2 h-1/2" role="img" aria-label={ariaLabel}>
-      <svg className="w-full h-full" viewBox="0 0 36 36" aria-hidden="true">
+    <div className="relative h-1/2 w-1/2" role="img" aria-label={ariaLabel}>
+      <svg className="h-full w-full" viewBox="0 0 36 36" aria-hidden="true">
         <circle
           className="text-[var(--color-border-brand)] dark:text-[var(--color-brand-light)]"
           strokeWidth="4"
@@ -43,7 +43,7 @@ export default function CalendarDayCircle({
           />
         )}
       </svg>
-      <div className="absolute inset-0 md:flex items-center justify-center hidden">
+      <div className="absolute inset-0 hidden items-center justify-center md:flex">
         <span className="text-[0.6rem] font-medium text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
           {percent}%
         </span>

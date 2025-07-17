@@ -2,9 +2,7 @@
 
 interface ClerkInstance {
   session?: {
-    getToken: (options?: {
-      template?: string;
-    }) => Promise<string | null>;
+    getToken: (options?: { template?: string }) => Promise<string | null>;
   };
 }
 
@@ -22,18 +20,18 @@ interface ImportMeta {
 }
 
 // PWA Virtual modules
-declare module 'virtual:pwa-register' {
+declare module "virtual:pwa-register" {
   export interface RegisterSWOptions {
     immediate?: boolean;
     onNeedRefresh?: () => void;
     onOfflineReady?: () => void;
     onRegistered?: (
-      registration: ServiceWorkerRegistration | undefined
+      registration: ServiceWorkerRegistration | undefined,
     ) => void;
     onRegisterError?: (error: Error) => void;
   }
 
   export function registerSW(
-    options?: RegisterSWOptions
+    options?: RegisterSWOptions,
   ): (reloadPage?: boolean) => Promise<void>;
 }

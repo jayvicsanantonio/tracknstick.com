@@ -47,50 +47,49 @@ We extended the Vite configuration to include the PWA plugin with specific setti
 
 ```typescript
 // @ts-nocheck
-import path from 'path';
-import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
-import { VitePWA } from 'vite-plugin-pwa';
+import path from "path";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'offline.html'],
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.ico", "offline.html"],
       manifest: {
-        name: 'TrackNStick',
-        short_name: 'TrackNStick',
-        description:
-          'TrackNStick - Track and manage your assets efficiently',
-        theme_color: '#4f46e5',
+        name: "TrackNStick",
+        short_name: "TrackNStick",
+        description: "TrackNStick - Track and manage your assets efficiently",
+        theme_color: "#4f46e5",
         icons: [
           {
-            src: '/icons/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable',
+            src: "/icons/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable",
           },
           {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
+            src: "/icons/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
           },
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        navigateFallback: 'index.html',
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        navigateFallback: "index.html",
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
@@ -102,9 +101,9 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/api\.tracknstick\.com\/api\/.*/i,
-            handler: 'NetworkFirst',
+            handler: "NetworkFirst",
             options: {
-              cacheName: 'api-cache',
+              cacheName: "api-cache",
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24, // 24 hours
@@ -116,15 +115,15 @@ export default defineConfig({
           },
         ],
       },
-      strategies: 'generateSW',
-      filename: 'sw.js',
+      strategies: "generateSW",
+      filename: "sw.js",
       navigateFallbackDenylist: [/^\/api/],
-      navigateFallback: 'index.html',
+      navigateFallback: "index.html",
     }),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });
@@ -135,11 +134,11 @@ export default defineConfig({
 We created custom type declarations for the vite-plugin-pwa module:
 
 ```typescript
-declare module 'vite-plugin-pwa' {
-  import type { Plugin } from 'vite';
+declare module "vite-plugin-pwa" {
+  import type { Plugin } from "vite";
 
   export interface VitePWAOptions {
-    registerType?: 'autoUpdate' | 'prompt' | 'skipWaiting';
+    registerType?: "autoUpdate" | "prompt" | "skipWaiting";
     includeAssets?: string[];
     manifest?: {
       name?: string;
@@ -199,19 +198,19 @@ We added type declarations for the virtual modules provided by vite-plugin-pwa:
 
 ```typescript
 // PWA Virtual modules
-declare module 'virtual:pwa-register' {
+declare module "virtual:pwa-register" {
   export interface RegisterSWOptions {
     immediate?: boolean;
     onNeedRefresh?: () => void;
     onOfflineReady?: () => void;
     onRegistered?: (
-      registration: ServiceWorkerRegistration | undefined
+      registration: ServiceWorkerRegistration | undefined,
     ) => void;
     onRegisterError?: (error: Error) => void;
   }
 
   export function registerSW(
-    options?: RegisterSWOptions
+    options?: RegisterSWOptions,
   ): (reloadPage?: boolean) => Promise<void>;
 }
 ```
@@ -224,10 +223,7 @@ We updated the HTML file to include PWA-specific meta tags:
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.ico" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta
     name="description"
     content="TrackNStick - Track and manage your assets efficiently"
@@ -243,17 +239,17 @@ We updated the HTML file to include PWA-specific meta tags:
 We added code to register the service worker with update and offline notifications:
 
 ```typescript
-import { registerSW } from 'virtual:pwa-register';
+import { registerSW } from "virtual:pwa-register";
 
 // Register service worker
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm('New content available. Reload?')) {
+    if (confirm("New content available. Reload?")) {
       void updateSW(true);
     }
   },
   onOfflineReady() {
-    console.log('App ready to work offline');
+    console.log("App ready to work offline");
   },
 });
 ```
@@ -344,10 +340,7 @@ We created a dedicated offline page to enhance the user experience when connecti
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TrackNStick - Offline</title>
     <style>
       /* Styling omitted for brevity */
@@ -358,13 +351,12 @@ We created a dedicated offline page to enhance the user experience when connecti
       <div class="icon">📶</div>
       <h1>You're Offline</h1>
       <p>
-        It looks like you've lost your internet connection. Some
-        features of TrackNStick may be unavailable until you're back
-        online.
+        It looks like you've lost your internet connection. Some features of
+        TrackNStick may be unavailable until you're back online.
       </p>
       <p>
-        Don't worry though, any changes you make will sync once your
-        connection is restored.
+        Don't worry though, any changes you make will sync once your connection
+        is restored.
       </p>
       <button class="button" onclick="window.location.reload()">
         Try Again
@@ -379,14 +371,14 @@ We created a dedicated offline page to enhance the user experience when connecti
 We added the PWA install prompt to the main App component:
 
 ```tsx
-import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 function App() {
   // Existing code...
 
   return (
     <div className={/* existing classes */}>
-      <div className="w-full max-w-7xl mx-auto flex flex-col min-h-screen">
+      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col">
         <HabitsStateProvider>
           <Header />
           <Body />

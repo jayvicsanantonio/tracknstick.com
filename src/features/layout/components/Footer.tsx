@@ -1,21 +1,21 @@
 const Footer = () => (
-  <footer className="mt-auto py-4 sm:py-6 md:py-10 border-t transition-colors duration-300 border-[var(--color-border-brand)] dark:border-[var(--color-border-primary)] text-muted-foreground">
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-8">
-      <div className="flex flex-col sm:flex-row justify-between items-center">
-        <p className="text-xs sm:text-sm mb-2 sm:mb-0">
+  <footer className="text-muted-foreground mt-auto border-t border-[var(--color-border-brand)] py-4 transition-colors duration-300 sm:py-6 md:py-10 dark:border-[var(--color-border-primary)]">
+    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-8">
+      <div className="flex flex-col items-center justify-between sm:flex-row">
+        <p className="mb-2 text-xs sm:mb-0 sm:text-sm">
           © {new Date().getFullYear()} Track N Stick. All rights reserved.
         </p>
 
         <div className="flex items-center space-x-4">
           <a
             href="#"
-            className="text-xs sm:text-sm transition hover:opacity-80 text-[var(--color-brand-primary)] hover:text-[var(--color-brand-secondary)] dark:text-[var(--color-brand-text-light)] dark:hover:text-[var(--color-brand-text-light)]"
+            className="text-xs text-[var(--color-brand-primary)] transition hover:text-[var(--color-brand-secondary)] hover:opacity-80 sm:text-sm dark:text-[var(--color-brand-text-light)] dark:hover:text-[var(--color-brand-text-light)]"
           >
             Privacy Policy
           </a>
           <a
             href="#"
-            className="text-xs sm:text-sm transition hover:opacity-80 text-[var(--color-brand-primary)] hover:text-[var(--color-brand-secondary)] dark:text-[var(--color-brand-text-light)] dark:hover:text-[var(--color-brand-text-light)]"
+            className="text-xs text-[var(--color-brand-primary)] transition hover:text-[var(--color-brand-secondary)] hover:opacity-80 sm:text-sm dark:text-[var(--color-brand-text-light)] dark:hover:text-[var(--color-brand-text-light)]"
           >
             Terms of Service
           </a>

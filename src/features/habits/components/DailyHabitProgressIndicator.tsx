@@ -12,19 +12,19 @@ export default function DailyHabitProgressIndicator({
 
   return (
     <div
-      className="flex flex-col items-center justify-center mb-12 mt-4"
+      className="mt-4 mb-12 flex flex-col items-center justify-center"
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
-      <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64">
+      <div className="relative h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64">
         {/* Drop shadow for the progress circle */}
         <div
           aria-hidden="true"
           className="absolute inset-0 rounded-full bg-[var(--color-brand-primary)]/30 dark:bg-[var(--color-brand-primary)]/20"
         ></div>
 
-        <div className="relative w-full h-full">
+        <div className="relative h-full w-full">
           <svg
-            className="w-full h-full"
+            className="h-full w-full"
             viewBox="0 0 100 100"
             aria-hidden="true"
           >
@@ -91,8 +91,8 @@ export default function DailyHabitProgressIndicator({
                 animate={{ scale: [0, 1.2, 1], opacity: 1 }}
                 transition={{ duration: 0.7, ease: "easeOut" }}
               >
-                <div className={`rounded-full p-5 `} aria-hidden="true">
-                  <Check className="w-32 h-32 text-[var(--color-brand-primary)]" />
+                <div className={`rounded-full p-5`} aria-hidden="true">
+                  <Check className="h-32 w-32 text-[var(--color-brand-primary)]" />
                 </div>
               </motion.div>
             ) : (
@@ -105,7 +105,7 @@ export default function DailyHabitProgressIndicator({
                 <span className="text-5xl font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
                   {displayRate}%
                 </span>
-                <span className="text-sm mt-1 text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)]">
+                <span className="mt-1 text-sm text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)]">
                   Completed
                 </span>
               </motion.div>

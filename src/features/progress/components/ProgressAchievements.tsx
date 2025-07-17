@@ -15,15 +15,15 @@ export default function ProgressAchievements({
   achievements,
 }: ProgressAchievementsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {achievements.map((achievement) => (
         <div
           key={achievement.id}
-          className="p-4 rounded-lg bg-[var(--color-surface)] dark:bg-[var(--color-brand-light)] shadow-md flex items-center space-x-4"
+          className="flex items-center space-x-4 rounded-lg bg-[var(--color-surface)] p-4 shadow-md dark:bg-[var(--color-brand-light)]"
         >
           <div
             aria-hidden="true"
-            className="p-2 rounded-full bg-[var(--color-brand-light)] dark:bg-[var(--color-brand-primary)]"
+            className="rounded-full bg-[var(--color-brand-light)] p-2 dark:bg-[var(--color-brand-primary)]"
           >
             <achievement.icon className="h-6 w-6 text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)]" />
           </div>

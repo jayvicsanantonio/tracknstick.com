@@ -20,7 +20,7 @@ export default function EditHabitDialogHeaderTitle({
   return (
     <DialogHeader>
       <DialogTitle className="text-2xl font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
-        {HabitIcon && <HabitIcon className="inline-block mr-2 h-8 w-8" />}
+        {HabitIcon && <HabitIcon className="mr-2 inline-block h-8 w-8" />}
         {habit.name}
       </DialogTitle>
       <DialogDescription>{frequencyLabel(habit.frequency)}</DialogDescription>

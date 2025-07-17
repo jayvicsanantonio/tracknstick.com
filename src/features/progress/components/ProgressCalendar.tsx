@@ -48,11 +48,11 @@ export default function ProgressCalendar({
           />
         </MonthNavButton>
       </div>
-      <div className="grid grid-cols-7 gap-1 mt-4" role="grid">
+      <div className="mt-4 grid grid-cols-7 gap-1" role="grid">
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-center font-bold text-xs text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
+            className="text-center text-xs font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
             role="columnheader"
             aria-label={day}
           >
@@ -70,13 +70,13 @@ export default function ProgressCalendar({
         {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }, index) => (
           <div
             key={index}
-            className="aspect-square flex flex-col items-center justify-center p-1"
+            className="flex aspect-square flex-col items-center justify-center p-1"
             role="gridcell"
             aria-label={`Day ${dayOfMonth}`}
           >
             <span
               aria-hidden="true"
-              className={`text-xs font-medium mb-1 ${
+              className={`mb-1 text-xs font-medium ${
                 isPast || isToday
                   ? "text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
                   : "text-[var(--color-text-tertiary)] dark:text-[var(--color-brand-secondary)]"

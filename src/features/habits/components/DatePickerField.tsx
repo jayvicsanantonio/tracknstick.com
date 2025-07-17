@@ -170,7 +170,7 @@ export default function DatePickerField({
       >
         {label}
         {isRequired && (
-          <span className="text-[var(--color-error)] ml-1">*</span>
+          <span className="ml-1 text-[var(--color-error)]">*</span>
         )}
       </Label>
       <DatePicker

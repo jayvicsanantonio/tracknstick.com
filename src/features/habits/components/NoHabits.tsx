@@ -11,33 +11,28 @@ export default function NoHabits() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="
-        relative overflow-hidden
-        bg-[var(--color-surface)] dark:bg-[var(--color-surface-secondary)]
-        flex flex-col items-center justify-center gap-4 py-10 px-8 sm:px-20 text-center rounded-xl shadow-lg
-        border border-[var(--color-border-brand)] dark:border-[var(--color-border-brand)]
-      "
+      className="relative flex flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border border-[var(--color-border-brand)] bg-[var(--color-surface)] px-8 py-10 text-center shadow-lg sm:px-20 dark:border-[var(--color-border-brand)] dark:bg-[var(--color-surface-secondary)]"
     >
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10 dark:opacity-5">
-        <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-[var(--color-brand-light)]"></div>
-        <div className="absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-[var(--color-brand-primary)]"></div>
+        <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-[var(--color-brand-light)]"></div>
+        <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[var(--color-brand-primary)]"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10">
         <div
           aria-hidden="true"
-          className="mb-2 p-4 rounded-full inline-flex bg-[var(--color-brand-lighter)] dark:bg-[var(--color-surface-tertiary)]"
+          className="mb-2 inline-flex rounded-full bg-[var(--color-brand-lighter)] p-4 dark:bg-[var(--color-surface-tertiary)]"
         >
-          <CalendarX2 className="text-[var(--color-brand-primary)] dark:text-[var(--color-brand-primary)] h-10 w-10" />
+          <CalendarX2 className="h-10 w-10 text-[var(--color-brand-primary)] dark:text-[var(--color-brand-primary)]" />
         </div>
 
-        <h3 className="text-[var(--color-brand-text)] dark:text-[var(--color-brand-text-light)] text-xl font-bold mb-2">
+        <h3 className="mb-2 text-xl font-bold text-[var(--color-brand-text)] dark:text-[var(--color-brand-text-light)]">
           No Habits Found
         </h3>
 
-        <p className="text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)] max-w-md mx-auto mb-4 text-sm sm:text-base">
+        <p className="mx-auto mb-4 max-w-md text-sm text-[var(--color-brand-primary)] sm:text-base dark:text-[var(--color-brand-text-light)]">
           Try adding a new habit to start tracking your daily progress, or check
           a different date to view existing habits. Building good habits is the
           first step towards achieving your goals!
@@ -46,11 +41,7 @@ export default function NoHabits() {
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
           <Button
             onClick={toggleShowAddHabitDialog}
-            className="
-              bg-gradient-to-r from-[var(--color-brand-primary)] to-[var(--color-brand-primary)] hover:from-[var(--color-brand-primary)] hover:to-[var(--color-brand-primary)]
-              text-[var(--color-text-inverse)] rounded-full font-semibold transition-all duration-300
-              shadow-md hover:shadow-lg px-6 py-5 mt-2
-            "
+            className="mt-2 rounded-full bg-gradient-to-r from-[var(--color-brand-primary)] to-[var(--color-brand-primary)] px-6 py-5 font-semibold text-[var(--color-text-inverse)] shadow-md transition-all duration-300 hover:from-[var(--color-brand-primary)] hover:to-[var(--color-brand-primary)] hover:shadow-lg"
             aria-label="Add a new habit"
           >
             <PlusCircle aria-hidden="true" className="mr-2 h-4 w-4" /> Add New

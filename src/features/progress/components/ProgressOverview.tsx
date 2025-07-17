@@ -67,15 +67,15 @@ export default function ProgressOverview() {
 
   return (
     <motion.div
-      className="flex-1 flex flex-col h-full"
+      className="flex h-full flex-1 flex-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full flex-1 flex flex-col overflow-hidden shadow-xl border-purple-100 bg-white shadow-purple-200/50 dark:border-purple-900 dark:bg-[#121228] dark:shadow-purple-900/20">
-        <CardHeader className="px-3 sm:px-6 pt-4 sm:pt-6">
+      <Card className="flex w-full flex-1 flex-col overflow-hidden border-purple-100 bg-white shadow-xl shadow-purple-200/50 dark:border-purple-900 dark:bg-[#121228] dark:shadow-purple-900/20">
+        <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
           <div>
-            <CardTitle className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2 dark:text-white">
+            <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold sm:text-2xl dark:text-white">
               <Button
                 variant="ghost"
                 size="icon"
@@ -108,53 +108,53 @@ export default function ProgressOverview() {
               </Button>
               Progress Overview
             </CardTitle>
-            <p className="text-sm dark:text-purple-400 text-zinc-600">
+            <p className="text-sm text-zinc-600 dark:text-purple-400">
               View your progress in one place
             </p>
           </div>
         </CardHeader>
-        <CardContent className="px-3 sm:px-6 pb-6 sm:pb-8 flex-1 overflow-auto">
-          <div className="flex justify-center items-center mb-4">
-            <div className="flex items-center space-x-8 dark:text-purple-300 text-purple-800">
+        <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
+          <div className="mb-4 flex items-center justify-center">
+            <div className="flex items-center space-x-8 text-purple-800 dark:text-purple-300">
               <StreakDisplayDays value={currentStreak} label="Current Streak" />
               <StreakDisplayDays value={longestStreak} label="Longest Streak" />
             </div>
           </div>
           <Tabs defaultValue="calendar" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 dark:bg-zinc-800 bg-purple-200">
+            <TabsList className="grid w-full grid-cols-3 bg-purple-200 dark:bg-zinc-800">
               <TabsTrigger
                 value="calendar"
-                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:data-[state=inactive]:text-purple-400 dark:hover:text-white"
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:hover:text-white dark:data-[state=inactive]:text-purple-400"
               >
-                <Calendar aria-hidden="true" className="w-4 h-4 mr-2" />
+                <Calendar aria-hidden="true" className="mr-2 h-4 w-4" />
                 History
               </TabsTrigger>
               <TabsTrigger
                 value="graph"
-                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:data-[state=inactive]:text-purple-400 dark:hover:text-white"
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:hover:text-white dark:data-[state=inactive]:text-purple-400"
               >
-                <BarChart2 aria-hidden="true" className="w-4 h-4 mr-2" />
+                <BarChart2 aria-hidden="true" className="mr-2 h-4 w-4" />
                 Completion Rate
               </TabsTrigger>
               <TabsTrigger
                 value="achievements"
-                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:data-[state=inactive]:text-purple-400 dark:hover:text-white"
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:hover:text-white dark:data-[state=inactive]:text-purple-400"
               >
-                <Trophy aria-hidden="true" className="w-4 h-4 mr-2" />
+                <Trophy aria-hidden="true" className="mr-2 h-4 w-4" />
                 Achievements
               </TabsTrigger>
             </TabsList>
             <TabsContent value="calendar">
               <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
                 <CardHeader>
-                  <h3 className="text-lg font-semibold dark:text-purple-300 text-purple-800">
+                  <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
                     Calendar
                   </h3>
                 </CardHeader>
                 <CardContent className="h-fit overflow-y-auto">
                   {isLoading ? (
-                    <div className="flex justify-center items-center h-full">
-                      <p className="dark:text-purple-400 text-purple-800">
+                    <div className="flex h-full items-center justify-center">
+                      <p className="text-purple-800 dark:text-purple-400">
                         Loading calendar data...
                       </p>
                     </div>
@@ -171,14 +171,14 @@ export default function ProgressOverview() {
             <TabsContent value="graph">
               <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
                 <CardHeader>
-                  <h3 className="text-lg font-semibold dark:text-purple-300 text-purple-800">
+                  <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
                     Daily Completion Rates
                   </h3>
                 </CardHeader>
                 <CardContent className="min-h-80">
                   {isLoading ? (
-                    <div className="flex justify-center items-center h-full">
-                      <p className="dark:text-purple-400 text-purple-800">
+                    <div className="flex h-full items-center justify-center">
+                      <p className="text-purple-800 dark:text-purple-400">
                         Loading chart data...
                       </p>
                     </div>
@@ -191,7 +191,7 @@ export default function ProgressOverview() {
             <TabsContent value="achievements">
               <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
                 <CardHeader>
-                  <h3 className="text-lg font-semibold dark:text-purple-300 text-purple-800">
+                  <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
                     Achievements
                   </h3>
                 </CardHeader>

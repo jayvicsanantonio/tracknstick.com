@@ -106,14 +106,14 @@ export default function HabitForm({
       <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
-        className="min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4 text-foreground"
+        className="text-foreground grid max-h-[70vh] min-h-fit gap-3 overflow-y-auto py-2 sm:h-auto sm:max-h-none sm:gap-4 sm:py-4"
       >
         <div className="space-y-3 sm:space-y-4">
           {/* Name Input */}
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className="text-sm sm:text-base text-[var(--color-brand-text)] dark:text-[var(--color-brand-text-light)]"
+              className="text-sm text-[var(--color-brand-text)] sm:text-base dark:text-[var(--color-brand-text-light)]"
             >
               Name
               <span className="text-[var(--color-error)]">*</span>
@@ -125,7 +125,7 @@ export default function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
-              className="dark:bg-[var(--color-surface-secondary)] dark:border-[var(--color-border-brand)] dark:placeholder:text-[var(--color-brand-text-light)]"
+              className="dark:border-[var(--color-border-brand)] dark:bg-[var(--color-surface-secondary)] dark:placeholder:text-[var(--color-brand-text-light)]"
             />
           </div>
 

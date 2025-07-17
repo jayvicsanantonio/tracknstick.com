@@ -14,13 +14,13 @@ export default function FormActions({
   habit,
 }: FormActionsProps) {
   return (
-    <div className="flex flex-col-reverse sm:flex-row items-center gap-2 mt-2 sm:mt-0">
-      <div className="w-full sm:w-auto sm:flex-1 mt-2 sm:mt-0">
+    <div className="mt-2 flex flex-col-reverse items-center gap-2 sm:mt-0 sm:flex-row">
+      <div className="mt-2 w-full sm:mt-0 sm:w-auto sm:flex-1">
         {habit?.id && onDelete && (
           <Button
             type="button"
             variant="outline"
-            className="w-full sm:w-auto border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error)] hover:text-[var(--color-text-inverse)] text-sm sm:text-base bg-[var(--color-surface)] hover:bg-[var(--color-error)] dark:bg-transparent dark:hover:bg-[var(--color-error)] dark:hover:border-[var(--color-error)]"
+            className="w-full border-[var(--color-error)] bg-[var(--color-surface)] text-sm text-[var(--color-error)] hover:bg-[var(--color-error)] hover:text-[var(--color-text-inverse)] sm:w-auto sm:text-base dark:bg-transparent dark:hover:border-[var(--color-error)] dark:hover:bg-[var(--color-error)]"
             onClick={() => {
               if (!habit?.id) return;
               void onDelete(habit.id);
@@ -31,20 +31,20 @@ export default function FormActions({
           </Button>
         )}
       </div>
-      <div className="flex flex-row gap-2 w-full sm:w-auto">
+      <div className="flex w-full flex-row gap-2 sm:w-auto">
         <DialogClose asChild className={`flex-1 sm:flex-none`}>
           <Button
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="text-sm sm:text-base border-[var(--color-border-brand)] text-[var(--color-brand-primary)] hover:bg-[var(--color-hover-brand)] hover:text-[var(--color-brand-secondary)] dark:border-[var(--color-border-brand)] dark:bg-[var(--color-brand-light)] dark:text-[var(--color-brand-text-light)] dark:hover:bg-[var(--color-hover-brand)] dark:hover:text-[var(--color-brand-text-light)] dark:hover:border-[var(--color-border-brand)]"
+            className="border-[var(--color-border-brand)] text-sm text-[var(--color-brand-primary)] hover:bg-[var(--color-hover-brand)] hover:text-[var(--color-brand-secondary)] sm:text-base dark:border-[var(--color-border-brand)] dark:bg-[var(--color-brand-light)] dark:text-[var(--color-brand-text-light)] dark:hover:border-[var(--color-border-brand)] dark:hover:bg-[var(--color-hover-brand)] dark:hover:text-[var(--color-brand-text-light)]"
           >
             Cancel
           </Button>
         </DialogClose>
         <Button
           type="submit"
-          className="flex-1 sm:flex-none sm:w-32 text-sm sm:text-base bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] text-[var(--color-text-inverse)] dark:hover:bg-[var(--color-brand-primary)]"
+          className="flex-1 bg-[var(--color-brand-primary)] text-sm text-[var(--color-text-inverse)] hover:bg-[var(--color-brand-secondary)] sm:w-32 sm:flex-none sm:text-base dark:hover:bg-[var(--color-brand-primary)]"
           disabled={isSubmitting}
         >
           {isSubmitting ? "Saving..." : "Save Changes"}

@@ -12,7 +12,7 @@ export default function HabitDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={toggleIsOpen}>
-      <DialogContent className="w-[95vw] max-h-[90vh] overflow-y-auto p-4 sm:p-6 mx-auto sm:max-w-3xl bg-[var(--color-brand-lighter)] border-[var(--color-border-brand)] dark:bg-[var(--color-surface-secondary)] dark:border-[var(--color-border-secondary)]">
+      <DialogContent className="mx-auto max-h-[90vh] w-[95vw] overflow-y-auto border-[var(--color-border-brand)] bg-[var(--color-brand-lighter)] p-4 sm:max-w-3xl sm:p-6 dark:border-[var(--color-border-secondary)] dark:bg-[var(--color-surface-secondary)]">
         {children}
       </DialogContent>
     </Dialog>

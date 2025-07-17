@@ -16,16 +16,16 @@ export default function EditHabitDialog() {
     >
       <HabitDialogHeader isEditMode={true} habit={editingHabit} />
       <Tabs defaultValue="edit" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-2 sm:mb-4 rounded-md overflow-hidden bg-[var(--color-surface-tertiary)] dark:bg-[var(--color-surface-secondary)]">
+        <TabsList className="mb-2 grid w-full grid-cols-2 overflow-hidden rounded-md bg-[var(--color-surface-tertiary)] sm:mb-4 dark:bg-[var(--color-surface-secondary)]">
           <TabsTrigger
             value="edit"
-            className="text-xs sm:text-sm py-1.5 sm:py-2 font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)] dark:focus:ring-[var(--color-brand-text-light)]"
+            className="py-1.5 text-xs font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] sm:py-2 sm:text-sm dark:focus:ring-[var(--color-brand-text-light)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)]"
           >
             Edit
           </TabsTrigger>
           <TabsTrigger
             value="stats"
-            className="text-xs sm:text-sm py-1.5 sm:py-2 font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)] dark:focus:ring-[var(--color-brand-text-light)]"
+            className="py-1.5 text-xs font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] sm:py-2 sm:text-sm dark:focus:ring-[var(--color-brand-text-light)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)]"
           >
             Stats
           </TabsTrigger>
