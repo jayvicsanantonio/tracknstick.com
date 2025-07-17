@@ -164,36 +164,53 @@ HabitStats;
 #### Get Progress Overview
 
 ```http
-GET /api/v1/habits/progress/overview
+GET /api/v1/progress/overview
 ```
 
 **Query Parameters:**
 
-- `date` (string, required): ISO date string
 - `timeZone` (string, required): User's timezone
+- `startDate` (string, optional): ISO date string for range start
+- `endDate` (string, optional): ISO date string for range end
 
 **Response:**
 
 ```typescript
-ProgressOverview;
+ProgressOverviewResponse;
 ```
 
 #### Get Progress History
 
 ```http
-GET /api/v1/habits/progress/history
+GET /api/v1/progress/history
 ```
 
 **Query Parameters:**
 
 - `timeZone` (string, required): User's timezone
-- `startDate` (string, required): ISO date string for range start
-- `endDate` (string, required): ISO date string for range end
+- `startDate` (string, optional): ISO date string for range start
+- `endDate` (string, optional): ISO date string for range end
 
 **Response:**
 
 ```typescript
-HistoryDates[]
+ProgressHistoryResponse;
+```
+
+#### Get Progress Streaks
+
+```http
+GET /api/v1/progress/streaks
+```
+
+**Query Parameters:**
+
+- `timeZone` (string, required): User's timezone
+
+**Response:**
+
+```typescript
+ProgressStreaksResponse;
 ```
 
 ## Data Types
@@ -232,12 +249,10 @@ type Frequency =
 
 ```typescript
 interface HabitStats {
-  totalDays: number;
-  completedDays: number;
-  completionRate: number;
-  currentStreak: number;
+  streak: number;
   longestStreak: number;
-  lastCompleted?: Date;
+  totalCompletions: number;
+  lastCompleted: string;
 }
 ```
 
@@ -245,32 +260,49 @@ interface HabitStats {
 
 ```typescript
 interface ProgressOverview {
-  totalHabits: number;
-  completedHabits: number;
-  completionRate: number;
   currentStreak: number;
   longestStreak: number;
-  weeklyProgress: {
-    date: string;
-    completed: number;
-    total: number;
-  }[];
+  days: HistoryDates[]; // Note: In API responses, this is named "history"
 }
 ```
+
+> **Implementation Note**: There is a discrepancy between the frontend type definition and the API response. The API returns `history: HistoryDates[]` while the frontend type expects `days: HistoryDates[]`. This should be reconciled in future updates.
 
 ### HistoryDates
 
 ```typescript
 interface HistoryDates {
   date: string;
-  completedHabits: number;
-  totalHabits: number;
   completionRate: number;
-  habits: {
-    id: string;
-    name: string;
-    completed: boolean;
-  }[];
+}
+```
+
+> **Note**: In the frontend codebase, this same data structure is also used as `InsightData` in some UI components. Both interfaces are identical and represent the same data from the API.
+
+### ProgressHistoryResponse
+
+```typescript
+interface ProgressHistoryResponse {
+  history: HistoryDates[];
+}
+```
+
+### ProgressStreaksResponse
+
+```typescript
+interface ProgressStreaksResponse {
+  currentStreak: number;
+  longestStreak: number;
+}
+```
+
+### ProgressOverviewResponse
+
+```typescript
+interface ProgressOverviewResponse {
+  history: HistoryDates[];
+  currentStreak: number;
+  longestStreak: number;
 }
 ```
 
