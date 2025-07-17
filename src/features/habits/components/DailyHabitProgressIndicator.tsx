@@ -19,7 +19,7 @@ export default function DailyHabitProgressIndicator({
         {/* Drop shadow for the progress circle */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-[var(--color-brand-primary)]/30 dark:bg-[var(--color-brand-primary)]/20"
+          className="absolute inset-0 rounded-full bg-(--color-brand-primary)/30 dark:bg-(--color-brand-primary)/20"
         ></div>
 
         <div className="relative h-full w-full">
@@ -31,7 +31,7 @@ export default function DailyHabitProgressIndicator({
             {/* Background track */}
             <circle
               aria-hidden="true"
-              className="text-[var(--color-brand-tertiary)]/20 dark:text-[var(--color-brand-tertiary)]/80"
+              className="text-(--color-brand-tertiary)/20 dark:text-(--color-brand-tertiary)/80"
               strokeWidth="10"
               stroke="currentColor"
               fill="transparent"
@@ -43,7 +43,7 @@ export default function DailyHabitProgressIndicator({
             {/* Glowing effect behind progress */}
             <motion.circle
               aria-hidden="true"
-              className="text-[var(--color-brand-primary)]/30 dark:text-[var(--color-brand-primary)]/30"
+              className="text-(--color-brand-primary)/30 dark:text-(--color-brand-primary)/30"
               strokeWidth="14"
               strokeDasharray={42 * 2 * Math.PI}
               strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
@@ -64,7 +64,7 @@ export default function DailyHabitProgressIndicator({
             {/* Main progress indicator */}
             <motion.circle
               aria-hidden="true"
-              className="text-[var(--color-brand-primary)] dark:text-[var(--color-brand-primary)]"
+              className="text-(--color-brand-primary) dark:text-(--color-brand-primary)"
               strokeWidth="10"
               strokeDasharray={42 * 2 * Math.PI}
               strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
@@ -92,7 +92,7 @@ export default function DailyHabitProgressIndicator({
                 transition={{ duration: 0.7, ease: 'easeOut' }}
               >
                 <div className={`rounded-full p-5`} aria-hidden="true">
-                  <Check className="h-32 w-32 text-[var(--color-brand-primary)]" />
+                  <Check className="h-32 w-32 text-(--color-brand-primary)" />
                 </div>
               </motion.div>
             ) : (
@@ -102,10 +102,10 @@ export default function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-5xl font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
+                <span className="text-5xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
                   {displayRate}%
                 </span>
-                <span className="mt-1 text-sm text-[var(--color-brand-primary)] dark:text-[var(--color-brand-text-light)]">
+                <span className="mt-1 text-sm text-(--color-brand-primary) dark:text-(--color-brand-text-light)">
                   Completed
                 </span>
               </motion.div>

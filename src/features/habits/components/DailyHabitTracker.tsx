@@ -13,7 +13,7 @@ export default function DailyHabitTracker() {
     return (
       <div className="flex flex-1 items-center justify-center">
         <motion.div
-          className="h-12 w-12 rounded-full border-4 border-[var(--color-brand-primary)] border-t-transparent"
+          className="h-12 w-12 rounded-full border-4 border-(--color-brand-primary) border-t-transparent"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -27,7 +27,7 @@ export default function DailyHabitTracker() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-[var(--color-error-light)] bg-[var(--color-error-light)] p-8 text-center text-[var(--color-error-text)] dark:border-[var(--color-error)] dark:bg-[var(--color-error-light)] dark:text-[var(--color-error-text)]">
+      <div className="rounded-lg border border-(--color-error-light) bg-(--color-error-light) p-8 text-center text-(--color-error-text) dark:border-(--color-error) dark:bg-(--color-error-light) dark:text-(--color-error-text)">
         Error loading habits. Please try again.
       </div>
     );
@@ -40,7 +40,7 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="flex w-full flex-1 flex-col overflow-hidden border-[var(--color-border-brand)] bg-[var(--color-surface)] shadow-[var(--color-border-brand)]/50 shadow-xl dark:border-[var(--color-border-brand)] dark:bg-[var(--color-surface)] dark:shadow-[var(--color-border-brand)]/20">
+      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface) dark:shadow-(--color-border-brand)/20">
         <CardHeader className="px-3 pt-6 sm:px-6">
           <DailyHabitDate />
         </CardHeader>

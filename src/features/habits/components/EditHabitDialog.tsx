@@ -16,16 +16,16 @@ export default function EditHabitDialog() {
     >
       <HabitDialogHeader isEditMode={true} habit={editingHabit} />
       <Tabs defaultValue="edit" className="w-full">
-        <TabsList className="mb-2 grid w-full grid-cols-2 overflow-hidden rounded-md bg-[var(--color-surface-tertiary)] sm:mb-4 dark:bg-[var(--color-surface-secondary)]">
+        <TabsList className="mb-2 grid w-full grid-cols-2 overflow-hidden rounded-md bg-(--color-surface-tertiary) sm:mb-4 dark:bg-(--color-surface-secondary)">
           <TabsTrigger
             value="edit"
-            className="py-1.5 text-xs font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] sm:py-2 sm:text-sm dark:focus:ring-[var(--color-brand-text-light)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)]"
+            className="py-1.5 text-xs font-medium data-[state=active]:bg-(--color-active-brand) data-[state=active]:text-(--color-brand-tertiary) sm:py-2 sm:text-sm dark:focus:ring-(--color-brand-text-light) dark:data-[state=active]:bg-(--color-brand-primary) dark:data-[state=active]:text-(--color-text-inverse) dark:data-[state=inactive]:text-(--color-brand-text-light)"
           >
             Edit
           </TabsTrigger>
           <TabsTrigger
             value="stats"
-            className="py-1.5 text-xs font-medium data-[state=active]:bg-[var(--color-active-brand)] data-[state=active]:text-[var(--color-brand-tertiary)] sm:py-2 sm:text-sm dark:focus:ring-[var(--color-brand-text-light)] dark:data-[state=active]:bg-[var(--color-brand-primary)] dark:data-[state=active]:text-[var(--color-text-inverse)] dark:data-[state=inactive]:text-[var(--color-brand-text-light)]"
+            className="py-1.5 text-xs font-medium data-[state=active]:bg-(--color-active-brand) data-[state=active]:text-(--color-brand-tertiary) sm:py-2 sm:text-sm dark:focus:ring-(--color-brand-text-light) dark:data-[state=active]:bg-(--color-brand-primary) dark:data-[state=active]:text-(--color-text-inverse) dark:data-[state=inactive]:text-(--color-brand-text-light)"
           >
             Stats
           </TabsTrigger>

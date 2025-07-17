@@ -32,10 +32,10 @@ export default function ProgressCalendar({
         >
           <ChevronLeft
             aria-hidden="true"
-            className="h-4 w-4 text-[var(--color-text-primary)] dark:text-[var(--color-brand-text-light)]"
+            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
           />
         </MonthNavButton>
-        <h3 className="text-lg font-semibold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
+        <h3 className="text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           {selectedMonth.toLocaleString('default', {
             month: 'long',
             year: 'numeric',
@@ -44,7 +44,7 @@ export default function ProgressCalendar({
         <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
-            className="h-4 w-4 text-[var(--color-text-primary)] dark:text-[var(--color-brand-text-light)]"
+            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
           />
         </MonthNavButton>
       </div>
@@ -52,7 +52,7 @@ export default function ProgressCalendar({
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-center text-xs font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]"
+            className="text-center text-xs font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)"
             role="columnheader"
             aria-label={day}
           >
@@ -78,8 +78,8 @@ export default function ProgressCalendar({
               aria-hidden="true"
               className={`mb-1 text-xs font-medium ${
                 isPast || isToday
-                  ? 'text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]'
-                  : 'text-[var(--color-text-tertiary)] dark:text-[var(--color-brand-secondary)]'
+                  ? 'text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)'
+                  : 'text-(--color-text-tertiary) dark:text-(--color-brand-secondary)'
               }`}
             >
               {dayOfMonth}

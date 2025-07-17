@@ -15,7 +15,7 @@ export default function MonthNavButton({
       variant="outline"
       size="icon"
       aria-label={ariaLabel}
-      className="border-[var(--color-border-brand)] hover:bg-[var(--color-hover-brand)] dark:border-[var(--color-border-brand)] dark:bg-[var(--color-brand-light)] dark:text-[var(--color-brand-text-light)] dark:hover:bg-[var(--color-hover-brand)]"
+      className="border-(--color-border-brand) hover:bg-(--color-hover-brand) dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:bg-(--color-hover-brand)"
     >
       {children}
     </Button>

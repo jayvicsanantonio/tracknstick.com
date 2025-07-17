@@ -113,10 +113,10 @@ export default function HabitForm({
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className="text-sm text-[var(--color-brand-text)] sm:text-base dark:text-[var(--color-brand-text-light)]"
+              className="text-sm text-(--color-brand-text) sm:text-base dark:text-(--color-brand-text-light)"
             >
               Name
-              <span className="text-[var(--color-error)]">*</span>
+              <span className="text-(--color-error)">*</span>
             </Label>
             <Input
               id="habit-name"
@@ -125,7 +125,7 @@ export default function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
-              className="dark:border-[var(--color-border-brand)] dark:bg-[var(--color-surface-secondary)] dark:placeholder:text-[var(--color-brand-text-light)]"
+              className="dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
             />
           </div>
 
@@ -161,7 +161,7 @@ export default function HabitForm({
           />
         </div>
 
-        <Separator className="my-2 bg-[var(--color-border-brand)] dark:bg-[var(--color-brand-light)]" />
+        <Separator className="my-2 bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
 
         <FormActions
           isSubmitting={isSubmitting}

@@ -7,7 +7,7 @@ import {
 export default function AddHabitDialogHeaderTitle() {
   return (
     <DialogHeader>
-      <DialogTitle className="text-2xl font-bold text-[var(--color-brand-tertiary)] dark:text-[var(--color-brand-text-light)]">
+      <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
         Add New Habit
       </DialogTitle>
       <DialogDescription className="sr-only">

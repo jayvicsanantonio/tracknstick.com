@@ -166,12 +166,10 @@ export default function DatePickerField({
     <div className={`space-y-2 ${heightClass}`}>
       <Label
         htmlFor={id}
-        className="text-[var(--color-brand-text)] dark:text-[var(--color-brand-text-light)]"
+        className="text-(--color-brand-text) dark:text-(--color-brand-text-light)"
       >
         {label}
-        {isRequired && (
-          <span className="ml-1 text-[var(--color-error)]">*</span>
-        )}
+        {isRequired && <span className="ml-1 text-(--color-error)">*</span>}
       </Label>
       <DatePicker
         selected={selected}
