@@ -45,7 +45,7 @@ This architecture has several technical limitations:
 
 ### 3.1 Goals
 
-1.  **Implement `react-router-dom` v6** as the sole authority for application
+1.  **Implement `react-router-dom` v7.7** as the sole authority for application
     routing.
 2.  **Refactor the application** to use a route-centric architecture with
     distinct page components.
@@ -122,6 +122,30 @@ build a functional routing system in a web browser.
   `src/routes/index.tsx`.
 - **Entry Point:** `main.tsx` will be updated to provide the router to the
   application via `<RouterProvider>`.
+
+#### 4.3.1 React Router v7.7 Features
+
+**React Router v7.7** introduces several improvements over v6:
+
+- **Enhanced Data APIs:** Improved data loading patterns with better error
+  handling
+- **Better Type Safety:** Enhanced TypeScript support with more accurate type
+  inference
+- **Improved Performance:** Optimized bundle size and runtime performance
+- **Future-Ready:** Built with modern React patterns and concurrent features in
+  mind
+- **Backward Compatibility:** Maintains API compatibility with v6 while adding
+  new features
+
+**Key v7.7 APIs we will utilize:**
+
+- `createBrowserRouter` - For router configuration
+- `RouterProvider` - For providing the router to the application
+- `Outlet` - For nested route rendering
+- `NavLink` - For navigation links with active state
+- `useNavigate` - For programmatic navigation
+- `useLocation` - For accessing current location
+- `useParams` - For accessing route parameters (future use)
 
 ```typescript
 // src/main.tsx
