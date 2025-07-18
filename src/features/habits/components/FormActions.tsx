@@ -44,7 +44,7 @@ export default function FormActions({
         </DialogClose>
         <Button
           type="submit"
-          className="flex-1 bg-(--color-brand-primary) text-sm text-(--color-text-inverse) hover:bg-(--color-brand-secondary) sm:w-32 sm:flex-none sm:text-base dark:hover:bg-(--color-brand-primary)"
+          className="flex-1 bg-(--color-brand-primary) text-sm text-(--color-text-inverse) hover:bg-(--color-brand-secondary) sm:w-32 sm:flex-none sm:text-base dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Saving...' : 'Save Changes'}
