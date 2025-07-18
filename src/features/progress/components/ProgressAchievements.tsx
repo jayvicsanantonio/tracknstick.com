@@ -1,4 +1,4 @@
-import { ElementType } from "react";
+import { ElementType } from 'react';
 
 interface Achievement {
   id: string;
@@ -9,37 +9,29 @@ interface Achievement {
 
 interface ProgressAchievementsProps {
   achievements: Achievement[];
-  isDarkMode: boolean;
 }
 
 export default function ProgressAchievements({
   achievements,
-  isDarkMode,
 }: ProgressAchievementsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {achievements.map((achievement) => (
         <div
           key={achievement.id}
-          className={`p-4 rounded-lg ${isDarkMode ? "bg-purple-900/50" : "bg-white"} shadow-md flex items-center space-x-4`}
+          className="flex items-center space-x-4 rounded-lg bg-(--color-surface) p-4 shadow-md dark:bg-(--color-brand-light)"
         >
           <div
             aria-hidden="true"
-            className={`p-2 rounded-full ${isDarkMode ? "bg-purple-600" : "bg-purple-100"}`}
+            className="rounded-full bg-(--color-brand-light) p-2 dark:bg-(--color-brand-primary)"
           >
-            <achievement.icon
-              className={`h-6 w-6 ${isDarkMode ? "text-purple-300" : "text-purple-600"}`}
-            />
+            <achievement.icon className="h-6 w-6 text-(--color-brand-primary) dark:text-(--color-brand-text-light)" />
           </div>
           <div>
-            <h4
-              className={`font-semibold ${isDarkMode ? "text-purple-300" : "text-purple-800"}`}
-            >
+            <h4 className="font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
               {achievement.name}
             </h4>
-            <p
-              className={`text-sm ${isDarkMode ? "text-purple-400" : "text-gray-600"}`}
-            >
+            <p className="text-sm text-(--color-text-secondary) dark:text-(--color-brand-text-light)">
               {achievement.description}
             </p>
           </div>

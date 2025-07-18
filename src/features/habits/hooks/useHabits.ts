@@ -1,20 +1,20 @@
-import { useCallback, useContext, useState, useEffect, useMemo } from "react";
-import useSWR from "swr";
-import { useToast } from "@/hooks/use-toast";
-import { DateContext } from "@/context/DateContext";
+import { useCallback, useContext, useState, useEffect, useMemo } from 'react';
+import useSWR from 'swr';
+import { useToast } from '@/hooks/use-toast';
+import { DateContext } from '@/context/DateContext';
 
-import toggleOnSound from "@/assets/audio/habit-toggled-on.mp3";
-import toggleOffSound from "@/assets/audio/habit-toggled-off.mp3";
-import completedAllHabits from "@/assets/audio/completed-all-habits.mp3";
-import { Habit } from "@/features/habits/types/Habit";
+import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
+import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
+import completedAllHabits from '@/assets/audio/completed-all-habits.mp3';
+import { Habit } from '@/features/habits/types/Habit';
 import {
   fetchHabits,
   addHabit as apiAddHabit,
   updateHabit as apiUpdateHabit,
   deleteHabit as apiDeleteHabit,
   toggleHabitCompletion as apiToggleHabitCompletion,
-} from "@/features/habits/api";
-import { useAuth } from "@clerk/clerk-react";
+} from '@/features/habits/api';
+import { useAuth } from '@clerk/clerk-react';
 
 interface UseHabitsReturn {
   habits: Habit[];
@@ -22,10 +22,10 @@ interface UseHabitsReturn {
   error: unknown;
   animatingHabitId: string | null;
   mutateHabits: () => Promise<Habit[] | undefined>;
-  addHabit: (habitData: Omit<Habit, "id" | "completed">) => Promise<void>;
+  addHabit: (habitData: Omit<Habit, 'id' | 'completed'>) => Promise<void>;
   updateHabit: (
     habitId: string,
-    habitData: Partial<Omit<Habit, "id" | "completed">>,
+    habitData: Partial<Omit<Habit, 'id' | 'completed'>>,
   ) => Promise<void>;
   deleteHabit: (habitId: string, habitName: string) => Promise<void>;
   toggleHabit: (habitId: string) => Promise<void>;
@@ -65,7 +65,7 @@ export function useHabits(): UseHabitsReturn {
   }, [timeoutId]);
 
   const addHabit = useCallback(
-    async (habitData: Omit<Habit, "id" | "completed">) => {
+    async (habitData: Omit<Habit, 'id' | 'completed'>) => {
       try {
         await apiAddHabit(habitData);
         toast({
@@ -74,9 +74,9 @@ export function useHabits(): UseHabitsReturn {
         setDate(new Date());
         void mutateHabits();
       } catch (err) {
-        console.error("Failed to add habit:", err);
+        console.error('Failed to add habit:', err);
         toast({
-          variant: "destructive",
+          variant: 'destructive',
           description: `Failed to add habit "${habitData.name}". Please try again.`,
         });
       }
@@ -89,7 +89,7 @@ export function useHabits(): UseHabitsReturn {
   const updateHabit = useCallback(
     async (
       habitId: string,
-      habitData: Partial<Omit<Habit, "id" | "completed">>,
+      habitData: Partial<Omit<Habit, 'id' | 'completed'>>,
     ) => {
       void mutateHabits(
         (currentHabits) =>
@@ -102,14 +102,14 @@ export function useHabits(): UseHabitsReturn {
       try {
         await apiUpdateHabit(habitId, habitData);
         toast({
-          description: `Habit "${habitData.name ?? "habit"}" updated.`,
+          description: `Habit "${habitData.name ?? 'habit'}" updated.`,
         });
       } catch (err) {
-        console.error("Failed to update habit:", err);
+        console.error('Failed to update habit:', err);
         toast({
-          variant: "destructive",
+          variant: 'destructive',
           description: `Failed to update habit "${
-            habitData.name ?? "habit"
+            habitData.name ?? 'habit'
           }". Reverting changes.`,
         });
       } finally {
@@ -130,9 +130,9 @@ export function useHabits(): UseHabitsReturn {
         await apiDeleteHabit(habitId);
         toast({ description: `Habit "${habitName}" deleted.` });
       } catch (err) {
-        console.error("Failed to delete habit:", err);
+        console.error('Failed to delete habit:', err);
         toast({
-          variant: "destructive",
+          variant: 'destructive',
           description: `Failed to delete habit "${habitName}". Restoring habit.`,
         });
       } finally {
@@ -153,14 +153,14 @@ export function useHabits(): UseHabitsReturn {
       );
 
       try {
-        if (!date) throw new Error("Date context is not available");
+        if (!date) throw new Error('Date context is not available');
         await apiToggleHabitCompletion(habitId, date, timeZone);
         void mutateHabits();
       } catch (err) {
-        console.error("Failed to toggle habit completion:", err);
+        console.error('Failed to toggle habit completion:', err);
         toast({
-          variant: "destructive",
-          description: "Failed to update habit status. Reverting change.",
+          variant: 'destructive',
+          description: 'Failed to update habit status. Reverting change.',
         });
         void mutateHabits();
       }
@@ -197,12 +197,12 @@ export function useHabits(): UseHabitsReturn {
 
       if (allHabitsWereCompletedBeforeToggle) {
         const audio = new Audio(completedAllHabits);
-        await audio.play().catch((e) => console.error("Audio play failed:", e));
+        await audio.play().catch((e) => console.error('Audio play failed:', e));
       } else if (habit) {
         const audio = !habit.completed
           ? new Audio(toggleOnSound)
           : new Audio(toggleOffSound);
-        await audio.play().catch((e) => console.error("Audio play failed:", e));
+        await audio.play().catch((e) => console.error('Audio play failed:', e));
       }
     },
     [habits, timeoutId, internalToggleHabitCompletion],

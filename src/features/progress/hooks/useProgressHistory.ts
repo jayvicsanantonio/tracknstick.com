@@ -1,9 +1,9 @@
-import useSWR, { SWRResponse } from "swr";
-import { fetchProgressHistory } from "@/features/progress/api";
-import { useState, useEffect, useContext } from "react";
-import { HistoryDates } from "@/features/progress/types/HistoryDates";
-import { getLocalStartofDayUTC, getLocalEndOfDayUTC } from "@/lib/formatDate";
-import { DateContext } from "@/context/DateContext";
+import useSWR, { SWRResponse } from 'swr';
+import { fetchProgressHistory } from '@/features/progress/api';
+import { useState, useEffect, useContext } from 'react';
+import { HistoryDates } from '@/features/progress/types/HistoryDates';
+import { getLocalStartofDayUTC, getLocalEndOfDayUTC } from '@/lib/formatDate';
+import { DateContext } from '@/context/DateContext';
 
 const getMonthBoundaryDates = (date: Date, timeZone: string) => {
   const year = date.getFullYear();
@@ -41,12 +41,12 @@ export default function useProgressHistory(selectedMonth: Date) {
   const cacheKey =
     monthStartDate && monthEndDate
       ? ([
-          "progressHistory",
+          'progressHistory',
           date.toISOString(),
           monthStartDate,
           monthEndDate,
         ] as const)
-      : (["progressHistory", date.toISOString()] as const);
+      : (['progressHistory', date.toISOString()] as const);
 
   const { data, error, isLoading }: SWRResponse<HistoryDates[], Error> = useSWR<
     HistoryDates[],

@@ -1,6 +1,6 @@
-import AddHabitDialogHeaderTitle from "@/features/habits/components/AddHabitDialogHeaderTitle";
-import EditHabitDialogHeaderTitle from "@/features/habits/components/EditHabitDialogHeaderTitle";
-import { Habit } from "@/features/habits/types/Habit";
+import AddHabitDialogHeaderTitle from '@/features/habits/components/AddHabitDialogHeaderTitle';
+import EditHabitDialogHeaderTitle from '@/features/habits/components/EditHabitDialogHeaderTitle';
+import { Habit } from '@/features/habits/types/Habit';
 
 export default function HabitDialogHeader({
   isEditMode,

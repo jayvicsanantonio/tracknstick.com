@@ -4,6 +4,8 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+import prettier from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
 
 export default tseslint.config(
   { ignores: ["dist"] },
@@ -12,6 +14,7 @@ export default tseslint.config(
       js.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
+      prettierConfig,
     ],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
@@ -27,6 +30,7 @@ export default tseslint.config(
       react,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
+      prettier,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -37,6 +41,7 @@ export default tseslint.config(
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
       "react/prop-types": "off",
+      "prettier/prettier": "error",
     },
   },
 );

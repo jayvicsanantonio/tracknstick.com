@@ -1,48 +1,28 @@
-import { useContext } from "react";
-import { ThemeContext } from "@/context/ThemeContext";
+const Footer = () => (
+  <footer className="text-muted-foreground mt-auto border-t border-(--color-border-brand) py-4 transition-colors duration-300 sm:py-6 md:py-10 dark:border-(--color-border-primary)">
+    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-8">
+      <div className="flex flex-col items-center justify-between sm:flex-row">
+        <p className="mb-2 text-xs sm:mb-0 sm:text-sm">
+          © {new Date().getFullYear()} Track N Stick. All rights reserved.
+        </p>
 
-export default function Footer() {
-  const { isDarkMode } = useContext(ThemeContext);
-
-  return (
-    <footer
-      className={`mt-auto py-4 sm:py-6 md:py-10 border-t transition-colors duration-300 ${
-        isDarkMode
-          ? "border-gray-800 text-gray-400"
-          : "border-purple-100 text-gray-600"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center">
-          <p className={`text-xs sm:text-sm mb-2 sm:mb-0`}>
-            © {new Date().getFullYear()} Track N&apos; Stick. All rights
-            reserved.
-          </p>
-
-          <div className="flex items-center space-x-4">
-            <a
-              href="#"
-              className={`text-xs sm:text-sm transition hover:opacity-80 ${
-                isDarkMode
-                  ? "text-purple-400 hover:text-purple-300"
-                  : "text-purple-600 hover:text-purple-700"
-              }`}
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="#"
-              className={`text-xs sm:text-sm transition hover:opacity-80 ${
-                isDarkMode
-                  ? "text-purple-400 hover:text-purple-300"
-                  : "text-purple-600 hover:text-purple-700"
-              }`}
-            >
-              Terms of Service
-            </a>
-          </div>
+        <div className="flex items-center space-x-4">
+          <a
+            href="#"
+            className="text-xs text-(--color-brand-primary) transition hover:text-(--color-brand-secondary) hover:opacity-80 sm:text-sm dark:text-(--color-brand-text-light) dark:hover:text-(--color-brand-text-light)"
+          >
+            Privacy Policy
+          </a>
+          <a
+            href="#"
+            className="text-xs text-(--color-brand-primary) transition hover:text-(--color-brand-secondary) hover:opacity-80 sm:text-sm dark:text-(--color-brand-text-light) dark:hover:text-(--color-brand-text-light)"
+          >
+            Terms of Service
+          </a>
         </div>
       </div>
-    </footer>
-  );
-}
+    </div>
+  </footer>
+);
+
+export default Footer;

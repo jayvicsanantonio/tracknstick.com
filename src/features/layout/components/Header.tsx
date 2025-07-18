@@ -1,13 +1,13 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
-import { useContext } from "react";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { Button } from "@/components/ui/button";
-import { ThemeContext } from "@/context/ThemeContext";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { useContext } from 'react';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { Button } from '@/components/ui/button';
+import { ThemeContext } from '@/context/ThemeContext';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2 } = MiscellaneousIcons;
 
 export default function Header() {
-  const { isDarkMode, toggleDarkMode } = useContext(ThemeContext);
+  const { toggleDarkMode } = useContext(ThemeContext);
   const {
     toggleShowAddHabitDialog,
     toggleisHabitsOverviewMode,
@@ -21,15 +21,9 @@ export default function Header() {
       <div className="flex items-center">
         <CheckCircle2
           aria-hidden="true"
-          className={`h-8 w-8 sm:h-10 sm:w-10 mr-2 transition-transform duration-300 hover:scale-110 ${
-            isDarkMode ? "text-purple-500" : "text-purple-600"
-          }`}
+          className="mr-2 h-8 w-8 text-(--color-brand-primary) transition-transform duration-300 hover:scale-110 sm:h-10 sm:w-10"
         />
-        <span
-          className={`hidden sm:inline-block text-lg sm:text-xl md:text-2xl font-bold ${
-            isDarkMode ? "text-purple-300" : "text-purple-800"
-          } pl-1`}
-        >
+        <span className="hidden pl-1 text-lg font-bold text-(--color-brand-tertiary) sm:inline-block sm:text-xl md:text-2xl dark:text-(--color-brand-text-light)">
           Track N&apos; Stick
         </span>
       </div>
@@ -38,65 +32,65 @@ export default function Header() {
           <div
             role="toolbar"
             aria-label="User actions"
-            className="flex space-x-2 sm:space-x-3 bg-opacity-20 rounded-full p-1 sm:p-2 transition-all duration-300 hover:bg-opacity-30"
+            className="bg-opacity-20 hover:bg-opacity-30 flex space-x-2 rounded-full p-1 transition-all duration-300 sm:space-x-3 sm:p-2"
           >
             <Button
-              className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
-                isDarkMode
-                  ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50"
-                  : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50"
-              }`}
+              className="h-8 w-8 rounded-full bg-(--color-brand-primary) p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20"
               onClick={toggleShowAddHabitDialog}
               aria-label="Add Habit"
             >
-              <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
+              <Plus
+                aria-hidden="true"
+                className="h-4 w-4 text-white sm:h-6 sm:w-6 dark:text-(--color-brand-primary)"
+              />
             </Button>
             <Button
-              className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
+              className={`h-8 w-8 rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                 isHabitsOverviewMode
-                  ? "bg-purple-700 shadow-purple-700/50 text-white" // Changed from purple-500, ensured text-white for icon
-                  : isDarkMode
-                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
+                  ? 'bg-(--color-brand-secondary) shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
+                  : 'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) hover:shadow-lg dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
               }`}
               onClick={toggleisHabitsOverviewMode}
               aria-label="Toggle Edit Mode"
             >
-              <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
+              <Edit
+                aria-hidden="true"
+                className={`h-4 w-4 sm:h-6 sm:w-6 ${isHabitsOverviewMode ? 'text-white' : 'text-white dark:text-(--color-brand-primary)'}`}
+              />
             </Button>
             <Button
-              className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
+              className={`h-8 w-8 rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                 isProgressOverviewMode
-                  ? "bg-purple-700 shadow-purple-700/50 text-white" // Changed from purple-500, ensured text-white for icon
-                  : isDarkMode
-                    ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-                    : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
+                  ? 'bg-(--color-brand-secondary) shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
+                  : 'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) hover:shadow-lg dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
               }`}
               aria-label="Manage Habits"
               onClick={toggleisProgressOverviewMode}
             >
-              <BarChart2 aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
+              <BarChart2
+                aria-hidden="true"
+                className={`h-4 w-4 sm:h-6 sm:w-6 ${isProgressOverviewMode ? 'text-white' : 'text-white dark:text-(--color-brand-primary)'}`}
+              />
             </Button>
             <Button
-              className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
-                isDarkMode
-                  ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-                  : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-              }`}
+              className="h-8 w-8 rounded-full bg-(--color-brand-primary) p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20"
               onClick={toggleDarkMode}
               aria-label="Toggle Dark Mode"
             >
-              {isDarkMode ? (
-                <Sun aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-              ) : (
-                <Moon aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-              )}
+              <Sun
+                aria-hidden="true"
+                className="h-4 w-4 text-white sm:h-6 sm:w-6 dark:hidden"
+              />
+              <Moon
+                aria-hidden="true"
+                className="hidden h-4 w-4 text-(--color-brand-primary) sm:h-6 sm:w-6 dark:block"
+              />
             </Button>
             <UserButton
               appearance={{
                 elements: {
                   userButtonAvatarBox:
-                    "min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:bg-purple-600 hover:shadow-purple-600/50",
+                    'min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-(--color-brand-primary)/20',
                 },
               }}
             />
@@ -104,19 +98,18 @@ export default function Header() {
         </SignedIn>
         <SignedOut>
           <Button
-            className={`rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0 shadow-md transition-all duration-300 ${
-              isDarkMode
-                ? "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-                : "bg-purple-600 hover:bg-purple-500 hover:shadow-purple-600/50 text-white"
-            }`}
+            className="h-8 w-8 rounded-full bg-(--color-brand-primary) p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20"
             onClick={toggleDarkMode}
             aria-label="Toggle Dark Mode"
           >
-            {isDarkMode ? (
-              <Sun aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-            ) : (
-              <Moon aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-            )}
+            <Sun
+              aria-hidden="true"
+              className="h-4 w-4 text-white sm:h-6 sm:w-6 dark:hidden"
+            />
+            <Moon
+              aria-hidden="true"
+              className="hidden h-4 w-4 text-(--color-brand-primary) sm:h-6 sm:w-6 dark:block"
+            />
           </Button>
         </SignedOut>
       </div>

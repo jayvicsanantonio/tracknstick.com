@@ -1,10 +1,10 @@
-import useSWR, { SWRResponse } from "swr";
+import useSWR, { SWRResponse } from 'swr';
 import {
   fetchProgressStreaks,
   ProgressStreaksResponse,
-} from "@/features/progress/api";
-import { useContext } from "react";
-import { DateContext } from "@/context/DateContext";
+} from '@/features/progress/api';
+import { useContext } from 'react';
+import { DateContext } from '@/context/DateContext';
 
 export default function useProgressStreaks() {
   const { timeZone } = useContext(DateContext);
@@ -15,7 +15,7 @@ export default function useProgressStreaks() {
   }: SWRResponse<ProgressStreaksResponse, Error> = useSWR<
     ProgressStreaksResponse,
     Error
-  >(["progressStreaks", timeZone] as const, () =>
+  >(['progressStreaks', timeZone] as const, () =>
     fetchProgressStreaks(timeZone),
   );
 

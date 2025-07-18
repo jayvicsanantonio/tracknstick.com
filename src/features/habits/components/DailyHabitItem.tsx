@@ -1,13 +1,11 @@
-import { useContext } from "react";
-import HabitsIcons from "@/icons/habits";
-import { Button } from "@/components/ui/button";
-import { ThemeContext } from "@/context/ThemeContext";
-import StarAnimation from "@/components/ui/animations/StarAnimation";
-import { Habit } from "@/features/habits/types/Habit";
-import frequencyLabel from "@/lib/frequencyLabel";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { useHabitsContext } from "@/features/habits/context/HabitsStateContext";
-import { useHabits } from "@/features/habits/hooks/useHabits";
+import HabitsIcons from '@/icons/habits';
+import { Button } from '@/components/ui/button';
+import StarAnimation from '@/components/ui/animations/StarAnimation';
+import { Habit } from '@/features/habits/types/Habit';
+import frequencyLabel from '@/lib/frequencyLabel';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import { useHabits } from '@/features/habits/hooks/useHabits';
 
 const { Edit } = MiscellaneousIcons;
 
@@ -16,42 +14,30 @@ interface DailyHabitItemProps {
 }
 
 export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
-  const { isDarkMode } = useContext(ThemeContext);
   const { isEditMode, openEditDialog } = useHabitsContext();
   const { toggleHabit, animatingHabitId } = useHabits();
   const Icon = HabitsIcons[habit.icon];
 
   return (
-    <div key={habit.id} className="flex flex-col items-center group">
+    <div key={habit.id} className="group flex flex-col items-center">
       <div className="relative mb-3">
         <div
-          className={`absolute -inset-1 rounded-full blur-sm opacity-0 group-hover:opacity-70 transition-opacity duration-300 
-          ${
+          className={`absolute -inset-1 rounded-full opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-70 ${
             habit.completed
-              ? isDarkMode
-                ? "bg-purple-600/30"
-                : "bg-purple-500/30"
-              : isDarkMode
-                ? "bg-purple-600/20"
-                : "bg-purple-400/20"
+              ? 'bg-(--color-brand-primary)/30 dark:bg-(--color-brand-primary)/30'
+              : 'bg-(--color-brand-primary)/20 dark:bg-(--color-brand-primary)/20'
           }`}
         ></div>
         <button
-          className={`cursor-pointer relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full shadow-md border-2
-            ${
-              habit.completed
-                ? isDarkMode
-                  ? "bg-gradient-to-br from-purple-600 to-purple-500 shadow-purple-600/30 border-none"
-                  : "bg-gradient-to-br from-purple-600 to-purple-500 shadow-purple-500/30 border-none"
-                : isDarkMode
-                  ? "bg-[#121228] shadow-gray-900/20 hover:bg-gray-750 border-purple-500"
-                  : "bg-white shadow-purple-300/40 hover:bg-purple-50 border-purple-600"
-            } 
-            transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 active:scale-95`}
+          className={`relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-2 shadow-md sm:h-24 sm:w-24 md:h-28 md:w-28 ${
+            habit.completed
+              ? 'border-none bg-linear-to-br from-(--color-brand-primary) to-(--color-brand-primary) shadow-(--color-brand-primary)/30 dark:shadow-(--color-brand-primary)/30'
+              : 'border-(--color-brand-primary) bg-(--color-surface) shadow-(--color-brand-light)/40 hover:bg-(--color-brand-lighter) dark:border-(--color-brand-primary) dark:bg-(--color-surface) dark:shadow-(--color-surface-secondary)/20'
+          } transform transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95`}
           onClick={() => {
             if (habit.id) {
               toggleHabit(habit.id).catch((error) => {
-                console.error("Failed to toggle habit:", error);
+                console.error('Failed to toggle habit:', error);
               });
             }
           }}
@@ -64,49 +50,31 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
         >
           <Icon
             aria-hidden="true"
-            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 transition-colors
-              ${
-                habit.completed
-                  ? isDarkMode
-                    ? "text-purple-100"
-                    : "text-purple-100" // Changed from text-white for better contrast on purple-500/600 gradient
-                  : isDarkMode
-                    ? "text-purple-500"
-                    : "text-purple-600"
-              }`}
+            className={`h-10 w-10 transition-colors sm:h-12 sm:w-12 md:h-14 md:w-14 ${
+              habit.completed
+                ? 'text-(--color-text-inverse) dark:text-(--color-text-inverse)'
+                : 'text-(--color-brand-primary) dark:text-(--color-brand-primary)'
+            }`}
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />
         </button>
         {isEditMode && (
           <Button
-            className={`absolute -top-1 -right-1 rounded-full w-6 h-6 sm:w-8 sm:h-8 p-0 
-              ${
-                isDarkMode
-                  ? "bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 text-white" // Ensured text-white for icon
-                  : "bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 text-white" // Changed from purple-500 to purple-600 for light mode, ensured text-white
-              } transition-all duration-300 z-10`}
+            className="absolute -top-1 -right-1 z-10 h-6 w-6 rounded-full bg-(--color-brand-primary) p-0 text-(--color-text-inverse) shadow-(--color-brand-primary)/30 shadow-md transition-all duration-300 hover:bg-(--color-brand-primary) sm:h-8 sm:w-8"
             onClick={() => openEditDialog(habit)}
             aria-label={`Edit ${habit.name}`}
           >
             <Edit
               aria-hidden="true"
-              className="h-3 w-3 sm:h-4 sm:w-4 text-white"
+              className="h-3 w-3 text-(--color-text-inverse) sm:h-4 sm:w-4"
             />
           </Button>
         )}
       </div>
-      <span
-        className={`text-xs sm:text-sm font-semibold text-center ${
-          isDarkMode ? "text-purple-300" : "text-purple-800"
-        } line-clamp-1 max-w-full px-1`}
-      >
+      <span className="line-clamp-1 max-w-full px-1 text-center text-xs font-semibold text-(--color-brand-tertiary) sm:text-sm dark:text-(--color-brand-text-light)">
         {habit.name}
       </span>
-      <span
-        className={`text-xs ${
-          isDarkMode ? "text-purple-400" : "text-purple-700" // Changed from text-purple-600/80 for light mode
-        } mt-0.5`}
-      >
+      <span className="mt-0.5 text-xs text-(--color-brand-text) dark:text-(--color-brand-text-light)">
         {frequencyLabel(habit.frequency)}
       </span>
     </div>

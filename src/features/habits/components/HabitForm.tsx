@@ -1,19 +1,18 @@
-import { useContext, useState, useCallback } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import "react-datepicker/dist/react-datepicker.css";
-import { Habit } from "@/features/habits/types/Habit";
-import { Frequency } from "@/features/habits/types/Frequency";
-import HabitsIcons from "@/icons/habits";
-import { ThemeContext } from "@/context/ThemeContext";
-import { useHabits } from "@/features/habits/hooks/useHabits";
-import DatePickerField, { datePickerStyles } from "./DatePickerField";
-import IconPicker from "./IconPicker";
-import FrequencySelector from "./FrequencySelector";
-import FormActions from "./FormActions";
-import { DateContext } from "@/context/DateContext";
-import { getLocalEndOfDayUTC, getLocalStartofDayUTC } from "@/lib/formatDate";
+import { useContext, useState, useCallback } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Habit } from '@/features/habits/types/Habit';
+import { Frequency } from '@/features/habits/types/Frequency';
+import HabitsIcons from '@/icons/habits';
+import { useHabits } from '@/features/habits/hooks/useHabits';
+import DatePickerField, { datePickerStyles } from './DatePickerField';
+import IconPicker from './IconPicker';
+import FrequencySelector from './FrequencySelector';
+import FormActions from './FormActions';
+import { DateContext } from '@/context/DateContext';
+import { getLocalEndOfDayUTC, getLocalStartofDayUTC } from '@/lib/formatDate';
 export default function HabitForm({
   habit,
   toggleDialog,
@@ -22,10 +21,9 @@ export default function HabitForm({
   toggleDialog: () => void;
 }) {
   const { timeZone } = useContext(DateContext);
-  const { isDarkMode } = useContext(ThemeContext);
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [name, setName] = useState<string>(habit?.name ?? "");
+  const [name, setName] = useState<string>(habit?.name ?? '');
   const [frequency, setFrequency] = useState<Frequency[]>(
     habit?.frequency ?? [],
   );
@@ -52,7 +50,7 @@ export default function HabitForm({
       try {
         await deleteHabit(habitId, habit.name);
       } catch (error) {
-        console.error("Failed to delete habit:", error);
+        console.error('Failed to delete habit:', error);
       } finally {
         toggleDialog();
       }
@@ -77,7 +75,7 @@ export default function HabitForm({
         await addHabit(habitData);
       }
     } catch (error) {
-      console.error("Failed to save habit:", error);
+      console.error('Failed to save habit:', error);
     } finally {
       setIsSubmitting(false);
       toggleDialog();
@@ -108,19 +106,17 @@ export default function HabitForm({
       <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
-        className={`min-h-fit max-h-[70vh] sm:max-h-none sm:h-auto overflow-y-auto grid gap-3 sm:gap-4 py-2 sm:py-4 ${
-          isDarkMode ? "text-purple-300" : "text-gray-800"
-        }`}
+        className="text-foreground grid max-h-[70vh] min-h-fit gap-3 overflow-y-auto py-2 sm:h-auto sm:max-h-none sm:gap-4 sm:py-4"
       >
         <div className="space-y-3 sm:space-y-4">
           {/* Name Input */}
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className={`text-sm sm:text-base ${isDarkMode ? "text-purple-300" : "text-purple-700"}`}
+              className="text-sm text-(--color-brand-text) sm:text-base dark:text-(--color-brand-text-light)"
             >
               Name
-              <span className="text-red-500">*</span>
+              <span className="text-(--color-error)">*</span>
             </Label>
             <Input
               id="habit-name"
@@ -129,11 +125,7 @@ export default function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
-              className={
-                isDarkMode
-                  ? "bg-gray-800 border-purple-900 placeholder:text-purple-500/50"
-                  : ""
-              }
+              className="dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
             />
           </div>
 
@@ -169,9 +161,7 @@ export default function HabitForm({
           />
         </div>
 
-        <Separator
-          className={`my-2 ${isDarkMode ? "bg-purple-900" : "bg-purple-200"}`}
-        />
+        <Separator className="my-2 bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
 
         <FormActions
           isSubmitting={isSubmitting}

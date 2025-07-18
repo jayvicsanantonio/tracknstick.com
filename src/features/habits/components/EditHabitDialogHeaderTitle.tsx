@@ -1,21 +1,17 @@
-import { useContext } from "react";
 import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import frequencyLabel from "@/lib/frequencyLabel";
-import HabitsIcons from "@/icons/habits";
-import { ThemeContext } from "@/context/ThemeContext";
-import { Habit } from "@/features/habits/types/Habit";
+} from '@/components/ui/dialog';
+import frequencyLabel from '@/lib/frequencyLabel';
+import HabitsIcons from '@/icons/habits';
+import { Habit } from '@/features/habits/types/Habit';
 
 export default function EditHabitDialogHeaderTitle({
   habit,
 }: {
   habit?: Habit | null;
 }) {
-  const { isDarkMode } = useContext(ThemeContext);
-
   if (!habit) {
     return null;
   }
@@ -23,12 +19,8 @@ export default function EditHabitDialogHeaderTitle({
 
   return (
     <DialogHeader>
-      <DialogTitle
-        className={`text-2xl font-bold ${
-          isDarkMode ? "text-purple-200" : "text-purple-800"
-        }`}
-      >
-        {HabitIcon && <HabitIcon className="inline-block mr-2 h-8 w-8" />}
+      <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+        {HabitIcon && <HabitIcon className="mr-2 inline-block h-8 w-8" />}
         {habit.name}
       </DialogTitle>
       <DialogDescription>{frequencyLabel(habit.frequency)}</DialogDescription>

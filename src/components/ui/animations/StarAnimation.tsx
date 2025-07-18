@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import MiscellaneousIcons from "@/icons/miscellaneous";
+import { motion, AnimatePresence } from 'framer-motion';
+import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { Star } = MiscellaneousIcons;
 

@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { InsightData } from "@/features/progress/types/InsightData";
-import { CalendarDay } from "@/features/progress/types/CalendarDay";
+import { useMemo } from 'react';
+import { InsightData } from '@/features/progress/types/InsightData';
+import { CalendarDay } from '@/features/progress/types/CalendarDay';
 
 export function useProgressCalendar(
   insightData: InsightData[],
@@ -28,7 +28,7 @@ export function useProgressCalendar(
       const isPast = date < today;
       const isToday = date.toDateString() === today.toDateString();
       const dayData = insightData.find((d) => {
-        return parseInt(d.date.split("-")[2]) === dayOfMonth;
+        return parseInt(d.date.split('-')[2]) === dayOfMonth;
       });
 
       return { dayOfMonth, isPast, isToday, date, dayData };

@@ -1,6 +1,3 @@
-import { useContext } from "react";
-import { ThemeContext } from "@/context/ThemeContext";
-
 export default function StreakDisplayDays({
   value,
   label,
@@ -8,34 +5,20 @@ export default function StreakDisplayDays({
   value: number;
   label: string;
 }) {
-  const { isDarkMode } = useContext(ThemeContext);
-
   return (
     <div
-      className={`flex items-center ${
-        isDarkMode ? "bg-purple-900/50" : "bg-purple-100"
-      } rounded-lg p-4 shadow-md`}
+      className="flex items-center rounded-lg bg-(--color-brand-light) p-4 shadow-md dark:bg-(--color-brand-light)"
       role="status"
       aria-label={`${label}: ${value} days`}
     >
-      <span
-        className={`text-4xl font-bold mr-2 ${
-          isDarkMode ? "text-purple-300" : "text-purple-800"
-        }`}
-      >
+      <span className="mr-2 text-4xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
         {value}
       </span>
       <div className="flex flex-col">
-        <span
-          className={`text-sm ${isDarkMode ? "text-purple-300" : "text-purple-800"}`}
-        >
+        <span className="text-sm text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           {label}
         </span>
-        <span
-          className={`text-xs ${
-            isDarkMode ? "text-purple-400" : "text-purple-600"
-          }`}
-        >
+        <span className="text-xs text-(--color-brand-primary) dark:text-(--color-brand-text-light)">
           days
         </span>
       </div>

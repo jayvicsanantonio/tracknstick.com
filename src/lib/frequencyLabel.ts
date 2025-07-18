@@ -1,12 +1,12 @@
-import { Frequency } from "@/features/habits/types/Frequency";
+import { Frequency } from '@/features/habits/types/Frequency';
 
 export default function frequencyLabel(frequency: Frequency[]) {
   if (frequency.length === 7) {
-    return "Daily";
+    return 'Daily';
   }
 
   if (frequency.length === 1) {
-    return "Weekly";
+    return 'Weekly';
   }
 
   return `${frequency.length}x a week`;

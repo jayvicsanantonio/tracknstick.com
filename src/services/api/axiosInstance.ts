@@ -1,5 +1,5 @@
-import axios, { AxiosError } from "axios";
-import getConfig from "@/lib/getConfig";
+import axios, { AxiosError } from 'axios';
+import getConfig from '@/lib/getConfig';
 
 const { apiHost } = getConfig();
 
@@ -16,10 +16,10 @@ axiosInstance.interceptors.request.use(
           config.headers.Authorization = `Bearer ${token}`;
         }
       } else {
-        console.warn("Clerk session not available for attaching token.");
+        console.warn('Clerk session not available for attaching token.');
       }
     } catch (error) {
-      console.error("Error getting Clerk token in interceptor:", error);
+      console.error('Error getting Clerk token in interceptor:', error);
     }
     return config;
   },

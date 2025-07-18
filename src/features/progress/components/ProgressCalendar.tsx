@@ -1,21 +1,19 @@
-import { useProgressCalendar } from "@/features/progress/hooks/useProgressCalendar";
-import MonthNavButton from "@/features/progress/components/MonthNavButton";
-import MiscellaneousIcons from "@/icons/miscellaneous";
-import { InsightData } from "@/features/progress/types/InsightData";
-import CalendarDayCircle from "@/features/progress/components/CalendarDayCircle";
-import { Dispatch, SetStateAction } from "react";
+import { useProgressCalendar } from '@/features/progress/hooks/useProgressCalendar';
+import MonthNavButton from '@/features/progress/components/MonthNavButton';
+import MiscellaneousIcons from '@/icons/miscellaneous';
+import { InsightData } from '@/features/progress/types/InsightData';
+import CalendarDayCircle from '@/features/progress/components/CalendarDayCircle';
+import { Dispatch, SetStateAction } from 'react';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
-const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function ProgressCalendar({
   insightData,
-  isDarkMode,
   selectedMonth,
   setSelectedMonth,
 }: {
   insightData: InsightData[];
-  isDarkMode: boolean;
   selectedMonth: Date;
   setSelectedMonth: Dispatch<SetStateAction<Date>>;
 }) {
@@ -30,42 +28,31 @@ export default function ProgressCalendar({
       <div className="flex items-center justify-between">
         <MonthNavButton
           onClick={() => changeMonth(-1)}
-          isDarkMode={isDarkMode}
           ariaLabel="Previous Month"
         >
           <ChevronLeft
             aria-hidden="true"
-            className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
+            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
           />
         </MonthNavButton>
-        <h3
-          className={`text-lg font-semibold ${
-            isDarkMode ? "text-purple-300" : "text-purple-800"
-          }`}
-        >
-          {selectedMonth.toLocaleString("default", {
-            month: "long",
-            year: "numeric",
+        <h3 className="text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+          {selectedMonth.toLocaleString('default', {
+            month: 'long',
+            year: 'numeric',
           })}
         </h3>
-        <MonthNavButton
-          onClick={() => changeMonth(1)}
-          isDarkMode={isDarkMode}
-          ariaLabel="Next Month"
-        >
+        <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
-            className={`h-4 w-4 ${isDarkMode ? "text-purple-300" : ""}`}
+            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
           />
         </MonthNavButton>
       </div>
-      <div className="grid grid-cols-7 gap-1 mt-4" role="grid">
+      <div className="mt-4 grid grid-cols-7 gap-1" role="grid">
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className={`text-center font-bold text-xs ${
-              isDarkMode ? "text-purple-400" : "text-purple-800"
-            }`}
+            className="text-center text-xs font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)"
             role="columnheader"
             aria-label={day}
           >
@@ -83,20 +70,16 @@ export default function ProgressCalendar({
         {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }, index) => (
           <div
             key={index}
-            className="aspect-square flex flex-col items-center justify-center p-1"
+            className="flex aspect-square flex-col items-center justify-center p-1"
             role="gridcell"
             aria-label={`Day ${dayOfMonth}`}
           >
             <span
               aria-hidden="true"
-              className={`text-xs font-medium mb-1 ${
+              className={`mb-1 text-xs font-medium ${
                 isPast || isToday
-                  ? isDarkMode
-                    ? "text-purple-400"
-                    : "text-purple-800"
-                  : isDarkMode
-                    ? "text-purple-700"
-                    : "text-gray-400"
+                  ? 'text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)'
+                  : 'text-(--color-text-tertiary) dark:text-(--color-brand-secondary)'
               }`}
             >
               {dayOfMonth}
@@ -106,14 +89,12 @@ export default function ProgressCalendar({
                 dayData={dayData}
                 isPast={isPast}
                 isToday={isToday}
-                isDarkMode={isDarkMode}
               />
             ) : (
               <CalendarDayCircle
                 dayData={undefined}
                 isPast={false}
                 isToday={false}
-                isDarkMode={isDarkMode}
               />
             )}
           </div>

@@ -1,6 +1,6 @@
-import DailyHabitItem from "@/features/habits/components/DailyHabitItem";
-import { useHabits } from "@/features/habits/hooks/useHabits";
-import { motion } from "framer-motion";
+import DailyHabitItem from '@/features/habits/components/DailyHabitItem';
+import { useHabits } from '@/features/habits/hooks/useHabits';
+import { motion } from 'framer-motion';
 
 export default function DailyHabitList() {
   const { habits } = useHabits();
@@ -18,7 +18,7 @@ export default function DailyHabitList() {
 
   return (
     <motion.div
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
+      className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-5"
       aria-label="List of daily habits"
       variants={container}
       initial="hidden"

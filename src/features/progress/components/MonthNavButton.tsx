@@ -1,13 +1,11 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 export default function MonthNavButton({
   onClick,
-  isDarkMode,
   children,
   ariaLabel,
 }: {
   onClick: () => void;
-  isDarkMode: boolean;
   children: React.ReactNode;
   ariaLabel: string;
 }) {
@@ -17,11 +15,7 @@ export default function MonthNavButton({
       variant="outline"
       size="icon"
       aria-label={ariaLabel}
-      className={
-        isDarkMode
-          ? "border-purple-900 bg-purple-900/50 hover:bg-purple-800/60 text-purple-300"
-          : "border-purple-300 hover:bg-purple-100"
-      }
+      className="border-(--color-border-brand) hover:bg-(--color-hover-brand) dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:bg-(--color-hover-brand)"
     >
       {children}
     </Button>
