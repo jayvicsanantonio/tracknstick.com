@@ -32,7 +32,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
           className={`relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-2 shadow-md sm:h-24 sm:w-24 md:h-28 md:w-28 ${
             habit.completed
               ? 'border-none bg-linear-to-br from-(--color-brand-primary) to-(--color-brand-primary) shadow-(--color-brand-primary)/30 dark:shadow-(--color-brand-primary)/30'
-              : 'border-(--color-brand-primary) bg-(--color-surface) shadow-(--color-brand-light)/40 hover:bg-(--color-brand-lighter) dark:border-(--color-brand-primary) dark:bg-(--color-surface) dark:shadow-(--color-surface-secondary)/20 dark:hover:bg-(--color-surface-secondary)'
+              : 'border-(--color-brand-primary) bg-(--color-surface) shadow-(--color-brand-light)/40 hover:bg-(--color-brand-lighter) dark:border-(--color-brand-primary) dark:bg-(--color-surface) dark:shadow-(--color-surface-secondary)/20'
           } transform transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95`}
           onClick={() => {
             if (habit.id) {
@@ -52,7 +52,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
             aria-hidden="true"
             className={`h-10 w-10 transition-colors sm:h-12 sm:w-12 md:h-14 md:w-14 ${
               habit.completed
-                ? 'text-(--color-text-inverse)'
+                ? 'text-(--color-text-inverse) dark:text-(--color-text-inverse)'
                 : 'text-(--color-brand-primary) dark:text-(--color-brand-primary)'
             }`}
           />

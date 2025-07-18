@@ -40,7 +40,7 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface) dark:shadow-(--color-border-brand)/20">
+      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20">
         <CardHeader className="px-3 pt-6 sm:px-6">
           <DailyHabitDate />
         </CardHeader>
