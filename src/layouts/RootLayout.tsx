@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Welcome from '@/features/layout/components/Welcome';
+import Header from '@/features/layout/components/Header';
+import Footer from '@/features/layout/components/Footer';
 
 /**
  * Root layout component that handles authentication-based rendering
@@ -13,13 +15,17 @@ import Welcome from '@/features/layout/components/Welcome';
 export function RootLayout() {
   return (
     <>
-      <SignedOut>
-        <h1 className="sr-only">Welcome</h1>
-        <Welcome />
-      </SignedOut>
-      <SignedIn>
-        <Outlet />
-      </SignedIn>
+      <Header />
+      <main>
+        <SignedOut>
+          <h1 className="sr-only">Welcome</h1>
+          <Welcome />
+        </SignedOut>
+        <SignedIn>
+          <Outlet />
+        </SignedIn>
+      </main>
+      <Footer />
     </>
   );
 }
