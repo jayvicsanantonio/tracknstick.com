@@ -34,7 +34,7 @@ export function NotFoundPage() {
 
         {/* Navigation Options */}
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Button onClick={goToDashboard} className="min-w-[140px]">
+          <Button onClick={() => goToDashboard()} className="min-w-[140px]">
             Go to Dashboard
           </Button>
           <Button

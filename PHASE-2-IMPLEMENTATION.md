@@ -102,18 +102,32 @@ nested routes with layouts:
 ```typescript
 // src/layouts/RootLayout.tsx
 import { Outlet } from 'react-router-dom';
+import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Welcome from '@/features/layout/components/Welcome';
-import { useAuthContext } from '@/context/AuthContext';
 
-export default function RootLayout() {
-  const { user } = useAuthContext();
-
-  if (!user) {
-    return <Welcome />;
-  }
-
-  return <Outlet />;
+/**
+ * Root layout component that handles authentication-based rendering
+ *
+ * This layout wraps all routes and conditionally renders content based on
+ * authentication status:
+ * - When signed in: Renders the matched route component via Outlet
+ * - When signed out: Renders the Welcome component
+ */
+export function RootLayout() {
+  return (
+    <>
+      <SignedOut>
+        <h1 className="sr-only">Welcome</h1>
+        <Welcome />
+      </SignedOut>
+      <SignedIn>
+        <Outlet />
+      </SignedIn>
+    </>
+  );
 }
+
+export default RootLayout;
 ```
 
 #### 2. **Updated Router Configuration**
@@ -214,9 +228,11 @@ export const router = createBrowserRouter(routes);
 
 ### 2. **Layout-Based Routing**
 
-- Implemented `RootLayout` to handle authentication-based rendering
-- Shows `Welcome` component for unauthenticated users
-- Renders route outlet for authenticated users
+- Implemented `RootLayout` to handle authentication-based rendering using Clerk
+- Uses Clerk's `<SignedOut>` component to show `Welcome` for unauthenticated
+  users
+- Uses Clerk's `<SignedIn>` component to render route outlet for authenticated
+  users
 - Provides a centralized place for future layout concerns
 
 ### 3. **Enhanced Router Features**
