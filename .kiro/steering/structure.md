@@ -2,7 +2,8 @@
 
 ## Feature-Based Organization
 
-The project follows a feature-driven architecture where related functionality is grouped together:
+The project follows a feature-driven architecture where related functionality is
+grouped together:
 
 ```
 src/
@@ -22,6 +23,15 @@ src/
 ├── lib/              # Utility functions and helpers
 ├── icons/            # Icon definitions and collections
 ├── assets/           # Static assets (audio, images)
+├── pages/            # Route-level page components
+│   ├── DashboardPage.tsx
+│   ├── HabitsPage.tsx
+│   ├── ProgressPage.tsx
+│   └── NotFoundPage.tsx
+├── layouts/          # Layout components for routing
+│   └── RootLayout.tsx # Authentication-aware root layout
+├── routes/           # Routing configuration
+│   └── index.tsx     # Centralized route definitions
 └── services/         # External service integrations
 ```
 
@@ -41,7 +51,8 @@ src/
 
 ### API Layer
 
-- **Feature APIs**: Each feature has its own `api/index.ts` with related endpoints
+- **Feature APIs**: Each feature has its own `api/index.ts` with related
+  endpoints
 - **HTTP Client**: Centralized axios instance in `services/api/`
 - **Data Fetching**: SWR hooks for server state management
 

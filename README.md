@@ -1,16 +1,23 @@
 # Track N' Stick
 
-**Track N' Stick** is a Progressive Web Application designed to help you track and build healthy habits. Built with a modern tech stack featuring React 19, TypeScript, and Tailwind CSS v4, it provides an intuitive interface for managing daily routines and achieving personal goals.
+**Track N' Stick** is a Progressive Web Application designed to help you track
+and build healthy habits. Built with a modern tech stack featuring React 19,
+TypeScript, and Tailwind CSS v4, it provides an intuitive interface for managing
+daily routines and achieving personal goals.
 
 ## ✨ Features
 
 ### Core Functionality
 
-- **Habit Management:** Add, edit, delete, and track daily habits with custom icons and frequencies
-- **Progress Visualization:** Interactive charts and calendars showing completion rates and historical data
+- **Habit Management:** Add, edit, delete, and track daily habits with custom
+  icons and frequencies
+- **Progress Visualization:** Interactive charts and calendars showing
+  completion rates and historical data
 - **Streak Tracking:** Monitor current and longest streaks to stay motivated
-- **Flexible Scheduling:** Set habit frequency (daily, weekdays, weekends, or specific days)
-- **Audio Feedback:** Sound notifications for habit completion and milestone achievements
+- **Flexible Scheduling:** Set habit frequency (daily, weekdays, weekends, or
+  specific days)
+- **Audio Feedback:** Sound notifications for habit completion and milestone
+  achievements
 
 ### Progressive Web App
 
@@ -109,7 +116,8 @@ pnpm preview          # Preview production build
 pnpm lint             # Run ESLint
 ```
 
-> **Note:** This project uses [pnpm](https://pnpm.io/) as package manager. See [PNPM_MIGRATION.md](PNPM_MIGRATION.md) for migration details.
+> **Note:** This project uses [pnpm](https://pnpm.io/) as package manager. See
+> [PNPM_MIGRATION.md](PNPM_MIGRATION.md) for migration details.
 
 ## 📁 Project Structure
 
@@ -131,12 +139,16 @@ src/
 ├── lib/              # Utility functions
 ├── icons/            # Icon definitions
 ├── assets/           # Static assets (audio, images)
+├── pages/            # Route-level page components
+├── layouts/          # Layout components for routing
+├── routes/           # Routing configuration
 └── services/         # External service integrations
 ```
 
 ## 🔌 API Integration
 
-The application integrates with a REST API for data persistence. Key endpoints include:
+The application integrates with a REST API for data persistence. Key endpoints
+include:
 
 ### Habits API
 
@@ -152,13 +164,16 @@ The application integrates with a REST API for data persistence. Key endpoints i
 - `GET /api/v1/progress/history` - Get historical completion data
 - `GET /api/v1/progress/streaks` - Get current and longest streaks
 
-All API requests include timezone support for accurate date calculations across different user locations.
+All API requests include timezone support for accurate date calculations across
+different user locations.
 
-For detailed API documentation, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
+For detailed API documentation, see
+[API_DOCUMENTATION.md](API_DOCUMENTATION.md).
 
 ## 🎨 Theming & Customization
 
-The app supports both light and dark themes with automatic system preference detection:
+The app supports both light and dark themes with automatic system preference
+detection:
 
 - **CSS Variables:** Defined in `src/index.css` for consistent theming
 - **Theme Context:** Global theme state management via React Context
@@ -175,12 +190,16 @@ Track N' Stick is a full-featured PWA with:
 - **Push Notifications:** (Coming soon) Habit reminders
 - **Auto-Updates:** Seamless app updates with user prompts
 
-For PWA implementation details, see [PWA_IMPLEMENTATION.md](PWA_IMPLEMENTATION.md).
+For PWA implementation details, see
+[PWA_IMPLEMENTATION.md](PWA_IMPLEMENTATION.md).
 
 ## Contributing
 
-Contributions are welcome! If you find a bug or have a suggestion for improvement, please open an issue or submit a pull request on the GitHub repository.
+Contributions are welcome! If you find a bug or have a suggestion for
+improvement, please open an issue or submit a pull request on the GitHub
+repository.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file
+for more information.
