@@ -2,35 +2,13 @@ import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { Suspense } from 'react';
 
 import RootLayout from '@/layouts/RootLayout';
+import LoadingFallback from '@/components/LoadingFallback';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import DashboardPage from '@/pages/DashboardPage';
 import HabitsPage from '@/pages/HabitsPage';
 import ProgressPage from '@/pages/ProgressPage';
 import NotFoundPage from '@/pages/NotFoundPage';
-
-function LoadingFallback() {
-  return (
-    <div className="flex items-center justify-center py-16">
-      <div className="text-center">
-        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600"></div>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-function ErrorBoundary() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16">
-      <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">
-        Something went wrong
-      </h1>
-      <p className="mt-4 text-gray-600 dark:text-gray-400">
-        Please try refreshing the page.
-      </p>
-    </div>
-  );
-}
 
 /**
  * Route configuration with React Router v7.7 best practices

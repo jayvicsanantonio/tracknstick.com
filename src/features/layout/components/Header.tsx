@@ -4,20 +4,14 @@ import { NavLink } from 'react-router-dom';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Button } from '@/components/ui/button';
 import { ThemeContext } from '@/context/ThemeContext';
-import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { featureFlags } from '@/config/featureFlags';
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
 
 export default function Header() {
   const { toggleDarkMode } = useContext(ThemeContext);
-  const {
-    toggleShowAddHabitDialog,
-    toggleisHabitsOverviewMode,
-    isHabitsOverviewMode,
-    isProgressOverviewMode,
-    toggleisProgressOverviewMode,
-  } = useHabitsContext();
+  const { toggleShowAddHabitDialog } = useHabitsContext();
 
   return (
     <header className="flex items-center justify-between py-4 sm:py-8">
@@ -101,32 +95,33 @@ export default function Header() {
               </>
             ) : (
               <>
+                {/* Legacy navigation buttons - these won't function but maintain visual compatibility */}
                 <Button
-                  className={`h-8 w-8 rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
-                    isHabitsOverviewMode
-                      ? 'bg-(--color-brand-secondary) shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
-                      : 'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) hover:shadow-lg dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
-                  }`}
-                  onClick={toggleisHabitsOverviewMode}
-                  aria-label="Toggle Edit Mode"
+                  className="h-8 w-8 rounded-full bg-(--color-brand-primary) p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20"
+                  onClick={() =>
+                    console.warn(
+                      'Legacy navigation mode - enable URL routing for navigation',
+                    )
+                  }
+                  aria-label="Habits (Legacy Mode)"
                 >
                   <Edit
                     aria-hidden="true"
-                    className={`h-4 w-4 sm:h-6 sm:w-6 ${isHabitsOverviewMode ? 'text-white' : 'text-white dark:text-(--color-brand-primary)'}`}
+                    className="h-4 w-4 text-white sm:h-6 sm:w-6 dark:text-(--color-brand-primary)"
                   />
                 </Button>
                 <Button
-                  className={`h-8 w-8 rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
-                    isProgressOverviewMode
-                      ? 'bg-(--color-brand-secondary) shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
-                      : 'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) hover:shadow-lg dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
-                  }`}
-                  aria-label="Manage Habits"
-                  onClick={toggleisProgressOverviewMode}
+                  className="h-8 w-8 rounded-full bg-(--color-brand-primary) p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20"
+                  aria-label="Progress (Legacy Mode)"
+                  onClick={() =>
+                    console.warn(
+                      'Legacy navigation mode - enable URL routing for navigation',
+                    )
+                  }
                 >
                   <BarChart2
                     aria-hidden="true"
-                    className={`h-4 w-4 sm:h-6 sm:w-6 ${isProgressOverviewMode ? 'text-white' : 'text-white dark:text-(--color-brand-primary)'}`}
+                    className="h-4 w-4 text-white sm:h-6 sm:w-6 dark:text-(--color-brand-primary)"
                   />
                 </Button>
               </>

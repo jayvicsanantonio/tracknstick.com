@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useHabits } from '@/features/habits/hooks/useHabits';
-import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { featureFlags } from '@/config/featureFlags';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +23,8 @@ import HabitsIcons from '@/icons/habits';
 
 export default function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useHabits();
-  const { toggleisHabitsOverviewMode, openEditDialog } = useHabitsContext();
+  const { openEditDialog } = useHabitsContext();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState('all');
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
@@ -87,7 +90,13 @@ export default function HabitsOverview() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleisHabitsOverviewMode}
+                onClick={() => {
+                  if (featureFlags.isUrlRoutingEnabled) {
+                    void navigate('/');
+                  } else {
+                    console.warn('Legacy navigation mode');
+                  }
+                }}
                 className="mr-2 text-black hover:bg-purple-50 dark:text-white dark:hover:bg-purple-950/70 dark:hover:text-purple-100"
               >
                 <svg
