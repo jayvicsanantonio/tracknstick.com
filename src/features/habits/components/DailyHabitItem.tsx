@@ -4,7 +4,7 @@ import StarAnimation from '@/components/ui/animations/StarAnimation';
 import { Habit } from '@/features/habits/types/Habit';
 import frequencyLabel from '@/lib/frequencyLabel';
 import MiscellaneousIcons from '@/icons/miscellaneous';
-import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
+import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 
 const { Edit } = MiscellaneousIcons;

@@ -1,7 +1,6 @@
 import {
   createContext,
   useState,
-  useContext,
   ReactNode,
   useCallback,
   useMemo,
@@ -18,23 +17,18 @@ interface HabitsStateContextValue {
   toggleShowAddHabitDialog: () => void;
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
-  isHabitsOverviewMode: boolean;
-  toggleisHabitsOverviewMode: () => void;
-  isProgressOverviewMode: boolean;
-  toggleisProgressOverviewMode: () => void;
   openEditDialog: (habit: Habit) => void;
 }
 
-const HabitsStateContext = createContext<HabitsStateContextValue | null>(null);
+export const HabitsStateContext = createContext<HabitsStateContextValue | null>(
+  null,
+);
 
 export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
-  const [isHabitsOverviewMode, toggleisHabitsOverviewMode] = useToggle(false);
-  const [isProgressOverviewMode, toggleisProgressOverviewMode] =
-    useToggle(false);
   const openEditDialog = useCallback(
     (habit: Habit) => {
       setEditingHabit(habit);
@@ -56,11 +50,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       toggleShowAddHabitDialog,
       showEditHabitDialog,
       toggleShowEditHabitDialog,
-      isHabitsOverviewMode,
-      toggleisHabitsOverviewMode,
       openEditDialog,
-      isProgressOverviewMode,
-      toggleisProgressOverviewMode,
     }),
     [
       isEditMode,
@@ -71,11 +61,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       toggleShowAddHabitDialog,
       showEditHabitDialog,
       toggleShowEditHabitDialog,
-      isHabitsOverviewMode,
-      toggleisHabitsOverviewMode,
       openEditDialog,
-      isProgressOverviewMode,
-      toggleisProgressOverviewMode,
     ],
   );
 
@@ -84,14 +70,4 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       {children}
     </HabitsStateContext.Provider>
   );
-}
-
-export function useHabitsContext() {
-  const context = useContext(HabitsStateContext);
-  if (context === null) {
-    throw new Error(
-      'useHabitsContext must be used within a HabitsStateProvider',
-    );
-  }
-  return context;
 }

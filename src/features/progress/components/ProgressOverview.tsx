@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProgressCalendar from '@/features/progress/components/ProgressCalendar';
 import ProgressChart from '@/features/progress/components/ProgressChart';
 import ProgressAchievements from '@/features/progress/components/ProgressAchievements';
@@ -7,11 +8,11 @@ import StreakDisplayDays from '@/features/progress/components/StreakDisplayDays'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MiscellaneousIcons from '@/icons/miscellaneous';
-import { useHabitsContext } from '@/features/habits/context/HabitsStateContext';
 import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressStreaks from '../hooks/useProgressStreaks';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { featureFlags } from '@/config/featureFlags';
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
@@ -50,7 +51,7 @@ const achievements = [
 ];
 
 export default function ProgressOverview() {
-  const { toggleisProgressOverviewMode } = useHabitsContext();
+  const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   // Use separate hooks for history and streaks
@@ -79,7 +80,13 @@ export default function ProgressOverview() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleisProgressOverviewMode}
+                onClick={() => {
+                  if (featureFlags.isUrlRoutingEnabled) {
+                    void navigate('/');
+                  } else {
+                    console.warn('Legacy navigation mode');
+                  }
+                }}
                 className="mr-2 dark:text-white dark:hover:bg-purple-900/70 dark:hover:text-purple-300"
                 aria-label="Back to daily view"
               >
