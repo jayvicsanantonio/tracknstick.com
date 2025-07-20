@@ -96,13 +96,17 @@ if (!featureFlags.isUrlRoutingEnabled) {
 - Added `useNavigate` hook from React Router
 - Back button now uses proper navigation when URL routing is enabled
 - Falls back to console warning in legacy mode
+- Fixed promise-returning function warnings in onClick handlers
 
 ```tsx
-// HabitsOverview.tsx - Navigation handling
-onClick={() => featureFlags.isUrlRoutingEnabled
-  ? navigate('/')
-  : console.warn('Legacy navigation mode')
-}
+// HabitsOverview.tsx - Navigation handling with proper void handling
+onClick={() => {
+  if (featureFlags.isUrlRoutingEnabled) {
+    void navigate('/');
+  } else {
+    console.warn('Legacy navigation mode');
+  }
+}}
 ```
 
 #### 4. **ProgressOverview Component**
@@ -160,6 +164,8 @@ This phase resolves several technical debt items:
 - ✅ Eliminated redundant state variables
 - ✅ Simplified component logic
 - ✅ Improved code maintainability
+- ✅ Fixed React Refresh warnings by separating mixed exports
+- ✅ Resolved TypeScript linting issues with promise-returning event handlers
 
 ## Next Steps
 
@@ -185,3 +191,48 @@ management, resulting in:
 The implementation follows best practices for gradual migration and ensures zero
 disruption for existing users while providing a clear path to modern URL-based
 navigation.
+
+## Additional Architectural Improvements
+
+### Component File Organization
+
+To improve maintainability and React Refresh compatibility, several components
+were refactored:
+
+1. **Separated UI Components**:
+
+   - `LoadingFallback` and `ErrorBoundary` moved to separate files
+   - Avoids mixed exports that cause React Refresh warnings
+   - Better error boundary handling and reusability
+
+2. **Hook Organization**:
+   - `useHabitsContext` moved to dedicated `hooks/useHabitsContext.ts`
+   - Cleaner separation between context definition and usage
+   - Updated import paths across all components
+
+### TypeScript and Linting Compliance
+
+1. **Promise Handling in Event Handlers**:
+
+   ```tsx
+   // Before (causes linting warnings)
+   onClick={() => navigate('/')}
+
+   // After (proper void handling)
+   onClick={() => {
+     void navigate('/');
+   }}
+   ```
+
+2. **Import Path Updates**:
+   ```tsx
+   // Updated imports
+   import { useHabitsContext } from '@/hooks/useHabitsContext';
+   ```
+
+These improvements ensure:
+
+- No React Refresh warnings during development
+- Full TypeScript compliance without suppressing linting rules
+- Better developer experience with hot module replacement
+- Cleaner codebase organization

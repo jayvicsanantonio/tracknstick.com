@@ -172,6 +172,33 @@ Engineering Requirements Document.
 - Conduct thorough testing across various browsers and devices
 - Plan extensions for nested and protected routes in future expansions
 
+## Architectural Best Practices Applied
+
+### Component Organization
+
+- Separate fallback components (`LoadingFallback`, `ErrorBoundary`) into
+  dedicated files to avoid React Refresh warnings
+- Move hooks like `useHabitsContext` to a dedicated `hooks` folder for better
+  code organization
+- Keep route definitions clean by importing components rather than declaring
+  them inline
+
+### TypeScript and Linting Compliance
+
+- Handle promise-returning functions in event handlers properly:
+  ```tsx
+  // Avoid: onClick={() => navigate('/')}
+  // Use: onClick={() => { void navigate('/'); }}
+  ```
+- This prevents TypeScript linting errors about misused promises
+- Maintains full type safety without suppressing linting rules
+
+### Import Path Management
+
+- Use consistent import paths with aliases (e.g., `@/hooks/useHabitsContext`)
+- Update all component imports when refactoring file locations
+- Maintain clear separation between context definitions and their usage hooks
+
 ---
 
 This implementation strategy ensures a smooth transition to URL-based
