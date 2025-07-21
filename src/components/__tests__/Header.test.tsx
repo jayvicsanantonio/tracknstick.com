@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Header from '@/features/layout/components/Header';
 import { featureFlags } from '@/config/featureFlags';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
@@ -30,13 +30,13 @@ describe('Header Component', () => {
       renderHeader();
 
       // Should show button elements, not links
-      const dailyButton = screen.getByRole('button', {
-        name: /daily tracker/i,
+      const habitsButton = screen.getByRole('button', {
+        name: /habits \(legacy mode\)/i,
       });
-      const habitsButton = screen.getByRole('button', { name: /habits/i });
-      const progressButton = screen.getByRole('button', { name: /progress/i });
+      const progressButton = screen.getByRole('button', {
+        name: /progress \(legacy mode\)/i,
+      });
 
-      expect(dailyButton).toBeInTheDocument();
       expect(habitsButton).toBeInTheDocument();
       expect(progressButton).toBeInTheDocument();
     });
@@ -48,7 +48,9 @@ describe('Header Component', () => {
 
       renderHeader();
 
-      const habitsButton = screen.getByRole('button', { name: /habits/i });
+      const habitsButton = screen.getByRole('button', {
+        name: /habits \(legacy mode\)/i,
+      });
       await user.click(habitsButton);
 
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -69,8 +71,10 @@ describe('Header Component', () => {
 
       // Should show link elements
       const dailyLink = screen.getByRole('link', { name: /daily tracker/i });
-      const habitsLink = screen.getByRole('link', { name: /habits/i });
-      const progressLink = screen.getByRole('link', { name: /progress/i });
+      const habitsLink = screen.getByRole('link', { name: /habits overview/i });
+      const progressLink = screen.getByRole('link', {
+        name: /progress overview/i,
+      });
 
       expect(dailyLink).toBeInTheDocument();
       expect(habitsLink).toBeInTheDocument();
@@ -83,21 +87,21 @@ describe('Header Component', () => {
     });
 
     it('applies active styles to current route', () => {
-      // Render with a specific route
+      // Render with a specific route using MemoryRouter
       render(
         <HabitsStateProvider>
-          <BrowserRouter>
+          <MemoryRouter initialEntries={['/habits']}>
             <Header />
-          </BrowserRouter>
+          </MemoryRouter>
         </HabitsStateProvider>,
       );
 
-      const habitsLink = screen.getByRole('link', { name: /habits/i });
+      const habitsLink = screen.getByRole('link', { name: /habits overview/i });
       const dailyLink = screen.getByRole('link', { name: /daily tracker/i });
 
-      // Active link should have blue text
-      expect(habitsLink.querySelector('svg')).toHaveClass('text-blue-600');
-      expect(dailyLink.querySelector('svg')).not.toHaveClass('text-blue-600');
+      // Active link should have specific active classes
+      expect(habitsLink).toHaveClass('bg-(--color-brand-secondary)');
+      expect(dailyLink).not.toHaveClass('bg-(--color-brand-secondary)');
     });
   });
 });

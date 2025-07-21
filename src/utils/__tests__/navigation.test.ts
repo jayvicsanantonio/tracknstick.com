@@ -34,6 +34,12 @@ describe('Navigation Utilities', () => {
       result.current.navigateTo('/progress');
       expect(mockNavigate).toHaveBeenCalledWith('/progress', undefined);
 
+      // Test navigateTo with options
+      result.current.navigateTo('/', { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith('/', {
+        replace: true,
+      });
+
       // Test goToDashboard
       result.current.goToDashboard();
       expect(mockNavigate).toHaveBeenCalledWith('/', undefined);
@@ -49,6 +55,10 @@ describe('Navigation Utilities', () => {
       // Test goBack
       result.current.goBack();
       expect(mockNavigate).toHaveBeenCalledWith(-1);
+
+      // Test goForward
+      result.current.goForward();
+      expect(mockNavigate).toHaveBeenCalledWith(1);
 
       // Test getCurrentRoute
       expect(result.current.getCurrentRoute()).toBe('/habits');
@@ -68,6 +78,33 @@ describe('Navigation Utilities', () => {
       expect(result.current.isOnDashboard()).toBe(false);
       expect(result.current.isOnHabits()).toBe(true);
       expect(result.current.isOnProgress()).toBe(false);
+
+      // Test isOnRoute with different route values
+      expect(result.current.isOnRoute('/')).toBe(false);
+      expect(result.current.isOnRoute('/habits')).toBe(true);
+      expect(result.current.isOnRoute('/progress')).toBe(false);
+    });
+
+    it('provides accurate route checking for different locations', () => {
+      const mockNavigate = vi.fn();
+      const mockLocation = { pathname: '/progress' };
+
+      vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+      vi.mocked(useLocation).mockReturnValue(
+        mockLocation as ReturnType<typeof useLocation>,
+      );
+
+      const { result } = renderHook(() => useAppNavigation());
+
+      // Test isOnRoute with progress location
+      expect(result.current.isOnRoute('/')).toBe(false);
+      expect(result.current.isOnRoute('/habits')).toBe(false);
+      expect(result.current.isOnRoute('/progress')).toBe(true);
+
+      // Test specific route checkers
+      expect(result.current.isOnDashboard()).toBe(false);
+      expect(result.current.isOnHabits()).toBe(false);
+      expect(result.current.isOnProgress()).toBe(true);
     });
   });
 

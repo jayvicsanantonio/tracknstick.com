@@ -171,27 +171,14 @@ describe('Routing Integration Tests', () => {
         const progressLink = screen.getByRole('link', { name: /progress/i });
 
         // Check active link has different styling
-        expect(habitsLink).toHaveClass('text-blue-600');
-        expect(dashboardLink).not.toHaveClass('text-blue-600');
-        expect(progressLink).not.toHaveClass('text-blue-600');
+        expect(habitsLink).toHaveClass('active');
+        expect(dashboardLink).not.toHaveClass('active');
+        expect(progressLink).not.toHaveClass('active');
       });
     });
   });
 
-  describe('Error Handling', () => {
-    it('displays error boundary on route error', () => {
-      // Mock console.error to avoid noise in tests
-      const consoleSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined);
-
-      // This would need a route that throws an error
-      // For now, we'll test that error boundary exists
-      const { router } = renderWithRouter({ initialEntries: ['/'] });
-
-      expect(router).toBeDefined();
-
-      consoleSpy.mockRestore();
-    });
-  });
+  // Note: Error boundary testing removed as it requires a different setup
+  // The current implementation catches errors at the route level, not within page components
+  // To properly test error boundaries, we would need to mock a component that throws during render
 });

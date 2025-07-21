@@ -53,13 +53,44 @@ export function renderWithRouter({
 }
 
 // Mock feature flags for testing
-import { featureFlags } from '@/config/featureFlags';
+import { vi } from 'vitest';
+import { featureFlags, type FeatureFlags } from '@/config/featureFlags';
 
-export const mockFeatureFlags = (flags: Partial<typeof featureFlags>) => {
+export const mockFeatureFlags = (flags: Partial<FeatureFlags>) => {
+  // Store original values
+  const originalValues = new Map<keyof FeatureFlags, boolean>();
+
+  // Backup current values and set new ones
+  Object.entries(flags).forEach(([key, value]) => {
+    const typedKey = key as keyof FeatureFlags;
+    originalValues.set(typedKey, featureFlags[typedKey]);
+    featureFlags[typedKey] = value;
+  });
+
+  // Return cleanup function
+  return () => {
+    originalValues.forEach((value, key) => {
+      featureFlags[key] = value;
+    });
+  };
+};
+
+// Alternative approach using vi.mocked for better type safety
+export const mockFeatureFlagsWithVi = (flags: Partial<FeatureFlags>) => {
   const originalFlags = { ...featureFlags };
-  Object.assign(featureFlags, flags);
+
+  // Use vi.mocked to ensure proper cleanup
+  const mockedFlags = vi.mocked(featureFlags);
+
+  Object.entries(flags).forEach(([key, value]) => {
+    const typedKey = key as keyof FeatureFlags;
+    mockedFlags[typedKey] = value;
+  });
 
   return () => {
-    Object.assign(featureFlags, originalFlags);
+    Object.entries(originalFlags).forEach(([key, value]) => {
+      const typedKey = key as keyof FeatureFlags;
+      mockedFlags[typedKey] = value;
+    });
   };
 };

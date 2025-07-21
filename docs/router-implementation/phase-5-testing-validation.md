@@ -15,12 +15,11 @@ functionality.
 ```json
 {
   "devDependencies": {
-    "@testing-library/react": "^16.1.0",
-    "@testing-library/jest-dom": "^6.5.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@vitest/ui": "^3.0.3",
-    "jsdom": "^25.0.1",
-    "vitest": "^3.0.3"
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^14.6.1",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4"
   }
 }
 ```
@@ -28,31 +27,30 @@ functionality.
 #### Vitest Configuration (`vitest.config.ts`)
 
 ```typescript
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react()],
   test: {
-    globals: true,
     environment: 'jsdom',
+    globals: true,
     setupFiles: './src/test/setup.ts',
     coverage: {
-      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
-        'node_modules/**',
-        'src/test/**',
+        'node_modules/',
+        'src/test/',
         '**/*.d.ts',
         '**/*.config.*',
-        '**/mockData/**',
+        '**/mockServiceWorker.js',
       ],
     },
   },
   resolve: {
     alias: {
-      '@': '/src',
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });
