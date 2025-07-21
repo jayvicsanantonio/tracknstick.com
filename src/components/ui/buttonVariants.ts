@@ -8,13 +8,13 @@ const buttonVariants = cva(
         default:
           'bg-zinc-900 text-zinc-50 shadow-xs hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90',
         destructive:
-          'bg-red-500 text-white shadow-xs hover:bg-red-500/90 focus-visible:ring-red-500/20 dark:focus-visible:ring-red-500/40 dark:bg-red-500/60 dark:bg-red-900 dark:hover:bg-red-900/90 dark:focus-visible:ring-red-900/20 dark:focus-visible:ring-red-900/40 dark:bg-red-900/60',
+          'bg-red-500 text-white shadow-xs hover:bg-red-500/90 focus-visible:ring-red-500/20 dark:focus-visible:ring-red-500/40 dark:bg-red-900 dark:hover:bg-red-900/90 dark:focus-visible:ring-red-900/20 dark:focus-visible:ring-red-900/40',
         outline:
-          'border bg-white shadow-xs hover:bg-zinc-100 hover:text-zinc-900 dark:bg-zinc-200/30 dark:border-zinc-200 dark:hover:bg-zinc-200/50 dark:bg-zinc-950 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:bg-zinc-800/30 dark:border-zinc-800 dark:hover:bg-zinc-800/50',
+          'border bg-white shadow-xs hover:bg-zinc-100 hover:text-zinc-900 dark:bg-zinc-800/30 dark:border-zinc-800 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-50',
         secondary:
           'bg-zinc-100 text-zinc-900 shadow-xs hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80',
         ghost:
-          'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-100/50 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:hover:bg-zinc-800/50',
+          'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-50',
         link: 'text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50',
       },
       size: {
