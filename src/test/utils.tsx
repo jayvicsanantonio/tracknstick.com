@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
-import { router } from '@/routes';
+import { routes } from '@/routes';
 
 // Mock Clerk is now handled in mocks.tsx
 
@@ -31,23 +31,23 @@ export function renderWithRouter({
   initialEntries = ['/'],
   initialIndex = 0,
 }: RenderWithProvidersOptions = {}) {
-  const memoryRouter = createMemoryRouter(router.routes, {
+  const memoryRouter = createMemoryRouter(routes, {
     initialEntries,
     initialIndex,
   });
 
-  const AllTheProviders = () => {
+  const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
     return (
       <ClerkProvider publishableKey="test-key">
-        <HabitsStateProvider>
-          <RouterProvider router={memoryRouter} />
-        </HabitsStateProvider>
+        <HabitsStateProvider>{children}</HabitsStateProvider>
       </ClerkProvider>
     );
   };
 
   return {
-    ...render(<AllTheProviders />),
+    ...render(<RouterProvider router={memoryRouter} />, {
+      wrapper: AllTheProviders,
+    }),
     router: memoryRouter,
   };
 }

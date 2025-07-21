@@ -70,3 +70,6 @@ const routes: RouteObject[] = [
  * - Consistent loading states
  */
 export const router = createBrowserRouter(routes);
+
+// Export routes array for testing
+export { routes };

@@ -18,12 +18,38 @@ vi.mock('@clerk/clerk-react', () => ({
   useAuth: mockUseAuth,
 }));
 
-// Mock feature flags
-vi.mock('@/config/featureFlags', () => ({
-  featureFlags: {
-    isUrlRoutingEnabled: true,
+// Mock useToggle hook
+vi.mock('@/hooks/use-toggle', () => ({
+  useToggle: (initialValue = false) => {
+    let value = initialValue;
+    const toggle = vi.fn(() => {
+      value = !value;
+    });
+    return [value, toggle];
   },
 }));
+
+// Mock HabitsStateProvider
+vi.mock('@/features/habits/context/HabitsStateContext', () => {
+  const mockContextValue = {
+    isEditMode: false,
+    toggleIsEditMode: vi.fn(),
+    editingHabit: null,
+    setEditingHabit: vi.fn(),
+    showAddHabitDialog: false,
+    toggleShowAddHabitDialog: vi.fn(),
+    showEditHabitDialog: false,
+    toggleShowEditHabitDialog: vi.fn(),
+    openEditDialog: vi.fn(),
+  };
+
+  return {
+    HabitsStateContext: React.createContext(mockContextValue),
+    HabitsStateProvider: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+  };
+});
 
 // Mock habits context
 vi.mock('@/features/habits/hooks/useHabitsContext', () => ({
@@ -168,6 +194,87 @@ vi.mock('@/features/layout/components/Welcome', () => ({
 // Mock DailyHabitTracker
 vi.mock('@/features/habits/components/DailyHabitTracker', () => ({
   default: () => <div>Daily Habit Tracker</div>,
+}));
+
+// Mock HabitsOverview
+vi.mock('@/features/habits/components/HabitsOverview', () => ({
+  default: () => <div>Habits Overview</div>,
+}));
+
+// Mock ProgressOverview
+vi.mock('@/features/progress/components/ProgressOverview', () => ({
+  default: () => <div>Progress Overview</div>,
+}));
+
+// Mock Footer component
+vi.mock('@/features/layout/components/Footer', () => ({
+  default: () => <footer>Footer Mock</footer>,
+}));
+
+// Mock habit dialog components
+vi.mock('@/features/habits/components/AddHabitDialog', () => ({
+  default: () => <div>Add Habit Dialog Mock</div>,
+}));
+
+vi.mock('@/features/habits/components/EditHabitDialog', () => ({
+  default: () => <div>Edit Habit Dialog Mock</div>,
+}));
+
+// Mock PWAInstallPrompt
+vi.mock('@/components/PWAInstallPrompt', () => ({
+  PWAInstallPrompt: () => <div>PWA Install Prompt Mock</div>,
+}));
+
+// Mock ThemeProvider to avoid localStorage issues in tests
+vi.mock('@/context/ThemeProvider', async () => {
+  const { ThemeContext } = await vi.importActual<{
+    ThemeContext: React.Context<{ toggleDarkMode: () => void }>;
+  }>('@/context/ThemeContext');
+  return {
+    default: ({ children }: { children: React.ReactNode }) => {
+      const mockValue = { toggleDarkMode: vi.fn() };
+      return (
+        <ThemeContext.Provider value={mockValue}>
+          {children}
+        </ThemeContext.Provider>
+      );
+    },
+  };
+});
+
+// Mock DateProvider
+vi.mock('@/context/DateProvider', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+// Mock UI components
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}
+
+vi.mock('@/components/ui/button', () => ({
+  Button: ({ children, onClick, className, ...props }: ButtonProps) => (
+    <button className={className} onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+}));
+
+// Mock icons
+type IconProps = React.SVGProps<SVGSVGElement>;
+
+vi.mock('@/icons/miscellaneous', () => ({
+  default: {
+    CheckCircle2: (props: IconProps) => <div {...props}>CheckCircle2</div>,
+    Edit: (props: IconProps) => <div {...props}>Edit</div>,
+    Moon: (props: IconProps) => <div {...props}>Moon</div>,
+    Plus: (props: IconProps) => <div {...props}>Plus</div>,
+    Sun: (props: IconProps) => <div {...props}>Sun</div>,
+    BarChart2: (props: IconProps) => <div {...props}>BarChart2</div>,
+    Calendar: (props: IconProps) => <div {...props}>Calendar</div>,
+  },
 }));
 
 // Export mock functions for use in tests

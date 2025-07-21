@@ -1,31 +1,43 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Header from '@/features/layout/components/Header';
-import { featureFlags } from '@/config/featureFlags';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
+import { ThemeContext } from '@/context/ThemeContext';
+import { mockFeatureFlags } from '@/test/utils';
+
+const mockThemeContextValue = {
+  toggleDarkMode: vi.fn(),
+};
 
 const renderHeader = () => {
   return render(
-    <HabitsStateProvider>
-      <BrowserRouter>
-        <Header />
-      </BrowserRouter>
-    </HabitsStateProvider>,
+    <ThemeContext.Provider value={mockThemeContextValue}>
+      <HabitsStateProvider>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </HabitsStateProvider>
+    </ThemeContext.Provider>,
   );
 };
 
 describe('Header Component', () => {
   const user = userEvent.setup();
+  let restoreFeatureFlags: () => void;
 
-  beforeEach(() => {
+  afterEach(() => {
+    if (restoreFeatureFlags) {
+      restoreFeatureFlags();
+    }
     vi.clearAllMocks();
-    // Reset feature flag
-    vi.mocked(featureFlags).isUrlRoutingEnabled = false;
   });
 
   describe('with URL routing disabled', () => {
+    beforeEach(() => {
+      restoreFeatureFlags = mockFeatureFlags({ isUrlRoutingEnabled: false });
+    });
     it('renders legacy navigation buttons', () => {
       renderHeader();
 
@@ -63,7 +75,7 @@ describe('Header Component', () => {
 
   describe('with URL routing enabled', () => {
     beforeEach(() => {
-      vi.mocked(featureFlags).isUrlRoutingEnabled = true;
+      restoreFeatureFlags = mockFeatureFlags({ isUrlRoutingEnabled: true });
     });
 
     it('renders navigation links instead of buttons', () => {
@@ -89,11 +101,13 @@ describe('Header Component', () => {
     it('applies active styles to current route', () => {
       // Render with a specific route using MemoryRouter
       render(
-        <HabitsStateProvider>
-          <MemoryRouter initialEntries={['/habits']}>
-            <Header />
-          </MemoryRouter>
-        </HabitsStateProvider>,
+        <ThemeContext.Provider value={mockThemeContextValue}>
+          <HabitsStateProvider>
+            <MemoryRouter initialEntries={['/habits']}>
+              <Header />
+            </MemoryRouter>
+          </HabitsStateProvider>
+        </ThemeContext.Provider>,
       );
 
       const habitsLink = screen.getByRole('link', { name: /habits overview/i });
