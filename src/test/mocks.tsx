@@ -267,13 +267,41 @@ type IconProps = React.SVGProps<SVGSVGElement>;
 
 vi.mock('@/icons/miscellaneous', () => ({
   default: {
-    CheckCircle2: (props: IconProps) => <div {...props}>CheckCircle2</div>,
-    Edit: (props: IconProps) => <div {...props}>Edit</div>,
-    Moon: (props: IconProps) => <div {...props}>Moon</div>,
-    Plus: (props: IconProps) => <div {...props}>Plus</div>,
-    Sun: (props: IconProps) => <div {...props}>Sun</div>,
-    BarChart2: (props: IconProps) => <div {...props}>BarChart2</div>,
-    Calendar: (props: IconProps) => <div {...props}>Calendar</div>,
+    CheckCircle2: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-checkcircle2">
+        CheckCircle2
+      </div>
+    ),
+    Edit: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-edit">
+        Edit
+      </div>
+    ),
+    Moon: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-moon">
+        Moon
+      </div>
+    ),
+    Plus: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-plus">
+        Plus
+      </div>
+    ),
+    Sun: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-sun">
+        Sun
+      </div>
+    ),
+    BarChart2: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-barchart2">
+        BarChart2
+      </div>
+    ),
+    Calendar: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-calendar">
+        Calendar
+      </div>
+    ),
   },
 }));
 
