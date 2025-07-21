@@ -27,3 +27,7 @@ dist-ssr
 *.sln
 *.sw?
 *.tsbuildinfo
+
+# Playwright test artifacts
+playwright-report/
+test-results/
