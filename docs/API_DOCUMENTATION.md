@@ -1,6 +1,7 @@
 # API Documentation
 
-This document outlines the API endpoints and data structures used by Track N' Stick.
+This document outlines the API endpoints and data structures used by Track N'
+Stick.
 
 ## Base Configuration
 
@@ -11,7 +12,8 @@ This document outlines the API endpoints and data structures used by Track N' St
 
 ## Authentication
 
-All API requests require authentication via Clerk JWT tokens. The axios instance automatically includes the authorization header for authenticated requests.
+All API requests require authentication via Clerk JWT tokens. The axios instance
+automatically includes the authorization header for authenticated requests.
 
 ## Endpoints
 
@@ -233,16 +235,16 @@ interface Habit {
 
 ```typescript
 type Frequency =
-  | "monday"
-  | "tuesday"
-  | "wednesday"
-  | "thursday"
-  | "friday"
-  | "saturday"
-  | "sunday"
-  | "daily"
-  | "weekdays"
-  | "weekends";
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday'
+  | 'daily'
+  | 'weekdays'
+  | 'weekends';
 ```
 
 ### HabitStats
@@ -266,7 +268,10 @@ interface ProgressOverview {
 }
 ```
 
-> **Implementation Note**: There is a discrepancy between the frontend type definition and the API response. The API returns `history: HistoryDates[]` while the frontend type expects `days: HistoryDates[]`. This should be reconciled in future updates.
+> **Implementation Note**: There is a discrepancy between the frontend type
+> definition and the API response. The API returns `history: HistoryDates[]`
+> while the frontend type expects `days: HistoryDates[]`. This should be
+> reconciled in future updates.
 
 ### HistoryDates
 
@@ -277,7 +282,9 @@ interface HistoryDates {
 }
 ```
 
-> **Note**: In the frontend codebase, this same data structure is also used as `InsightData` in some UI components. Both interfaces are identical and represent the same data from the API.
+> **Note**: In the frontend codebase, this same data structure is also used as
+> `InsightData` in some UI components. Both interfaces are identical and
+> represent the same data from the API.
 
 ### ProgressHistoryResponse
 
@@ -366,7 +373,7 @@ const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 ```

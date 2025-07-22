@@ -5,7 +5,8 @@
 - **Frontend Framework**: React 19 with TypeScript
 - **Build Tool**: Vite 6.x for fast development and optimized builds
 - **Styling**: Tailwind CSS v4 with utility-first approach
-- **Package Manager**: pnpm (fast, disk-efficient with improved dependency management)
+- **Package Manager**: pnpm (fast, disk-efficient with improved dependency
+  management)
 - **Node Version**: >= 20.0.0
 
 ## Key Libraries & Dependencies
