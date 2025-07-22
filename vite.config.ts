@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'offline.html'],
       manifest: {
-        name: 'TrackNStick',
-        short_name: 'TrackNStick',
-        description: 'TrackNStick - Track and manage your assets efficiently',
+        name: "Track N' Stick",
+        short_name: "Track N' Stick",
+        description: "Track N' Stick - Help you track and build healthy habits",
         theme_color: '#4f46e5',
         icons: [
           {
