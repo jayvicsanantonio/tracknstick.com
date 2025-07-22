@@ -1,8 +1,10 @@
-# TrackNStick PWA Implementation Documentation
+# Track N' Stick PWA Implementation Documentation
 
 ## Overview
 
-This document details the process of converting TrackNStick into a Progressive Web App (PWA), enabling offline functionality, installability, and improved user experience.
+This document details the process of converting Track N' Stick into a
+Progressive Web App (PWA), enabling offline functionality, installability, and
+improved user experience.
 
 ## Dependencies Added
 
@@ -17,9 +19,9 @@ npm install -D @types/workbox-window
 
 ```json
 {
-  "name": "TrackNStick",
-  "short_name": "TrackNStick",
-  "description": "TrackNStick - Track and manage your assets efficiently",
+  "name": "Track N' Stick",
+  "short_name": "Track N' Stick",
+  "description": "Track N' Stick - Build better habits, one day at a time",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -43,53 +45,54 @@ npm install -D @types/workbox-window
 
 ### 2. Vite Configuration (`vite.config.ts`)
 
-We extended the Vite configuration to include the PWA plugin with specific settings:
+We extended the Vite configuration to include the PWA plugin with specific
+settings:
 
 ```typescript
 // @ts-nocheck
-import path from "path";
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-import tailwindcss from "@tailwindcss/vite";
-import { VitePWA } from "vite-plugin-pwa";
+import path from 'path';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "offline.html"],
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'offline.html'],
       manifest: {
-        name: "TrackNStick",
-        short_name: "TrackNStick",
-        description: "TrackNStick - Track and manage your assets efficiently",
-        theme_color: "#4f46e5",
+        name: "Track N' Stick",
+        short_name: "Track N' Stick",
+        description: "Track N' Stick - Build better habits, one day at a time",
+        theme_color: '#4f46e5',
         icons: [
           {
-            src: "/icons/icon-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any maskable",
+            src: '/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
           },
           {
-            src: "/icons/icon-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
           },
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-        navigateFallback: "index.html",
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "CacheFirst",
+            handler: 'CacheFirst',
             options: {
-              cacheName: "google-fonts-cache",
+              cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
@@ -101,9 +104,9 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/api\.tracknstick\.com\/api\/.*/i,
-            handler: "NetworkFirst",
+            handler: 'NetworkFirst',
             options: {
-              cacheName: "api-cache",
+              cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24, // 24 hours
@@ -115,15 +118,15 @@ export default defineConfig({
           },
         ],
       },
-      strategies: "generateSW",
-      filename: "sw.js",
+      strategies: 'generateSW',
+      filename: 'sw.js',
       navigateFallbackDenylist: [/^\/api/],
-      navigateFallback: "index.html",
+      navigateFallback: 'index.html',
     }),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });
@@ -134,11 +137,11 @@ export default defineConfig({
 We created custom type declarations for the vite-plugin-pwa module:
 
 ```typescript
-declare module "vite-plugin-pwa" {
-  import type { Plugin } from "vite";
+declare module 'vite-plugin-pwa' {
+  import type { Plugin } from 'vite';
 
   export interface VitePWAOptions {
-    registerType?: "autoUpdate" | "prompt" | "skipWaiting";
+    registerType?: 'autoUpdate' | 'prompt' | 'skipWaiting';
     includeAssets?: string[];
     manifest?: {
       name?: string;
@@ -198,7 +201,7 @@ We added type declarations for the virtual modules provided by vite-plugin-pwa:
 
 ```typescript
 // PWA Virtual modules
-declare module "virtual:pwa-register" {
+declare module 'virtual:pwa-register' {
   export interface RegisterSWOptions {
     immediate?: boolean;
     onNeedRefresh?: () => void;
@@ -226,7 +229,7 @@ We updated the HTML file to include PWA-specific meta tags:
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta
     name="description"
-    content="TrackNStick - Track and manage your assets efficiently"
+    content="Track N' Stick - Build better habits, one day at a time"
   />
   <meta name="theme-color" content="#4f46e5" />
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
@@ -236,20 +239,21 @@ We updated the HTML file to include PWA-specific meta tags:
 
 ## Service Worker Registration (`src/main.tsx`)
 
-We added code to register the service worker with update and offline notifications:
+We added code to register the service worker with update and offline
+notifications:
 
 ```typescript
-import { registerSW } from "virtual:pwa-register";
+import { registerSW } from 'virtual:pwa-register';
 
 // Register service worker
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm("New content available. Reload?")) {
+    if (confirm('New content available. Reload?')) {
       void updateSW(true);
     }
   },
   onOfflineReady() {
-    console.log("App ready to work offline");
+    console.log('App ready to work offline');
   },
 });
 ```
@@ -314,7 +318,7 @@ export function PWAInstallPrompt() {
 
   return (
     <div className="fixed bottom-4 right-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg z-50 max-w-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="font-semibold text-lg mb-2">Install TrackNStick</h3>
+      <h3 className="font-semibold text-lg mb-2">Install Track N' Stick</h3>
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
         Install our app on your device for a better experience!
       </p>
@@ -333,7 +337,8 @@ export function PWAInstallPrompt() {
 
 ## Offline Page (`public/offline.html`)
 
-We created a dedicated offline page to enhance the user experience when connectivity is lost:
+We created a dedicated offline page to enhance the user experience when
+connectivity is lost:
 
 ```html
 <!DOCTYPE html>
@@ -341,7 +346,7 @@ We created a dedicated offline page to enhance the user experience when connecti
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TrackNStick - Offline</title>
+    <title>Track N' Stick - Offline</title>
     <style>
       /* Styling omitted for brevity */
     </style>
@@ -352,7 +357,7 @@ We created a dedicated offline page to enhance the user experience when connecti
       <h1>You're Offline</h1>
       <p>
         It looks like you've lost your internet connection. Some features of
-        TrackNStick may be unavailable until you're back online.
+        Track N' Stick may be unavailable until you're back online.
       </p>
       <p>
         Don't worry though, any changes you make will sync once your connection
@@ -371,7 +376,7 @@ We created a dedicated offline page to enhance the user experience when connecti
 We added the PWA install prompt to the main App component:
 
 ```tsx
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 
 function App() {
   // Existing code...
@@ -431,7 +436,8 @@ The PWA plugin generates the following files during build:
 
 ### 1. Auto-update Mechanism
 
-The PWA is configured to automatically check for updates. When an update is detected:
+The PWA is configured to automatically check for updates. When an update is
+detected:
 
 - The user is prompted to refresh the page
 - If they confirm, the page reloads with the new version

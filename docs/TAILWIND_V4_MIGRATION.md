@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document outlines the migration from the current implementation to fully utilize TailwindCSS v4.1 features.
+This document outlines the migration from the current implementation to fully
+utilize TailwindCSS v4.1 features.
 
 ## Key Changes Required
 
@@ -65,7 +66,8 @@ This document outlines the migration from the current implementation to fully ut
   - EditHabitDialogHeaderTitle.tsx
   - EditHabitDialog.tsx
 
-- ✅ All remaining components have been verified to already use dark: variants correctly:
+- ✅ All remaining components have been verified to already use dark: variants
+  correctly:
   - ProgressCalendar.tsx ✅ COMPLETED
   - ProgressOverview.tsx ✅ COMPLETED
   - ProgressAchievements.tsx ✅ COMPLETED
@@ -85,7 +87,8 @@ This document outlines the migration from the current implementation to fully ut
 
 - ✅ Removed `isDarkMode` from ThemeContext interface
 - ✅ Updated ThemeProvider to only expose `toggleDarkMode`
-- ✅ Removed all `isDarkMode` usage from components (except ProgressChart.tsx which correctly uses document.documentElement check)
+- ✅ Removed all `isDarkMode` usage from components (except ProgressChart.tsx
+  which correctly uses document.documentElement check)
 - ✅ All components now use Tailwind's native dark: variants
 
 ## Files Updated
@@ -93,7 +96,8 @@ This document outlines the migration from the current implementation to fully ut
 1. ✅ `src/index.css` - Theme configuration
 2. ✅ `src/context/ThemeContext.tsx` - Dark mode implementation
 3. ✅ `src/App.tsx` - Root dark mode class
-4. ✅ Multiple component files - Replaced conditional classes with dark: variants
+4. ✅ Multiple component files - Replaced conditional classes with dark:
+   variants
 
 ## Migration Status: ✅ 100% COMPLETE
 
@@ -114,6 +118,8 @@ This document outlines the migration from the current implementation to fully ut
 
 ### Notes:
 
-- ProgressChart.tsx correctly uses `document.documentElement.classList.contains('dark')` for chart styling
-- ThemeProvider.tsx maintains `isDarkMode` internally for state management but only exposes `toggleDarkMode`
+- ProgressChart.tsx correctly uses
+  `document.documentElement.classList.contains('dark')` for chart styling
+- ThemeProvider.tsx maintains `isDarkMode` internally for state management but
+  only exposes `toggleDarkMode`
 - Header.tsx correctly uses `toggleDarkMode` from context
