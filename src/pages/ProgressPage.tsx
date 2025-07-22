@@ -1,5 +1,6 @@
 import { usePageTitle } from '@/hooks/usePageTitle';
 import ProgressOverview from '@/features/progress/components/ProgressOverview';
+import { useRouteMonitoring } from '@/utils/monitoring';
 
 /**
  * Progress page component
@@ -11,6 +12,7 @@ import ProgressOverview from '@/features/progress/components/ProgressOverview';
  */
 export function ProgressPage() {
   usePageTitle('Progress Overview');
+  useRouteMonitoring('/progress');
 
   return (
     <>

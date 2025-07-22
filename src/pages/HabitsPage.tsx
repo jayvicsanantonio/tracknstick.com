@@ -1,5 +1,6 @@
 import { usePageTitle } from '@/hooks/usePageTitle';
 import HabitsOverview from '@/features/habits/components/HabitsOverview';
+import { useRouteMonitoring } from '@/utils/monitoring';
 
 /**
  * Habits page component
@@ -11,6 +12,7 @@ import HabitsOverview from '@/features/habits/components/HabitsOverview';
  */
 export function HabitsPage() {
   usePageTitle('Habits Overview');
+  useRouteMonitoring('/habits');
 
   return (
     <>

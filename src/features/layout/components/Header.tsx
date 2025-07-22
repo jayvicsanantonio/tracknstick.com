@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeContext } from '@/context/ThemeContext';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { featureFlags } from '@/config/featureFlags';
+import { trackNavigationClick } from '@/utils/monitoring';
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
 
@@ -46,6 +47,7 @@ export default function Header() {
               <>
                 <NavLink
                   to="/"
+                  onClick={trackNavigationClick}
                   className={({ isActive }) =>
                     `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                       isActive
@@ -62,6 +64,7 @@ export default function Header() {
                 </NavLink>
                 <NavLink
                   to="/habits"
+                  onClick={trackNavigationClick}
                   className={({ isActive }) =>
                     `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                       isActive
@@ -78,6 +81,7 @@ export default function Header() {
                 </NavLink>
                 <NavLink
                   to="/progress"
+                  onClick={trackNavigationClick}
                   className={({ isActive }) =>
                     `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                       isActive

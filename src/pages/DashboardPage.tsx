@@ -1,5 +1,6 @@
 import { usePageTitle } from '@/hooks/usePageTitle';
 import DailyHabitTracker from '@/features/habits/components/DailyHabitTracker';
+import { useRouteMonitoring } from '@/utils/monitoring';
 
 /**
  * Dashboard page component
@@ -11,6 +12,7 @@ import DailyHabitTracker from '@/features/habits/components/DailyHabitTracker';
  */
 export function DashboardPage() {
   usePageTitle('Dashboard');
+  useRouteMonitoring('/');
 
   return (
     <>
