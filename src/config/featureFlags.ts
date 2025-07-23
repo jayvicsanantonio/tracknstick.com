@@ -5,8 +5,10 @@
  * These flags allow for gradual rollout and easy rollback if needed.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FeatureFlags {
-  isUrlRoutingEnabled: boolean;
+  // Add new feature flags here as needed
+  // Example: enableNewFeature?: boolean;
 }
 
 /**
@@ -14,9 +16,7 @@ export interface FeatureFlags {
  */
 export const getFeatureFlags = (): FeatureFlags => {
   return {
-    // Feature flag to control React Router rollout
-    // Set VITE_URL_ROUTING_ENABLED=true in environment to enable
-    isUrlRoutingEnabled: import.meta.env.VITE_URL_ROUTING_ENABLED === 'true',
+    // Add new feature flags here as needed
   };
 };
 

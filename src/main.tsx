@@ -10,7 +10,6 @@ import '@/index.css';
 import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@/routes';
-import { featureFlags } from '@/config/featureFlags';
 
 // Register service worker
 const updateSW = registerSW({
@@ -48,13 +47,9 @@ createRoot(document.getElementById('root')!).render(
         }}
       >
         <DateProvider>
-          {featureFlags.isUrlRoutingEnabled ? (
-            <App>
-              <RouterProvider router={router} />
-            </App>
-          ) : (
-            <App />
-          )}
+          <App>
+            <RouterProvider router={router} />
+          </App>
           <Toaster />
         </DateProvider>
       </ClerkProvider>

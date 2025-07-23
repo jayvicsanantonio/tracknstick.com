@@ -52,13 +52,10 @@ class RoutingMonitor {
   private isEnabled = false;
 
   constructor() {
-    // Only enable monitoring if URL routing is enabled
-    this.isEnabled = import.meta.env.VITE_URL_ROUTING_ENABLED === 'true';
-
-    if (this.isEnabled) {
-      this.setupEventListeners();
-      this.detectNavigationType();
-    }
+    // Routing is now always enabled
+    this.isEnabled = true;
+    this.setupEventListeners();
+    this.detectNavigationType();
   }
 
   /**
@@ -300,7 +297,7 @@ class RoutingMonitor {
     return JSON.stringify({
       timestamp: new Date().toISOString(),
       metrics: this.getMetricsSummary(),
-      featureFlag: 'isUrlRoutingEnabled',
+      // Feature flag removed - routing is now always enabled
       enabled: this.isEnabled,
     });
   }
