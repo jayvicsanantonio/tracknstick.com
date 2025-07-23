@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { featureFlags } from '@/config/featureFlags';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -90,13 +89,7 @@ export default function HabitsOverview() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => {
-                  if (featureFlags.isUrlRoutingEnabled) {
-                    void navigate('/');
-                  } else {
-                    console.warn('Legacy navigation mode');
-                  }
-                }}
+                onClick={() => void navigate('/')}
                 className="mr-2 text-black hover:bg-purple-50 dark:text-white dark:hover:bg-purple-950/70 dark:hover:text-purple-100"
               >
                 <svg

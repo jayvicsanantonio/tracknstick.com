@@ -1,28 +1,7 @@
-import {
-  createContext,
-  useState,
-  ReactNode,
-  useCallback,
-  useMemo,
-} from 'react';
+import { useState, ReactNode, useCallback, useMemo } from 'react';
 import { useToggle } from '@/hooks/use-toggle';
 import { Habit } from '@/features/habits/types/Habit';
-
-interface HabitsStateContextValue {
-  isEditMode: boolean;
-  toggleIsEditMode: () => void;
-  editingHabit: Habit | null;
-  setEditingHabit: (habit: Habit | null) => void;
-  showAddHabitDialog: boolean;
-  toggleShowAddHabitDialog: () => void;
-  showEditHabitDialog: boolean;
-  toggleShowEditHabitDialog: () => void;
-  openEditDialog: (habit: Habit) => void;
-}
-
-export const HabitsStateContext = createContext<HabitsStateContextValue | null>(
-  null,
-);
+import { HabitsStateContext } from './HabitsStateContextDefinition';
 
 export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [isEditMode, toggleIsEditMode] = useToggle(false);
@@ -71,3 +50,6 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
     </HabitsStateContext.Provider>
   );
 }
+
+// Re-export for backward compatibility
+export { HabitsStateContext } from './HabitsStateContextDefinition';

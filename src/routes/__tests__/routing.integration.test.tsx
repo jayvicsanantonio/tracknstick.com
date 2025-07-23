@@ -12,12 +12,7 @@ vi.mock('@clerk/clerk-react', () => ({
   useAuth: () => ({ isSignedIn: true }),
 }));
 
-// Mock feature flags
-vi.mock('@/config/featureFlags', () => ({
-  featureFlags: {
-    isUrlRoutingEnabled: true,
-  },
-}));
+// Feature flags no longer needed - routing is always enabled
 
 describe('Routing Integration Tests', () => {
   const user = userEvent.setup();

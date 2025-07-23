@@ -12,7 +12,6 @@ import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressStreaks from '../hooks/useProgressStreaks';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { featureFlags } from '@/config/featureFlags';
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
@@ -80,13 +79,7 @@ export default function ProgressOverview() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => {
-                  if (featureFlags.isUrlRoutingEnabled) {
-                    void navigate('/');
-                  } else {
-                    console.warn('Legacy navigation mode');
-                  }
-                }}
+                onClick={() => void navigate('/')}
                 className="mr-2 dark:text-white dark:hover:bg-purple-900/70 dark:hover:text-purple-300"
                 aria-label="Back to daily view"
               >
