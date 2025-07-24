@@ -57,7 +57,9 @@ export function PWAInstallPrompt() {
 
   return (
     <div className="fixed right-4 bottom-4 z-50 max-w-sm rounded-lg border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-      <h3 className="mb-2 text-lg font-semibold">Install TrackNStick</h3>
+      <h3 className="mb-2 text-lg font-semibold">
+        Install Track N&apos; Stick
+      </h3>
       <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-300">
         Install our app on your device for a better experience!
       </p>
