@@ -72,7 +72,7 @@ export default function ProgressOverview() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="flex w-full flex-1 flex-col overflow-hidden border-purple-100 bg-white shadow-xl shadow-purple-200/50 dark:border-purple-900 dark:bg-[#121228] dark:shadow-purple-900/20">
+      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20">
         <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
           <div>
             <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold sm:text-2xl dark:text-white">

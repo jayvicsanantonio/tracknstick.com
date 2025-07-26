@@ -98,7 +98,7 @@
     --color-brand-text: theme(--color-purple-300);
     --color-brand-text-light: theme(--color-purple-400);
     --color-surface: theme(--color-purple-950);
-    --color-surface-secondary: theme(--color-zinc-800);
+    --color-surface-secondary: theme(--color-slate-900);
     --color-surface-tertiary: theme(--color-zinc-700);
     --color-text-primary: theme(--color-zinc-100);
     --color-text-secondary: theme(--color-zinc-400);

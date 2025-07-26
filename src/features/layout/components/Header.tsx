@@ -37,7 +37,7 @@ export default function Header() {
               className={({ isActive }) =>
                 `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                   isActive
-                    ? 'bg-(--color-brand-secondary) text-white shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
+                    ? 'bg-(--color-brand-secondary) text-white shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
                     : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 hover:shadow-lg dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
                 }`
               }
@@ -51,7 +51,7 @@ export default function Header() {
               className={({ isActive }) =>
                 `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                   isActive
-                    ? 'bg-(--color-brand-secondary) text-white shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
+                    ? 'bg-(--color-brand-secondary) text-white shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
                     : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 hover:shadow-lg dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
                 }`
               }
@@ -65,7 +65,7 @@ export default function Header() {
               className={({ isActive }) =>
                 `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
                   isActive
-                    ? 'bg-(--color-brand-secondary) text-white shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary) dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
+                    ? 'bg-(--color-brand-secondary) text-white shadow-lg hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary)'
                     : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 hover:shadow-lg dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20'
                 }`
               }
@@ -74,7 +74,7 @@ export default function Header() {
               <BarChart2 aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
             </NavLink>
             <Button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-brand-primary)/20 p-0 text-(--color-brand-primary) shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary)/30 hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-6"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-brand-primary)/20 p-0 text-(--color-brand-primary) shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary)/30 hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary)/60 dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-6"
               onClick={toggleShowAddHabitDialog}
               aria-label="Add Habit"
             >
@@ -82,7 +82,7 @@ export default function Header() {
             </Button>
 
             <Button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-brand-primary)/20 p-0 text-(--color-brand-primary) shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary)/30 hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-6"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-brand-primary)/20 p-0 text-(--color-brand-primary) shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary)/30 hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary)/60 dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-6"
               onClick={toggleDarkMode}
               aria-label="Toggle Dark Mode"
             >
@@ -107,7 +107,7 @@ export default function Header() {
         </SignedIn>
         <SignedOut>
           <Button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-brand-primary) p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-6"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-brand-primary)/60 p-0 shadow-md transition-all duration-300 hover:bg-(--color-brand-secondary) hover:shadow-lg sm:h-10 sm:w-10 dark:bg-(--color-surface-secondary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 [&_svg:not([class*='size-'])]:size-4 sm:[&_svg:not([class*='size-'])]:size-6"
             onClick={toggleDarkMode}
             aria-label="Toggle Dark Mode"
           >
