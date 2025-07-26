@@ -5,7 +5,7 @@ import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { ReactNode } from 'react';
 
 interface AppProps {
-  children?: ReactNode;
+  children: ReactNode;
 }
 
 function App({ children }: AppProps) {
