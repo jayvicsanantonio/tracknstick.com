@@ -4,14 +4,24 @@ import ProgressCalendar from '@/features/progress/components/ProgressCalendar';
 import ProgressChart from '@/features/progress/components/ProgressChart';
 import ProgressAchievements from '@/features/progress/components/ProgressAchievements';
 import StreakDisplayDays from '@/features/progress/components/StreakDisplayDays';
-// import { ThemeContext } from "@/context/ThemeContext";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { ThemeContext } from "@app/providers/ThemeContext";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@shared/components/ui/tabs';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressStreaks from '../hooks/useProgressStreaks';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { Button } from '@shared/components/ui/button';
 
 const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
   MiscellaneousIcons;
@@ -72,7 +82,7 @@ export default function ProgressOverview() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20">
+      <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
         <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
           <div>
             <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold sm:text-2xl dark:text-white">

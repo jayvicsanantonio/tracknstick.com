@@ -11,10 +11,10 @@ export default function Welcome() {
           transition={{ duration: 0.75 }}
           className="mx-auto max-w-2xl text-center"
         >
-          <h2 className="mb-4 text-2xl font-bold text-(--color-brand-tertiary) sm:mb-6 sm:text-3xl md:text-4xl dark:text-(--color-brand-text-light)">
+          <h2 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mb-4 text-2xl font-bold sm:mb-6 sm:text-3xl md:text-4xl">
             Welcome to Track N&apos; Stick
           </h2>
-          <p className="mb-8 text-base leading-relaxed text-(--color-brand-primary) sm:mb-12 sm:text-lg md:text-xl dark:text-(--color-brand-text-light)">
+          <p className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) mb-8 text-base leading-relaxed sm:mb-12 sm:text-lg md:text-xl">
             Embark on your journey to better habits and personal growth. Start
             by adding your first habit and watch your progress unfold.
           </p>

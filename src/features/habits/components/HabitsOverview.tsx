@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@shared/components/ui/card';
+import { Button } from '@shared/components/ui/button';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,9 +19,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
+} from '@shared/components/ui/alert-dialog';
+import { Tabs, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
+import { Input } from '@shared/components/ui/input';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 
@@ -82,7 +87,7 @@ export default function HabitsOverview() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20">
+      <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
         <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
           <div>
             <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-black sm:text-2xl dark:text-white">

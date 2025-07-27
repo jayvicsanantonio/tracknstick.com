@@ -7,18 +7,18 @@ export default function StreakDisplayDays({
 }) {
   return (
     <div
-      className="flex items-center rounded-lg bg-(--color-brand-light) p-4 shadow-md dark:bg-(--color-brand-light)"
+      className="bg-(--color-brand-light) dark:bg-(--color-brand-light) flex items-center rounded-lg p-4 shadow-md"
       role="status"
       aria-label={`${label}: ${value} days`}
     >
-      <span className="mr-2 text-4xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+      <span className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mr-2 text-4xl font-bold">
         {value}
       </span>
       <div className="flex flex-col">
-        <span className="text-sm text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+        <span className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-sm">
           {label}
         </span>
-        <span className="text-xs text-(--color-brand-primary) dark:text-(--color-brand-text-light)">
+        <span className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) text-xs">
           days
         </span>
       </div>

@@ -1,4 +1,4 @@
-import axiosInstance from '@/services/api/axiosInstance';
+import { axiosInstance } from '@shared/services/api/axiosInstance';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
 
 export interface ProgressHistoryResponse {

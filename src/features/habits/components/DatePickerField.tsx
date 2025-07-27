@@ -1,5 +1,5 @@
 import DatePicker from 'react-datepicker';
-import { Label } from '@/components/ui/label';
+import { Label } from '@shared/components/ui/label';
 import DatePickerInput, {
   datePickerInputStyles,
 } from '@/features/habits/components/DatePickerInput';
@@ -169,7 +169,7 @@ export default function DatePickerField({
         className="text-(--color-brand-text) dark:text-(--color-brand-text-light)"
       >
         {label}
-        {isRequired && <span className="ml-1 text-(--color-error)">*</span>}
+        {isRequired && <span className="text-(--color-error) ml-1">*</span>}
       </Label>
       <DatePicker
         selected={selected}

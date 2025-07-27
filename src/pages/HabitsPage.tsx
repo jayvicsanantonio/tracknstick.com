@@ -1,6 +1,6 @@
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageTitle } from '@shared/hooks/usePageTitle';
 import HabitsOverview from '@/features/habits/components/HabitsOverview';
-import { useRouteMonitoring } from '@/utils/monitoring';
+import { useRouteMonitoring } from '@shared/utils/monitoring';
 
 /**
  * Habits page component

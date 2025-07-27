@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState, useEffect, useMemo } from 'react';
 import useSWR from 'swr';
-import { useToast } from '@/hooks/use-toast';
-import { DateContext } from '@/context/DateContext';
+import { useToast } from '@shared/hooks/use-toast';
+import { DateContext } from '@app/providers/DateContext';
 
 import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
 import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import useSWR from 'swr';
 import { fetchHabitStats } from '@/features/habits/api';
-import { DateContext } from '@/context/DateContext';
+import { DateContext } from '@app/providers/DateContext';
 import { HabitStats } from '../types/HabitStats';
 
 export default function useHabitStats(habitId: string): HabitStats {

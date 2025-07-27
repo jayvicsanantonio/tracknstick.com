@@ -2,12 +2,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
+} from '@shared/components/ui/dialog';
 
 export default function AddHabitDialogHeaderTitle() {
   return (
     <DialogHeader>
-      <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+      <DialogTitle className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-2xl font-bold">
         Add New Habit
       </DialogTitle>
       <DialogDescription className="sr-only">
