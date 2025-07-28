@@ -2,8 +2,11 @@ import useSWR, { SWRResponse } from 'swr';
 import { fetchProgressHistory } from '@/features/progress/api';
 import { useState, useEffect, useContext } from 'react';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
-import { getLocalStartofDayUTC, getLocalEndOfDayUTC } from '@/lib/formatDate';
-import { DateContext } from '@/context/DateContext';
+import {
+  getLocalStartofDayUTC,
+  getLocalEndOfDayUTC,
+} from '@shared/utils/date/formatDate';
+import { DateContext } from '@app/providers/DateContext';
 
 const getMonthBoundaryDates = (date: Date, timeZone: string) => {
   const year = date.getFullYear();

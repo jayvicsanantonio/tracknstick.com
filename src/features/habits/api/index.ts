@@ -1,4 +1,4 @@
-import axiosInstance from '@/services/api/axiosInstance';
+import { axiosInstance } from '@shared/services/api/axiosInstance';
 import { Habit } from '@/features/habits/types/Habit';
 import { HabitStats } from '@/features/habits/types/HabitStats';
 import { ProgressOverview } from '@/features/progress/types/ProgressOverview';

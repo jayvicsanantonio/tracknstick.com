@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { renderWithRouter } from '@/test/utils';
+import { renderWithRouter } from '@testing/utils';
 import '@testing-library/jest-dom';
 
 describe('Routing', () => {

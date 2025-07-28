@@ -1,7 +1,7 @@
 import { useContext, useState, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { Input } from '@shared/components/ui/input';
+import { Label } from '@shared/components/ui/label';
+import { Separator } from '@shared/components/ui/separator';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Habit } from '@/features/habits/types/Habit';
 import { Frequency } from '@/features/habits/types/Frequency';
@@ -11,8 +11,11 @@ import DatePickerField, { datePickerStyles } from './DatePickerField';
 import IconPicker from './IconPicker';
 import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
-import { DateContext } from '@/context/DateContext';
-import { getLocalEndOfDayUTC, getLocalStartofDayUTC } from '@/lib/formatDate';
+import { DateContext } from '@app/providers/DateContext';
+import {
+  getLocalEndOfDayUTC,
+  getLocalStartofDayUTC,
+} from '@shared/utils/date/formatDate';
 export default function HabitForm({
   habit,
   toggleDialog,
@@ -113,7 +116,7 @@ export default function HabitForm({
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className="text-sm text-(--color-brand-text) sm:text-base dark:text-(--color-brand-text-light)"
+              className="text-(--color-brand-text) dark:text-(--color-brand-text-light) text-sm sm:text-base"
             >
               Name
               <span className="text-(--color-error)">*</span>
@@ -161,7 +164,7 @@ export default function HabitForm({
           />
         </div>
 
-        <Separator className="my-2 bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
+        <Separator className="bg-(--color-border-brand) dark:bg-(--color-brand-light) my-2" />
 
         <FormActions
           isSubmitting={isSubmitting}

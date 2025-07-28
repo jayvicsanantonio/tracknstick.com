@@ -1,5 +1,5 @@
-import { DialogClose } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { DialogClose } from '@shared/components/ui/dialog';
+import { Button } from '@shared/components/ui/button';
 import { Habit } from '@/features/habits/types/Habit';
 
 interface FormActionsProps {
@@ -20,7 +20,7 @@ export default function FormActions({
           <Button
             type="button"
             variant="outline"
-            className="w-full border-(--color-error) bg-(--color-surface) text-sm text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) sm:w-auto sm:text-base dark:bg-transparent dark:hover:border-(--color-error) dark:hover:bg-(--color-error)"
+            className="border-(--color-error) bg-(--color-surface) text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) dark:hover:border-(--color-error) dark:hover:bg-(--color-error) w-full text-sm sm:w-auto sm:text-base dark:bg-transparent"
             onClick={() => {
               if (!habit?.id) return;
               void onDelete(habit.id);
@@ -37,14 +37,14 @@ export default function FormActions({
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="border-(--color-border-brand) text-sm text-(--color-brand-primary) hover:bg-(--color-hover-brand) hover:text-(--color-brand-secondary) sm:text-base dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:border-(--color-border-brand) dark:hover:bg-(--color-hover-brand) dark:hover:text-(--color-brand-text-light)"
+            className="border-(--color-border-brand) text-(--color-brand-primary) hover:bg-(--color-hover-brand) hover:text-(--color-brand-secondary) dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:border-(--color-border-brand) dark:hover:bg-(--color-hover-brand) dark:hover:text-(--color-brand-text-light) text-sm sm:text-base"
           >
             Cancel
           </Button>
         </DialogClose>
         <Button
           type="submit"
-          className="flex-1 bg-(--color-brand-primary) text-sm text-(--color-text-inverse) hover:bg-(--color-brand-secondary) sm:w-32 sm:flex-none sm:text-base dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90"
+          className="bg-(--color-brand-primary) text-(--color-text-inverse) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90 flex-1 text-sm sm:w-32 sm:flex-none sm:text-base"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Saving...' : 'Save Changes'}

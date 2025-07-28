@@ -1,5 +1,5 @@
 import { Habit } from '@/features/habits/types/Habit';
-import formatDate from '@/lib/formatDate';
+import formatDate from '@shared/utils/date/formatDate';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import useHabitStats from '@/features/habits/hooks/useHabitStats';
 import { motion } from 'framer-motion';

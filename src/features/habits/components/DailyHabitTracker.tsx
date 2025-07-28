@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import NoHabits from '@/features/habits/components/NoHabits';
 import DailyHabitDate from '@/features/habits/components/DailyHabitDate';
 import DailyHabitProgressIndicator from '@/features/habits/components/DailyHabitProgressIndicator';
@@ -13,7 +13,7 @@ export default function DailyHabitTracker() {
     return (
       <div className="flex flex-1 items-center justify-center">
         <motion.div
-          className="h-12 w-12 rounded-full border-4 border-(--color-brand-primary) border-t-transparent"
+          className="border-(--color-brand-primary) h-12 w-12 rounded-full border-4 border-t-transparent"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -27,7 +27,7 @@ export default function DailyHabitTracker() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-(--color-error-light) bg-(--color-error-light) p-8 text-center text-(--color-error-text) dark:border-(--color-error) dark:bg-(--color-error-light) dark:text-(--color-error-text)">
+      <div className="border-(--color-error-light) bg-(--color-error-light) text-(--color-error-text) dark:border-(--color-error) dark:bg-(--color-error-light) dark:text-(--color-error-text) rounded-lg border p-8 text-center">
         Error loading habits. Please try again.
       </div>
     );
@@ -40,7 +40,7 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="flex w-full flex-1 flex-col overflow-hidden border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 shadow-xl dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20">
+      <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
         <CardHeader className="px-3 pt-6 sm:px-6">
           <DailyHabitDate />
         </CardHeader>

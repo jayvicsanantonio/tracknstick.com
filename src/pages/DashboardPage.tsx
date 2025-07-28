@@ -1,6 +1,6 @@
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageTitle } from '@shared/hooks/usePageTitle';
 import DailyHabitTracker from '@/features/habits/components/DailyHabitTracker';
-import { useRouteMonitoring } from '@/utils/monitoring';
+import { useRouteMonitoring } from '@shared/utils/monitoring';
 
 /**
  * Dashboard page component

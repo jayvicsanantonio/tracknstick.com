@@ -2,8 +2,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import frequencyLabel from '@/lib/frequencyLabel';
+} from '@shared/components/ui/dialog';
+import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import HabitsIcons from '@/icons/habits';
 import { Habit } from '@/features/habits/types/Habit';
 
@@ -19,7 +19,7 @@ export default function EditHabitDialogHeaderTitle({
 
   return (
     <DialogHeader>
-      <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+      <DialogTitle className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-2xl font-bold">
         {HabitIcon && <HabitIcon className="mr-2 inline-block h-8 w-8" />}
         {habit.name}
       </DialogTitle>

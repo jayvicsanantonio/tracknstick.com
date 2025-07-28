@@ -1,6 +1,6 @@
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageTitle } from '@shared/hooks/usePageTitle';
 import ProgressOverview from '@/features/progress/components/ProgressOverview';
-import { useRouteMonitoring } from '@/utils/monitoring';
+import { useRouteMonitoring } from '@shared/utils/monitoring';
 
 /**
  * Progress page component

@@ -1,5 +1,5 @@
 import { useState, ReactNode, useCallback, useMemo } from 'react';
-import { useToggle } from '@/hooks/use-toggle';
+import { useToggle } from '@shared/hooks/use-toggle';
 import { Habit } from '@/features/habits/types/Habit';
 import { HabitsStateContext } from './HabitsStateContextDefinition';
 

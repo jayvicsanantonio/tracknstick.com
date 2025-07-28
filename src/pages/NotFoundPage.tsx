@@ -1,6 +1,6 @@
-import { usePageTitle } from '@/hooks/usePageTitle';
-import { useAppNavigation } from '@/utils/navigation';
-import { Button } from '@/components/ui/button';
+import { usePageTitle } from '@shared/hooks/usePageTitle';
+import { useAppNavigation } from '@shared/utils/navigation';
+import { Button } from '@shared/components/ui/button';
 
 /**
  * 404 Not Found page component

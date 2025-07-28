@@ -1,15 +1,15 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import ThemeProvider from '@/context/ThemeProvider';
-import DateProvider from '@/context/DateProvider.tsx';
+import ThemeProvider from '@app/providers/ThemeProvider';
+import DateProvider from '@app/providers/DateProvider.tsx';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { shadesOfPurple } from '@clerk/themes';
-import { Toaster } from '@/components/ui/toaster.tsx';
-import App from '@/App.tsx';
-import '@/index.css';
+import { Toaster } from '@shared/components/ui/toaster.tsx';
+import App from '@app/App.tsx';
+import '@/styles/index.css';
 import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';
-import { router } from '@/routes';
+import { router } from '@app/routes';
 
 // Register service worker
 const updateSW = registerSW({

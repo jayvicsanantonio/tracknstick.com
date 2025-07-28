@@ -4,7 +4,7 @@ import {
   ProgressStreaksResponse,
 } from '@/features/progress/api';
 import { useContext } from 'react';
-import { DateContext } from '@/context/DateContext';
+import { DateContext } from '@app/providers/DateContext';
 
 export default function useProgressStreaks() {
   const { timeZone } = useContext(DateContext);

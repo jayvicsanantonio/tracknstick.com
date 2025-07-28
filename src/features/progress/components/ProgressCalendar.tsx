@@ -32,10 +32,10 @@ export default function ProgressCalendar({
         >
           <ChevronLeft
             aria-hidden="true"
-            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
+            className="text-(--color-text-primary) dark:text-(--color-brand-text-light) h-4 w-4"
           />
         </MonthNavButton>
-        <h3 className="text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+        <h3 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-lg font-semibold">
           {selectedMonth.toLocaleString('default', {
             month: 'long',
             year: 'numeric',
@@ -44,7 +44,7 @@ export default function ProgressCalendar({
         <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
-            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
+            className="text-(--color-text-primary) dark:text-(--color-brand-text-light) h-4 w-4"
           />
         </MonthNavButton>
       </div>
@@ -52,7 +52,7 @@ export default function ProgressCalendar({
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-center text-xs font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)"
+            className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-center text-xs font-bold"
             role="columnheader"
             aria-label={day}
           >
