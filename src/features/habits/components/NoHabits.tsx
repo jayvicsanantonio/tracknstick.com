@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Button } from '@shared/components/ui/button';
 import { CalendarX2, PlusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 
-export default function NoHabits() {
+const NoHabits = memo(function NoHabits() {
   const { toggleShowAddHabitDialog } = useHabitsContext();
 
   return (
@@ -51,4 +52,6 @@ export default function NoHabits() {
       </div>
     </motion.div>
   );
-}
+});
+
+export default NoHabits;

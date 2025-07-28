@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@shared/components/ui/dialog';
 
-export default function AddHabitDialogHeaderTitle() {
+const AddHabitDialogHeaderTitle = memo(function AddHabitDialogHeaderTitle() {
   return (
     <DialogHeader>
       <DialogTitle className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-2xl font-bold">
@@ -15,4 +16,6 @@ export default function AddHabitDialogHeaderTitle() {
       </DialogDescription>
     </DialogHeader>
   );
-}
+});
+
+export default AddHabitDialogHeaderTitle;

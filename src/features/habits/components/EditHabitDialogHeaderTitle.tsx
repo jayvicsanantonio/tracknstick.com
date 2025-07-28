@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   DialogHeader,
   DialogTitle,
@@ -7,11 +8,13 @@ import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import HabitsIcons from '@/icons/habits';
 import { Habit } from '@/features/habits/types/Habit';
 
-export default function EditHabitDialogHeaderTitle({
-  habit,
-}: {
+interface EditHabitDialogHeaderTitleProps {
   habit?: Habit | null;
-}) {
+}
+
+const EditHabitDialogHeaderTitle = memo(function EditHabitDialogHeaderTitle({
+  habit,
+}: EditHabitDialogHeaderTitleProps) {
   if (!habit) {
     return null;
   }
@@ -26,4 +29,6 @@ export default function EditHabitDialogHeaderTitle({
       <DialogDescription>{frequencyLabel(habit.frequency)}</DialogDescription>
     </DialogHeader>
   );
-}
+});
+
+export default EditHabitDialogHeaderTitle;
