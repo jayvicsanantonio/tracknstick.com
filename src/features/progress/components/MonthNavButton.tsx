@@ -1,14 +1,17 @@
+import { memo, ReactNode } from 'react';
 import { Button } from '@shared/components/ui/button';
 
-export default function MonthNavButton({
+interface MonthNavButtonProps {
+  onClick: () => void;
+  children: ReactNode;
+  ariaLabel: string;
+}
+
+const MonthNavButton = memo(function MonthNavButton({
   onClick,
   children,
   ariaLabel,
-}: {
-  onClick: () => void;
-  children: React.ReactNode;
-  ariaLabel: string;
-}) {
+}: MonthNavButtonProps) {
   return (
     <Button
       onClick={onClick}
@@ -20,4 +23,6 @@ export default function MonthNavButton({
       {children}
     </Button>
   );
-}
+});
+
+export default MonthNavButton;

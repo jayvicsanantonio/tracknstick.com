@@ -1,10 +1,14 @@
-export default function StreakDisplayDays({
-  value,
-  label,
-}: {
+import { memo } from 'react';
+
+interface StreakDisplayDaysProps {
   value: number;
   label: string;
-}) {
+}
+
+const StreakDisplayDays = memo(function StreakDisplayDays({
+  value,
+  label,
+}: StreakDisplayDaysProps) {
   return (
     <div
       className="bg-(--color-brand-light) dark:bg-(--color-brand-light) flex items-center rounded-lg p-4 shadow-md"
@@ -24,4 +28,6 @@ export default function StreakDisplayDays({
       </div>
     </div>
   );
-}
+});
+
+export default StreakDisplayDays;

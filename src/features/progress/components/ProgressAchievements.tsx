@@ -1,4 +1,4 @@
-import { ElementType } from 'react';
+import { ElementType, memo } from 'react';
 
 interface Achievement {
   id: string;
@@ -11,7 +11,7 @@ interface ProgressAchievementsProps {
   achievements: Achievement[];
 }
 
-export default function ProgressAchievements({
+const ProgressAchievements = memo(function ProgressAchievements({
   achievements,
 }: ProgressAchievementsProps) {
   return (
@@ -39,4 +39,6 @@ export default function ProgressAchievements({
       ))}
     </div>
   );
-}
+});
+
+export default ProgressAchievements;

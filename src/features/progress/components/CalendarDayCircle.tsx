@@ -1,20 +1,27 @@
+import { memo, useMemo } from 'react';
 import { InsightData } from '@/features/progress/types/InsightData';
 
-export default function CalendarDayCircle({
-  dayData,
-  isPast,
-  isToday,
-}: {
+interface CalendarDayCircleProps {
   dayData?: InsightData;
   isPast: boolean;
   isToday: boolean;
-}) {
+}
+
+const CalendarDayCircle = memo(function CalendarDayCircle({
+  dayData,
+  isPast,
+  isToday,
+}: CalendarDayCircleProps) {
   const showCircle = isPast || isToday;
-  const percent = dayData ? Math.round(dayData.completionRate) : 0;
-  let ariaLabel = 'Future day';
-  if (showCircle) {
-    ariaLabel = dayData ? `${percent}% completion` : '0% completion';
-  }
+  const percent = useMemo(
+    () => (dayData ? Math.round(dayData.completionRate) : 0),
+    [dayData],
+  );
+
+  const ariaLabel = useMemo(() => {
+    if (!showCircle) return 'Future day';
+    return dayData ? `${percent}% completion` : '0% completion';
+  }, [showCircle, dayData, percent]);
 
   return (
     <div className="relative h-1/2 w-1/2" role="img" aria-label={ariaLabel}>
@@ -50,4 +57,6 @@ export default function CalendarDayCircle({
       </div>
     </div>
   );
-}
+});
+
+export default CalendarDayCircle;
