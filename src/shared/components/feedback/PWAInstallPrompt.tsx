@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Button } from '@shared/components/ui/button';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -6,7 +6,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export function PWAInstallPrompt() {
+export const PWAInstallPrompt = memo(function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +33,7 @@ export function PWAInstallPrompt() {
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = useCallback(async () => {
     if (!deferredPrompt) return;
 
     // Show the install prompt
@@ -51,7 +51,11 @@ export function PWAInstallPrompt() {
     // Clear the saved prompt since it can't be used again
     setDeferredPrompt(null);
     setIsVisible(false);
-  };
+  }, [deferredPrompt]);
+
+  const handleDismiss = useCallback(() => {
+    setIsVisible(false);
+  }, []);
 
   if (!isVisible) return null;
 
@@ -64,15 +68,11 @@ export function PWAInstallPrompt() {
         Install our app on your device for a better experience!
       </p>
       <div className="flex justify-end">
-        <Button
-          variant="ghost"
-          onClick={() => setIsVisible(false)}
-          className="mr-2"
-        >
+        <Button variant="ghost" onClick={handleDismiss} className="mr-2">
           Not now
         </Button>
         <Button onClick={() => void handleInstallClick()}>Install</Button>
       </div>
     </div>
   );
-}
+});
