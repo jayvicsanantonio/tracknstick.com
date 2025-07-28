@@ -1,9 +1,9 @@
+import { memo } from 'react';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import { Outlet } from 'react-router-dom';
-
 import Welcome from '@/features/layout/components/Welcome';
 
-export default function Body() {
+const Body = memo(function Body() {
   return (
     <>
       <SignedOut>
@@ -15,4 +15,6 @@ export default function Body() {
       </SignedIn>
     </>
   );
-}
+});
+
+export default Body;

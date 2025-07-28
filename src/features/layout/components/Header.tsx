@@ -1,17 +1,28 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
-import { useContext } from 'react';
+import { useContext, memo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Button } from '@shared/components/ui/button';
 import { ThemeContext } from '@app/providers/ThemeContext';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { trackNavigationClick } from '@shared/utils/monitoring';
+
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
 
-export default function Header() {
+const Header = memo(function Header() {
   const { toggleDarkMode } = useContext(ThemeContext);
   const { toggleShowAddHabitDialog } = useHabitsContext();
+
+  const navLinkClassName = useCallback(
+    ({ isActive }: { isActive: boolean }) =>
+      `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
+        isActive
+          ? 'bg-(--color-brand-secondary) hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary) text-white shadow-lg'
+          : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 hover:shadow-lg'
+      }`,
+    [],
+  );
 
   return (
     <header className="flex items-center justify-between py-4 sm:py-8">
@@ -34,13 +45,7 @@ export default function Header() {
             <NavLink
               to="/"
               onClick={trackNavigationClick}
-              className={({ isActive }) =>
-                `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
-                  isActive
-                    ? 'bg-(--color-brand-secondary) hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary) text-white shadow-lg'
-                    : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 hover:shadow-lg'
-                }`
-              }
+              className={navLinkClassName}
               aria-label="Daily Tracker"
             >
               <Calendar aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
@@ -48,13 +53,7 @@ export default function Header() {
             <NavLink
               to="/habits"
               onClick={trackNavigationClick}
-              className={({ isActive }) =>
-                `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
-                  isActive
-                    ? 'bg-(--color-brand-secondary) hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary) text-white shadow-lg'
-                    : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 hover:shadow-lg'
-                }`
-              }
+              className={navLinkClassName}
               aria-label="Habits Overview"
             >
               <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
@@ -62,13 +61,7 @@ export default function Header() {
             <NavLink
               to="/progress"
               onClick={trackNavigationClick}
-              className={({ isActive }) =>
-                `flex h-8 w-8 items-center justify-center rounded-full p-0 shadow-md transition-all duration-300 sm:h-10 sm:w-10 ${
-                  isActive
-                    ? 'bg-(--color-brand-secondary) hover:bg-(--color-brand-tertiary) dark:bg-(--color-brand-primary)/60 dark:shadow-(--color-brand-secondary)/20 dark:hover:bg-(--color-brand-secondary) text-white shadow-lg'
-                    : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary) hover:bg-(--color-brand-secondary)/30 dark:bg-(--color-surface-secondary) dark:text-(--color-brand-primary) dark:hover:bg-(--color-surface-tertiary) dark:hover:shadow-(--color-brand-primary)/20 hover:shadow-lg'
-                }`
-              }
+              className={navLinkClassName}
               aria-label="Progress Overview"
             >
               <BarChart2 aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
@@ -124,4 +117,6 @@ export default function Header() {
       </div>
     </header>
   );
-}
+});
+
+export default Header;
