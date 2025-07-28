@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Card,
@@ -25,7 +25,7 @@ import { Input } from '@shared/components/ui/input';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 
-export default function HabitsOverview() {
+const HabitsOverview = memo(function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useHabits();
   const { openEditDialog } = useHabitsContext();
   const navigate = useNavigate();
@@ -33,17 +33,34 @@ export default function HabitsOverview() {
   const [selectedTab, setSelectedTab] = useState('all');
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
 
-  // Filter habits based on search term and selected tab
-  const filteredHabits = habits.filter((habit) => {
-    const matchesSearch = habit.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  const handleDeleteHabit = useCallback((habit: Habit) => {
+    setHabitToDelete(habit);
+  }, []);
 
-    if (selectedTab === 'all') return matchesSearch;
-    if (selectedTab === 'active') return matchesSearch && !habit.endDate;
-    if (selectedTab === 'completed') return matchesSearch && !!habit.endDate;
-    return matchesSearch;
-  });
+  const confirmDelete = useCallback(() => {
+    if (habitToDelete?.id) {
+      void deleteHabit(habitToDelete.id, habitToDelete.name);
+      setHabitToDelete(null);
+    }
+  }, [habitToDelete, deleteHabit]);
+
+  const navigateBack = useCallback(() => {
+    void navigate('/');
+  }, [navigate]);
+
+  // Filter habits based on search term and selected tab
+  const filteredHabits = useMemo(() => {
+    return habits.filter((habit) => {
+      const matchesSearch = habit.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      if (selectedTab === 'all') return matchesSearch;
+      if (selectedTab === 'active') return matchesSearch && !habit.endDate;
+      if (selectedTab === 'completed') return matchesSearch && !!habit.endDate;
+      return matchesSearch;
+    });
+  }, [habits, searchTerm, selectedTab]);
 
   if (isLoading) {
     return (
@@ -69,17 +86,6 @@ export default function HabitsOverview() {
     );
   }
 
-  const handleDeleteHabit = (habit: Habit) => {
-    setHabitToDelete(habit);
-  };
-
-  const confirmDelete = () => {
-    if (habitToDelete?.id) {
-      void deleteHabit(habitToDelete.id, habitToDelete.name);
-      setHabitToDelete(null);
-    }
-  };
-
   return (
     <motion.div
       className="flex h-full flex-1 flex-col"
@@ -94,7 +100,7 @@ export default function HabitsOverview() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => void navigate('/')}
+                onClick={navigateBack}
                 className="mr-2 text-black hover:bg-purple-50 dark:text-white dark:hover:bg-purple-950/70 dark:hover:text-purple-100"
               >
                 <svg
@@ -361,4 +367,6 @@ export default function HabitsOverview() {
       </AlertDialog>
     </motion.div>
   );
-}
+});
+
+export default HabitsOverview;
