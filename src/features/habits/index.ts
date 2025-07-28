@@ -7,8 +7,8 @@ export { default as HabitStats } from './components/HabitStats';
 export { default as NoHabits } from './components/NoHabits';
 
 // Hooks
-export { default as useHabits } from './hooks/useHabits';
-export { default as useHabitsContext } from './hooks/useHabitsContext';
+export { useHabits } from './hooks/useHabits';
+export { useHabitsContext } from './hooks/useHabitsContext';
 export { default as useHabitStats } from './hooks/useHabitStats';
 
 // Context

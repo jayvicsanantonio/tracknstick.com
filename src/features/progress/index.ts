@@ -8,7 +8,7 @@ export { default as MonthNavButton } from './components/MonthNavButton';
 export { default as StreakDisplayDays } from './components/StreakDisplayDays';
 
 // Hooks
-export { default as useProgressCalendar } from './hooks/useProgressCalendar';
+export { useProgressCalendar } from './hooks/useProgressCalendar';
 export { default as useProgressHistory } from './hooks/useProgressHistory';
 export { default as useProgressStreaks } from './hooks/useProgressStreaks';
 
