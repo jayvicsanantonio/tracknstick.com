@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import DatePicker from 'react-datepicker';
 import { Label } from '@shared/components/ui/label';
 import DatePickerInput, {
@@ -152,7 +153,7 @@ export const datePickerStyles = `
   ${datePickerInputStyles}
 `;
 
-export default function DatePickerField({
+const DatePickerField = memo(function DatePickerField({
   id,
   label,
   selected,
@@ -183,4 +184,6 @@ export default function DatePickerField({
       />
     </div>
   );
-}
+});
+
+export default DatePickerField;

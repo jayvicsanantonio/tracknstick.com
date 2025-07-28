@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import { RadioGroup, RadioGroupItem } from '@shared/components/ui/radio-group';
 import { Label } from '@shared/components/ui/label';
 import HabitsIcons from '@/icons/habits';
@@ -8,11 +9,17 @@ interface IconPickerProps {
   label?: string;
 }
 
-export default function IconPicker({
+const IconPicker = memo(function IconPicker({
   selectedIcon,
   onIconChange,
   label = 'Icon',
 }: IconPickerProps) {
+  const handleValueChange = useCallback(
+    (value: string) => {
+      onIconChange(value as keyof typeof HabitsIcons);
+    },
+    [onIconChange],
+  );
   return (
     <div className="space-y-1 sm:space-y-2">
       <Label className="text-(--color-brand-text) dark:text-(--color-brand-text-light) text-sm sm:text-base">
@@ -23,9 +30,7 @@ export default function IconPicker({
         <RadioGroup
           className="grid grid-cols-5 gap-1.5 sm:grid-cols-7 sm:gap-2 md:grid-cols-9"
           value={selectedIcon}
-          onValueChange={(value) => {
-            onIconChange(value as keyof typeof HabitsIcons);
-          }}
+          onValueChange={handleValueChange}
         >
           {Object.entries(HabitsIcons).map(([name, Icon]) => (
             <Label
@@ -40,4 +45,6 @@ export default function IconPicker({
       </div>
     </div>
   );
-}
+});
+
+export default IconPicker;
