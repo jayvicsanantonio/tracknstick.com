@@ -1,20 +1,32 @@
+import { memo, useMemo } from 'react';
 import DailyHabitItem from '@/features/habits/components/DailyHabitItem';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { motion } from 'framer-motion';
 
-export default function DailyHabitList() {
+const DailyHabitList = memo(function DailyHabitList() {
   const { habits } = useHabits();
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
+  const container = useMemo(
+    () => ({
+      hidden: { opacity: 0 },
+      show: {
+        opacity: 1,
+        transition: {
+          staggerChildren: 0.1,
+          delayChildren: 0.3,
+        },
       },
-    },
-  };
+    }),
+    [],
+  );
+
+  const itemVariants = useMemo(
+    () => ({
+      hidden: { opacity: 0, y: 20 },
+      show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    }),
+    [],
+  );
 
   return (
     <motion.div
@@ -25,16 +37,12 @@ export default function DailyHabitList() {
       animate="show"
     >
       {habits.map((habit) => (
-        <motion.div
-          key={habit.id}
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-          }}
-        >
+        <motion.div key={habit.id} variants={itemVariants}>
           <DailyHabitItem habit={habit} />
         </motion.div>
       ))}
     </motion.div>
   );
-}
+});
+
+export default DailyHabitList;

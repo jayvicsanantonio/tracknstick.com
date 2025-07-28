@@ -1,11 +1,11 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, memo } from 'react';
 import { Button } from '@shared/components/ui/button';
 import { DateContext } from '@app/providers/DateContext';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
-export default function DailyHabitDate() {
+const DailyHabitDate = memo(function DailyHabitDate() {
   const { date, handlePreviousDate, handleNextDate, timeZone } =
     useContext(DateContext);
 
@@ -62,4 +62,6 @@ export default function DailyHabitDate() {
       </Button>
     </div>
   );
-}
+});
+
+export default DailyHabitDate;
