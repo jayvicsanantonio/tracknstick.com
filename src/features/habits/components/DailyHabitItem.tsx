@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import HabitsIcons from '@/icons/habits';
 import { Button } from '@shared/components/ui/button';
 import StarAnimation from '@shared/components/ui/animations/StarAnimation';
@@ -13,10 +14,24 @@ interface DailyHabitItemProps {
   habit: Habit;
 }
 
-export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
+const DailyHabitItem = memo(function DailyHabitItem({
+  habit,
+}: DailyHabitItemProps) {
   const { isEditMode, openEditDialog } = useHabitsContext();
   const { toggleHabit, animatingHabitId } = useHabits();
   const Icon = HabitsIcons[habit.icon];
+
+  const handleToggle = useCallback(() => {
+    if (habit.id) {
+      toggleHabit(habit.id).catch((error) => {
+        console.error('Failed to toggle habit:', error);
+      });
+    }
+  }, [habit.id, toggleHabit]);
+
+  const handleEdit = useCallback(() => {
+    openEditDialog(habit);
+  }, [habit, openEditDialog]);
 
   return (
     <div key={habit.id} className="group flex flex-col items-center">
@@ -34,13 +49,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
               ? 'bg-linear-to-br from-(--color-brand-primary) to-(--color-brand-primary) shadow-(--color-brand-primary)/30 dark:shadow-(--color-brand-primary)/30 border-none'
               : 'border-(--color-brand-primary) bg-(--color-surface) shadow-(--color-brand-light)/40 hover:bg-(--color-brand-lighter) dark:border-(--color-brand-primary) dark:bg-(--color-surface) dark:shadow-(--color-surface-secondary)/20'
           } transform transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95`}
-          onClick={() => {
-            if (habit.id) {
-              toggleHabit(habit.id).catch((error) => {
-                console.error('Failed to toggle habit:', error);
-              });
-            }
-          }}
+          onClick={handleToggle}
           aria-pressed={habit.completed}
           aria-label={
             habit.completed
@@ -61,7 +70,7 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
         {isEditMode && (
           <Button
             className="bg-(--color-brand-primary) text-(--color-text-inverse) shadow-(--color-brand-primary)/30 hover:bg-(--color-brand-primary) absolute -right-1 -top-1 z-10 h-6 w-6 rounded-full p-0 shadow-md transition-all duration-300 sm:h-8 sm:w-8"
-            onClick={() => openEditDialog(habit)}
+            onClick={handleEdit}
             aria-label={`Edit ${habit.name}`}
           >
             <Edit
@@ -79,4 +88,6 @@ export default function DailyHabitItem({ habit }: DailyHabitItemProps) {
       </span>
     </div>
   );
-}
+});
+
+export default DailyHabitItem;

@@ -5,23 +5,32 @@ import DailyHabitProgressIndicator from '@/features/habits/components/DailyHabit
 import DailyHabitList from '@/features/habits/components/DailyHabitList';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { motion } from 'framer-motion';
+import { HabitListSkeleton, Skeleton } from '@shared/components/ui/skeleton';
 
 export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate } = useHabits();
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <motion.div
-          className="border-(--color-brand-primary) h-12 w-12 rounded-full border-4 border-t-transparent"
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
-      </div>
+      <motion.div
+        className="flex h-full flex-1 flex-col"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
+          <CardHeader className="px-3 pt-6 sm:px-6">
+            <Skeleton className="mx-auto h-8 w-48" />
+          </CardHeader>
+          <CardContent className="flex-1 px-3 pb-8 sm:px-6">
+            <div className="mb-6">
+              <Skeleton className="mx-auto mb-2 h-6 w-32" />
+              <Skeleton className="h-2 w-full" />
+            </div>
+            <HabitListSkeleton />
+          </CardContent>
+        </Card>
+      </motion.div>
     );
   }
 

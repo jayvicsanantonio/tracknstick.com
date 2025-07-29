@@ -1,33 +1,38 @@
+import { memo, useCallback, Dispatch, SetStateAction } from 'react';
 import { useProgressCalendar } from '@/features/progress/hooks/useProgressCalendar';
 import MonthNavButton from '@/features/progress/components/MonthNavButton';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { InsightData } from '@/features/progress/types/InsightData';
 import CalendarDayCircle from '@/features/progress/components/CalendarDayCircle';
-import { Dispatch, SetStateAction } from 'react';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function ProgressCalendar({
-  insightData,
-  selectedMonth,
-  setSelectedMonth,
-}: {
+interface ProgressCalendarProps {
   insightData: InsightData[];
   selectedMonth: Date;
   setSelectedMonth: Dispatch<SetStateAction<Date>>;
-}) {
+}
+
+const ProgressCalendar = memo(function ProgressCalendar({
+  insightData,
+  selectedMonth,
+  setSelectedMonth,
+}: ProgressCalendarProps) {
   const { changeMonth, firstDayOfMonth, calendarDays } = useProgressCalendar(
     insightData,
     selectedMonth,
     setSelectedMonth,
   );
 
+  const handlePreviousMonth = useCallback(() => changeMonth(-1), [changeMonth]);
+  const handleNextMonth = useCallback(() => changeMonth(1), [changeMonth]);
+
   return (
     <div>
       <div className="flex items-center justify-between">
         <MonthNavButton
-          onClick={() => changeMonth(-1)}
+          onClick={handlePreviousMonth}
           ariaLabel="Previous Month"
         >
           <ChevronLeft
@@ -41,7 +46,7 @@ export default function ProgressCalendar({
             year: 'numeric',
           })}
         </h3>
-        <MonthNavButton onClick={() => changeMonth(1)} ariaLabel="Next Month">
+        <MonthNavButton onClick={handleNextMonth} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
             className="text-(--color-text-primary) dark:text-(--color-brand-text-light) h-4 w-4"
@@ -102,4 +107,6 @@ export default function ProgressCalendar({
       </div>
     </div>
   );
-}
+});
+
+export default ProgressCalendar;

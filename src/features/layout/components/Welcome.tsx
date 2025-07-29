@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { SignIn } from '@clerk/clerk-react';
 import { motion } from 'framer-motion';
 
-export default function Welcome() {
+const Welcome = memo(function Welcome() {
   return (
     <div className="flex-1">
       <div className="relative flex min-h-[78vh] flex-col items-center justify-center overflow-hidden px-2 sm:px-4">
@@ -32,4 +33,6 @@ export default function Welcome() {
       </div>
     </div>
   );
-}
+});
+
+export default Welcome;

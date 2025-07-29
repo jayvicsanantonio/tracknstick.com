@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback } from 'react';
+import { useContext, useState, useCallback, useMemo, memo } from 'react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
 import { Separator } from '@shared/components/ui/separator';
@@ -16,13 +16,15 @@ import {
   getLocalEndOfDayUTC,
   getLocalStartofDayUTC,
 } from '@shared/utils/date/formatDate';
-export default function HabitForm({
-  habit,
-  toggleDialog,
-}: {
+interface HabitFormProps {
   habit?: Habit | null;
   toggleDialog: () => void;
-}) {
+}
+
+const HabitForm = memo(function HabitForm({
+  habit,
+  toggleDialog,
+}: HabitFormProps) {
   const { timeZone } = useContext(DateContext);
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,13 +45,16 @@ export default function HabitForm({
       ? getLocalEndOfDayUTC(new Date(habit.endDate), timeZone)
       : null,
   );
-  const isValid = name && icon && frequency.length > 0 && startDate;
+  const isValid = useMemo(
+    () => name && icon && frequency.length > 0 && startDate,
+    [name, icon, frequency, startDate],
+  );
 
-  const handleDelete = (habitId: string): void => {
-    if (!habit) return;
+  const handleDelete = useCallback(
+    async (habitId: string): Promise<void> => {
+      if (!habit) return;
 
-    setIsSubmitting(true);
-    void (async () => {
+      setIsSubmitting(true);
       try {
         await deleteHabit(habitId, habit.name);
       } catch (error) {
@@ -57,8 +62,9 @@ export default function HabitForm({
       } finally {
         toggleDialog();
       }
-    })();
-  };
+    },
+    [habit, deleteHabit, toggleDialog],
+  );
 
   const handleAddOrEdit = useCallback(async () => {
     try {
@@ -97,12 +103,15 @@ export default function HabitForm({
     timeZone,
   ]);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    if (!isValid) return;
-    setIsSubmitting(true);
-    void handleAddOrEdit();
-  };
+  const handleSubmit = useCallback<React.FormEventHandler<HTMLFormElement>>(
+    (event) => {
+      event.preventDefault();
+      if (!isValid) return;
+      setIsSubmitting(true);
+      void handleAddOrEdit();
+    },
+    [isValid, handleAddOrEdit],
+  );
 
   return (
     <>
@@ -174,4 +183,6 @@ export default function HabitForm({
       </form>
     </>
   );
-}
+});
+
+export default HabitForm;

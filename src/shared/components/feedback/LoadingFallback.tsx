@@ -1,4 +1,6 @@
-export default function LoadingFallback() {
+import { memo } from 'react';
+
+const LoadingFallback = memo(function LoadingFallback() {
   return (
     <div className="flex items-center justify-center py-16">
       <div className="text-center">
@@ -7,4 +9,6 @@ export default function LoadingFallback() {
       </div>
     </div>
   );
-}
+});
+
+export default LoadingFallback;

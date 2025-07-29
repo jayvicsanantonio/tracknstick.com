@@ -1,18 +1,23 @@
+import { memo, useCallback } from 'react';
 import { DialogClose } from '@shared/components/ui/dialog';
 import { Button } from '@shared/components/ui/button';
 import { Habit } from '@/features/habits/types/Habit';
 
 interface FormActionsProps {
   isSubmitting: boolean;
-  onDelete?: (habitId: string) => void;
+  onDelete?: (habitId: string) => void | Promise<void>;
   habit?: Habit | null;
 }
 
-export default function FormActions({
+const FormActions = memo(function FormActions({
   isSubmitting,
   onDelete,
   habit,
 }: FormActionsProps) {
+  const handleDelete = useCallback(() => {
+    if (!habit?.id || !onDelete) return;
+    void onDelete(habit.id);
+  }, [habit?.id, onDelete]);
   return (
     <div className="mt-2 flex flex-col-reverse items-center gap-2 sm:mt-0 sm:flex-row">
       <div className="mt-2 w-full sm:mt-0 sm:w-auto sm:flex-1">
@@ -21,10 +26,7 @@ export default function FormActions({
             type="button"
             variant="outline"
             className="border-(--color-error) bg-(--color-surface) text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) dark:hover:border-(--color-error) dark:hover:bg-(--color-error) w-full text-sm sm:w-auto sm:text-base dark:bg-transparent"
-            onClick={() => {
-              if (!habit?.id) return;
-              void onDelete(habit.id);
-            }}
+            onClick={handleDelete}
             disabled={isSubmitting}
           >
             Delete
@@ -52,4 +54,6 @@ export default function FormActions({
       </div>
     </div>
   );
-}
+});
+
+export default FormActions;

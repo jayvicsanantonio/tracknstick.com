@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -12,11 +13,17 @@ interface FrequencySelectorProps {
   label?: string;
 }
 
-export default function FrequencySelector({
+const FrequencySelector = memo(function FrequencySelector({
   selectedDays,
   onFrequencyChange,
   label = 'Frequency',
 }: FrequencySelectorProps) {
+  const handleValueChange = useCallback(
+    (value: string[]) => {
+      onFrequencyChange(value as Frequency[]);
+    },
+    [onFrequencyChange],
+  );
   return (
     <div className="space-y-1 sm:space-y-2">
       <Label className="text-(--color-brand-text) dark:text-(--color-brand-text-light) text-sm sm:text-base">
@@ -28,9 +35,7 @@ export default function FrequencySelector({
         className="flex justify-between sm:flex-wrap sm:justify-start sm:gap-2"
         aria-label="Select days of the week"
         value={selectedDays}
-        onValueChange={(value) => {
-          onFrequencyChange(value as Frequency[]);
-        }}
+        onValueChange={handleValueChange}
       >
         {daysOfWeek.map((day) => (
           <ToggleGroupItem
@@ -46,4 +51,6 @@ export default function FrequencySelector({
       </ToggleGroup>
     </div>
   );
-}
+});
+
+export default FrequencySelector;

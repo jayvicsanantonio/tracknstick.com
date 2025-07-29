@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Habit } from '@/features/habits/types/Habit';
 import formatDate from '@shared/utils/date/formatDate';
 import MiscellaneousIcons from '@/icons/miscellaneous';
@@ -6,8 +7,19 @@ import { motion } from 'framer-motion';
 
 const { Trophy, Calendar, CheckCircle2, Award } = MiscellaneousIcons;
 
-export default function HabitStats({ habit }: { habit: Habit | null }) {
+interface HabitStatsProps {
+  habit: Habit | null;
+}
+
+const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
   const habitStats = useHabitStats(habit?.id ?? '');
+
+  const motivationalMessage = useMemo(() => {
+    if (!habit) return '';
+    return habitStats.streak > 0
+      ? `Great job! You've been consistent with "${habit.name}" for ${habitStats.streak} days.`
+      : `Start your streak by completing "${habit.name}" today!`;
+  }, [habit, habitStats.streak]);
 
   if (!habit) return null;
 
@@ -128,11 +140,11 @@ export default function HabitStats({ habit }: { habit: Habit | null }) {
         className="mt-2 rounded-lg border border-purple-200/70 bg-purple-50 p-4 text-center dark:border-purple-900/30 dark:bg-purple-900/20"
       >
         <p className="text-xs text-purple-600 sm:text-sm dark:text-purple-400">
-          {habitStats.streak > 0
-            ? `Great job! You've been consistent with "${habit.name}" for ${habitStats.streak} days.`
-            : `Start your streak by completing "${habit.name}" today!`}
+          {motivationalMessage}
         </p>
       </motion.div>
     </div>
   );
-}
+});
+
+export default HabitStats;

@@ -1,14 +1,25 @@
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { Check } = MiscellaneousIcons;
 
-export default function DailyHabitProgressIndicator({
-  completionRate,
-}: {
+interface DailyHabitProgressIndicatorProps {
   completionRate: number;
-}) {
-  const displayRate = Number.isNaN(completionRate) ? 0 : completionRate;
+}
+
+const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
+  completionRate,
+}: DailyHabitProgressIndicatorProps) {
+  const displayRate = useMemo(
+    () => (Number.isNaN(completionRate) ? 0 : completionRate),
+    [completionRate],
+  );
+
+  const strokeDashoffset = useMemo(
+    () => 42 * 2 * Math.PI * (1 - displayRate / 100),
+    [displayRate],
+  );
 
   return (
     <div
@@ -46,7 +57,7 @@ export default function DailyHabitProgressIndicator({
               className="text-(--color-brand-primary)/30 dark:text-(--color-brand-primary)/30"
               strokeWidth="14"
               strokeDasharray={42 * 2 * Math.PI}
-              strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
+              strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               stroke="currentColor"
               fill="transparent"
@@ -56,7 +67,7 @@ export default function DailyHabitProgressIndicator({
               transform="rotate(-90 50 50)"
               initial={{ strokeDashoffset: 42 * 2 * Math.PI }}
               animate={{
-                strokeDashoffset: 42 * 2 * Math.PI * (1 - displayRate / 100),
+                strokeDashoffset,
               }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             />
@@ -67,7 +78,7 @@ export default function DailyHabitProgressIndicator({
               className="text-(--color-brand-primary) dark:text-(--color-brand-primary)"
               strokeWidth="10"
               strokeDasharray={42 * 2 * Math.PI}
-              strokeDashoffset={42 * 2 * Math.PI * (1 - displayRate / 100)}
+              strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               stroke="currentColor"
               fill="transparent"
@@ -77,7 +88,7 @@ export default function DailyHabitProgressIndicator({
               transform="rotate(-90 50 50)"
               initial={{ strokeDashoffset: 42 * 2 * Math.PI }}
               animate={{
-                strokeDashoffset: 42 * 2 * Math.PI * (1 - displayRate / 100),
+                strokeDashoffset,
               }}
               transition={{ duration: 1, ease: 'easeOut' }}
             />
@@ -115,4 +126,6 @@ export default function DailyHabitProgressIndicator({
       </div>
     </div>
   );
-}
+});
+
+export default DailyHabitProgressIndicator;
