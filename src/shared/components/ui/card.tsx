@@ -15,7 +15,7 @@ const cardVariants = cva(
         subtle:
           'border border-transparent bg-(--color-surface-secondary) shadow-sm',
         glass:
-          'bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40 flex gap-2  p-1 rounded-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2',
+          'bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2  p-1 rounded-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2',
         outline:
           'border border-(--color-border-brand) bg-(--color-surface) shadow-sm',
       },

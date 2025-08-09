@@ -19,7 +19,7 @@ const Header = memo(function Header() {
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-4 sm:px-4 sm:py-8 md:px-8">
-        <div className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40 flex items-center gap-2 rounded-full px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:px-3 sm:py-2">
+        <div className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex items-center gap-2 rounded-full px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:px-3 sm:py-2">
           <CheckCircle2
             aria-hidden="true"
             className="text-(--color-brand-primary) h-8 w-8 shrink-0 hover:scale-110 sm:h-10 sm:w-10"
@@ -33,7 +33,7 @@ const Header = memo(function Header() {
             <div
               role="toolbar"
               aria-label="User actions"
-              className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40 flex gap-2 rounded-full p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2"
+              className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2 rounded-full p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2"
             >
               <IconNavLink
                 to="/"
