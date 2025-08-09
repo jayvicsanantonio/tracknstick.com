@@ -52,7 +52,7 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 md:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8">
         <Card
           variant="glass"
           className="relative flex w-full flex-1 flex-col overflow-hidden"
