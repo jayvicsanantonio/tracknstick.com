@@ -20,7 +20,7 @@ export function DashboardPage() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="relative flex min-h-[calc(100vh-14rem)] flex-1 flex-col"
+      className="relative flex min-h-[calc(100vh-10rem)] flex-1 flex-col sm:min-h-[calc(100vh-14rem)]"
     >
       <div
         aria-hidden

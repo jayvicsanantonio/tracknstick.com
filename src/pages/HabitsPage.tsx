@@ -20,7 +20,7 @@ export function HabitsPage() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="flex min-h-[calc(100vh-12rem)] flex-1 flex-col"
+      className="flex min-h-[calc(100vh-10rem)] flex-1 flex-col sm:min-h-[calc(100vh-14rem)]"
     >
       <h1 className="sr-only">Habits Overview</h1>
       <HabitsOverview />
