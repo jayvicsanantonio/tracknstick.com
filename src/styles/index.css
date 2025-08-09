@@ -72,8 +72,8 @@
 /* Dark mode color overrides - system preference */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    /* Elphaba — Dark Mode: Black + Greens only */
-    --color-background: theme(--color-black);
+    /* Elphaba — Dark Mode: Deep moss green background */
+    --color-background: #06150e;
     --color-foreground: theme(--color-emerald-50);
     --color-card: theme(--color-neutral-950);
     --color-card-foreground: theme(--color-emerald-50);

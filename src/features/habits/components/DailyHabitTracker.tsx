@@ -18,7 +18,10 @@ export default function DailyHabitTracker() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
+        <Card
+          variant="glass"
+          className="flex w-full flex-1 flex-col overflow-hidden"
+        >
           <CardHeader className="px-3 pt-6 sm:px-6">
             <Skeleton className="mx-auto h-8 w-48" />
           </CardHeader>
@@ -49,12 +52,11 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="mx-auto w-full max-w-6xl">
-        <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/40 relative flex w-full flex-1 flex-col overflow-hidden rounded-xl border shadow-xl backdrop-blur-[2px]">
-          <div
-            aria-hidden
-            className="from-(--color-brand-light) via-(--color-brand-primary)/30 to-(--color-brand-light) pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r"
-          />
+      <div className="mx-auto w-full max-w-7xl px-2 sm:px-4 md:px-8">
+        <Card
+          variant="glass"
+          className="relative flex w-full flex-1 flex-col overflow-hidden"
+        >
           <CardHeader className="px-3 pt-6 sm:px-6">
             <DailyHabitDate />
           </CardHeader>

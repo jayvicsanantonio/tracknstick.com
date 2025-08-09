@@ -4,17 +4,20 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@shared/utils/utils';
 
 const cardVariants = cva(
-  'relative group flex flex-col gap-6 rounded-xl border text-(--color-card-foreground)',
+  'relative group flex flex-col gap-6 rounded-xl text-(--color-card-foreground)',
   {
     variants: {
       variant: {
-        default: 'border-(--color-border-primary) bg-(--color-card) shadow-sm',
+        default:
+          'border border-(--color-border-primary) bg-(--color-card) shadow-sm',
         elevated:
-          'border-(--color-border-primary) bg-(--color-card) shadow-xl shadow-(--color-border-brand)/30',
-        subtle: 'border-transparent bg-(--color-surface-secondary) shadow-sm',
+          'border border-(--color-border-primary) bg-(--color-card) shadow-xl shadow-(--color-border-brand)/30',
+        subtle:
+          'border border-transparent bg-(--color-surface-secondary) shadow-sm',
         glass:
-          'border-(--color-border-primary)/60 bg-(--color-card)/60 backdrop-blur-md shadow-sm',
-        outline: 'border-(--color-border-brand) bg-(--color-surface) shadow-sm',
+          'bg-(--color-surface)/70 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40 flex gap-2  p-1 rounded-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2',
+        outline:
+          'border border-(--color-border-brand) bg-(--color-surface) shadow-sm',
       },
       padding: {
         none: 'p-0',
