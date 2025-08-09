@@ -49,21 +49,40 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
-        <CardHeader className="px-3 pt-6 sm:px-6">
-          <DailyHabitDate />
-        </CardHeader>
-        <CardContent className="flex-1 px-3 pb-8 sm:px-6">
-          {habits.length === 0 ? (
-            <NoHabits />
-          ) : (
-            <>
-              <DailyHabitProgressIndicator completionRate={completionRate} />
-              <DailyHabitList />
-            </>
-          )}
-        </CardContent>
-      </Card>
+      <div className="mx-auto w-full max-w-6xl">
+        <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/40 relative flex w-full flex-1 flex-col overflow-hidden rounded-xl border shadow-xl backdrop-blur-[2px]">
+          <div
+            aria-hidden
+            className="from-(--color-brand-light) via-(--color-brand-primary)/30 to-(--color-brand-light) pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r"
+          />
+          <CardHeader className="px-3 pt-6 sm:px-6">
+            <DailyHabitDate />
+          </CardHeader>
+          <CardContent className="flex-1 px-3 pb-8 sm:px-6">
+            {habits.length === 0 ? (
+              <NoHabits />
+            ) : (
+              <>
+                <section
+                  aria-label="Progress"
+                  className="relative mx-auto mb-8 w-full max-w-md"
+                >
+                  <div
+                    aria-hidden
+                    className="bg-(--color-brand-light) absolute inset-0 -z-10 mx-auto h-[420px] w-[420px] rounded-full opacity-30 blur-3xl sm:h-[480px] sm:w-[480px]"
+                  />
+                  <DailyHabitProgressIndicator
+                    completionRate={completionRate}
+                  />
+                </section>
+                <section aria-label="Today\'s Habits">
+                  <DailyHabitList />
+                </section>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </motion.div>
   );
 }

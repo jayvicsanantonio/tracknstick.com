@@ -62,40 +62,40 @@ const ProgressTabs = memo(function ProgressTabs({
 }: ProgressTabsProps) {
   return (
     <Tabs defaultValue="calendar" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 bg-purple-200 dark:bg-zinc-800">
+      <TabsList className="bg-(--color-muted) grid w-full grid-cols-3">
         <TabsTrigger
           value="calendar"
-          className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:hover:text-white dark:data-[state=inactive]:text-purple-400"
+          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
         >
           <Calendar aria-hidden="true" className="mr-2 h-4 w-4" />
           History
         </TabsTrigger>
         <TabsTrigger
           value="graph"
-          className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:hover:text-white dark:data-[state=inactive]:text-purple-400"
+          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
         >
           <BarChart2 aria-hidden="true" className="mr-2 h-4 w-4" />
           Completion Rate
         </TabsTrigger>
         <TabsTrigger
           value="achievements"
-          className="data-[state=active]:bg-purple-600 data-[state=active]:text-white dark:hover:text-white dark:data-[state=inactive]:text-purple-400"
+          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
         >
           <Trophy aria-hidden="true" className="mr-2 h-4 w-4" />
           Achievements
         </TabsTrigger>
       </TabsList>
       <TabsContent value="calendar">
-        <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
+        <Card className="border-(--color-border-primary)">
           <CardHeader>
-            <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
+            <h3 className="text-(--color-foreground) text-lg font-semibold">
               Calendar
             </h3>
           </CardHeader>
           <CardContent className="h-fit overflow-y-auto">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
-                <p className="text-purple-800 dark:text-purple-400">
+                <p className="text-(--color-text-secondary)">
                   Loading calendar data...
                 </p>
               </div>
@@ -110,16 +110,16 @@ const ProgressTabs = memo(function ProgressTabs({
         </Card>
       </TabsContent>
       <TabsContent value="graph">
-        <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
+        <Card className="border-(--color-border-primary)">
           <CardHeader>
-            <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
+            <h3 className="text-(--color-foreground) text-lg font-semibold">
               Daily Completion Rates
             </h3>
           </CardHeader>
           <CardContent className="min-h-80">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
-                <p className="text-purple-800 dark:text-purple-400">
+                <p className="text-(--color-text-secondary)">
                   Loading chart data...
                 </p>
               </div>
@@ -130,9 +130,9 @@ const ProgressTabs = memo(function ProgressTabs({
         </Card>
       </TabsContent>
       <TabsContent value="achievements">
-        <Card className="border-purple-200 dark:border-purple-900 dark:bg-black/30 dark:shadow-lg dark:shadow-purple-900/5">
+        <Card className="border-(--color-border-primary)">
           <CardHeader>
-            <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-300">
+            <h3 className="text-(--color-foreground) text-lg font-semibold">
               Achievements
             </h3>
           </CardHeader>

@@ -19,104 +19,106 @@
 /* Light mode color values - default */
 @layer base {
   :root {
-    --color-background: theme(--color-white);
-    --color-foreground: theme(--color-zinc-950);
-    --color-card: theme(--color-white);
-    --color-card-foreground: theme(--color-zinc-950);
-    --color-primary: theme(--color-purple-600);
+    /* Glinda — Light Mode: Pinks only */
+    --color-background: theme(--color-pink-50);
+    --color-foreground: theme(--color-pink-950);
+    --color-card: theme(--color-pink-50);
+    --color-card-foreground: theme(--color-pink-950);
+    --color-primary: theme(--color-pink-600);
     --color-primary-foreground: theme(--color-white);
-    --color-secondary: theme(--color-zinc-100);
-    --color-secondary-foreground: theme(--color-zinc-900);
-    --color-muted: theme(--color-zinc-100);
-    --color-muted-foreground: theme(--color-zinc-500);
-    --color-accent: theme(--color-purple-100);
-    --color-accent-foreground: theme(--color-purple-900);
-    --color-destructive: theme(--color-red-500);
-    --color-destructive-foreground: theme(--color-white);
-    --color-border: theme(--color-zinc-200);
-    --color-input: theme(--color-zinc-200);
-    --color-ring: theme(--color-purple-500);
+    --color-secondary: theme(--color-pink-100);
+    --color-secondary-foreground: theme(--color-pink-900);
+    --color-muted: theme(--color-pink-100);
+    --color-muted-foreground: theme(--color-pink-600);
+    --color-accent: theme(--color-pink-300);
+    --color-accent-foreground: theme(--color-pink-950);
+    --color-destructive: theme(--color-pink-800);
+    --color-destructive-foreground: theme(--color-pink-50);
+    --color-border: theme(--color-pink-200);
+    --color-input: theme(--color-pink-200);
+    --color-ring: theme(--color-pink-500);
 
-    /* Extended theme colors */
-    --color-brand-primary: theme(--color-purple-600);
-    --color-brand-secondary: theme(--color-purple-700);
-    --color-brand-tertiary: theme(--color-purple-800);
-    --color-brand-light: theme(--color-purple-100);
-    --color-brand-lighter: theme(--color-purple-50);
-    --color-brand-text: theme(--color-purple-700);
-    --color-brand-text-light: theme(--color-purple-300);
-    --color-surface: theme(--color-white);
-    --color-surface-secondary: theme(--color-gray-50);
-    --color-surface-tertiary: theme(--color-gray-100);
-    --color-text-primary: theme(--color-zinc-900);
-    --color-text-secondary: theme(--color-zinc-600);
-    --color-text-tertiary: theme(--color-zinc-500);
-    --color-text-inverse: theme(--color-white);
-    --color-border-primary: theme(--color-zinc-200);
-    --color-border-secondary: theme(--color-zinc-300);
-    --color-border-brand: theme(--color-purple-200);
-    --color-hover-surface: theme(--color-gray-100);
-    --color-hover-brand: theme(--color-purple-100);
-    --color-active-surface: theme(--color-gray-200);
-    --color-active-brand: theme(--color-purple-200);
-    --color-error: theme(--color-red-500);
-    --color-error-light: theme(--color-red-100);
-    --color-error-text: theme(--color-red-600);
-    --color-success: theme(--color-green-500);
-    --color-success-light: theme(--color-green-100);
-    --color-success-text: theme(--color-green-600);
+    /* Extended theme colors - Glinda */
+    --color-brand-primary: theme(--color-pink-600);
+    --color-brand-secondary: theme(--color-pink-700);
+    --color-brand-tertiary: theme(--color-pink-800);
+    --color-brand-light: theme(--color-pink-100);
+    --color-brand-lighter: theme(--color-pink-50);
+    --color-brand-text: theme(--color-pink-800);
+    --color-brand-text-light: theme(--color-pink-400);
+    --color-surface: theme(--color-pink-50);
+    --color-surface-secondary: theme(--color-pink-100);
+    --color-surface-tertiary: theme(--color-pink-200);
+    --color-text-primary: theme(--color-pink-950);
+    --color-text-secondary: theme(--color-pink-700);
+    --color-text-tertiary: theme(--color-pink-600);
+    --color-text-inverse: theme(--color-pink-50);
+    --color-border-primary: theme(--color-pink-200);
+    --color-border-secondary: theme(--color-pink-300);
+    --color-border-brand: theme(--color-pink-300);
+    --color-hover-surface: theme(--color-pink-100);
+    --color-hover-brand: theme(--color-pink-200);
+    --color-active-surface: theme(--color-pink-200);
+    --color-active-brand: theme(--color-pink-300);
+    --color-error: theme(--color-pink-800);
+    --color-error-light: theme(--color-pink-100);
+    --color-error-text: theme(--color-pink-900);
+    --color-success: theme(--color-pink-600);
+    --color-success-light: theme(--color-pink-100);
+    --color-success-text: theme(--color-pink-900);
   }
 }
 
 /* Dark mode color overrides - system preference */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --color-background: theme(--color-zinc-950);
-    --color-foreground: theme(--color-zinc-50);
-    --color-card: theme(--color-zinc-900);
-    --color-card-foreground: theme(--color-zinc-50);
-    --color-primary: theme(--color-purple-500);
-    --color-primary-foreground: theme(--color-white);
-    --color-secondary: theme(--color-zinc-800);
-    --color-secondary-foreground: theme(--color-zinc-50);
-    --color-muted: theme(--color-zinc-800);
-    --color-muted-foreground: theme(--color-zinc-400);
-    --color-accent: theme(--color-purple-950);
-    --color-accent-foreground: theme(--color-purple-50);
-    --color-destructive: theme(--color-red-900);
-    --color-destructive-foreground: theme(--color-red-50);
-    --color-border: theme(--color-zinc-800);
-    --color-input: theme(--color-zinc-800);
-    --color-ring: theme(--color-purple-400);
+    /* Elphaba — Dark Mode: Black + Greens only */
+    --color-background: theme(--color-black);
+    --color-foreground: theme(--color-emerald-50);
+    --color-card: theme(--color-neutral-950);
+    --color-card-foreground: theme(--color-emerald-50);
+    --color-primary: theme(--color-emerald-500);
+    --color-primary-foreground: theme(--color-black);
+    --color-secondary: theme(--color-neutral-900);
+    --color-secondary-foreground: theme(--color-emerald-50);
+    --color-muted: theme(--color-neutral-900);
+    --color-muted-foreground: theme(--color-emerald-300);
+    --color-accent: theme(--color-emerald-900);
+    --color-accent-foreground: theme(--color-emerald-100);
+    --color-destructive: theme(--color-emerald-700);
+    --color-destructive-foreground: theme(--color-emerald-50);
+    --color-border: theme(--color-neutral-800);
+    --color-input: theme(--color-neutral-800);
+    --color-ring: theme(--color-emerald-400);
 
-    /* Extended dark mode colors */
-    --color-brand-primary: theme(--color-purple-500);
-    --color-brand-secondary: theme(--color-purple-600);
-    --color-brand-tertiary: theme(--color-purple-700);
-    --color-brand-light: theme(--color-purple-900);
-    --color-brand-lighter: theme(--color-purple-950);
-    --color-brand-text: theme(--color-purple-300);
-    --color-brand-text-light: theme(--color-purple-400);
-    --color-surface: theme(--color-purple-950);
-    --color-surface-secondary: theme(--color-slate-900);
-    --color-surface-tertiary: theme(--color-zinc-700);
-    --color-text-primary: theme(--color-zinc-100);
-    --color-text-secondary: theme(--color-zinc-400);
-    --color-text-tertiary: theme(--color-zinc-500);
-    --color-text-inverse: theme(--color-zinc-50);
-    --color-border-primary: theme(--color-zinc-800);
-    --color-border-secondary: theme(--color-zinc-700);
-    --color-border-brand: theme(--color-purple-900);
-    --color-hover-surface: theme(--color-zinc-800);
-    --color-hover-brand: theme(--color-purple-900);
-    --color-active-surface: theme(--color-zinc-700);
-    --color-active-brand: theme(--color-purple-800);
-    --color-error: theme(--color-red-600);
-    --color-error-light: theme(--color-red-900);
-    --color-error-text: theme(--color-red-400);
-    --color-success: theme(--color-green-600);
-    --color-success-light: theme(--color-green-900);
-    --color-success-text: theme(--color-green-400);
+    /* Extended dark mode colors - Elphaba */
+    --color-brand-primary: theme(--color-emerald-500);
+    --color-brand-secondary: theme(--color-emerald-600);
+    --color-brand-tertiary: theme(--color-emerald-700);
+    --color-brand-light: theme(--color-emerald-900);
+    --color-brand-lighter: theme(--color-black);
+    --color-brand-text: theme(--color-emerald-300);
+    --color-brand-text-light: theme(--color-emerald-400);
+    --color-surface: theme(--color-black);
+    --color-surface-secondary: theme(--color-neutral-950);
+    --color-surface-tertiary: theme(--color-neutral-900);
+    --color-text-primary: theme(--color-emerald-50);
+    --color-text-secondary: theme(--color-emerald-300);
+    --color-text-tertiary: theme(--color-emerald-400);
+    --color-text-inverse: theme(--color-black);
+    --color-border-primary: theme(--color-neutral-800);
+    --color-border-secondary: theme(--color-neutral-700);
+    --color-border-brand: theme(--color-emerald-800);
+    --color-hover-surface: theme(--color-neutral-900);
+    --color-hover-brand: theme(--color-emerald-900);
+    --color-active-surface: theme(--color-neutral-800);
+    --color-active-brand: theme(--color-emerald-800);
+    --color-error: theme(--color-emerald-600);
+    --color-error-light: theme(--color-emerald-900);
+    --color-error-text: theme(--color-emerald-300);
+    --color-success: theme(--color-emerald-500);
+    --color-success-light: theme(--color-emerald-900);
+    --color-success-text: theme(--color-emerald-300);
   }
 }
 
@@ -147,11 +149,46 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    /* Wicked aurora backdrop: subtle parallax layers */
+    background-image:
+      radial-gradient(
+        1200px 800px at 80% -10%,
+        color-mix(in oklab, var(--color-brand-light) 20%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        900px 700px at 0% 100%,
+        color-mix(in oklab, var(--color-brand-light) 12%, transparent) 0%,
+        transparent 70%
+      );
+    background-attachment: fixed, fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 
 @media (min-width: theme(--breakpoint-xs)) {
   .xs\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Motion preferences */
+@layer utilities {
+  .motion-safe\:fade-up {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fadeUp 700ms ease forwards;
+    }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

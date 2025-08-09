@@ -16,8 +16,9 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
     [completionRate],
   );
 
+  const circumference = 42 * 2 * Math.PI;
   const strokeDashoffset = useMemo(
-    () => 42 * 2 * Math.PI * (1 - displayRate / 100),
+    () => circumference * (1 - displayRate / 100),
     [displayRate],
   );
 
@@ -26,7 +27,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
       className="mb-12 mt-4 flex flex-col items-center justify-center"
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
-      <div className="relative h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64">
+      <div className="relative h-52 w-52 sm:h-60 sm:w-60 md:h-64 md:w-64">
         {/* Drop shadow for the progress circle */}
         <div
           aria-hidden="true"
@@ -42,8 +43,8 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             {/* Background track */}
             <circle
               aria-hidden="true"
-              className="text-(--color-brand-tertiary)/20 dark:text-(--color-brand-tertiary)/80"
-              strokeWidth="10"
+              className="text-(--color-border-primary)"
+              strokeWidth="8"
               stroke="currentColor"
               fill="transparent"
               r="42"
@@ -54,9 +55,9 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             {/* Glowing effect behind progress */}
             <motion.circle
               aria-hidden="true"
-              className="text-(--color-brand-primary)/30 dark:text-(--color-brand-primary)/30"
-              strokeWidth="14"
-              strokeDasharray={42 * 2 * Math.PI}
+              className="text-(--color-brand-primary)/30"
+              strokeWidth="12"
+              strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               stroke="currentColor"
@@ -75,9 +76,9 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             {/* Main progress indicator */}
             <motion.circle
               aria-hidden="true"
-              className="text-(--color-brand-primary) dark:text-(--color-brand-primary)"
-              strokeWidth="10"
-              strokeDasharray={42 * 2 * Math.PI}
+              className="text-(--color-brand-primary)"
+              strokeWidth="8"
+              strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               stroke="currentColor"
@@ -103,7 +104,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 transition={{ duration: 0.7, ease: 'easeOut' }}
               >
                 <div className={`rounded-full p-5`} aria-hidden="true">
-                  <Check className="text-(--color-brand-primary) h-32 w-32" />
+                  <Check className="text-(--color-brand-primary) h-28 w-28" />
                 </div>
               </motion.div>
             ) : (
@@ -113,10 +114,10 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-5xl font-bold">
+                <span className="text-(--color-foreground) text-5xl font-extrabold tracking-tight">
                   {displayRate}%
                 </span>
-                <span className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) mt-1 text-sm">
+                <span className="text-(--color-text-secondary) mt-1 text-sm">
                   Completed
                 </span>
               </motion.div>

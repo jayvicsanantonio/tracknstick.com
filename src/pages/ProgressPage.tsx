@@ -1,6 +1,7 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import ProgressOverview from '@/features/progress/components/ProgressOverview';
 import { useRouteMonitoring } from '@shared/utils/monitoring';
+import { motion } from 'framer-motion';
 
 /**
  * Progress page component
@@ -15,10 +16,14 @@ export function ProgressPage() {
   useRouteMonitoring('/progress');
 
   return (
-    <>
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <h1 className="sr-only">Progress Overview</h1>
       <ProgressOverview />
-    </>
+    </motion.section>
   );
 }
 

@@ -1,6 +1,7 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import HabitsOverview from '@/features/habits/components/HabitsOverview';
 import { useRouteMonitoring } from '@shared/utils/monitoring';
+import { motion } from 'framer-motion';
 
 /**
  * Habits page component
@@ -15,10 +16,14 @@ export function HabitsPage() {
   useRouteMonitoring('/habits');
 
   return (
-    <>
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <h1 className="sr-only">Habits Overview</h1>
       <HabitsOverview />
-    </>
+    </motion.section>
   );
 }
 

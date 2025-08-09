@@ -21,11 +21,26 @@ const ProgressChart = memo(function ProgressChart({
 
   const chartColors = useMemo(
     () => ({
-      grid: isDarkMode ? '#581c87' : '#d8b4fe',
-      axis: isDarkMode ? '#d8b4fe' : '#7e22ce',
-      tooltipBg: isDarkMode ? '#1e1b4b' : '#faf5ff',
-      tooltipBorder: isDarkMode ? '#7e22ce' : '#d8b4fe',
-      tooltipText: isDarkMode ? '#d8b4fe' : '#000000',
+      grid:
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-border-primary')
+          .trim() || '#e5e7eb',
+      axis:
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-brand-text')
+          .trim() || '#111827',
+      tooltipBg:
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-card')
+          .trim() || '#ffffff',
+      tooltipBorder:
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-border-brand')
+          .trim() || '#e5e7eb',
+      tooltipText:
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-card-foreground')
+          .trim() || '#111827',
     }),
     [isDarkMode],
   );
@@ -74,7 +89,11 @@ const ProgressChart = memo(function ProgressChart({
               color: chartColors.tooltipText,
             }}
           />
-          <Bar dataKey="completionRate" fill="#9333ea" radius={[4, 4, 0, 0]} />
+          <Bar
+            dataKey="completionRate"
+            fill="var(--color-brand-primary)"
+            radius={[4, 4, 0, 0]}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

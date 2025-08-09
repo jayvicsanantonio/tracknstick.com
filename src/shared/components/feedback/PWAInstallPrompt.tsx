@@ -60,11 +60,11 @@ export const PWAInstallPrompt = memo(function PWAInstallPrompt() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-lg border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+    <div className="border-(--color-border-primary) bg-(--color-card) text-(--color-card-foreground) fixed bottom-4 right-4 z-50 max-w-sm rounded-lg border p-4 shadow-lg">
       <h3 className="mb-2 text-lg font-semibold">
         Install Track N&apos; Stick
       </h3>
-      <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-300">
+      <p className="text-(--color-text-secondary) mb-3 text-sm">
         Install our app on your device for a better experience!
       </p>
       <div className="flex justify-end">

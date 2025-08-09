@@ -17,7 +17,14 @@ export const RootLayout = memo(function RootLayout() {
   return (
     <>
       <Header />
-      <main>
+      <main className="relative">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 select-none [mask-image:radial-gradient(60%_60%_at_50%_20%,black,transparent)]"
+        >
+          <div className="bg-(--color-brand-light) dark:bg-(--color-brand-light) absolute -left-32 -top-24 h-72 w-72 rounded-full opacity-25 blur-3xl" />
+          <div className="bg-(--color-accent) absolute right-0 top-40 h-80 w-80 rounded-full opacity-20 blur-3xl" />
+        </div>
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Welcome />

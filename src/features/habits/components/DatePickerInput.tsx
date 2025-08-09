@@ -21,11 +21,11 @@ export const datePickerInputStyles = `
     pointer-events: none;
     z-index: 1;
     transition: color 0.2s ease;
-    color: #9333ea;
+    color: var(--color-brand-primary);
   }
   
   .dark .date-picker-input-icon {
-    color: #d8b4fe;
+    color: var(--color-brand-primary);
   }
   
   /* Icon pulse animation on focus */

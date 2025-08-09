@@ -66,7 +66,7 @@ const HabitsOverview = memo(function HabitsOverview() {
     return (
       <div className="flex flex-1 items-center justify-center">
         <motion.div
-          className="h-12 w-12 rounded-full border-4 border-purple-600 border-t-transparent dark:border-purple-400"
+          className="border-(--color-brand-primary) h-12 w-12 rounded-full border-4 border-t-transparent"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -96,12 +96,12 @@ const HabitsOverview = memo(function HabitsOverview() {
       <Card className="border-(--color-border-brand) bg-(--color-surface) shadow-(--color-border-brand)/50 dark:border-(--color-border-brand) dark:bg-(--color-surface)/10 dark:shadow-(--color-border-brand)/20 flex w-full flex-1 flex-col overflow-hidden shadow-xl">
         <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
           <div>
-            <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-black sm:text-2xl dark:text-white">
+            <CardTitle className="text-(--color-foreground) mb-2 flex items-center gap-2 text-xl font-bold sm:text-2xl">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={navigateBack}
-                className="mr-2 text-black hover:bg-purple-50 dark:text-white dark:hover:bg-purple-950/70 dark:hover:text-purple-100"
+                className="hover:bg-(--color-hover-surface) mr-2"
               >
                 <svg
                   className="h-5 w-5"
@@ -127,7 +127,7 @@ const HabitsOverview = memo(function HabitsOverview() {
               </Button>
               Habits Overview
             </CardTitle>
-            <p className="text-sm text-gray-600 dark:text-purple-100">
+            <p className="text-(--color-text-secondary) text-sm">
               Manage all your habits in one place
             </p>
           </div>
@@ -135,7 +135,7 @@ const HabitsOverview = memo(function HabitsOverview() {
         <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
           <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
             <Input
-              className="w-full border-gray-400 bg-white text-black placeholder:text-gray-500 sm:max-w-[300px] dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+              className="w-full sm:max-w-[300px]"
               placeholder="Search habits..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -145,21 +145,21 @@ const HabitsOverview = memo(function HabitsOverview() {
               onValueChange={setSelectedTab}
               className="w-full sm:max-w-[300px]"
             >
-              <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-gray-800">
+              <TabsList className="bg-(--color-muted) grid w-full grid-cols-3">
                 <TabsTrigger
-                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:text-gray-200 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white"
+                  className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
                   value="all"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:text-gray-200 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white"
+                  className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
                   value="active"
                 >
                   Active
                 </TabsTrigger>
                 <TabsTrigger
-                  className="data-[state=active]:bg-purple-200 data-[state=active]:text-purple-800 dark:text-gray-200 dark:data-[state=active]:bg-purple-700 dark:data-[state=active]:text-white"
+                  className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
                   value="completed"
                 >
                   Archived
@@ -183,29 +183,29 @@ const HabitsOverview = memo(function HabitsOverview() {
                 </p>
               </motion.div>
             ) : (
-              <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-purple-900">
+              <div className="border-(--color-border-primary) overflow-hidden rounded-lg border">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 text-left dark:bg-purple-950">
+                    <thead className="bg-(--color-surface-secondary) text-left">
                       <tr>
-                        <th className="px-3 py-3 text-xs font-medium text-gray-800 sm:px-4 sm:text-sm dark:text-purple-100">
+                        <th className="text-(--color-text-secondary) px-3 py-3 text-xs font-medium sm:px-4 sm:text-sm">
                           Habit
                         </th>
-                        <th className="hidden px-3 py-3 text-xs font-medium text-gray-800 sm:table-cell sm:px-4 sm:text-sm dark:text-purple-100">
+                        <th className="text-(--color-text-secondary) hidden px-3 py-3 text-xs font-medium sm:table-cell sm:px-4 sm:text-sm">
                           Frequency
                         </th>
-                        <th className="hidden px-3 py-3 text-xs font-medium text-gray-800 sm:px-4 sm:text-sm md:table-cell dark:text-purple-100">
+                        <th className="text-(--color-text-secondary) hidden px-3 py-3 text-xs font-medium sm:px-4 sm:text-sm md:table-cell">
                           Start Date
                         </th>
-                        <th className="px-3 py-3 text-xs font-medium text-gray-800 sm:px-4 sm:text-sm dark:text-purple-100">
+                        <th className="text-(--color-text-secondary) px-3 py-3 text-xs font-medium sm:px-4 sm:text-sm">
                           Status
                         </th>
-                        <th className="px-3 py-3 text-right text-xs font-medium text-gray-800 sm:px-4 sm:text-sm dark:text-purple-100">
+                        <th className="text-(--color-text-secondary) px-3 py-3 text-right text-xs font-medium sm:px-4 sm:text-sm">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 text-gray-800 dark:divide-purple-900/70 dark:text-white">
+                    <tbody className="divide-(--color-border-primary) text-(--color-foreground) divide-y">
                       {filteredHabits.map((habit) => {
                         const Icon = HabitsIcons[habit.icon];
                         return (
@@ -214,14 +214,14 @@ const HabitsOverview = memo(function HabitsOverview() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="hover:bg-gray-50 dark:hover:bg-purple-950/60"
+                            className="hover:bg-(--color-hover-surface)"
                           >
                             <td className="px-3 py-3 sm:px-4 sm:py-4">
                               <div className="flex items-center gap-2 sm:gap-3">
-                                <div className="flex items-center justify-center rounded-full bg-purple-100 p-1.5 sm:p-2 dark:bg-purple-800/70">
-                                  <Icon className="h-4 w-4 text-purple-600 sm:h-5 sm:w-5 dark:text-purple-100" />
+                                <div className="bg-(--color-brand-light) flex items-center justify-center rounded-full p-1.5 sm:p-2">
+                                  <Icon className="text-(--color-brand-primary) h-4 w-4 sm:h-5 sm:w-5" />
                                 </div>
-                                <span className="line-clamp-1 text-sm font-medium text-gray-800 sm:text-base dark:text-white">
+                                <span className="text-(--color-foreground) line-clamp-1 text-sm font-medium sm:text-base">
                                   {habit.name}
                                 </span>
                               </div>
@@ -231,22 +231,22 @@ const HabitsOverview = memo(function HabitsOverview() {
                                 {habit.frequency.map((day) => (
                                   <span
                                     key={day}
-                                    className="rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700 dark:bg-purple-800 dark:text-white"
+                                    className="bg-(--color-brand-light) text-(--color-brand-text) rounded-full px-2 py-0.5 text-xs"
                                   >
                                     {day.substring(0, 3)}
                                   </span>
                                 ))}
                               </div>
                             </td>
-                            <td className="hidden px-3 py-3 text-xs text-gray-800 sm:px-4 sm:py-4 sm:text-sm md:table-cell dark:text-purple-100">
+                            <td className="text-(--color-foreground) hidden px-3 py-3 text-xs sm:px-4 sm:py-4 sm:text-sm md:table-cell">
                               {new Date(habit.startDate).toLocaleDateString()}
                             </td>
                             <td className="px-3 py-3 sm:px-4 sm:py-4">
                               <span
                                 className={`rounded-full px-2 py-1 text-xs ${
                                   habit.endDate
-                                    ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-white'
-                                    : 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-white'
+                                    ? 'bg-(--color-muted) text-(--color-text-secondary)'
+                                    : 'bg-(--color-brand-light) text-(--color-brand-text)'
                                 }`}
                               >
                                 {habit.endDate ? 'Archived' : 'Active'}
@@ -258,7 +258,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => openEditDialog(habit)}
-                                  className="h-7 w-7 text-purple-600 hover:bg-gray-100 sm:h-8 sm:w-8 dark:bg-purple-900/70 dark:text-white dark:hover:bg-purple-800"
+                                  className="text-(--color-brand-primary) hover:bg-(--color-hover-surface) h-7 w-7 sm:h-8 sm:w-8"
                                 >
                                   <svg
                                     className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -286,7 +286,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleDeleteHabit(habit)}
-                                  className="h-7 w-7 text-red-600 hover:bg-red-100 sm:h-8 sm:w-8 dark:bg-red-900/70 dark:text-white dark:hover:bg-red-800"
+                                  className="text-(--color-destructive) hover:bg-(--color-error-light) h-7 w-7 sm:h-8 sm:w-8"
                                 >
                                   <svg
                                     className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -342,23 +342,23 @@ const HabitsOverview = memo(function HabitsOverview() {
         open={!!habitToDelete}
         onOpenChange={(open) => !open && setHabitToDelete(null)}
       >
-        <AlertDialogContent className="bg-white text-black dark:border-purple-900 dark:bg-gray-800 dark:text-white">
+        <AlertDialogContent className="bg-(--color-card) text-(--color-card-foreground)">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-800 dark:text-white">
+            <AlertDialogTitle className="text-(--color-foreground)">
               Delete Habit
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-800 dark:text-purple-100">
+            <AlertDialogDescription className="text-(--color-text-secondary)">
               Are you sure you want to delete &quot;
               {habitToDelete?.name}&quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-300 text-black hover:bg-gray-400 hover:text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:hover:text-gray-100">
+            <AlertDialogCancel className="bg-(--color-muted) text-(--color-foreground) hover:bg-(--color-hover-surface)">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-red-600 text-white hover:bg-red-700 focus:ring-purple-400 dark:focus:ring-purple-800"
+              className="bg-(--color-destructive) text-(--color-destructive-foreground) focus:ring-(--color-ring) hover:opacity-90"
             >
               Delete
             </AlertDialogAction>

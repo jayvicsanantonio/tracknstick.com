@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import ThemeProvider from '@app/providers/ThemeProvider';
 import DateProvider from '@app/providers/DateProvider.tsx';
 import { ClerkProvider } from '@clerk/clerk-react';
-import { shadesOfPurple } from '@clerk/themes';
 import { Toaster } from '@shared/components/ui/toaster.tsx';
 import App from '@app/App.tsx';
 import '@/styles/index.css';
@@ -36,12 +35,17 @@ createRoot(document.getElementById('root')!).render(
         publishableKey={PUBLISHABLE_KEY}
         afterSignOutUrl="/"
         appearance={{
-          baseTheme: [shadesOfPurple],
-          variables: { colorPrimary: 'var(--color-purple-50)' },
+          variables: {
+            colorPrimary: 'var(--color-brand-primary)',
+            colorText: 'var(--color-foreground)',
+            colorBackground: 'var(--color-background)',
+            borderRadius: '12px',
+          },
           signIn: {
-            baseTheme: [shadesOfPurple],
             variables: {
-              colorPrimary: 'var(--color-purple-50)',
+              colorPrimary: 'var(--color-brand-primary)',
+              colorText: 'var(--color-foreground)',
+              colorBackground: 'var(--color-background)',
             },
           },
         }}
