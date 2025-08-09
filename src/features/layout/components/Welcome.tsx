@@ -46,7 +46,7 @@ const Welcome = memo(function Welcome() {
               appearance={{
                 elements: {
                   formButtonPrimary:
-                    'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-full font-semibold transition-colors duration-300 shadow-lg',
+                    'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-full font-semibold shadow-lg',
                 },
               }}
             />

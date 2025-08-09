@@ -67,10 +67,6 @@ export default function DailyHabitTracker() {
                   aria-label="Progress"
                   className="relative mx-auto mb-8 w-full max-w-md"
                 >
-                  <div
-                    aria-hidden
-                    className="bg-(--color-brand-light) absolute inset-0 -z-10 mx-auto h-[420px] w-[420px] rounded-full opacity-30 blur-3xl sm:h-[480px] sm:w-[480px]"
-                  />
                   <DailyHabitProgressIndicator
                     completionRate={completionRate}
                   />

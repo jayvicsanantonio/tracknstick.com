@@ -37,7 +37,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
     <div key={habit.id} className="group flex flex-col items-center">
       <div className="relative mb-3">
         <div
-          className={`absolute -inset-1 rounded-full opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-70 ${
+          className={`absolute -inset-1 rounded-full opacity-0 blur-sm transition-opacity group-hover:opacity-70 ${
             habit.completed
               ? 'bg-(--color-brand-primary)/30 dark:bg-(--color-brand-primary)/30'
               : 'bg-(--color-brand-primary)/20 dark:bg-(--color-brand-primary)/20'
@@ -48,7 +48,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
             habit.completed
               ? 'bg-linear-to-br from-(--color-brand-primary) to-(--color-brand-primary) shadow-(--color-brand-primary)/30 dark:shadow-(--color-brand-primary)/30 border-none'
               : 'border-(--color-brand-primary) bg-(--color-surface) shadow-(--color-brand-light)/40 hover:bg-(--color-brand-lighter) dark:border-(--color-brand-primary) dark:bg-(--color-surface) dark:shadow-(--color-surface-secondary)/20'
-          } transform transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95`}
+          } transform hover:-translate-y-1 hover:scale-105 active:scale-95`}
           onClick={handleToggle}
           aria-pressed={habit.completed}
           aria-label={
@@ -59,7 +59,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
         >
           <Icon
             aria-hidden="true"
-            className={`h-10 w-10 transition-colors sm:h-12 sm:w-12 md:h-14 md:w-14 ${
+            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 ${
               habit.completed
                 ? 'text-(--color-text-inverse) dark:text-(--color-text-inverse)'
                 : 'text-(--color-brand-primary) dark:text-(--color-brand-primary)'
@@ -69,7 +69,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
         </button>
         {isEditMode && (
           <Button
-            className="bg-(--color-brand-primary) text-(--color-text-inverse) shadow-(--color-brand-primary)/30 hover:bg-(--color-brand-primary) absolute -right-1 -top-1 z-10 h-6 w-6 rounded-full p-0 shadow-md transition-all duration-300 sm:h-8 sm:w-8"
+            className="bg-(--color-brand-primary) text-(--color-text-inverse) shadow-(--color-brand-primary)/30 hover:bg-(--color-brand-primary) absolute -right-1 -top-1 z-10 h-6 w-6 rounded-full p-0 shadow-md sm:h-8 sm:w-8"
             onClick={handleEdit}
             aria-label={`Edit ${habit.name}`}
           >

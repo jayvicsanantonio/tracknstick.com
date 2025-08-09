@@ -41,7 +41,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         variant="ghost"
         size="icon"
         aria-label="Previous Date"
-        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm transition-all duration-300 hover:shadow-md"
+        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm hover:shadow-md"
       >
         <ChevronLeft aria-hidden="true" className="h-4 w-4" />
       </Button>
@@ -63,7 +63,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         variant="ghost"
         size="icon"
         aria-label="Next Date"
-        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm transition-all duration-300 hover:shadow-md"
+        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm hover:shadow-md"
       >
         <ChevronRight aria-hidden="true" className="h-4 w-4" />
       </Button>

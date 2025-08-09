@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@shared/utils/utils';
 
 const cardVariants = cva(
-  'relative flex flex-col gap-6 rounded-xl border text-(--color-card-foreground) transition-colors',
+  'relative group flex flex-col gap-6 rounded-xl border text-(--color-card-foreground)',
   {
     variants: {
       variant: {
@@ -38,6 +38,7 @@ const cardVariants = cva(
 type CardProps = React.ComponentProps<'div'> &
   VariantProps<typeof cardVariants> & {
     accent?: boolean;
+    glow?: boolean;
   };
 
 function Card({
@@ -46,6 +47,7 @@ function Card({
   padding,
   interactive,
   accent,
+  glow = false,
   ...props
 }: CardProps) {
   return (
@@ -54,6 +56,12 @@ function Card({
       className={cn(cardVariants({ variant, padding, interactive }), className)}
       {...props}
     >
+      {glow ? (
+        <div
+          aria-hidden
+          className="bg-(--color-brand-primary) pointer-events-none absolute -inset-2 -z-10 rounded-[inherit] opacity-20 blur-2xl transition-opacity duration-300 group-hover:opacity-30"
+        />
+      ) : null}
       {accent ? (
         <div
           aria-hidden

@@ -20,7 +20,7 @@
 @layer base {
   :root {
     /* Glinda — Light Mode: Pinks only */
-    --color-background: theme(--color-pink-50);
+    --color-background: theme(--color-pink-100);
     --color-foreground: theme(--color-pink-950);
     --color-card: theme(--color-pink-50);
     --color-card-foreground: theme(--color-pink-950);
