@@ -16,7 +16,7 @@ export function NotFoundPage() {
   const { goToDashboard } = useAppNavigation();
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-16">
+    <div className="flex min-h-[calc(100vh-12rem)] flex-1 flex-col items-center justify-center px-4 py-16">
       <div className="text-center">
         {/* 404 Icon */}
         <div className="mb-8 text-8xl font-bold text-purple-300 dark:text-purple-800">
