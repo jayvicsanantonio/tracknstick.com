@@ -37,10 +37,10 @@ const DailyHabitItem = memo(function DailyHabitItem({
     <div key={habit.id} className="group flex flex-col items-center">
       <div className="relative mb-3">
         <button
-          className={`relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:h-24 sm:w-24 md:h-28 md:w-28 ${
+          className={`ring-(--color-border-primary)/40 relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:h-24 sm:w-24 md:h-28 md:w-28 ${
             habit.completed
-              ? 'bg-(--color-brand-primary)/18 dark:bg-(--color-brand-primary)/20 ring-(--color-brand-primary)/55'
-              : 'bg-(--color-surface)/60 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40'
+              ? 'bg-(--color-brand-primary)/18 dark:bg-(--color-brand-primary)/20'
+              : 'bg-(--color-surface)/60 dark:bg-(--color-surface-secondary)/40'
           } transition-transform hover:-translate-y-1 hover:scale-105 active:scale-95`}
           onClick={handleToggle}
           aria-pressed={habit.completed}
@@ -53,7 +53,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
           {habit.completed ? (
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 z-0 rounded-full bg-gradient-to-b from-white/80 to-transparent opacity-60 dark:from-white/30"
+              className="pointer-events-none absolute inset-0 z-0 rounded-full"
             />
           ) : null}
           <Icon
