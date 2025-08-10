@@ -96,12 +96,18 @@ const Header = memo(function Header() {
               </Button>
               <UserButton
                 appearance={{
+                  variables: {
+                    colorPrimary: 'var(--color-brand-primary)',
+                    colorBackground: 'var(--color-card)',
+                    colorText: 'var(--color-foreground)',
+                    borderRadius: '1rem',
+                  },
                   elements: {
                     userButtonAvatarBox:
                       'min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-(--color-brand-primary)/20',
                     // Popover container
                     userButtonPopoverCard:
-                      'bg-(--color-surface) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-xl border border-(--color-border-primary) shadow-xl',
+                      'bg-(--color-card) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-2xl border border-(--color-border-primary) shadow-2xl',
                     userButtonPopoverMain:
                       'bg-transparent text-(--color-foreground)',
                     userPreview:
@@ -110,10 +116,16 @@ const Header = memo(function Header() {
                       'text-(--color-foreground) text-sm font-medium',
                     // Action items
                     userButtonActionButton:
-                      'text-(--color-foreground) hover:bg-(--color-hover-surface) rounded-lg h-10 px-3',
+                      '!text-(--color-foreground) !opacity-100 hover:bg-(--color-hover-surface) focus:bg-(--color-hover-surface) rounded-lg h-10 px-3',
                     userButtonActionButtonText:
-                      'text-(--color-foreground) text-sm',
-                    userButtonActionButtonIcon: 'text-(--color-text-secondary)',
+                      '!text-(--color-foreground) !opacity-100 text-sm',
+                    userButtonActionButtonIcon: '!text-(--color-foreground)',
+                    userButtonPopoverActionButton:
+                      '!text-(--color-foreground) !opacity-100 hover:bg-(--color-hover-surface) focus:bg-(--color-hover-surface) rounded-lg h-10 px-3',
+                    userButtonPopoverActionButtonText:
+                      '!text-(--color-foreground) !opacity-100 text-sm',
+                    userButtonPopoverActionButtonIcon:
+                      '!text-(--color-foreground)',
                     // Footer area (Secured by Clerk)
                     userButtonPopoverFooter:
                       'bg-transparent border-t border-(--color-border-primary) text-(--color-text-secondary)',
