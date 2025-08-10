@@ -36,7 +36,7 @@ const Welcome = memo(function Welcome() {
 
   return (
     <div className="flex-1">
-      <div className="relative flex h-[calc(100dvh-12rem)] min-h-[calc(100dvh-12rem)] w-full flex-1 flex-col items-center justify-center overflow-hidden">
+      <div className="relative flex h-[calc(100dvh-16rem)] min-h-[calc(100dvh-10rem)] w-full flex-1 flex-col items-center justify-center overflow-hidden sm:min-h-[calc(100vh-14rem)]">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="bg-(--color-brand-light) absolute left-20 top-0 h-80 w-80 -translate-y-20 rounded-full opacity-20 blur-3xl" />
           <div className="bg-(--color-accent) absolute right-0 top-40 h-96 w-96 rounded-full opacity-20 blur-3xl" />
