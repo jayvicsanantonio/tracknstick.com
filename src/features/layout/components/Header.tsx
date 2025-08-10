@@ -22,9 +22,9 @@ const Header = memo(function Header() {
         <div className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex items-center gap-2 rounded-full px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:px-3 sm:py-2">
           <CheckCircle2
             aria-hidden="true"
-            className="text-(--color-brand-primary) h-8 w-8 shrink-0 hover:scale-110 sm:h-10 sm:w-10"
+            className="text-(--color-brand-primary) h-6 w-6 shrink-0 sm:h-8 sm:w-8"
           />
-          <span className="text-(--color-brand-text) dark:text-(--color-brand-text-light) hidden pl-1 pr-2 text-lg font-bold sm:inline-block sm:text-xl md:text-2xl">
+          <span className="text-(--color-brand-primary) hidden pl-1 pr-2 text-lg font-bold sm:inline-block sm:text-xl md:text-2xl">
             Track N&apos; Stick
           </span>
         </div>
@@ -99,6 +99,24 @@ const Header = memo(function Header() {
                   elements: {
                     userButtonAvatarBox:
                       'min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-(--color-brand-primary)/20',
+                    // Popover container
+                    userButtonPopoverCard:
+                      'bg-(--color-surface) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-xl border border-(--color-border-primary) shadow-xl',
+                    userButtonPopoverMain:
+                      'bg-transparent text-(--color-foreground)',
+                    userPreview:
+                      'grid grid-cols-[auto_1fr] items-center gap-3 p-3',
+                    userPreviewText:
+                      'text-(--color-foreground) text-sm font-medium',
+                    // Action items
+                    userButtonActionButton:
+                      'text-(--color-foreground) hover:bg-(--color-hover-surface) rounded-lg h-10 px-3',
+                    userButtonActionButtonText:
+                      'text-(--color-foreground) text-sm',
+                    userButtonActionButtonIcon: 'text-(--color-text-secondary)',
+                    // Footer area (Secured by Clerk)
+                    userButtonPopoverFooter:
+                      'bg-transparent border-t border-(--color-border-primary) text-(--color-text-secondary)',
                   },
                 }}
               />
