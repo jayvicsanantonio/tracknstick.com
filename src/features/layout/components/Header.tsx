@@ -135,21 +135,27 @@ const Header = memo(function Header() {
             </div>
           </SignedIn>
           <SignedOut>
-            <Button
-              variant="brandTonal"
-              size="icon"
-              onClick={toggleDarkMode}
-              aria-label="Toggle Dark Mode"
+            <div
+              role="toolbar"
+              aria-label="User actions"
+              className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2 rounded-full p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2"
             >
-              <Sun
-                aria-hidden="true"
-                className="text-(--color-text-inverse) h-4 w-4 sm:h-6 sm:w-6 dark:hidden"
-              />
-              <Moon
-                aria-hidden="true"
-                className="text-(--color-brand-primary) hidden h-4 w-4 sm:h-6 sm:w-6 dark:block"
-              />
-            </Button>
+              <Button
+                variant="brandTonal"
+                size="icon"
+                onClick={toggleDarkMode}
+                aria-label="Toggle Dark Mode"
+              >
+                <Sun
+                  aria-hidden="true"
+                  className="h-4 w-4 sm:h-6 sm:w-6 dark:hidden"
+                />
+                <Moon
+                  aria-hidden="true"
+                  className="hidden h-4 w-4 sm:h-6 sm:w-6 dark:block"
+                />
+              </Button>
+            </div>
           </SignedOut>
         </div>
       </div>
