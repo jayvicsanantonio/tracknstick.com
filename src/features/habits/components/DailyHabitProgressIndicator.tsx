@@ -20,8 +20,22 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = useMemo(
     () => circumference * (1 - displayRate / 100),
-    [displayRate],
+    [displayRate, circumference],
   );
+  const strokeWidth = displayRate === 100 ? 10 : 8;
+
+  const isDark =
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('dark');
+
+  const shimmerBackground = useMemo(() => {
+    if (isDark) {
+      // Light green shimmer in dark mode (mix brand with white)
+      return 'radial-gradient(circle, color-mix(in oklab, var(--color-brand-primary) 30%, white 70%) 0%, color-mix(in oklab, var(--color-brand-primary) 15%, white 85%) 35%, rgba(255,255,255,0) 70%)';
+    }
+    // Dark pink shimmer in light mode (mix brand tertiary with black)
+    return 'radial-gradient(circle, color-mix(in oklab, var(--color-brand-tertiary) 70%, white 80%) 0%, color-mix(in oklab, var(--color-brand-tertiary) 50%, white 80%) 35%, rgba(0,0,0,0) 70%)';
+  }, [isDark]);
 
   return (
     <div
@@ -45,7 +59,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             <circle
               aria-hidden="true"
               className="text-(--color-border-primary)"
-              strokeWidth="8"
+              strokeWidth={8}
               stroke="currentColor"
               fill="transparent"
               r={radius}
@@ -75,7 +89,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             <motion.circle
               aria-hidden="true"
               className="text-(--color-brand-primary)"
-              strokeWidth="8"
+              strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
@@ -95,6 +109,28 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
           {/* Central display */}
           <div className="absolute inset-0 flex items-center justify-center">
+            {displayRate === 100 ? (
+              <motion.div
+                className="pointer-events-none absolute inset-0"
+                initial={{ opacity: 0.9 }}
+                animate={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                aria-hidden
+              >
+                {/* Radial shimmer */}
+                <motion.div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                  style={{
+                    width: '120%',
+                    height: '120%',
+                    background: shimmerBackground,
+                  }}
+                  initial={{ scale: 0.7, opacity: 0.9 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                />
+              </motion.div>
+            ) : null}
             {displayRate === 100 ? (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
