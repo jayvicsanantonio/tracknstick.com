@@ -36,19 +36,12 @@ const DailyHabitItem = memo(function DailyHabitItem({
   return (
     <div key={habit.id} className="group flex flex-col items-center">
       <div className="relative mb-3">
-        <div
-          className={`absolute -inset-1 rounded-full opacity-0 blur-sm transition-opacity group-hover:opacity-70 ${
-            habit.completed
-              ? 'bg-(--color-brand-primary)/30 dark:bg-(--color-brand-primary)/30'
-              : 'bg-(--color-brand-primary)/20 dark:bg-(--color-brand-primary)/20'
-          }`}
-        ></div>
         <button
-          className={`relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-2 shadow-md sm:h-24 sm:w-24 md:h-28 md:w-28 ${
+          className={`relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:h-24 sm:w-24 md:h-28 md:w-28 ${
             habit.completed
-              ? 'bg-linear-to-br from-(--color-brand-primary) to-(--color-brand-primary) shadow-(--color-brand-primary)/30 dark:shadow-(--color-brand-primary)/30 border-none'
-              : 'border-(--color-brand-primary) bg-(--color-surface) shadow-(--color-brand-light)/40 hover:bg-(--color-brand-lighter) dark:border-(--color-brand-primary) dark:bg-(--color-surface) dark:shadow-(--color-surface-secondary)/20'
-          } transform hover:-translate-y-1 hover:scale-105 active:scale-95`}
+              ? 'bg-(--color-brand-primary)/18 dark:bg-(--color-brand-primary)/20 ring-(--color-brand-primary)/55'
+              : 'bg-(--color-surface)/60 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40'
+          } transition-transform hover:-translate-y-1 hover:scale-105 active:scale-95`}
           onClick={handleToggle}
           aria-pressed={habit.completed}
           aria-label={
@@ -57,13 +50,15 @@ const DailyHabitItem = memo(function DailyHabitItem({
               : `Mark ${habit.name} as complete`
           }
         >
+          {habit.completed ? (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-0 rounded-full bg-gradient-to-b from-white/80 to-transparent opacity-60 dark:from-white/30"
+            />
+          ) : null}
           <Icon
             aria-hidden="true"
-            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 ${
-              habit.completed
-                ? 'text-(--color-text-inverse) dark:text-(--color-text-inverse)'
-                : 'text-(--color-brand-primary) dark:text-(--color-brand-primary)'
-            }`}
+            className={`text-(--color-brand-primary) relative z-10 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14`}
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />
         </button>
