@@ -19,6 +19,7 @@ import { useAuth } from '@clerk/clerk-react';
 interface UseHabitsReturn {
   habits: Habit[];
   isLoading: boolean;
+  isValidating: boolean;
   error: unknown;
   animatingHabitId: string | null;
   mutateHabits: () => Promise<Habit[] | undefined>;
