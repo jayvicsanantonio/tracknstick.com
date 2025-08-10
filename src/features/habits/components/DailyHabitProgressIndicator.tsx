@@ -16,7 +16,8 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
     [completionRate],
   );
 
-  const circumference = 42 * 2 * Math.PI;
+  const radius = 42;
+  const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = useMemo(
     () => circumference * (1 - displayRate / 100),
     [displayRate],
@@ -28,11 +29,11 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
       <div className="relative h-52 w-52 sm:h-60 sm:w-60 md:h-64 md:w-64">
-        {/* Drop shadow for the progress circle */}
+        {/* Glass badge backdrop */}
         <div
           aria-hidden="true"
-          className="bg-(--color-brand-primary)/30 dark:bg-(--color-brand-primary)/20 absolute inset-0 rounded-full"
-        ></div>
+          className="bg-(--color-surface)/60 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40 absolute inset-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl"
+        />
 
         <div className="relative h-full w-full">
           <svg
@@ -47,30 +48,27 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
               strokeWidth="8"
               stroke="currentColor"
               fill="transparent"
-              r="42"
+              r={radius}
               cx="50"
               cy="50"
             />
 
-            {/* Glowing effect behind progress */}
-            <motion.circle
+            {/* Soft gradient "glass" accent behind progress */}
+            <defs>
+              <linearGradient id="glassGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
+                <stop offset="60%" stopColor="white" stopOpacity="0.05" />
+                <stop offset="100%" stopColor="white" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <circle
               aria-hidden="true"
-              className="text-(--color-brand-primary)/30"
-              strokeWidth="12"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              stroke="currentColor"
+              stroke="url(#glassGradient)"
+              strokeWidth="10"
               fill="transparent"
-              r="42"
+              r={radius}
               cx="50"
               cy="50"
-              transform="rotate(-90 50 50)"
-              initial={{ strokeDashoffset: 42 * 2 * Math.PI }}
-              animate={{
-                strokeDashoffset,
-              }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
             />
 
             {/* Main progress indicator */}
@@ -83,11 +81,11 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
               strokeLinecap="round"
               stroke="currentColor"
               fill="transparent"
-              r="42"
+              r={radius}
               cx="50"
               cy="50"
               transform="rotate(-90 50 50)"
-              initial={{ strokeDashoffset: 42 * 2 * Math.PI }}
+              initial={{ strokeDashoffset: radius * 2 * Math.PI }}
               animate={{
                 strokeDashoffset,
               }}
