@@ -82,8 +82,34 @@ function DateHotkeys({
 }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') onPrev();
-      if (e.key === 'ArrowRight') onNext();
+      // Don't interfere with input fields or other interactive elements
+      const target = e.target as HTMLElement;
+      const isInteractiveElement =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'SELECT' ||
+        target.contentEditable === 'true' ||
+        target.closest('[contenteditable="true"]') !== null ||
+        target.closest('input, textarea, select') !== null ||
+        target.getAttribute('role') === 'textbox';
+
+      if (isInteractiveElement) {
+        return;
+      }
+
+      // Only handle arrow keys if no modifiers are pressed
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        onPrev();
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        onNext();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);

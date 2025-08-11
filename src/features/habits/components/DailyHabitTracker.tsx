@@ -10,7 +10,6 @@ import { motion } from 'framer-motion';
 
 export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate } = useHabits();
-  const isValidating = false; // SWR keep-previous UX placeholder; wire when available
 
   if (isLoading) {
     return (
@@ -66,12 +65,6 @@ export default function DailyHabitTracker() {
                   aria-label="Progress"
                   className="relative mx-auto mb-8 w-full max-w-md"
                 >
-                  {isValidating ? (
-                    <div className="bg-(--color-surface)/50 absolute right-2 top-2 z-10 inline-flex items-center gap-2 rounded-full px-2 py-1 text-xs backdrop-blur-sm">
-                      <span className="border-(--color-brand-primary) h-3 w-3 animate-spin rounded-full border-2 border-r-transparent"></span>
-                      Refreshing…
-                    </div>
-                  ) : null}
                   <DailyHabitProgressIndicator
                     completionRate={completionRate}
                   />

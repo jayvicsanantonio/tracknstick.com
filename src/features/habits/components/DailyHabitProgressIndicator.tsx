@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import MiscellaneousIcons from '@/icons/miscellaneous';
+import { useTheme } from '@shared/hooks/useTheme';
 
 const { Check } = MiscellaneousIcons;
 
@@ -11,6 +12,8 @@ interface DailyHabitProgressIndicatorProps {
 const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   completionRate,
 }: DailyHabitProgressIndicatorProps) {
+  const isDark = useTheme();
+
   const displayRate = useMemo(
     () => (Number.isNaN(completionRate) ? 0 : completionRate),
     [completionRate],
@@ -23,10 +26,6 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
     [displayRate, circumference],
   );
   const strokeWidth = displayRate === 100 ? 10 : 8;
-
-  const isDark =
-    typeof document !== 'undefined' &&
-    document.documentElement.classList.contains('dark');
 
   const shimmerBackground = useMemo(() => {
     if (isDark) {
