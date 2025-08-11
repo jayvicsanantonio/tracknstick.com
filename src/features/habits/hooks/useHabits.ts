@@ -19,6 +19,7 @@ import { useAuth } from '@clerk/clerk-react';
 interface UseHabitsReturn {
   habits: Habit[];
   isLoading: boolean;
+  isValidating: boolean;
   error: unknown;
   animatingHabitId: string | null;
   mutateHabits: () => Promise<Habit[] | undefined>;
@@ -49,11 +50,15 @@ export function useHabits(): UseHabitsReturn {
     data: fetchedHabits,
     error,
     isLoading,
+    isValidating,
     mutate: mutateHabits,
   } = useSWR<Habit[], unknown>(
     habitsEndpointKey,
     () => (date ? fetchHabits(date, timeZone) : Promise.resolve([])),
-    {},
+    {
+      revalidateOnFocus: true,
+      keepPreviousData: true,
+    },
   );
 
   useEffect(() => {
@@ -211,6 +216,7 @@ export function useHabits(): UseHabitsReturn {
   return {
     habits,
     isLoading,
+    isValidating,
     error,
     animatingHabitId,
     mutateHabits,

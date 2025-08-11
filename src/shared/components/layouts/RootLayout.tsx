@@ -17,7 +17,7 @@ export const RootLayout = memo(function RootLayout() {
   return (
     <>
       <Header />
-      <main>
+      <main className="relative min-h-0 flex-1">
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Welcome />

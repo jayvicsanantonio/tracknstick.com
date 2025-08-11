@@ -1,17 +1,78 @@
 import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@shared/utils/utils';
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
+const cardVariants = cva(
+  'relative group flex flex-col gap-6 rounded-xl text-(--color-card-foreground)',
+  {
+    variants: {
+      variant: {
+        default:
+          'border border-(--color-border-primary) bg-(--color-card) shadow-sm',
+        elevated:
+          'border border-(--color-border-primary) bg-(--color-card) shadow-xl shadow-(--color-border-brand)/30',
+        subtle:
+          'border border-transparent bg-(--color-surface-secondary) shadow-sm',
+        glass:
+          'bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2  p-1 rounded-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2',
+        outline:
+          'border border-(--color-border-brand) bg-(--color-surface) shadow-sm',
+      },
+      padding: {
+        none: 'p-0',
+        sm: 'py-4',
+        md: 'py-6',
+        lg: 'py-8',
+      },
+      interactive: {
+        false: '',
+        true: 'transition-shadow hover:shadow-lg hover:shadow-(--color-border-brand)/40',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      padding: 'md',
+      interactive: false,
+    },
+  },
+);
+
+type CardProps = React.ComponentProps<'div'> &
+  VariantProps<typeof cardVariants> & {
+    accent?: boolean;
+    glow?: boolean;
+  };
+
+function Card({
+  className,
+  variant,
+  padding,
+  interactive,
+  accent,
+  glow = false,
+  ...props
+}: CardProps) {
   return (
     <div
       data-slot="card"
-      className={cn(
-        'flex flex-col gap-6 rounded-xl border border-zinc-200 bg-white py-6 text-zinc-950 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50',
-        className,
-      )}
+      className={cn(cardVariants({ variant, padding, interactive }), className)}
       {...props}
-    />
+    >
+      {glow ? (
+        <div
+          aria-hidden
+          className="bg-(--color-brand-primary) pointer-events-none absolute -inset-2 -z-10 rounded-[inherit] opacity-20 blur-2xl transition-opacity duration-300 group-hover:opacity-30"
+        />
+      ) : null}
+      {accent ? (
+        <div
+          aria-hidden
+          className="from-(--color-brand-light) via-(--color-border-brand) to-(--color-brand-light) pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r"
+        />
+      ) : null}
+      {props.children}
+    </div>
   );
 }
 
@@ -32,7 +93,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('font-semibold leading-none', className)}
+      className={cn('font-semibold leading-none tracking-tight', className)}
       {...props}
     />
   );
@@ -42,7 +103,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-description"
-      className={cn('text-sm text-zinc-500 dark:text-zinc-400', className)}
+      className={cn('text-(--color-text-secondary) text-sm', className)}
       {...props}
     />
   );

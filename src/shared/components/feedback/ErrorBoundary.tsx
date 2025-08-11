@@ -29,15 +29,15 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         this.props.fallback ?? (
           <div className="flex flex-col items-center justify-center py-16">
-            <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">
+            <h1 className="text-(--color-destructive) text-2xl font-bold">
               Something went wrong
             </h1>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">
+            <p className="text-(--color-text-secondary) mt-4">
               Please try refreshing the page.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+              className="bg-(--color-destructive) text-(--color-destructive-foreground) mt-4 rounded-md px-4 py-2 hover:opacity-90"
             >
               Refresh Page
             </button>

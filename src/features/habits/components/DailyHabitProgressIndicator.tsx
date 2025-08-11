@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import MiscellaneousIcons from '@/icons/miscellaneous';
+import { useTheme } from '@shared/hooks/useTheme';
 
 const { Check } = MiscellaneousIcons;
 
@@ -11,27 +12,41 @@ interface DailyHabitProgressIndicatorProps {
 const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   completionRate,
 }: DailyHabitProgressIndicatorProps) {
+  const isDark = useTheme();
+
   const displayRate = useMemo(
     () => (Number.isNaN(completionRate) ? 0 : completionRate),
     [completionRate],
   );
 
+  const radius = 42;
+  const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = useMemo(
-    () => 42 * 2 * Math.PI * (1 - displayRate / 100),
-    [displayRate],
+    () => circumference * (1 - displayRate / 100),
+    [displayRate, circumference],
   );
+  const strokeWidth = displayRate === 100 ? 10 : 8;
+
+  const shimmerBackground = useMemo(() => {
+    if (isDark) {
+      // Light green shimmer in dark mode (mix brand with white)
+      return 'radial-gradient(circle, color-mix(in oklab, var(--color-brand-primary) 30%, white 70%) 0%, color-mix(in oklab, var(--color-brand-primary) 15%, white 85%) 35%, rgba(255,255,255,0) 70%)';
+    }
+    // Dark pink shimmer in light mode (mix brand tertiary with black)
+    return 'radial-gradient(circle, color-mix(in oklab, var(--color-brand-tertiary) 70%, white 80%) 0%, color-mix(in oklab, var(--color-brand-tertiary) 50%, white 80%) 35%, rgba(0,0,0,0) 70%)';
+  }, [isDark]);
 
   return (
     <div
       className="mb-12 mt-4 flex flex-col items-center justify-center"
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
-      <div className="relative h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64">
-        {/* Drop shadow for the progress circle */}
+      <div className="relative h-52 w-52 sm:h-60 sm:w-60 md:h-64 md:w-64">
+        {/* Glass badge backdrop */}
         <div
           aria-hidden="true"
-          className="bg-(--color-brand-primary)/30 dark:bg-(--color-brand-primary)/20 absolute inset-0 rounded-full"
-        ></div>
+          className="bg-(--color-surface)/60 dark:bg-(--color-surface-secondary)/40 ring-(--color-border-primary)/40 absolute inset-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl"
+        />
 
         <div className="relative h-full w-full">
           <svg
@@ -42,51 +57,48 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             {/* Background track */}
             <circle
               aria-hidden="true"
-              className="text-(--color-brand-tertiary)/20 dark:text-(--color-brand-tertiary)/80"
-              strokeWidth="10"
+              className="text-(--color-border-primary)"
+              strokeWidth={8}
               stroke="currentColor"
               fill="transparent"
-              r="42"
+              r={radius}
               cx="50"
               cy="50"
             />
 
-            {/* Glowing effect behind progress */}
-            <motion.circle
+            {/* Soft gradient "glass" accent behind progress */}
+            <defs>
+              <linearGradient id="glassGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
+                <stop offset="60%" stopColor="white" stopOpacity="0.05" />
+                <stop offset="100%" stopColor="white" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <circle
               aria-hidden="true"
-              className="text-(--color-brand-primary)/30 dark:text-(--color-brand-primary)/30"
-              strokeWidth="14"
-              strokeDasharray={42 * 2 * Math.PI}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              stroke="currentColor"
+              stroke="url(#glassGradient)"
+              strokeWidth="10"
               fill="transparent"
-              r="42"
+              r={radius}
               cx="50"
               cy="50"
-              transform="rotate(-90 50 50)"
-              initial={{ strokeDashoffset: 42 * 2 * Math.PI }}
-              animate={{
-                strokeDashoffset,
-              }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
             />
 
             {/* Main progress indicator */}
             <motion.circle
               aria-hidden="true"
-              className="text-(--color-brand-primary) dark:text-(--color-brand-primary)"
-              strokeWidth="10"
-              strokeDasharray={42 * 2 * Math.PI}
+              className="text-(--color-brand-primary)"
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
               stroke="currentColor"
               fill="transparent"
-              r="42"
+              r={radius}
               cx="50"
               cy="50"
               transform="rotate(-90 50 50)"
-              initial={{ strokeDashoffset: 42 * 2 * Math.PI }}
+              initial={{ strokeDashoffset: radius * 2 * Math.PI }}
               animate={{
                 strokeDashoffset,
               }}
@@ -98,12 +110,34 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
           <div className="absolute inset-0 flex items-center justify-center">
             {displayRate === 100 ? (
               <motion.div
+                className="pointer-events-none absolute inset-0"
+                initial={{ opacity: 0.9 }}
+                animate={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                aria-hidden
+              >
+                {/* Radial shimmer */}
+                <motion.div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                  style={{
+                    width: '120%',
+                    height: '120%',
+                    background: shimmerBackground,
+                  }}
+                  initial={{ scale: 0.7, opacity: 0.9 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                />
+              </motion.div>
+            ) : null}
+            {displayRate === 100 ? (
+              <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: [0, 1.2, 1], opacity: 1 }}
                 transition={{ duration: 0.7, ease: 'easeOut' }}
               >
                 <div className={`rounded-full p-5`} aria-hidden="true">
-                  <Check className="text-(--color-brand-primary) h-32 w-32" />
+                  <Check className="text-(--color-brand-primary) h-28 w-28" />
                 </div>
               </motion.div>
             ) : (
@@ -113,10 +147,10 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-5xl font-bold">
+                <span className="text-(--color-foreground) text-5xl font-extrabold tracking-tight">
                   {displayRate}%
                 </span>
-                <span className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) mt-1 text-sm">
+                <span className="text-(--color-text-secondary) mt-1 text-sm">
                   Completed
                 </span>
               </motion.div>

@@ -1,4 +1,4 @@
-import { useContext, useMemo, memo } from 'react';
+import { useContext, useEffect, useMemo, memo } from 'react';
 import { Button } from '@shared/components/ui/button';
 import { DateContext } from '@app/providers/DateContext';
 import MiscellaneousIcons from '@/icons/miscellaneous';
@@ -33,30 +33,37 @@ const DailyHabitDate = memo(function DailyHabitDate() {
 
   return (
     <div className="flex items-center justify-between">
+      {/* Keyboard shortcuts for date navigation */}
+      <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
+
       <Button
         onClick={handlePreviousDate}
-        variant="outline"
+        variant="ghost"
         size="icon"
         aria-label="Previous Date"
-        className="border-(--color-border-brand) hover:bg-(--color-hover-brand) dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:bg-(--color-hover-brand) shadow-sm transition-all duration-300"
+        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm hover:shadow-md"
       >
         <ChevronLeft aria-hidden="true" className="h-4 w-4" />
       </Button>
+
       <div className="relative text-center">
-        <h2 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mb-1 text-2xl font-bold transition-colors sm:text-3xl">
-          {dayLabel}
-        </h2>
-        <p className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) text-sm transition-colors sm:text-base">
-          {formattedDate}
-        </p>
-        <div className="bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) dark:from-(--color-brand-light) dark:via-(--color-brand-primary) dark:to-(--color-brand-light) mx-auto mt-1.5 h-0.5 w-24 rounded-full sm:w-32"></div>
+        <div className="border-(--color-border-primary) bg-(--color-card) mx-auto inline-flex items-center gap-3 rounded-full border px-4 py-2 shadow-sm">
+          <h2 className="text-(--color-foreground) text-xl font-bold sm:text-2xl">
+            {dayLabel}
+          </h2>
+          <span className="text-(--color-brand-primary) text-sm sm:text-base">
+            {formattedDate}
+          </span>
+        </div>
+        <div className="bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) mx-auto mt-2 h-0.5 w-28 rounded-full sm:w-36"></div>
       </div>
+
       <Button
         onClick={handleNextDate}
-        variant="outline"
+        variant="ghost"
         size="icon"
         aria-label="Next Date"
-        className="border-(--color-border-brand) text-(--color-brand-primary) hover:border-(--color-border-brand) hover:bg-(--color-hover-brand) hover:text-(--color-brand-secondary) dark:border-(--color-border-secondary) dark:bg-(--color-surface-secondary) dark:text-(--color-brand-text-light) dark:hover:border-(--color-border-brand) dark:hover:bg-(--color-hover-surface) dark:hover:text-(--color-brand-text-light) shadow-sm transition-all duration-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 dark:hover:shadow-md dark:disabled:cursor-not-allowed"
+        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm hover:shadow-md"
       >
         <ChevronRight aria-hidden="true" className="h-4 w-4" />
       </Button>
@@ -65,3 +72,47 @@ const DailyHabitDate = memo(function DailyHabitDate() {
 });
 
 export default DailyHabitDate;
+
+function DateHotkeys({
+  onPrev,
+  onNext,
+}: {
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Don't interfere with input fields or other interactive elements
+      const target = e.target as HTMLElement;
+      const isInteractiveElement =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'SELECT' ||
+        target.contentEditable === 'true' ||
+        target.closest('[contenteditable="true"]') !== null ||
+        target.closest('input, textarea, select') !== null ||
+        target.getAttribute('role') === 'textbox';
+
+      if (isInteractiveElement) {
+        return;
+      }
+
+      // Only handle arrow keys if no modifiers are pressed
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        onPrev();
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        onNext();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onPrev, onNext]);
+  return null;
+}
