@@ -3,15 +3,7 @@ import { SignIn } from '@clerk/clerk-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useRive } from '@rive-app/react-canvas';
-import { Button } from '@shared/components/ui/button';
 import { Card } from '@shared/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from '@shared/components/ui/dialog';
-import { ChevronRight } from 'lucide-react';
 
 const Welcome = memo(function Welcome() {
   const isDark = useTheme();
@@ -36,61 +28,88 @@ const Welcome = memo(function Welcome() {
 
   return (
     <div className="flex-1">
-      <div className="relative flex h-[calc(100dvh-16rem)] min-h-[calc(100dvh-10rem)] w-full flex-1 flex-col items-center justify-center overflow-hidden sm:min-h-[calc(100vh-14rem)]">
+      <div className="relative flex h-[calc(100dvh-8rem)] min-h-[calc(100dvh-8rem)] w-full flex-1 overflow-hidden lg:h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-8rem)]">
+        {/* Background Elements */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="bg-(--color-brand-light) absolute left-20 top-0 h-80 w-80 -translate-y-20 rounded-full opacity-20 blur-3xl" />
           <div className="bg-(--color-accent) absolute right-0 top-40 h-96 w-96 rounded-full opacity-20 blur-3xl" />
-        </div>
-        <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-50">
-          <RiveComponent className="h-[380px] w-[380px] sm:h-[460px] sm:w-[460px]" />
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75 }}
-          className="mx-auto h-full w-full max-w-7xl px-2 sm:px-4 md:px-8"
+          transition={{ duration: 0.8 }}
+          className="mx-auto flex h-full w-full max-w-7xl items-center justify-center px-4 py-8 lg:px-8 lg:py-16"
         >
           <Card
             variant="glass"
-            className="h-full w-full items-center justify-center gap-6 rounded-3xl p-6 text-center sm:gap-7 sm:p-8 md:gap-8 md:p-12"
+            className="relative h-full w-full max-w-6xl overflow-hidden rounded-3xl"
           >
-            <h1 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl">
-              {title}
-            </h1>
-            <p className="text-(--color-foreground) dark:text-(--color-text-primary) mx-auto max-w-2xl text-balance text-base leading-relaxed sm:text-lg md:text-xl">
-              {subtitle}
-            </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="brandTonalActive"
-                  size="lg"
-                  className="rounded-full px-6 py-6 text-base font-semibold sm:text-lg"
-                  aria-label="Get started"
-                >
-                  Get started
-                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="rounded-2xl p-0 sm:max-w-md">
-                <DialogTitle className="sr-only">Sign in</DialogTitle>
-                <div className="p-6">
+            {/* Rive Animation Background */}
+            <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-20 lg:opacity-30">
+              <RiveComponent className="h-[300px] w-[300px] sm:h-[380px] sm:w-[380px] lg:h-[460px] lg:w-[460px]" />
+            </div>
+
+            <div className="flex h-full flex-col lg:flex-row">
+              {/* Left Side - Hero Content */}
+              <div className="relative flex flex-1 flex-col items-center justify-center p-6 text-center sm:p-8 lg:items-start lg:p-12 lg:text-left">
+                <div className="z-10">
+                  <h1 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                    {title}
+                  </h1>
+                  <p className="text-(--color-foreground) dark:text-(--color-text-primary) mb-8 max-w-2xl text-balance text-lg leading-relaxed sm:text-xl lg:text-2xl">
+                    {subtitle}
+                  </p>
+                  <div className="space-y-4">
+                    <p className="text-(--color-text-secondary) text-xs sm:text-sm">
+                      Free to try. Your data stays private.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="bg-(--color-border-primary) mx-6 my-8 h-px w-auto lg:mx-0 lg:my-12 lg:h-auto lg:w-px" />
+
+              {/* Right Side - Sign In Form */}
+              <div className="flex flex-1 items-center justify-center p-6 sm:p-8 lg:p-12">
+                <div className="w-full max-w-sm">
+                  <div className="mb-6 text-center">
+                    <h2 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-xl font-semibold">
+                      Start Your Journey
+                    </h2>
+                    <p className="text-(--color-text-secondary) mt-2 text-sm">
+                      Sign in to begin tracking your habits
+                    </p>
+                  </div>
                   <SignIn
                     appearance={{
                       elements: {
                         formButtonPrimary:
-                          'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-full font-semibold shadow-lg',
-                        card: 'bg-(--color-card) border border-(--color-border-primary) shadow-xl rounded-2xl',
+                          'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-full font-semibold shadow-lg transition-all duration-200',
+                        card: 'bg-transparent border-0 shadow-none p-0',
+                        headerTitle: 'hidden',
+                        headerSubtitle: 'hidden',
+                        socialButtonsBlockButton:
+                          'bg-(--color-card) border border-(--color-border-primary) dark:border-white hover:bg-(--color-surface-hover) rounded-lg transition-all duration-200 text-(--color-foreground) dark:text-white !text-(--color-foreground) dark:!text-white !border-1 dark:!border-white !border-solid',
+                        socialButtonsBlockButtonText:
+                          'text-(--color-foreground) dark:text-white font-medium !text-(--color-foreground) dark:!text-white',
+                        socialButtonsIconButton:
+                          'text-(--color-foreground) dark:text-white !text-(--color-foreground) dark:!text-white',
+                        formFieldInput:
+                          'bg-(--color-card) border border-(--color-border-primary) rounded-lg focus:border-(--color-brand-primary) text-(--color-foreground) dark:text-white placeholder:text-(--color-text-secondary) dark:placeholder:!text-gray-300',
+                        formFieldLabel:
+                          'text-(--color-foreground) dark:text-white font-medium',
+                        identityPreviewText:
+                          'text-(--color-foreground) dark:text-white',
+                        formFieldInputShowPasswordButton:
+                          'text-(--color-text-secondary) dark:text-gray-400 hover:text-(--color-foreground) dark:hover:text-white',
                       },
                     }}
                   />
                 </div>
-              </DialogContent>
-            </Dialog>
-            <p className="text-(--color-text-secondary) text-xs sm:text-sm">
-              Free to try. Your data stays private.
-            </p>
+              </div>
+            </div>
           </Card>
         </motion.div>
       </div>
