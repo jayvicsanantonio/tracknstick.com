@@ -43,7 +43,7 @@ const Welcome = memo(function Welcome() {
         >
           <Card
             variant="glass"
-            className="relative h-full w-full max-w-6xl overflow-hidden rounded-3xl"
+            className="relative h-full w-full overflow-hidden rounded-3xl"
           >
             {/* Rive Animation Background */}
             <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-20 lg:opacity-30">
@@ -79,7 +79,7 @@ const Welcome = memo(function Welcome() {
                       Start Your Journey
                     </h2>
                     <p className="text-(--color-text-secondary) mt-2 text-sm">
-                      Sign in to begin tracking your habits
+                      Transform intention into momentum
                     </p>
                   </div>
                   <SignIn
