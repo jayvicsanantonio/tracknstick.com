@@ -120,7 +120,7 @@ const HabitForm = memo(function HabitForm({
         onSubmit={handleSubmit}
         className="text-foreground grid max-h-[70vh] min-h-fit gap-3 overflow-y-auto py-2 sm:h-auto sm:max-h-none sm:gap-4 sm:py-4"
       >
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-3 px-1 sm:space-y-4">
           {/* Name Input */}
           <div className="space-y-1 sm:space-y-2">
             <Label

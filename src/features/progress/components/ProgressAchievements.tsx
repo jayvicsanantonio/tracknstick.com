@@ -25,7 +25,7 @@ const ProgressAchievements = memo(function ProgressAchievements({
             aria-hidden="true"
             className="bg-(--color-brand-light) dark:bg-(--color-brand-primary) rounded-full p-2"
           >
-            <achievement.icon className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) h-6 w-6" />
+            <achievement.icon className="text-(--color-brand-primary) dark:text-(--color-muted) h-6 w-6" />
           </div>
           <div>
             <h4 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) font-semibold">
