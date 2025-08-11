@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(pnpm lint:fix:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)"
     ],
     "deny": []
   }

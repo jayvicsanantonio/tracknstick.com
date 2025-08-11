@@ -3,21 +3,17 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Header from '@/features/layout/components/Header';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
-import { ThemeContext } from '@app/providers/ThemeContext';
-
-const mockThemeContextValue = {
-  toggleDarkMode: vi.fn(),
-};
+import ThemeProvider from '@app/providers/ThemeProvider';
 
 const renderHeader = () => {
   return render(
-    <ThemeContext.Provider value={mockThemeContextValue}>
+    <ThemeProvider>
       <HabitsStateProvider>
         <BrowserRouter>
           <Header />
         </BrowserRouter>
       </HabitsStateProvider>
-    </ThemeContext.Provider>,
+    </ThemeProvider>,
   );
 };
 
@@ -49,13 +45,13 @@ describe('Header Component', () => {
   it('applies active styles to current route', () => {
     // Render with a specific route using MemoryRouter
     render(
-      <ThemeContext.Provider value={mockThemeContextValue}>
+      <ThemeProvider>
         <HabitsStateProvider>
           <MemoryRouter initialEntries={['/habits']}>
             <Header />
           </MemoryRouter>
         </HabitsStateProvider>
-      </ThemeContext.Provider>,
+      </ThemeProvider>,
     );
 
     const habitsLink = screen.getByRole('link', { name: /habits overview/i });

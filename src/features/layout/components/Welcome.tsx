@@ -6,7 +6,8 @@ import { useRive } from '@rive-app/react-canvas';
 import { Card } from '@shared/components/ui/card';
 
 const Welcome = memo(function Welcome() {
-  const isDark = useTheme();
+  const { mode } = useTheme();
+  const isDark = mode === 'dark';
 
   const { RiveComponent } = useRive({
     src: '/rive/wicked-orbs.riv',
@@ -54,10 +55,10 @@ const Welcome = memo(function Welcome() {
               {/* Left Side - Hero Content */}
               <div className="relative flex flex-1 flex-col items-center justify-center p-6 text-center sm:p-8 lg:items-start lg:p-12 lg:text-left">
                 <div className="z-10">
-                  <h1 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                  <h1 className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
                     {title}
                   </h1>
-                  <p className="text-(--color-foreground) dark:text-(--color-text-primary) mb-8 max-w-2xl text-balance text-lg leading-relaxed sm:text-xl lg:text-2xl">
+                  <p className="text-(--color-brand-tertiary) dark:text-(--color-text-primary) mb-8 max-w-2xl text-balance text-lg leading-relaxed sm:text-xl lg:text-2xl">
                     {subtitle}
                   </p>
                   <div className="space-y-4">

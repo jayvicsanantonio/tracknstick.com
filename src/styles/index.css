@@ -16,111 +16,61 @@
   --breakpoint-xs: 480px;
 }
 
-/* Light mode color values - default */
+/* Theme variables are now dynamically set by ThemeProvider */
+/* Default fallback values for initial render */
 @layer base {
   :root {
-    /* Glinda — Light Mode: Pinks only */
-    --color-background: theme(--color-pink-100);
-    --color-foreground: theme(--color-pink-950);
-    --color-card: theme(--color-pink-50);
-    --color-card-foreground: theme(--color-pink-950);
-    --color-primary: theme(--color-pink-600);
-    --color-primary-foreground: theme(--color-white);
-    --color-secondary: theme(--color-pink-100);
-    --color-secondary-foreground: theme(--color-pink-900);
-    --color-muted: theme(--color-pink-100);
-    --color-muted-foreground: theme(--color-pink-600);
-    --color-accent: theme(--color-pink-300);
-    --color-accent-foreground: theme(--color-pink-950);
-    --color-destructive: theme(--color-pink-800);
-    --color-destructive-foreground: theme(--color-pink-50);
-    --color-border: theme(--color-pink-200);
-    --color-input: theme(--color-pink-200);
-    --color-ring: theme(--color-pink-500);
+    /* Base theme tokens - these will be overridden by JavaScript */
+    --color-background: hsl(155, 100%, 4%);
+    --color-foreground: hsl(152, 81%, 96%);
+    --color-card: hsl(0, 0%, 6%);
+    --color-card-foreground: hsl(152, 81%, 96%);
+    --color-primary: hsl(160, 84%, 55%);
+    --color-primary-foreground: hsl(0, 0%, 0%);
+    --color-secondary: hsl(0, 0%, 14%);
+    --color-secondary-foreground: hsl(152, 81%, 96%);
+    --color-muted: hsl(0, 0%, 14%);
+    --color-muted-foreground: hsl(152, 72%, 77%);
+    --color-accent: hsl(155, 58%, 14%);
+    --color-accent-foreground: hsl(152, 81%, 96%);
+    --color-destructive: hsl(155, 58%, 46%);
+    --color-destructive-foreground: hsl(152, 81%, 96%);
+    --color-border: hsl(215, 15%, 21%);
+    --color-input: hsl(215, 15%, 21%);
+    --color-ring: hsl(152, 72%, 67%);
 
-    /* Extended theme colors - Glinda */
-    --color-brand-primary: theme(--color-pink-600);
-    --color-brand-secondary: theme(--color-pink-700);
-    --color-brand-tertiary: theme(--color-pink-800);
-    --color-brand-light: theme(--color-pink-100);
-    --color-brand-lighter: theme(--color-pink-50);
-    --color-brand-text: theme(--color-pink-800);
-    --color-brand-text-light: theme(--color-pink-400);
-    --color-surface: theme(--color-pink-50);
-    --color-surface-secondary: theme(--color-pink-100);
-    --color-surface-tertiary: theme(--color-pink-200);
-    --color-text-primary: theme(--color-pink-950);
-    --color-text-secondary: theme(--color-pink-700);
-    --color-text-tertiary: theme(--color-pink-600);
-    --color-text-inverse: theme(--color-pink-50);
-    --color-border-primary: theme(--color-pink-200);
-    --color-border-secondary: theme(--color-pink-300);
-    --color-border-brand: theme(--color-pink-300);
-    --color-hover-surface: theme(--color-pink-100);
-    --color-hover-brand: theme(--color-pink-200);
-    --color-active-surface: theme(--color-pink-200);
-    --color-active-brand: theme(--color-pink-300);
-    --color-error: theme(--color-pink-800);
-    --color-error-light: theme(--color-pink-100);
-    --color-error-text: theme(--color-pink-900);
-    --color-success: theme(--color-pink-600);
-    --color-success-light: theme(--color-pink-100);
-    --color-success-text: theme(--color-pink-900);
+    /* Extended theme colors - managed by ThemeProvider */
+    --color-brand-primary: hsl(160, 84%, 55%);
+    --color-brand-secondary: hsl(160, 84%, 35%);
+    --color-brand-tertiary: hsl(155, 58%, 46%);
+    --color-brand-light: hsl(155, 58%, 14%);
+    --color-brand-lighter: hsl(0, 0%, 0%);
+    --color-brand-text: hsl(152, 72%, 77%);
+    --color-brand-text-light: hsl(152, 72%, 67%);
+    --color-surface: hsl(0, 0%, 0%);
+    --color-surface-secondary: hsl(0, 0%, 6%);
+    --color-surface-tertiary: hsl(0, 0%, 14%);
+    --color-text-primary: hsl(152, 81%, 96%);
+    --color-text-secondary: hsl(152, 72%, 77%);
+    --color-text-tertiary: hsl(152, 72%, 67%);
+    --color-text-inverse: hsl(0, 0%, 0%);
+    --color-border-primary: hsl(215, 15%, 21%);
+    --color-border-secondary: hsl(215, 28%, 26%);
+    --color-border-brand: hsl(155, 58%, 25%);
+    --color-hover-surface: hsl(0, 0%, 14%);
+    --color-hover-brand: hsl(155, 58%, 14%);
+    --color-active-surface: hsl(215, 15%, 21%);
+    --color-active-brand: hsl(155, 58%, 25%);
+    --color-error: hsl(160, 84%, 35%);
+    --color-error-light: hsl(155, 58%, 14%);
+    --color-error-text: hsl(152, 72%, 77%);
+    --color-success: hsl(160, 84%, 55%);
+    --color-success-light: hsl(155, 58%, 14%);
+    --color-success-text: hsl(152, 72%, 77%);
   }
 }
 
-/* Dark mode color overrides - system preference */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    /* Elphaba — Dark Mode: Deeper moss green background */
-    --color-background: #04120b;
-    --color-foreground: theme(--color-emerald-50);
-    --color-card: theme(--color-neutral-950);
-    --color-card-foreground: theme(--color-emerald-50);
-    --color-primary: theme(--color-emerald-500);
-    --color-primary-foreground: theme(--color-black);
-    --color-secondary: theme(--color-neutral-900);
-    --color-secondary-foreground: theme(--color-emerald-50);
-    --color-muted: theme(--color-neutral-900);
-    --color-muted-foreground: theme(--color-emerald-300);
-    --color-accent: theme(--color-emerald-900);
-    --color-accent-foreground: theme(--color-emerald-100);
-    --color-destructive: theme(--color-emerald-700);
-    --color-destructive-foreground: theme(--color-emerald-50);
-    --color-border: theme(--color-neutral-800);
-    --color-input: theme(--color-neutral-800);
-    --color-ring: theme(--color-emerald-400);
-
-    /* Extended dark mode colors - Elphaba */
-    --color-brand-primary: theme(--color-emerald-500);
-    --color-brand-secondary: theme(--color-emerald-600);
-    --color-brand-tertiary: theme(--color-emerald-700);
-    --color-brand-light: theme(--color-emerald-900);
-    --color-brand-lighter: theme(--color-black);
-    --color-brand-text: theme(--color-emerald-300);
-    --color-brand-text-light: theme(--color-emerald-400);
-    --color-surface: theme(--color-black);
-    --color-surface-secondary: theme(--color-neutral-950);
-    --color-surface-tertiary: theme(--color-neutral-900);
-    --color-text-primary: theme(--color-emerald-50);
-    --color-text-secondary: theme(--color-emerald-300);
-    --color-text-tertiary: theme(--color-emerald-400);
-    --color-text-inverse: theme(--color-black);
-    --color-border-primary: theme(--color-neutral-800);
-    --color-border-secondary: theme(--color-neutral-700);
-    --color-border-brand: theme(--color-emerald-800);
-    --color-hover-surface: theme(--color-neutral-900);
-    --color-hover-brand: theme(--color-emerald-900);
-    --color-active-surface: theme(--color-neutral-800);
-    --color-active-brand: theme(--color-emerald-800);
-    --color-error: theme(--color-emerald-600);
-    --color-error-light: theme(--color-emerald-900);
-    --color-error-text: theme(--color-emerald-300);
-    --color-success: theme(--color-emerald-500);
-    --color-success-light: theme(--color-emerald-900);
-    --color-success-text: theme(--color-emerald-300);
-  }
-}
+/* System preference handling removed - themes are now controlled by ThemeProvider */
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,

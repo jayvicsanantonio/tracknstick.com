@@ -225,22 +225,20 @@ vi.mock('@shared/components/feedback/PWAInstallPrompt', () => ({
   PWAInstallPrompt: () => <div>PWA Install Prompt Mock</div>,
 }));
 
-// Mock ThemeProvider to avoid localStorage issues in tests
-vi.mock('@app/providers/ThemeProvider', async () => {
-  const { ThemeContext } = await vi.importActual<{
-    ThemeContext: React.Context<{ toggleDarkMode: () => void }>;
-  }>('@app/providers/ThemeContext');
-  return {
-    default: ({ children }: { children: React.ReactNode }) => {
-      const mockValue = { toggleDarkMode: vi.fn() };
-      return (
-        <ThemeContext.Provider value={mockValue}>
-          {children}
-        </ThemeContext.Provider>
-      );
-    },
-  };
-});
+// Mock ThemeProvider to avoid localStorage issues in tests (exclude from theme-specific tests)
+vi.mock('@app/providers/ThemeProvider', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+// Mock the new theme system (exclude from theme-specific tests)
+vi.mock('@shared/hooks/useTheme', () => ({
+  useTheme: () => ({
+    mode: 'dark',
+    tokens: {},
+    setMode: vi.fn(),
+    toggleMode: vi.fn(),
+  }),
+}));
 
 // Mock DateProvider
 vi.mock('@app/providers/DateProvider', () => ({

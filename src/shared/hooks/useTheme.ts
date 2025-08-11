@@ -1,29 +1,16 @@
-import { useEffect, useState } from 'react';
+// Custom hook for accessing theme context
+// Provides theme state management and control functions
 
-export function useTheme() {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark');
-    }
-    return false;
-  });
+import { useContext } from 'react';
+import { ThemeContext } from '@app/providers/ThemeContext';
+import { ThemeContextValue } from '@shared/types/theme';
 
-  useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          setIsDarkMode(document.documentElement.classList.contains('dark'));
-        }
-      });
-    });
+export function useTheme(): ThemeContextValue {
+  const context = useContext(ThemeContext);
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
 
-    return () => observer.disconnect();
-  }, []);
-
-  return isDarkMode;
+  return context;
 }

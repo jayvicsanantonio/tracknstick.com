@@ -1,39 +1,49 @@
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+// Theme provider component managing theme state and persistence
+// Applies theme tokens to CSS custom properties and handles mode switching
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ThemeContext } from '@app/providers/ThemeContext';
+import { ThemeMode, ThemeProviderProps } from '@shared/types/theme';
+import { themeConfigs } from '@shared/constants/theme';
+import {
+  applyThemeTokensToRoot,
+  updateThemeClass,
+  getInitialTheme,
+  setStoredTheme,
+  toggleThemeMode,
+} from '@shared/utils/theme';
 
-export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme
-      ? savedTheme === 'dark'
-      : window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+export default function ThemeProvider({ children }: ThemeProviderProps) {
+  const [mode, setMode] = useState<ThemeMode>(() => getInitialTheme());
+
+  const tokens = useMemo(() => themeConfigs[mode], [mode]);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', isDarkMode);
-    root.classList.toggle('light', !isDarkMode);
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+    applyThemeTokensToRoot(tokens);
+    updateThemeClass(mode);
+    setStoredTheme(mode);
+  }, [mode, tokens]);
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('theme')) {
-        setIsDarkMode(e.matches);
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+  const handleSetMode = useCallback((newMode: ThemeMode) => {
+    setMode(newMode);
   }, []);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode((prevMode) => !prevMode);
+  const toggleMode = useCallback(() => {
+    setMode((current) => toggleThemeMode(current));
   }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      mode,
+      tokens,
+      setMode: handleSetMode,
+      toggleMode,
+    }),
+    [mode, tokens, handleSetMode, toggleMode],
+  );
 
   return (
-    <ThemeContext.Provider value={{ toggleDarkMode }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

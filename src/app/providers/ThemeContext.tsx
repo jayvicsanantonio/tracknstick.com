@@ -1,11 +1,9 @@
+// React context for theme system state management
+// Provides theme mode, tokens, and control functions to components
+
 import { createContext } from 'react';
+import { ThemeContextValue } from '@shared/types/theme';
 
-interface ThemeContextProps {
-  toggleDarkMode: () => void;
-}
-
-export const ThemeContext = createContext<ThemeContextProps>({
-  toggleDarkMode: () => {
-    // This is intentionally empty as it will be implemented by the provider
-  },
-});
+export const ThemeContext = createContext<ThemeContextValue | undefined>(
+  undefined,
+);

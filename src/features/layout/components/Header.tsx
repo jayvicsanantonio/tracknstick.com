@@ -1,11 +1,11 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
-import { useContext, memo } from 'react';
+import { memo } from 'react';
 // import { NavLink } from 'react-router-dom';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Button } from '@shared/components/ui/button';
 // import { buttonVariants } from '@shared/components/ui/button-variants';
 import IconNavLink from './IconNavLink';
-import { ThemeContext } from '@app/providers/ThemeContext';
+import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { trackNavigationClick } from '@shared/utils/monitoring';
 
@@ -13,7 +13,7 @@ const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
 
 const Header = memo(function Header() {
-  const { toggleDarkMode } = useContext(ThemeContext);
+  const { toggleMode } = useTheme();
   const { toggleShowAddHabitDialog } = useHabitsContext();
 
   return (
@@ -82,8 +82,8 @@ const Header = memo(function Header() {
               <Button
                 variant="brandTonal"
                 size="icon"
-                onClick={toggleDarkMode}
-                aria-label="Toggle Dark Mode"
+                onClick={toggleMode}
+                aria-label="Toggle Theme"
               >
                 <Sun
                   aria-hidden="true"
@@ -143,8 +143,8 @@ const Header = memo(function Header() {
               <Button
                 variant="brandTonal"
                 size="icon"
-                onClick={toggleDarkMode}
-                aria-label="Toggle Dark Mode"
+                onClick={toggleMode}
+                aria-label="Toggle Theme"
               >
                 <Sun
                   aria-hidden="true"
