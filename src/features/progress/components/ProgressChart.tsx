@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react';
+import { memo } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,7 +8,6 @@ import {
   Tooltip,
   Bar,
 } from 'recharts';
-import { useTheme } from '@shared/hooks/useTheme';
 
 interface ProgressChartProps {
   data: { date: string; completionRate: number }[];
@@ -17,34 +16,6 @@ interface ProgressChartProps {
 const ProgressChart = memo(function ProgressChart({
   data,
 }: ProgressChartProps) {
-  const isDarkMode = useTheme();
-
-  const chartColors = useMemo(
-    () => ({
-      grid:
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-border-primary')
-          .trim() || '#e5e7eb',
-      axis:
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-brand-text')
-          .trim() || '#111827',
-      tooltipBg:
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-card')
-          .trim() || '#ffffff',
-      tooltipBorder:
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-border-brand')
-          .trim() || '#e5e7eb',
-      tooltipText:
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--color-card-foreground')
-          .trim() || '#111827',
-    }),
-    [isDarkMode],
-  );
-
   return (
     <div
       className="h-[400px]"
@@ -53,7 +24,10 @@ const ProgressChart = memo(function ProgressChart({
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="var(--color-border-primary)"
+          />
           <XAxis
             dataKey="date"
             tickFormatter={(value: string | number) =>
@@ -63,20 +37,20 @@ const ProgressChart = memo(function ProgressChart({
               value: 'Day of Month',
               position: 'insideBottom',
               offset: -5,
-              fill: chartColors.axis,
+              fill: 'var(--color-brand-text)',
             }}
-            stroke={chartColors.axis}
-            tick={{ fill: chartColors.axis }}
+            stroke="var(--color-brand-text)"
+            tick={{ fill: 'var(--color-brand-text)' }}
           />
           <YAxis
             label={{
               value: 'Completion Rate (%)',
               angle: -90,
               position: 'insideLeft',
-              fill: chartColors.axis,
+              fill: 'var(--color-brand-text)',
             }}
-            stroke={chartColors.axis}
-            tick={{ fill: chartColors.axis }}
+            stroke="var(--color-brand-text)"
+            tick={{ fill: 'var(--color-brand-text)' }}
           />
           <Tooltip
             formatter={(value: number) => [`${value}%`, 'Completion Rate']}
@@ -84,9 +58,9 @@ const ProgressChart = memo(function ProgressChart({
               `Date: ${new Date(String(label)).toLocaleDateString()}`
             }
             contentStyle={{
-              backgroundColor: chartColors.tooltipBg,
-              borderColor: chartColors.tooltipBorder,
-              color: chartColors.tooltipText,
+              backgroundColor: 'var(--color-card)',
+              borderColor: 'var(--color-border-brand)',
+              color: 'var(--color-card-foreground)',
             }}
           />
           <Bar
