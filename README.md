@@ -167,8 +167,8 @@ include:
 All API requests include timezone support for accurate date calculations across
 different user locations.
 
-For detailed API documentation, see
-[API_DOCUMENTATION.md](API_DOCUMENTATION.md).
+For detailed API documentation, see the
+[TrackNStick API Documentation](https://github.com/jayvicsanantonio/tracknstick-api/blob/main/docs/API_DOCUMENTATION.md).
 
 ## 🎨 Theming & Customization
 
