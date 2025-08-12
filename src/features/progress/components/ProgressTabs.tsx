@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import {
   Tabs,
@@ -10,9 +10,10 @@ import MiscellaneousIcons from '@/icons/miscellaneous';
 import ProgressCalendar from './ProgressCalendar';
 import ProgressChart from './ProgressChart';
 import ProgressAchievements from './ProgressAchievements';
+import AchievementStats from './AchievementStats';
+import { useAchievements, useAchievementProgress } from '../hooks/useAchievements';
 
-const { Award, BarChart2, Trophy, Calendar, Crown, Sun, Moon, Target } =
-  MiscellaneousIcons;
+const { BarChart2, Trophy, Calendar } = MiscellaneousIcons;
 
 interface ProgressTabsProps {
   historyData: { date: string; completionRate: number }[];
@@ -21,45 +22,15 @@ interface ProgressTabsProps {
   isLoading: boolean;
 }
 
-const achievements = [
-  {
-    id: '1',
-    name: 'Early Bird',
-    description: 'Complete all habits before 9 AM',
-    icon: Sun,
-  },
-  {
-    id: '2',
-    name: 'Consistency King',
-    description: 'Maintain a 7-day streak',
-    icon: Crown,
-  },
-  {
-    id: '3',
-    name: 'Habit Master',
-    description: 'Complete all habits for 30 days straight',
-    icon: Award,
-  },
-  {
-    id: '4',
-    name: 'Overachiever',
-    description: 'Complete 150% of your daily goals',
-    icon: Target,
-  },
-  {
-    id: '5',
-    name: 'Night Owl',
-    description: 'Complete all habits after 9 PM',
-    icon: Moon,
-  },
-];
-
 const ProgressTabs = memo(function ProgressTabs({
   historyData,
   selectedMonth,
   setSelectedMonth,
   isLoading,
 }: ProgressTabsProps) {
+  const { achievements, stats, loading: achievementsLoading } = useAchievements();
+  const { selectedCategory, setSelectedCategory } = useAchievementProgress();
+
   return (
     <Tabs defaultValue="calendar" className="w-full">
       <TabsList className="bg-(--color-muted) grid w-full grid-cols-3">
@@ -83,6 +54,11 @@ const ProgressTabs = memo(function ProgressTabs({
         >
           <Trophy aria-hidden="true" className="mr-2 h-4 w-4" />
           Achievements
+          {stats && (
+            <span className="ml-1 text-xs opacity-80">
+              ({stats.earnedAchievements}/{stats.totalAchievements})
+            </span>
+          )}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="calendar">
@@ -137,7 +113,22 @@ const ProgressTabs = memo(function ProgressTabs({
             </h3>
           </CardHeader>
           <CardContent>
-            <ProgressAchievements achievements={achievements} />
+            {achievementsLoading ? (
+              <div className="flex h-full items-center justify-center py-8">
+                <p className="text-(--color-text-secondary)">
+                  Loading achievements...
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {stats && <AchievementStats stats={stats} />}
+                <ProgressAchievements 
+                  achievements={achievements}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       </TabsContent>

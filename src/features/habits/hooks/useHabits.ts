@@ -14,6 +14,7 @@ import {
   deleteHabit as apiDeleteHabit,
   toggleHabitCompletion as apiToggleHabitCompletion,
 } from '@/features/habits/api';
+import { achievementApi } from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
 
 interface UseHabitsReturn {
@@ -40,6 +41,25 @@ export function useHabits(): UseHabitsReturn {
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
   const { date, setDate, timeZone } = useContext(DateContext);
   const { isSignedIn } = useAuth();
+
+  // Check for new achievements
+  const checkAchievements = useCallback(async () => {
+    try {
+      const result = await achievementApi.checkAchievements();
+      if (result.count > 0) {
+        // Show toast for new achievements
+        result.newAchievements.forEach(achievement => {
+          toast({
+            title: '🏆 Achievement Earned!',
+            description: `${achievement.name}: ${achievement.description}`,
+            duration: 5000,
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Failed to check achievements:', error);
+    }
+  }, [toast]);
 
   const habitsEndpointKey =
     date && isSignedIn
@@ -80,6 +100,8 @@ export function useHabits(): UseHabitsReturn {
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
         void mutate('/api/v1/habits');
+        // Check for achievements after adding a habit
+        void checkAchievements();
       } catch (err) {
         console.error('Failed to add habit:', err);
         toast({
@@ -88,7 +110,7 @@ export function useHabits(): UseHabitsReturn {
         });
       }
     },
-    [mutateHabits, toast, setDate],
+    [mutateHabits, toast, setDate, checkAchievements],
   );
 
   const habits = useMemo(() => fetchedHabits ?? [], [fetchedHabits]);
@@ -171,6 +193,8 @@ export function useHabits(): UseHabitsReturn {
         if (!date) throw new Error('Date context is not available');
         await apiToggleHabitCompletion(habitId, date, timeZone);
         void mutateHabits();
+        // Check for achievements after toggling habit completion
+        void checkAchievements();
       } catch (err) {
         console.error('Failed to toggle habit completion:', err);
         toast({
@@ -180,7 +204,7 @@ export function useHabits(): UseHabitsReturn {
         void mutateHabits();
       }
     },
-    [date, timeZone, mutateHabits, toast],
+    [date, timeZone, mutateHabits, toast, checkAchievements],
   );
 
   const completionRate = useMemo(() => {

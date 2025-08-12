@@ -91,3 +91,6 @@ export const fetchProgressOverview = async (
   );
   return response.data;
 };
+
+// Export achievement API
+export { achievementApi } from './achievements';
