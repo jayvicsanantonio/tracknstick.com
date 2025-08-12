@@ -35,6 +35,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -70,6 +71,24 @@ export default defineConfig({
       filename: 'sw.js',
     }),
   ],
+  build: {
+    chunkSizeWarningLimit: 3000, // Increase warning limit to 3MB
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+          ],
+          charts: ['recharts'],
+          icons: ['lucide-react'],
+          clerk: ['@clerk/clerk-react'],
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
