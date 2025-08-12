@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState, useEffect, useMemo } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { DateContext } from '@app/providers/DateContext';
 
@@ -77,7 +77,9 @@ export function useHabits(): UseHabitsReturn {
           description: `Habit "${habitData.name}" added successfully.`,
         });
         setDate(new Date());
+        // Invalidate both date-specific and all-habits caches
         void mutateHabits();
+        void mutate('/api/v1/habits');
       } catch (err) {
         console.error('Failed to add habit:', err);
         toast({
@@ -109,6 +111,9 @@ export function useHabits(): UseHabitsReturn {
         toast({
           description: `Habit "${habitData.name ?? 'habit'}" updated.`,
         });
+        // Invalidate both date-specific and all-habits caches
+        void mutateHabits();
+        void mutate('/api/v1/habits');
       } catch (err) {
         console.error('Failed to update habit:', err);
         toast({
@@ -117,8 +122,9 @@ export function useHabits(): UseHabitsReturn {
             habitData.name ?? 'habit'
           }". Reverting changes.`,
         });
-      } finally {
+        // Still need to invalidate both caches on error to ensure consistency
         void mutateHabits();
+        void mutate('/api/v1/habits');
       }
     },
     [mutateHabits, toast],
@@ -134,14 +140,18 @@ export function useHabits(): UseHabitsReturn {
       try {
         await apiDeleteHabit(habitId);
         toast({ description: `Habit "${habitName}" deleted.` });
+        // Invalidate both date-specific and all-habits caches
+        void mutateHabits();
+        void mutate('/api/v1/habits');
       } catch (err) {
         console.error('Failed to delete habit:', err);
         toast({
           variant: 'destructive',
           description: `Failed to delete habit "${habitName}". Restoring habit.`,
         });
-      } finally {
+        // Still need to invalidate both caches on error to ensure consistency
         void mutateHabits();
+        void mutate('/api/v1/habits');
       }
     },
     [mutateHabits, toast],

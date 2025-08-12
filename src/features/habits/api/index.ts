@@ -4,11 +4,14 @@ import { HabitStats } from '@/features/habits/types/HabitStats';
 import { ProgressOverview } from '@/features/progress/types/ProgressOverview';
 
 export const fetchHabits = async (
-  date: Date,
-  timeZone: string,
+  date?: Date,
+  timeZone?: string,
 ): Promise<Habit[]> => {
+  const params =
+    date && timeZone ? { date: date.toISOString(), timeZone } : undefined;
+
   const response = await axiosInstance.get<Habit[]>('/api/v1/habits', {
-    params: { date: date.toISOString(), timeZone },
+    params,
   });
   return response.data;
 };

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@shared/components/ui/card';
 import { Button } from '@shared/components/ui/button';
-import { useHabits } from '@/features/habits/hooks/useHabits';
+import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -26,7 +26,7 @@ import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 
 const HabitsOverview = memo(function HabitsOverview() {
-  const { habits, isLoading, error, deleteHabit } = useHabits();
+  const { habits, isLoading, error, deleteHabit } = useAllHabits();
   const { openEditDialog } = useHabitsContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
