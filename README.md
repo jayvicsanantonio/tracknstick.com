@@ -395,7 +395,7 @@ file for details.
 
 <div align="center">
 
-**Built with ❤️ by [Jay Vic Sanantonio](https://github.com/jayvicsanantonio)**
+**Built with ❤️ by [Jayvic San Antonio](https://github.com/jayvicsanantonio)**
 
 [⭐ Star this project](https://github.com/jayvicsanantonio/tracknstick.com) if
 you find it helpful!
