@@ -2,16 +2,19 @@
 // Maps icon name strings to Lucide React components
 
 import * as Icons from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 // Get Lucide icon component by name
-export const getAchievementIcon = (iconName?: string) => {
+export const getAchievementIcon = (iconName?: string): LucideIcon => {
   if (!iconName) return Icons.Trophy;
-  
+
   // Get the icon component from Lucide React
-  const IconComponent = (Icons as any)[iconName];
-  
+  const IconComponent = (Icons as unknown as Record<string, LucideIcon>)[
+    iconName
+  ];
+
   // Return the icon or fallback to Trophy
-  return IconComponent || Icons.Trophy;
+  return IconComponent ?? Icons.Trophy;
 };
 
 // Get icon color class based on achievement category

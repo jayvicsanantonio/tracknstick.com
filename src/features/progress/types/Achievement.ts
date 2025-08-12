@@ -7,11 +7,17 @@ export interface Achievement {
   name: string;
   description: string;
   icon?: string;
-  type: 'habit_creation' | 'streak' | 'completion' | 'special_achievement' | 'perfect_completion' | 'activity_tracking';
+  type:
+    | 'habit_creation'
+    | 'streak'
+    | 'completion'
+    | 'special_achievement'
+    | 'perfect_completion'
+    | 'activity_tracking';
   category: 'getting_started' | 'consistency' | 'dedication' | 'milestones';
   requirementType: 'count' | 'streak' | 'days' | 'percentage';
   requirementValue: number;
-  requirementData?: any;
+  requirementData?: Record<string, unknown>;
   isEarned: boolean;
   earnedAt?: string;
   progress?: AchievementProgress;
@@ -34,17 +40,20 @@ export interface UserAchievement {
   type: string;
   category: string;
   earnedAt: string;
-  progressData?: any;
+  progressData?: Record<string, unknown>;
 }
 
 export interface AchievementStats {
   totalAchievements: number;
   earnedAchievements: number;
   completionPercentage: number;
-  categoryStats: Record<string, {
-    total: number;
-    earned: number;
-  }>;
+  categoryStats: Record<
+    string,
+    {
+      total: number;
+      earned: number;
+    }
+  >;
   recentAchievements: UserAchievement[];
 }
 

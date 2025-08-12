@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import {
   Tabs,
@@ -11,7 +11,10 @@ import ProgressCalendar from './ProgressCalendar';
 import ProgressChart from './ProgressChart';
 import ProgressAchievements from './ProgressAchievements';
 import AchievementStats from './AchievementStats';
-import { useAchievements, useAchievementProgress } from '../hooks/useAchievements';
+import {
+  useAchievements,
+  useAchievementProgress,
+} from '../hooks/useAchievements';
 
 const { BarChart2, Trophy, Calendar } = MiscellaneousIcons;
 
@@ -28,7 +31,11 @@ const ProgressTabs = memo(function ProgressTabs({
   setSelectedMonth,
   isLoading,
 }: ProgressTabsProps) {
-  const { achievements, stats, loading: achievementsLoading } = useAchievements();
+  const {
+    achievements,
+    stats,
+    loading: achievementsLoading,
+  } = useAchievements();
   const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
   return (
@@ -122,7 +129,7 @@ const ProgressTabs = memo(function ProgressTabs({
             ) : (
               <div className="space-y-6">
                 {stats && <AchievementStats stats={stats} />}
-                <ProgressAchievements 
+                <ProgressAchievements
                   achievements={achievements}
                   selectedCategory={selectedCategory}
                   onCategoryChange={setSelectedCategory}
