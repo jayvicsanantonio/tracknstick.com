@@ -27,13 +27,17 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
   // Calculate counts for each category
   const getCategoryCount = (categoryKey: string) => {
     if (categoryKey === 'all') return achievements.length;
-    return achievements.filter(achievement => achievement.category === categoryKey).length;
+    return achievements.filter(
+      (achievement) => achievement.category === categoryKey,
+    ).length;
   };
 
   const getEarnedCount = (categoryKey: string) => {
-    if (categoryKey === 'all') return achievements.filter(a => a.isEarned).length;
-    return achievements.filter(achievement => 
-      achievement.category === categoryKey && achievement.isEarned
+    if (categoryKey === 'all')
+      return achievements.filter((a) => a.isEarned).length;
+    return achievements.filter(
+      (achievement) =>
+        achievement.category === categoryKey && achievement.isEarned,
     ).length;
   };
 
@@ -44,7 +48,7 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
           const count = getCategoryCount(category.key);
           const earnedCount = getEarnedCount(category.key);
           const isSelected = selectedCategory === category.key;
-          
+
           // Don't show categories with no achievements (except 'all')
           if (count === 0 && category.key !== 'all') return null;
 
@@ -52,23 +56,21 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
             <button
               key={category.key}
               onClick={() => onCategoryChange?.(category.key)}
-              className={`
-                flex items-center space-x-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors
-                ${isSelected
+              className={`flex items-center space-x-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+                isSelected
                   ? 'border-(--color-brand-primary) text-(--color-brand-primary) dark:text-(--color-brand-secondary) dark:border-(--color-brand-secondary)'
-                  : 'border-transparent text-(--color-text-secondary) hover:text-(--color-brand-tertiary) hover:border-gray-300 dark:text-gray-300 dark:hover:text-(--color-brand-secondary) dark:hover:border-gray-500'
-                }
-              `}
+                  : 'text-(--color-text-secondary) hover:text-(--color-brand-tertiary) dark:hover:text-(--color-brand-secondary) border-transparent hover:border-gray-300 dark:text-gray-300 dark:hover:border-gray-500'
+              } `}
             >
-              <category.icon className="w-4 h-4" aria-hidden="true" />
+              <category.icon className="h-4 w-4" aria-hidden="true" />
               <span>{category.label}</span>
-              <span className={`
-                px-2 py-1 text-xs rounded-full
-                ${isSelected
-                  ? 'bg-(--color-brand-primary) text-white dark:bg-(--color-brand-secondary) dark:text-gray-900'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700/50 dark:text-gray-200'
-                }
-              `}>
+              <span
+                className={`rounded-full px-2 py-1 text-xs ${
+                  isSelected
+                    ? 'bg-(--color-brand-primary) dark:bg-(--color-brand-secondary) text-white dark:text-gray-900'
+                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700/50 dark:text-gray-200'
+                } `}
+              >
                 {earnedCount}/{count}
               </span>
             </button>
