@@ -20,18 +20,18 @@ const AchievementProgressBar = memo(function AchievementProgressBar({
     <div className="space-y-1">
       {/* Progress Text */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-(--color-text-secondary) dark:text-gray-300">
+        <span className="text-(--color-text-secondary) text-xs dark:text-gray-300">
           Progress: {current} / {target}
         </span>
-        <span className="text-xs font-medium text-(--color-brand-primary) dark:text-(--color-brand-secondary)">
+        <span className="text-(--color-brand-primary) dark:text-(--color-brand-secondary) text-xs font-medium">
           {Math.round(clampedPercentage)}%
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 dark:bg-gray-600/50 rounded-full h-2 overflow-hidden">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-600/50">
         <div
-          className="bg-gradient-to-r from-(--color-brand-primary) to-(--color-brand-secondary) dark:from-(--color-brand-secondary) dark:to-(--color-brand-primary) h-2 rounded-full transition-all duration-300 ease-out"
+          className="from-(--color-brand-primary) to-(--color-brand-secondary) dark:from-(--color-brand-secondary) dark:to-(--color-brand-primary) h-2 rounded-full bg-gradient-to-r transition-all duration-300 ease-out"
           style={{ width: `${clampedPercentage}%` }}
         />
       </div>

@@ -48,7 +48,7 @@ export function useHabits(): UseHabitsReturn {
       const result = await achievementApi.checkAchievements();
       if (result.count > 0) {
         // Show toast for new achievements
-        result.newAchievements.forEach(achievement => {
+        result.newAchievements.forEach((achievement) => {
           toast({
             title: '🏆 Achievement Earned!',
             description: `${achievement.name}: ${achievement.description}`,

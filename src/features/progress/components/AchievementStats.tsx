@@ -12,10 +12,15 @@ interface AchievementStatsProps {
 const AchievementStatsComponent = memo(function AchievementStatsComponent({
   stats,
 }: AchievementStatsProps) {
-  const { totalAchievements, earnedAchievements, completionPercentage, categoryStats } = stats;
+  const {
+    totalAchievements,
+    earnedAchievements,
+    completionPercentage,
+    categoryStats,
+  } = stats;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       {/* Total Progress */}
       <div className="bg-(--color-surface) dark:bg-(--color-brand-light) rounded-lg p-4 shadow-md">
         <div className="flex items-center justify-between">
@@ -27,16 +32,16 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
               {earnedAchievements}/{totalAchievements}
             </p>
           </div>
-          <Trophy className="w-8 h-8 text-yellow-500" />
+          <Trophy className="h-8 w-8 text-yellow-500" />
         </div>
         <div className="mt-2">
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+          <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
             <div
-              className="bg-gradient-to-r from-(--color-brand-primary) to-(--color-brand-secondary) h-2 rounded-full"
+              className="from-(--color-brand-primary) to-(--color-brand-secondary) h-2 rounded-full bg-gradient-to-r"
               style={{ width: `${completionPercentage}%` }}
             />
           </div>
-          <p className="text-(--color-brand-primary) dark:text-(--color-brand-secondary) text-sm font-medium mt-1">
+          <p className="text-(--color-brand-primary) dark:text-(--color-brand-secondary) mt-1 text-sm font-medium">
             {completionPercentage}% Complete
           </p>
         </div>
@@ -44,19 +49,20 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
 
       {/* Category Stats */}
       {Object.entries(categoryStats).map(([category, data]) => {
-        const percentage = data.total > 0 ? Math.round((data.earned / data.total) * 100) : 0;
-        
+        const percentage =
+          data.total > 0 ? Math.round((data.earned / data.total) * 100) : 0;
+
         return (
-          <div 
+          <div
             key={category}
             className="bg-(--color-surface) dark:bg-(--color-brand-light) rounded-lg p-4 shadow-md"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-(--color-text-secondary) dark:text-gray-300 text-sm">
+                <p className="text-(--color-text-secondary) text-sm dark:text-gray-300">
                   {getCategoryLabel(category)}
                 </p>
-                <p className="text-(--color-brand-tertiary) dark:text-gray-100 text-xl font-bold">
+                <p className="text-(--color-brand-tertiary) text-xl font-bold dark:text-gray-100">
                   {data.earned}/{data.total}
                 </p>
               </div>
@@ -65,13 +71,13 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
               </div>
             </div>
             <div className="mt-2">
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                 <div
                   className={`h-2 rounded-full ${getCategoryColor(category)}`}
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <p className="text-(--color-text-secondary) dark:text-gray-300 text-sm mt-1">
+              <p className="text-(--color-text-secondary) mt-1 text-sm dark:text-gray-300">
                 {percentage}%
               </p>
             </div>
@@ -98,19 +104,31 @@ function getCategoryLabel(category: string): string {
 }
 
 function getCategoryIconComponent(category: string) {
-  const iconClass = "w-6 h-6";
-  
+  const iconClass = 'w-6 h-6';
+
   switch (category) {
     case 'getting_started':
-      return <Sprout className={`${iconClass} text-green-500 dark:text-green-400`} />;
+      return (
+        <Sprout className={`${iconClass} text-green-500 dark:text-green-400`} />
+      );
     case 'consistency':
-      return <Flame className={`${iconClass} text-blue-500 dark:text-blue-400`} />;
+      return (
+        <Flame className={`${iconClass} text-blue-500 dark:text-blue-400`} />
+      );
     case 'dedication':
-      return <Shield className={`${iconClass} text-purple-500 dark:text-purple-400`} />;
+      return (
+        <Shield
+          className={`${iconClass} text-purple-500 dark:text-purple-400`}
+        />
+      );
     case 'milestones':
-      return <Star className={`${iconClass} text-orange-500 dark:text-orange-400`} />;
+      return (
+        <Star className={`${iconClass} text-orange-500 dark:text-orange-400`} />
+      );
     default:
-      return <Trophy className={`${iconClass} text-gray-500 dark:text-gray-400`} />;
+      return (
+        <Trophy className={`${iconClass} text-gray-500 dark:text-gray-400`} />
+      );
   }
 }
 

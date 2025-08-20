@@ -4,7 +4,11 @@
 import { memo } from 'react';
 import { Achievement } from '../types/Achievement';
 import ProgressBar from './AchievementProgressBar';
-import { getAchievementIcon, getIconColorClass, getIconBackgroundClass } from '../utils/achievementIcons';
+import {
+  getAchievementIcon,
+  getIconColorClass,
+  getIconBackgroundClass,
+} from '../utils/achievementIcons';
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -13,33 +17,36 @@ interface AchievementCardProps {
 const AchievementCard = memo(function AchievementCard({
   achievement,
 }: AchievementCardProps) {
-  const { name, description, icon, isEarned, earnedAt, progress, category, type } = achievement;
+  const {
+    name,
+    description,
+    icon,
+    isEarned,
+    earnedAt,
+    progress,
+    category,
+    type,
+  } = achievement;
 
   return (
     <div
-      className={`
-        bg-(--color-surface) dark:bg-(--color-brand-light) 
-        rounded-lg p-4 shadow-md border-2 transition-all duration-200
-        ${isEarned 
-          ? 'border-(--color-brand-primary) bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 dark:border-yellow-400' 
-          : 'border-transparent hover:border-(--color-brand-primary)/30 dark:hover:border-(--color-brand-primary)/50'
-        }
-      `}
+      className={`bg-(--color-surface) dark:bg-(--color-brand-light) rounded-lg border-2 p-4 shadow-md transition-all duration-200 ${
+        isEarned
+          ? 'border-(--color-brand-primary) bg-gradient-to-br from-yellow-50 to-orange-50 dark:border-yellow-400 dark:from-yellow-900/30 dark:to-orange-900/30'
+          : 'hover:border-(--color-brand-primary)/30 dark:hover:border-(--color-brand-primary)/50 border-transparent'
+      } `}
     >
       {/* Achievement Header */}
       <div className="flex items-start space-x-4">
         {/* Icon */}
         <div
-          className={`
-            rounded-full p-3 flex-shrink-0
-            ${getIconBackgroundClass(category, isEarned)}
-          `}
+          className={`flex-shrink-0 rounded-full p-3 ${getIconBackgroundClass(category, isEarned)} `}
         >
           {(() => {
             const IconComponent = getAchievementIcon(icon);
             return (
-              <IconComponent 
-                className={`w-6 h-6 ${isEarned ? 'text-white' : getIconColorClass(category, isEarned)}`}
+              <IconComponent
+                className={`h-6 w-6 ${isEarned ? 'text-white' : getIconColorClass(category, isEarned)}`}
                 aria-label={name}
               />
             );
@@ -47,57 +54,55 @@ const AchievementCard = memo(function AchievementCard({
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className={`
-              font-semibold text-sm
-              ${isEarned 
-                ? 'text-(--color-brand-primary) dark:text-yellow-300' 
-                : 'text-(--color-brand-tertiary) dark:text-gray-200'
-              }
-            `}>
+        <div className="min-w-0 flex-1">
+          <div className="mb-2 flex items-center justify-between">
+            <h4
+              className={`text-sm font-semibold ${
+                isEarned
+                  ? 'text-(--color-brand-primary) dark:text-yellow-300'
+                  : 'text-(--color-brand-tertiary) dark:text-gray-200'
+              } `}
+            >
               {name}
             </h4>
-            
+
             {isEarned && (
-              <div className="text-xs bg-(--color-brand-primary) text-white px-2 py-1 rounded-full">
+              <div className="bg-(--color-brand-primary) rounded-full px-2 py-1 text-xs text-white">
                 ✓ Earned
               </div>
             )}
           </div>
 
-          <p className="text-(--color-text-secondary) dark:text-gray-300 text-xs mb-3">
+          <p className="text-(--color-text-secondary) mb-3 text-xs dark:text-gray-300">
             {description}
           </p>
 
           {/* Progress Bar */}
           {!isEarned && progress && (
-            <ProgressBar 
-              current={progress.currentValue} 
+            <ProgressBar
+              current={progress.currentValue}
               target={progress.targetValue}
               percentage={progress.progressPercentage}
             />
           )}
 
           {/* Achievement Metadata */}
-          <div className="flex items-center justify-between mt-3">
+          <div className="mt-3 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className={`
-                text-xs px-2 py-1 rounded-full
-                ${getCategoryColor(category)}
-              `}>
+              <span
+                className={`rounded-full px-2 py-1 text-xs ${getCategoryColor(category)} `}
+              >
                 {getCategoryLabel(category)}
               </span>
-              <span className={`
-                text-xs px-2 py-1 rounded-full
-                ${getTypeColor(type)}
-              `}>
+              <span
+                className={`rounded-full px-2 py-1 text-xs ${getTypeColor(type)} `}
+              >
                 {getTypeLabel(type)}
               </span>
             </div>
-            
+
             {isEarned && earnedAt && (
-              <span className="text-xs text-(--color-text-secondary) dark:text-gray-400">
+              <span className="text-(--color-text-secondary) text-xs dark:text-gray-400">
                 {new Date(earnedAt).toLocaleDateString()}
               </span>
             )}
