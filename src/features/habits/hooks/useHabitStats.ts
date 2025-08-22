@@ -9,7 +9,7 @@ export default function useHabitStats(habitId: string): HabitStats {
   const habitStatsEndpointKey = `/api/v1/habits/${habitId}/stats?timeZone=${timeZone}`;
   const { data: habitStats } = useSWR<HabitStats | null>(
     habitStatsEndpointKey,
-    () => fetchHabitStats(habitId, timeZone || ''),
+    () => fetchHabitStats(habitId, timeZone ?? ''),
   );
 
   return (

@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import ThemeProvider from '@app/providers/ThemeProvider';
 import DateProvider from '@app/providers/DateProvider.tsx';
+import { OfflineProvider } from '@app/providers/OfflineProvider.tsx';
+import '@/core/offline/database/DevUtils'; // Enable development utilities
 import { ClerkProvider } from '@clerk/clerk-react';
 import { Toaster } from '@shared/components/ui/toaster.tsx';
 import App from '@app/App.tsx';
@@ -50,12 +52,14 @@ createRoot(document.getElementById('root')!).render(
           },
         }}
       >
-        <DateProvider>
-          <App>
-            <RouterProvider router={router} />
-          </App>
-          <Toaster />
-        </DateProvider>
+        <OfflineProvider>
+          <DateProvider>
+            <App>
+              <RouterProvider router={router} />
+            </App>
+            <Toaster />
+          </DateProvider>
+        </OfflineProvider>
       </ClerkProvider>
     </ThemeProvider>
   </StrictMode>,
