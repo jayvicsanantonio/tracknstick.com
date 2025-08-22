@@ -10,7 +10,7 @@ import App from '@app/App.tsx';
 import '@/styles/index.css';
 import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';
-import { router } from '@app/routes';
+import { router } from '@/pages/routes';
 
 // Register service worker
 const updateSW = registerSW({
