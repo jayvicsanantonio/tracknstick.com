@@ -14,6 +14,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-expect-error - Template file with placeholder code
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 // ============================================================================

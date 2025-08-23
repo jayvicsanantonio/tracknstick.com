@@ -11,6 +11,3 @@
 // These will be removed once migration is complete
 export * from './offline/interfaces';
 export * from './offline/types';
-
-// Export other core modules
-export * from './habits';

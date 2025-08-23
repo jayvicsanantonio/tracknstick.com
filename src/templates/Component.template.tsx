@@ -13,10 +13,8 @@
  * 6. Add tests in __tests__/ComponentName.test.tsx
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
-import { cn } from '@/shared/utils/cn';
+import { cn } from '@/shared/utils/utils';
 
 // ============================================================================
 // Types
