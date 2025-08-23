@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
-import { routes } from '@app/routes';
+import { routes } from '@/pages/routes';
 
 // Mock Clerk is now handled in mocks.tsx
 
