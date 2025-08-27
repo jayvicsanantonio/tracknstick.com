@@ -31,5 +31,7 @@ dist-ssr
 # Playwright test artifacts
 playwright-report/
 test-results/
-playwright-report/
-test-results/
+
+# Session documentation files (should be in docs/archive/sessions/)
+session_*.md
+/session_*.md

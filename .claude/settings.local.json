@@ -6,8 +6,14 @@
       "Bash(npm run test:run:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run lint)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(npm test:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm test:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
-  }
+  },
+  "outputStyle": "Learning"
 }

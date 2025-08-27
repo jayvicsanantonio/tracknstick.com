@@ -92,7 +92,8 @@ jobs:
         if: |-
           ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
         env:
-          GITHUB_TOKEN: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
+          GITHUB_TOKEN:
+            '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
           EVENT_NAME: '${{ github.event_name }}'
           WORKFLOW_PR_NUMBER: '${{ github.event.inputs.pr_number }}'
           PULL_REQUEST_NUMBER: '${{ github.event.pull_request.number }}'
@@ -119,15 +120,18 @@ jobs:
             echo "EOF"
           } >> "${GITHUB_OUTPUT}"
 
-
       - name: 'Get PR details (issue_comment & reviews)'
         id: 'get_pr_comment'
         if: |-
           ${{ github.event_name == 'issue_comment' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment' }}
         env:
-          GITHUB_TOKEN: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
-          COMMENT_BODY: '${{ github.event.comment.body || github.event.review.body }}'
-          PR_NUMBER: '${{ github.event.issue.number || github.event.pull_request.number }}'
+          GITHUB_TOKEN:
+            '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
+          COMMENT_BODY:
+            '${{ github.event.comment.body || github.event.review.body }}'
+          PR_NUMBER:
+            '${{ github.event.issue.number || github.event.pull_request.number
+            }}'
         run: |-
           set -euo pipefail
 
@@ -155,11 +159,20 @@ jobs:
         uses: 'google-github-actions/run-gemini-cli@v0'
         id: 'gemini_pr_review'
         env:
-          GITHUB_TOKEN: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
-          PR_NUMBER: '${{ steps.get_pr.outputs.pr_number || steps.get_pr_comment.outputs.pr_number }}'
-          PR_DATA: '${{ steps.get_pr.outputs.pr_data || steps.get_pr_comment.outputs.pr_data }}'
-          CHANGED_FILES: '${{ steps.get_pr.outputs.changed_files || steps.get_pr_comment.outputs.changed_files }}'
-          ADDITIONAL_INSTRUCTIONS: '${{ steps.get_pr.outputs.additional_instructions || steps.get_pr_comment.outputs.additional_instructions }}'
+          GITHUB_TOKEN:
+            '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
+          PR_NUMBER:
+            '${{ steps.get_pr.outputs.pr_number ||
+            steps.get_pr_comment.outputs.pr_number }}'
+          PR_DATA:
+            '${{ steps.get_pr.outputs.pr_data ||
+            steps.get_pr_comment.outputs.pr_data }}'
+          CHANGED_FILES:
+            '${{ steps.get_pr.outputs.changed_files ||
+            steps.get_pr_comment.outputs.changed_files }}'
+          ADDITIONAL_INSTRUCTIONS:
+            '${{ steps.get_pr.outputs.additional_instructions ||
+            steps.get_pr_comment.outputs.additional_instructions }}'
           REPOSITORY: '${{ github.repository }}'
         with:
           gemini_cli_version: '${{ vars.GEMINI_CLI_VERSION }}'
@@ -452,13 +465,13 @@ jobs:
 
             Remember, you are running in a VM and no one reviewing your output. Your review must be posted to GitHub using the MCP tools to create a pending review, add comments to the pending review, and submit the pending review.
 
-
       - name: 'Post PR review failure comment'
         if: |-
           ${{ failure() && steps.gemini_pr_review.outcome == 'failure' }}
         uses: 'actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea'
         with:
-          github-token: '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
+          github-token:
+            '${{ steps.generate_token.outputs.token || secrets.GITHUB_TOKEN }}'
           script: |-
             github.rest.issues.createComment({
               owner: '${{ github.repository }}'.split('/')[0],

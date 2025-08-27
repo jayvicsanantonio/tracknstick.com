@@ -1,8 +1,8 @@
 /**
- * Barrel export for all page components
+ * Barrel export for all page components and routing
  *
- * This file re-exports all page components for easier importing
- * throughout the application.
+ * This file re-exports all page components and routing configuration
+ * for easier importing throughout the application.
  */
 
 export { DashboardPage } from './DashboardPage';
@@ -15,3 +15,6 @@ export { default as DashboardPageDefault } from './DashboardPage';
 export { default as HabitsPageDefault } from './HabitsPage';
 export { default as ProgressPageDefault } from './ProgressPage';
 export { default as NotFoundPageDefault } from './NotFoundPage';
+
+// Routing exports
+export { router, routes } from './routes';
