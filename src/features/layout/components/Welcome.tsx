@@ -29,7 +29,7 @@ const Welcome = memo(function Welcome() {
 
   return (
     <div className="flex-1">
-      <div className="relative flex w-full flex-1 overflow-auto">
+      <div className="relative flex w-full flex-1 overflow-hidden">
         {/* Background Elements */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="bg-(--color-brand-light) absolute left-20 top-0 h-80 w-80 -translate-y-20 rounded-full opacity-20 blur-3xl" />
@@ -44,7 +44,7 @@ const Welcome = memo(function Welcome() {
         >
           <Card
             variant="glass"
-            className="relative w-full max-w-7xl overflow-auto rounded-2xl sm:max-h-[calc(100dvh-10rem)] sm:rounded-3xl md:max-h-[calc(100vh-8rem)]"
+            className="relative w-full max-w-7xl overflow-hidden rounded-2xl sm:rounded-3xl md:max-h-[calc(100vh-8rem)]"
           >
             {/* Rive Animation Background */}
             <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-10 sm:opacity-15 md:opacity-20 lg:opacity-30">
@@ -73,8 +73,8 @@ const Welcome = memo(function Welcome() {
               <div className="bg-(--color-border-primary) mx-8 my-3 h-px w-auto sm:mx-12 sm:my-4 md:mx-0 md:my-6 md:h-auto md:w-px lg:my-12" />
 
               {/* Right Side - Sign In Form */}
-              <div className="flex w-full flex-1 items-start justify-center p-4 pb-12 sm:p-6 sm:pb-16 md:items-center md:p-8 md:pb-8 lg:p-12">
-                <div className="w-full max-w-xs sm:max-w-sm">
+              <div className="flex flex-1 justify-center pb-12 pt-4 sm:p-6 sm:pb-16 md:p-8 md:pb-8 lg:p-12">
+                <div>
                   <div className="mb-3 text-center sm:mb-4">
                     <h2 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-base font-semibold sm:text-lg">
                       Start Your Journey
@@ -95,7 +95,9 @@ const Welcome = memo(function Welcome() {
                       },
                       elements: {
                         // Main card container
-                        card: 'bg-transparent border-0 shadow-none p-0 w-full max-w-none',
+                        card: 'bg-transparent border-0 !shadow-none p-0 w-full max-w-none !border-0 !outline-0',
+                        cardBox:
+                          'bg-transparent border-0 !shadow-none p-0 w-full max-w-none !rounded-none !border-0 !outline-0 xs:!shadow-md xs:!rounded-3xl xs:!border-1',
 
                         // Header elements (hidden for cleaner mobile experience)
                         headerTitle: 'hidden',
