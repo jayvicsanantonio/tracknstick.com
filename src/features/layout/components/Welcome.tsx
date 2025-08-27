@@ -44,7 +44,7 @@ const Welcome = memo(function Welcome() {
         >
           <Card
             variant="glass"
-            className="relative max-h-[calc(100dvh-12rem)] w-full max-w-7xl overflow-auto rounded-2xl sm:max-h-[calc(100dvh-10rem)] sm:rounded-3xl md:max-h-[calc(100vh-8rem)]"
+            className="relative w-full max-w-7xl overflow-auto rounded-2xl sm:max-h-[calc(100dvh-10rem)] sm:rounded-3xl md:max-h-[calc(100vh-8rem)]"
           >
             {/* Rive Animation Background */}
             <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-10 sm:opacity-15 md:opacity-20 lg:opacity-30">
@@ -107,36 +107,36 @@ const Welcome = memo(function Welcome() {
 
                         // Primary action button (Sign In)
                         formButtonPrimary:
-                          'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-xl font-semibold shadow-lg transition-all duration-200 w-full min-h-[48px] py-4 px-6 text-sm sm:text-base touch-manipulation',
+                          'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-lg sm:rounded-xl font-semibold shadow-none sm:shadow-lg transition-all duration-200 w-full min-h-[48px] sm:min-h-[52px] py-3 sm:py-4 px-4 sm:px-6 text-base touch-manipulation active:scale-[0.98] hover:shadow-none sm:hover:shadow-xl',
 
                         // Secondary buttons (forgot password, etc.)
                         formButtonSecondary:
-                          'text-(--color-brand-primary) hover:text-(--color-brand-secondary) font-medium w-full min-h-[44px] py-3 px-4 text-sm sm:text-base',
+                          'text-(--color-brand-primary) hover:text-(--color-brand-secondary) font-medium w-full min-h-[48px] py-3 px-4 text-base touch-manipulation',
 
                         // Social sign-in buttons
                         socialButtonsBlockButton:
-                          'bg-(--color-card) border border-(--color-border-primary) dark:border-white hover:bg-(--color-surface-hover) rounded-lg transition-all duration-200 text-(--color-foreground) dark:text-white !text-(--color-foreground) dark:!text-white !border-1 dark:!border-white !border-solid',
+                          'bg-(--color-card) border border-(--color-border-primary) dark:border-white hover:bg-(--color-surface-hover) rounded-lg sm:rounded-xl transition-all duration-200 text-(--color-foreground) dark:text-white !text-(--color-foreground) dark:!text-white !border-1 dark:!border-white !border-solid min-h-[48px] sm:min-h-[52px] py-3 sm:py-4 px-4 sm:px-6 shadow-none sm:shadow-sm hover:shadow-none sm:hover:shadow-md active:scale-[0.98] touch-manipulation flex items-center justify-center gap-2 sm:gap-3',
                         socialButtonsBlockButtonText:
-                          'text-(--color-foreground) dark:text-white font-medium text-sm sm:text-base flex-1 text-center',
+                          'text-(--color-foreground) dark:text-white font-medium text-base',
 
                         socialButtonsIconButton:
                           'text-(--color-foreground) dark:text-white w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0',
 
                         // Form inputs
                         formFieldInput:
-                          'bg-(--color-card) border-2 border-(--color-border-primary) rounded-xl focus:border-(--color-brand-primary) focus:ring-2 focus:ring-(--color-brand-primary)/20 text-(--color-foreground) dark:text-white placeholder:text-(--color-text-secondary) dark:placeholder:!text-gray-300 w-full min-h-[48px] py-4 px-4 text-sm sm:text-base transition-all duration-200',
+                          'bg-(--color-card) border border-(--color-border-primary) sm:border-2 rounded-lg sm:rounded-xl focus:border-(--color-brand-primary) focus:ring-1 sm:focus:ring-2 focus:ring-(--color-brand-primary)/20 text-(--color-foreground) dark:text-white placeholder:text-(--color-text-secondary) dark:placeholder:!text-gray-300 w-full min-h-[48px] sm:min-h-[52px] py-3 sm:py-4 px-4 text-base text-center transition-all duration-200 touch-manipulation shadow-none sm:shadow-sm focus:shadow-none sm:focus:shadow-md',
 
                         // Form field labels
                         formFieldLabel:
                           'text-(--color-foreground) dark:text-white font-medium text-sm sm:text-base mb-2 block',
 
                         // Form field containers for proper spacing
-                        formField: 'w-full space-y-2',
+                        formField: 'w-full space-y-1 sm:space-y-2',
                         formFieldRow: 'w-full',
 
                         // Password field specific styling
                         formFieldInputShowPasswordButton:
-                          'text-(--color-text-secondary) dark:text-gray-400 hover:text-(--color-foreground) dark:hover:text-white p-3 min-h-[44px] min-w-[44px] flex items-center justify-center',
+                          'text-(--color-text-secondary) dark:text-gray-400 hover:text-(--color-foreground) dark:hover:text-white p-3 min-h-[48px] min-w-[48px] flex items-center justify-center touch-manipulation',
 
                         // Error and success messages
                         formFieldErrorText:
@@ -153,43 +153,43 @@ const Welcome = memo(function Welcome() {
                           'text-xs sm:text-sm text-(--color-brand-primary) hover:text-(--color-brand-secondary) underline',
 
                         // Divider styling
-                        dividerLine: 'bg-(--color-border-primary) my-4',
+                        dividerLine: 'bg-(--color-border-primary) my-3 sm:my-4',
                         dividerText:
-                          'text-(--color-text-secondary) text-xs sm:text-sm px-4',
+                          'text-(--color-text-secondary) text-sm px-4',
 
                         // OTP/Code inputs for 2FA
                         otpCodeFieldInput:
-                          'w-12 h-12 sm:w-14 sm:h-14 text-center text-base sm:text-lg font-semibold border-2 border-(--color-border-primary) rounded-xl focus:border-(--color-brand-primary) focus:ring-2 focus:ring-(--color-brand-primary)/20 bg-(--color-card)',
+                          'w-12 h-12 sm:w-14 sm:h-14 text-center text-base sm:text-lg font-semibold border border-(--color-border-primary) sm:border-2 rounded-lg sm:rounded-xl focus:border-(--color-brand-primary) focus:ring-1 sm:focus:ring-2 focus:ring-(--color-brand-primary)/20 bg-(--color-card) shadow-none sm:shadow-sm touch-manipulation',
 
                         otpCodeFieldInputs:
                           'flex gap-2 sm:gap-3 justify-center',
 
                         // Alert messages
                         alertText:
-                          'text-xs sm:text-sm p-3 rounded-lg bg-(--color-surface) border border-(--color-border-primary)',
+                          'text-sm p-3 sm:p-4 rounded-lg sm:rounded-xl bg-(--color-surface) border border-(--color-border-primary) shadow-none sm:shadow-sm',
 
                         // Identity preview (for sign out, etc.)
                         identityPreviewText:
                           'text-(--color-foreground) dark:text-white text-sm sm:text-base',
                         identityPreviewEditButton:
-                          'text-(--color-brand-primary) hover:text-(--color-brand-secondary) text-xs sm:text-sm',
+                          'text-(--color-brand-primary) hover:text-(--color-brand-secondary) text-sm min-h-[44px] flex items-center justify-center touch-manipulation',
 
                         // Footer elements - visible for better UX
                         footer:
-                          'text-center mt-4 text-xs text-(--color-text-secondary)',
-                        footerAction: 'text-xs text-(--color-text-secondary)',
+                          'text-center mt-4 text-sm text-(--color-text-secondary)',
+                        footerAction: 'text-sm text-(--color-text-secondary)',
                         footerActionText:
-                          'text-xs text-(--color-text-secondary)',
+                          'text-sm text-(--color-text-secondary)',
                         footerActionLink:
-                          'text-xs text-(--color-brand-primary) hover:text-(--color-brand-secondary)',
+                          'text-sm text-(--color-brand-primary) hover:text-(--color-brand-secondary) min-h-[44px] inline-flex items-center justify-center touch-manipulation',
 
                         // Loading states
                         spinner: 'w-5 h-5 sm:w-6 sm:h-6',
 
                         // Alternative methods section
-                        alternativeMethods: 'space-y-2 mt-4',
+                        alternativeMethods: 'space-y-2 sm:space-y-3 mt-4',
                         alternativeMethodsBlockButton:
-                          'w-full min-h-[44px] py-3 px-4 text-sm sm:text-base rounded-lg border border-(--color-border-primary) hover:bg-(--color-surface-hover) transition-all',
+                          'w-full min-h-[48px] sm:min-h-[52px] py-3 sm:py-4 px-4 sm:px-6 text-base rounded-lg sm:rounded-xl border border-(--color-border-primary) hover:bg-(--color-surface-hover) transition-all touch-manipulation shadow-none sm:shadow-sm hover:shadow-none sm:hover:shadow-md active:scale-[0.98]',
                       },
                     }}
                   />
