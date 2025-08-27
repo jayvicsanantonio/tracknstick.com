@@ -28,6 +28,9 @@ dist-ssr
 *.sw?
 *.tsbuildinfo
 
+# Test artifacts and reports
+axe-report*.json
+
 # Playwright test artifacts
 playwright-report/
 test-results/
