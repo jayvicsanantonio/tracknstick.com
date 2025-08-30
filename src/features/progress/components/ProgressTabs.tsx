@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import {
   Tabs,
@@ -6,15 +6,15 @@ import {
   TabsList,
   TabsTrigger,
 } from '@shared/components/ui/tabs';
-import MiscellaneousIcons from '@/icons/miscellaneous';
+import { memo } from 'react';
+import {
+  useAchievementProgress,
+  useAchievements,
+} from '../hooks/useAchievements';
+import AchievementStats from './AchievementStats';
+import ProgressAchievements from './ProgressAchievements';
 import ProgressCalendar from './ProgressCalendar';
 import ProgressChart from './ProgressChart';
-import ProgressAchievements from './ProgressAchievements';
-import AchievementStats from './AchievementStats';
-import {
-  useAchievements,
-  useAchievementProgress,
-} from '../hooks/useAchievements';
 
 const { BarChart2, Trophy, Calendar } = MiscellaneousIcons;
 
@@ -61,11 +61,6 @@ const ProgressTabs = memo(function ProgressTabs({
         >
           <Trophy aria-hidden="true" className="mr-2 h-4 w-4" />
           Achievements
-          {stats && (
-            <span className="ml-1 text-xs opacity-80">
-              ({stats.earnedAchievements}/{stats.totalAchievements})
-            </span>
-          )}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="calendar">
