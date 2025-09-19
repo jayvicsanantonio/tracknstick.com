@@ -6,7 +6,13 @@
       "Bash(npm run test:run:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run lint)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(git shortlog:*)",
+      "Bash(tree:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm test:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }
