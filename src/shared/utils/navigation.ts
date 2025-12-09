@@ -125,22 +125,6 @@ export function useAppNavigation() {
 }
 
 /**
- * Utility function to get route name from path
- */
-export function getRouteNameFromPath(path: string): string {
-  switch (path) {
-    case ROUTES.DASHBOARD:
-      return 'Dashboard';
-    case ROUTES.HABITS:
-      return 'Habits';
-    case ROUTES.PROGRESS:
-      return 'Progress';
-    default:
-      return 'Unknown';
-  }
-}
-
-/**
  * Utility function to validate if a path is a valid route
  */
 export function isValidRoute(path: string): path is RouteValues {

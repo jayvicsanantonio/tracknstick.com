@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
  *
  * Route: /habits
  */
-export function HabitsPage() {
+function HabitsPage() {
   usePageTitle('Habits Overview');
   useRouteMonitoring('/habits');
 

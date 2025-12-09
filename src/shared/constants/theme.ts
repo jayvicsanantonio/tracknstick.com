@@ -6,7 +6,7 @@ import { ThemeTokens } from '@shared/types/theme';
 export const THEME_STORAGE_KEY = 'track-n-stick-theme';
 export const DEFAULT_THEME_MODE = 'dark' as const;
 
-export const lightThemeTokens: ThemeTokens = {
+const lightThemeTokens: ThemeTokens = {
   background: 'hsl(327, 73%, 97%)',
   foreground: 'hsl(329, 36%, 6%)',
   card: 'hsl(327, 100%, 98%)',
@@ -53,7 +53,7 @@ export const lightThemeTokens: ThemeTokens = {
   successText: 'hsl(326, 84%, 14%)',
 };
 
-export const darkThemeTokens: ThemeTokens = {
+const darkThemeTokens: ThemeTokens = {
   background: 'hsl(155, 100%, 4%)',
   foreground: 'hsl(152, 81%, 96%)',
   card: 'hsl(0, 0%, 6%)',

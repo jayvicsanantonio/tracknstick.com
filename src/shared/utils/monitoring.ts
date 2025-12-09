@@ -304,7 +304,7 @@ class RoutingMonitor {
 }
 
 // Create singleton instance
-export const routingMonitor = new RoutingMonitor();
+const routingMonitor = new RoutingMonitor();
 
 /**
  * React hook for route monitoring
@@ -321,13 +321,6 @@ export function useRouteMonitoring(route: string) {
 
 /**
  * Error boundary helper for route errors
- */
-export function reportRouteError(route: string, error: Error): void {
-  routingMonitor.recordError(route, error);
-}
-
-/**
- * Navigation tracking helper
  */
 export function trackNavigationClick(): void {
   routingMonitor.trackNavigation('link');

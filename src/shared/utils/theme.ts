@@ -19,7 +19,7 @@ export function updateThemeClass(mode: ThemeMode): void {
   root.classList.add(mode);
 }
 
-export function getStoredTheme(): ThemeMode | null {
+function getStoredTheme(): ThemeMode | null {
   if (typeof window === 'undefined') return null;
 
   try {

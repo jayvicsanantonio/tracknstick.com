@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true
+  },
+  "ignore": [
+    "env.d.ts",
+    "src/shared/types/vite-plugin-pwa.d.ts",
+    "src/types/rive-app__react-canvas.d.ts"
+  ],
+  "tags": ["-lintignore"]
+}

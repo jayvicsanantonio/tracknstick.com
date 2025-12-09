@@ -13,7 +13,7 @@ import Footer from '@/features/layout/components/Footer';
  * - When signed in: Renders the matched route component via Outlet
  * - When signed out: Renders the Welcome component
  */
-export const RootLayout = memo(function RootLayout() {
+const RootLayout = memo(function RootLayout() {
   return (
     <>
       <Header />

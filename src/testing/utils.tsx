@@ -12,21 +12,6 @@ interface RenderWithProvidersOptions {
   initialIndex?: number;
 }
 
-export function renderWithProviders(
-  ui: React.ReactElement,
-  renderOptions: RenderWithProvidersOptions = {},
-) {
-  const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
-    return (
-      <ClerkProvider publishableKey="test-key">
-        <HabitsStateProvider>{children}</HabitsStateProvider>
-      </ClerkProvider>
-    );
-  };
-
-  return render(ui, { wrapper: AllTheProviders, ...renderOptions });
-}
-
 export function renderWithRouter({
   initialEntries = ['/'],
   initialIndex = 0,

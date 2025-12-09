@@ -16,7 +16,7 @@ interface DatePickerFieldProps {
   heightClass?: string;
 }
 
-export const datePickerCalendarStyles = `
+const datePickerCalendarStyles = `
   .react-datepicker {
     font-family: inherit;
     border-radius: 8px;

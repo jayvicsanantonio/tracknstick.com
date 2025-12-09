@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
  *
  * Route: /progress
  */
-export function ProgressPage() {
+function ProgressPage() {
   usePageTitle('Progress Overview');
   useRouteMonitoring('/progress');
 

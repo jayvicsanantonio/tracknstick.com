@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
  *
  * Route: / or /dashboard
  */
-export function DashboardPage() {
+function DashboardPage() {
   usePageTitle('Dashboard');
   useRouteMonitoring('/');
 

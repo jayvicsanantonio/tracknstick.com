@@ -50,11 +50,6 @@ export interface ThemeTokens {
   successText: string;
 }
 
-export interface ThemeConfig {
-  mode: ThemeMode;
-  tokens: ThemeTokens;
-}
-
 export interface ThemeContextValue {
   mode: ThemeMode;
   tokens: ThemeTokens;
