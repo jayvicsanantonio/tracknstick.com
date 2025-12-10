@@ -235,13 +235,44 @@ flowchart LR
 
 ### Phase 3: Frontend Chat UI
 
+**UI Pattern: Floating Chat Widget**
+
+The chatbot will be implemented as a **floating widget** that appears on all
+pages:
+
+- **Collapsed State:** A circular icon fixed to the bottom-right corner of the
+  viewport
+- **Expanded State:** When clicked, a chatbox opens above the icon
+- **Always Available:** Accessible from any page in the app without navigation
+
+```mermaid
+flowchart TB
+    subgraph Collapsed
+        A[🤖 Circular Icon]
+    end
+
+    subgraph Expanded
+        B[Chat Header with Close Button]
+        C[Message List]
+        D[Input Field]
+        E[🤖 Circular Icon Active]
+    end
+
+    A -->|Click| Expanded
+    E -->|Click| Collapsed
+```
+
 **Component Structure:**
 
 ```typescript
-ChatPage
-└── Chat (manages state via useChat)
-    ├── ChatMessage (renders individual messages)
-    └── ChatInput (handles user input)
+Layout (wraps all pages)
+└── ChatWidget (fixed position, bottom-right)
+    ├── ChatToggle (circular button to open/close)
+    └── ChatBox (conditionally rendered when open)
+        ├── ChatHeader (title + close button)
+        ├── ChatMessages (scrollable message list)
+        │   └── ChatMessage (individual message bubble)
+        └── ChatInput (text input + send button)
 ```
 
 **Why useChat hook?**
@@ -250,6 +281,15 @@ ChatPage
 - Built-in loading states
 - Handles SSE stream parsing
 - Error state management
+
+**Why Floating Widget vs. Dedicated Route?**
+
+| Aspect             | Floating Widget            | Dedicated Route       |
+| ------------------ | -------------------------- | --------------------- |
+| **Accessibility**  | Available on all pages     | Requires navigation   |
+| **Context**        | User stays in current flow | Loses current context |
+| **UX Pattern**     | Familiar (Intercom, Drift) | Less discoverable     |
+| **Implementation** | Slightly more complex      | Simpler routing       |
 
 ---
 
@@ -274,15 +314,26 @@ scripts/
 
 ```typescript
 src/
-├── pages/
-│   └── ChatPage.tsx         # Page wrapper
+├── components/
+│   └── layout/
+│       └── layout.tsx           # Wraps all pages, includes ChatWidget
 ├── features/
 │   └── chat/
 │       └── components/
-│           ├── Chat.tsx       # Main chat container
-│           ├── ChatMessage.tsx # Message bubble
-│           └── ChatInput.tsx   # Input form
+│           ├── ChatWidget.tsx    # Floating container (fixed position)
+│           ├── ChatToggle.tsx    # Circular button to open/close
+│           ├── ChatBox.tsx       # Chat panel (header + messages + input)
+│           ├── ChatHeader.tsx    # Title bar with close button
+│           ├── ChatMessages.tsx  # Scrollable message list
+│           ├── ChatMessage.tsx   # Individual message bubble
+│           └── ChatInput.tsx     # Text input and send button
 ```
+
+**Integration Point:**
+
+The `ChatWidget` component is rendered inside the main `Layout` component,
+making it available across all pages without modifying individual page
+components.
 
 ---
 
@@ -345,8 +396,8 @@ source .env && npx tsx scripts/generate-embeddings.ts
 ### Step 4: Frontend Implementation
 
 1. Add dependencies: `pnpm add ai @ai-sdk/react`
-2. Create Chat components
-3. Add route to router
+2. Create Chat components (`ChatWidget`, `ChatToggle`, `ChatBox`, etc.)
+3. Integrate `ChatWidget` into the main `Layout` component
 4. Test locally: `pnpm dev`
 
 ---
