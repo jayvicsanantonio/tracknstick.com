@@ -8,6 +8,5 @@
     "env.d.ts",
     "src/shared/types/vite-plugin-pwa.d.ts",
     "src/types/rive-app__react-canvas.d.ts"
-  ],
-  "tags": ["-lintignore"]
+  ]
 }

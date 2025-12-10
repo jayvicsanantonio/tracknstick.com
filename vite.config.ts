@@ -67,7 +67,6 @@ export default defineConfig({
           },
         ],
         inlineWorkboxRuntime: true,
-        mode: 'development',
       },
       strategies: 'generateSW',
       filename: 'sw.js',
