@@ -4,6 +4,7 @@ import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Welcome from '@/features/layout/components/Welcome';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
+import { ChatWidget } from '@/features/chat/components/ChatWidget';
 
 /**
  * Root layout component that handles authentication-based rendering
@@ -24,6 +25,7 @@ const RootLayout = memo(function RootLayout() {
         </SignedOut>
         <SignedIn>
           <Outlet />
+          <ChatWidget />
         </SignedIn>
       </main>
       <Footer />
