@@ -6,7 +6,6 @@ import DailyHabitList from '@/features/habits/components/DailyHabitList';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
 import { motion } from 'framer-motion';
-// import { Skeleton } from '@shared/components/ui/skeleton';
 
 export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate } = useHabits();

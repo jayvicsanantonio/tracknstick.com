@@ -10,7 +10,7 @@ import { Button } from '@shared/components/ui/button';
  *
  * Route: * (catch-all for unmatched routes)
  */
-export function NotFoundPage() {
+function NotFoundPage() {
   usePageTitle('Page Not Found');
 
   const { goToDashboard } = useAppNavigation();

@@ -10,12 +10,7 @@ interface IconNavLinkProps {
   onClick?: () => void;
 }
 
-export function IconNavLink({
-  to,
-  children,
-  onClick,
-  ...a11y
-}: IconNavLinkProps) {
+function IconNavLink({ to, children, onClick, ...a11y }: IconNavLinkProps) {
   return (
     <NavLink
       to={to}

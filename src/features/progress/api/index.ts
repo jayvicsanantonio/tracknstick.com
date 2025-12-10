@@ -10,12 +10,6 @@ export interface ProgressStreaksResponse {
   longestStreak: number;
 }
 
-export interface ProgressOverviewResponse {
-  history: HistoryDates[];
-  currentStreak: number;
-  longestStreak: number;
-}
-
 /**
  * Fetches user's progress history showing completion rates by day
  * Includes user's timezone to ensure dates are calculated correctly
@@ -63,30 +57,6 @@ export const fetchProgressStreaks = async (
 
   const response = await axiosInstance.get<ProgressStreaksResponse>(
     '/api/v1/progress/streaks',
-    { params },
-  );
-  return response.data;
-};
-
-/**
- * Fetches comprehensive progress data including history and streaks
- * Includes user's timezone for consistent date calculations
- */
-export const fetchProgressOverview = async (
-  timeZone: string,
-  startDate?: Date,
-  endDate?: Date,
-): Promise<ProgressOverviewResponse> => {
-  const params: {
-    startDate?: Date;
-    endDate?: Date;
-    timeZone?: string;
-  } = { timeZone };
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
-
-  const response = await axiosInstance.get<ProgressOverviewResponse>(
-    '/api/v1/progress/overview',
     { params },
   );
   return response.data;

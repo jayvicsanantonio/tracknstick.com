@@ -29,20 +29,3 @@ export function usePageTitle(title: string, suffix?: string) {
     };
   }, [title, suffix]);
 }
-
-/**
- * Hook variant that only sets the title without the app name suffix
- * Useful for specific cases where you want full control over the title
- *
- * @param title - The complete title to set
- */
-export function usePageTitleRaw(title: string) {
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = title;
-
-    return () => {
-      document.title = originalTitle;
-    };
-  }, [title]);
-}

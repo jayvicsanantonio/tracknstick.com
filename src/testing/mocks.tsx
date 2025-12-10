@@ -304,4 +304,4 @@ vi.mock('@/icons/miscellaneous', () => ({
 }));
 
 // Export mock functions for use in tests
-export { mockUseAuth, mockUseUser };
+export { mockUseAuth };
