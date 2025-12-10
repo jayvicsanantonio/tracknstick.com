@@ -33,7 +33,7 @@ export function ChatInput({
               onSubmit(e);
             }
           }}
-          placeholder="Ask about Atomic Habits..."
+          placeholder="Ask about habits and productivity..."
           rows={1}
           className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring max-h-32 min-h-[44px] flex-1 resize-none rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isLoading}

@@ -64,27 +64,25 @@ export function Chat() {
             <div className="bg-primary/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
               <BookOpen className="text-primary h-8 w-8" />
             </div>
-            <h2 className="text-lg font-semibold">Your Atomic Habits Coach</h2>
+            <h2 className="text-lg font-semibold">Your Habits Coach</h2>
             <p className="text-muted-foreground mt-2 max-w-md text-sm">
-              Ask about habit formation, the Four Laws of Behavior Change, habit
-              stacking, or any concept from Atomic Habits!
+              Get tips on building better habits, staying productive, and
+              achieving your goals.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               <SuggestionChip
-                text="What are the Four Laws?"
+                text="Build habits"
+                onClick={() => setInput('How do I build a new habit?')}
+              />
+              <SuggestionChip
+                text="Stay consistent"
                 onClick={() =>
-                  setInput('What are the Four Laws of Behavior Change?')
+                  setInput('How can I stay consistent with my habits?')
                 }
               />
               <SuggestionChip
-                text="How to break bad habits?"
+                text="Break bad habits"
                 onClick={() => setInput('How do I break a bad habit?')}
-              />
-              <SuggestionChip
-                text="Explain habit stacking"
-                onClick={() =>
-                  setInput('What is habit stacking and how do I use it?')
-                }
               />
             </div>
           </div>

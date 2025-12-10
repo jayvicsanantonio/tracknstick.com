@@ -17,7 +17,7 @@ export function ChatHeader({ onClose }: ChatHeaderProps) {
         <div>
           <h2 className="text-sm font-semibold">Habit Coach</h2>
           <p className="text-muted-foreground text-[10px]">
-            Powered by Atomic Habits
+            Powered by Atomic Habits (James Clear)
           </p>
         </div>
       </div>

@@ -6,9 +6,8 @@ import { Chat } from '@/features/chat/components/Chat';
 /**
  * Chat page component
  *
- * AI-powered habit coach powered by Atomic Habits.
- * Users can ask questions about habit formation and get advice
- * based on James Clear's book.
+ * AI-powered habits coach that helps users build better habits,
+ * stay productive, and achieve their goals.
  *
  * Route: /chat
  */

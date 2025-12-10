@@ -126,7 +126,7 @@ export function ChatBox({ onClose }: ChatBoxProps) {
   };
 
   return (
-    <div className="border-border/50 bg-card/95 flex h-[500px] w-[380px] flex-col overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-sm sm:h-[550px] sm:w-[400px]">
+    <div className="border-border/50 bg-card flex h-[500px] w-[380px] flex-col overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-2xl sm:h-[550px] sm:w-[400px]">
       <ChatHeader onClose={onClose} />
 
       {/* Messages area */}
@@ -136,25 +136,25 @@ export function ChatBox({ onClose }: ChatBoxProps) {
             <div className="bg-primary/10 mb-4 flex h-14 w-14 items-center justify-center rounded-full">
               <BookOpen className="text-primary h-7 w-7" />
             </div>
-            <h2 className="text-base font-semibold">Atomic Habits Coach</h2>
+            <h2 className="text-base font-semibold">Habits Coach</h2>
             <p className="text-muted-foreground mt-2 max-w-[280px] text-xs">
-              Ask about habit formation, the Four Laws, or any concept from the
-              book!
+              Get tips on building better habits, staying productive, and
+              achieving your goals.
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               <SuggestionChip
-                text="Four Laws?"
+                text="Build habits"
+                onClick={() => setInput('How do I build a new habit?')}
+              />
+              <SuggestionChip
+                text="Stay consistent"
                 onClick={() =>
-                  setInput('What are the Four Laws of Behavior Change?')
+                  setInput('How can I stay consistent with my habits?')
                 }
               />
               <SuggestionChip
                 text="Break bad habits"
                 onClick={() => setInput('How do I break a bad habit?')}
-              />
-              <SuggestionChip
-                text="Habit stacking"
-                onClick={() => setInput('What is habit stacking?')}
               />
             </div>
           </div>
