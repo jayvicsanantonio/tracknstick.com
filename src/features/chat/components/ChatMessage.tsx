@@ -21,7 +21,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        'flex max-w-[85%] gap-3',
+        'flex max-w-[85%] items-start gap-3',
         isUser ? 'ml-auto flex-row-reverse' : 'mr-auto',
       )}
     >
