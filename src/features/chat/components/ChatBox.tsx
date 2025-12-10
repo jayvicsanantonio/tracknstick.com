@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@clerk/clerk-react';
+import { BookOpen } from 'lucide-react';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
@@ -56,8 +57,6 @@ export function ChatBox({ onClose }: ChatBoxProps) {
 
       try {
         const token = await getToken();
-        console.log('[ChatBox] Sending request to:', `${apiHost}/api/v1/chat`);
-        console.log('[ChatBox] Messages:', apiMessages);
 
         const response = await fetch(`${apiHost}/api/v1/chat`, {
           method: 'POST',
@@ -67,12 +66,6 @@ export function ChatBox({ onClose }: ChatBoxProps) {
           },
           body: JSON.stringify({ messages: apiMessages }),
         });
-
-        console.log('[ChatBox] Response status:', response.status);
-        console.log(
-          '[ChatBox] Response headers:',
-          Object.fromEntries(response.headers.entries()),
-        );
 
         if (!response.ok) {
           const errorData = (await response.json()) as {
@@ -94,17 +87,14 @@ export function ChatBox({ onClose }: ChatBoxProps) {
         const reader = response.body?.getReader();
         if (!reader) throw new Error('No response body');
 
-        console.log('[ChatBox] Starting to read stream...');
         const decoder = new TextDecoder();
         let assistantContent = '';
 
         while (true) {
           const { done, value } = await reader.read();
-          console.log('[ChatBox] Chunk:', { done, valueLength: value?.length });
           if (done) break;
 
           const chunk = decoder.decode(value, { stream: true });
-          console.log('[ChatBox] Decoded chunk:', chunk);
           assistantContent += chunk;
 
           // Update the assistant message with accumulated content
@@ -116,12 +106,7 @@ export function ChatBox({ onClose }: ChatBoxProps) {
             ),
           );
         }
-        console.log(
-          '[ChatBox] Stream complete. Total content:',
-          assistantContent,
-        );
       } catch (err) {
-        console.error('[ChatBox] Error:', err);
         const message = err instanceof Error ? err.message : 'Unknown error';
         setError(message);
         // Remove the empty assistant message if error occurred
@@ -141,20 +126,22 @@ export function ChatBox({ onClose }: ChatBoxProps) {
   };
 
   return (
-    <div className="border-border/40 bg-card flex h-[500px] w-[380px] flex-col overflow-hidden rounded-2xl border shadow-2xl sm:h-[600px] sm:w-[420px]">
+    <div className="border-border/50 bg-card/95 flex h-[500px] w-[380px] flex-col overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-sm sm:h-[550px] sm:w-[400px]">
       <ChatHeader onClose={onClose} />
 
       {/* Messages area */}
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-3 text-4xl">📚</div>
-            <h2 className="text-base font-medium">Atomic Habits Coach</h2>
-            <p className="text-muted-foreground mt-1 max-w-[280px] text-xs">
+            <div className="bg-primary/10 mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+              <BookOpen className="text-primary h-7 w-7" />
+            </div>
+            <h2 className="text-base font-semibold">Atomic Habits Coach</h2>
+            <p className="text-muted-foreground mt-2 max-w-[280px] text-xs">
               Ask about habit formation, the Four Laws, or any concept from the
               book!
             </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
               <SuggestionChip
                 text="Four Laws?"
                 onClick={() =>

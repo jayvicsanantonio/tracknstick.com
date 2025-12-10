@@ -1,4 +1,5 @@
 import { cn } from '@shared/utils/utils';
+import { User, Sparkles } from 'lucide-react';
 
 export interface Message {
   id: string;
@@ -27,18 +28,26 @@ export function ChatMessage({ message }: ChatMessageProps) {
       {/* Avatar */}
       <div
         className={cn(
-          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm',
-          isUser ? 'bg-primary text-primary-foreground' : 'bg-muted',
+          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+          isUser
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-primary/20 text-primary',
         )}
       >
-        {isUser ? '👤' : '🤖'}
+        {isUser ? (
+          <User className="h-4 w-4" />
+        ) : (
+          <Sparkles className="h-4 w-4" />
+        )}
       </div>
 
       {/* Message bubble */}
       <div
         className={cn(
-          'rounded-2xl px-4 py-2.5',
-          isUser ? 'bg-primary text-primary-foreground' : 'bg-muted',
+          'rounded-2xl px-4 py-3',
+          isUser
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-muted/80 text-foreground',
         )}
       >
         <p className="whitespace-pre-wrap text-sm leading-relaxed">

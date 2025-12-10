@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useChat, type UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useAuth } from '@clerk/clerk-react';
+import { BookOpen } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { getConfig } from '@shared/utils/getConfig';
@@ -60,8 +61,10 @@ export function Chat() {
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 text-5xl">📚</div>
-            <h2 className="text-lg font-medium">Your Atomic Habits Coach</h2>
+            <div className="bg-primary/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+              <BookOpen className="text-primary h-8 w-8" />
+            </div>
+            <h2 className="text-lg font-semibold">Your Atomic Habits Coach</h2>
             <p className="text-muted-foreground mt-2 max-w-md text-sm">
               Ask about habit formation, the Four Laws of Behavior Change, habit
               stacking, or any concept from Atomic Habits!
