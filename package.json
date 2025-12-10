@@ -43,6 +43,7 @@
     "react": "^19.1.0",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.7.0",
     "recharts": "^2.15.3",
     "swr": "^2.3.3",
