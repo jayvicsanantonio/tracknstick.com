@@ -7,7 +7,7 @@
 ## Executive Summary
 
 This document outlines the implementation of an AI-powered chatbot for the Track
-N' Stick habit tracking app. The chatbot will serve as a virtual habit coach,
+N' Stick habit-tracking app. The chatbot will serve as a virtual habit coach,
 answering user questions exclusively using knowledge from **"Atomic Habits"** by
 James Clear.
 
@@ -24,7 +24,7 @@ James Clear.
 
 ### The Need
 
-Users of habit tracking apps often struggle with:
+Users of habit-tracking apps often struggle with:
 
 - Understanding _how_ to build effective habits
 - Staying motivated when habits break
@@ -96,7 +96,7 @@ time, we can:
 
 **Our RAG Flow:**
 
-```
+```mermaid
 User Question → Embed → Search Pinecone → Get Book Chunks → Inject into Prompt → LLM Generates Answer
 ```
 
@@ -237,7 +237,7 @@ flowchart LR
 
 **Component Structure:**
 
-```
+```typescript
 ChatPage
 └── Chat (manages state via useChat)
     ├── ChatMessage (renders individual messages)
@@ -257,7 +257,7 @@ ChatPage
 
 ### Backend (tracknstick-api)
 
-```
+```typescript
 src/
 ├── routes/
 │   └── chat.ts              # Route definition
@@ -272,7 +272,7 @@ scripts/
 
 ### Frontend (tracknstick.com)
 
-```
+```typescript
 src/
 ├── pages/
 │   └── ChatPage.tsx         # Page wrapper
@@ -292,7 +292,7 @@ src/
 
 ```bash
 # Runtime
-pnpm add ai workers-ai-provider @pinecone-database/pinecone
+pnpm add ai @ai-sdk/cloudflare @pinecone-database/pinecone
 
 # Development (for ingestion scripts)
 pnpm add -D unpdf tsx
@@ -325,16 +325,19 @@ mkdir -p data
 npx tsx scripts/ingest-atomic-habits.ts /path/to/atomic-habits.pdf
 
 # Generate embeddings and upload to Pinecone
-export CLOUDFLARE_ACCOUNT_ID=xxx
-export CLOUDFLARE_API_TOKEN=xxx
-export PINECONE_API_KEY=xxx
-npx tsx scripts/generate-embeddings.ts
+# Create a .env file for secrets
+# CLOUDFLARE_ACCOUNT_ID=xxx
+# CLOUDFLARE_API_TOKEN=xxx
+# PINECONE_API_KEY=xxx
+
+# Source the .env file
+source .env && npx tsx scripts/generate-embeddings.ts
 ```
 
 ### Step 3: Backend Implementation
 
 1. Add dependencies:
-   `pnpm add ai workers-ai-provider @pinecone-database/pinecone`
+   `pnpm add ai @ai-sdk/cloudflare @pinecone-database/pinecone`
 2. Create route, controller, service files
 3. Set secret: `wrangler secret put PINECONE_API_KEY`
 4. Deploy: `wrangler deploy`
@@ -358,13 +361,17 @@ npx tsx scripts/generate-embeddings.ts
 | "How to break a bad habit?" | References inversion of the Four Laws               |
 | "What stocks should I buy?" | Politely declines—off-topic                         |
 | "Explain habit stacking"    | Describes linking new habits to existing ones       |
+| **Edge Case**               | "..." (Empty/short input) -> Handle gracefully      |
+| **Ambiguity**               | "How do I do it?" -> Ask for clarification          |
 
 ### Verification Checklist
 
 - [ ] Streaming responses appear character-by-character
-- [ ] Error states display correctly
+- [ ] Error states display correctly (Graceful degradation)
 - [ ] Auth token passed correctly
 - [ ] Mobile responsive
+- [ ] Backend Integration Test (verify chunks retrieved)
+- [ ] Performance check (response time acceptable)
 
 ---
 
@@ -384,10 +391,11 @@ npx tsx scripts/generate-embeddings.ts
 
 This implementation delivers a production-ready AI chatbot that:
 
-✅ **Answers only from Atomic Habits** → No hallucinations ✅ **Streams
-responses in real-time** → Great UX ✅ **Uses modern AI SDK patterns** → Clean,
-maintainable code ✅ **Runs on Cloudflare edge** → Low latency globally ✅
-**Scales cost-effectively** → Pay per query
+- ✅ **Answers only from Atomic Habits** → No hallucinations
+- ✅ **Streams responses in real-time** → Great UX
+- ✅ **Uses modern AI SDK patterns** → Clean, maintainable code
+- ✅ **Runs on Cloudflare edge** → Low latency globally
+- ✅ **Scales cost-effectively** → Pay per query
 
 The modular architecture allows future expansion to include chat history,
 multiple knowledge sources, and additional features.
