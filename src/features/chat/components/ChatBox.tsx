@@ -126,7 +126,7 @@ export function ChatBox({ onClose }: ChatBoxProps) {
   };
 
   return (
-    <div className="border-border/50 bg-card flex h-[500px] w-[380px] flex-col overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-2xl sm:h-[550px] sm:w-[400px]">
+    <div className="border-border/50 bg-card flex h-full w-full flex-col overflow-hidden shadow-2xl backdrop-blur-2xl sm:h-[550px] sm:w-[400px] sm:rounded-2xl sm:border">
       <ChatHeader onClose={onClose} />
 
       {/* Messages area */}
