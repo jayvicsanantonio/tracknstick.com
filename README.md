@@ -8,6 +8,9 @@
 [![PWA](https://img.shields.io/badge/PWA-Ready-4285f4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://developers.google.com/web/progressive-web-apps)
 [![pnpm](https://img.shields.io/badge/pnpm-≥8.0.0-f69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
 
+<img width="1667" height="1087" alt="Screenshot 2025-12-16 at 11 43 22 AM" src="https://github.com/user-attachments/assets/49d6a23f-9836-46da-83f7-3a80a4f4e9a1" />
+
+
 **Build Better Habits, One Day at a Time**
 
 _A modern, feature-rich Progressive Web Application for habit tracking with
