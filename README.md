@@ -1,4 +1,4 @@
-# 🎯 Track N' Stick
+# Track N' Stick
 
 <div align="center">
 
@@ -16,15 +16,15 @@
 _A modern, feature-rich Progressive Web Application for habit tracking with
 real-time analytics, achievement system, and seamless user experience._
 
-[🚀 Live Demo](https://tracknstick.com) •
-[📚 API Documentation](https://github.com/jayvicsanantonio/tracknstick-api) •
-[📊 Architecture](#-architecture)
+[ Live Demo](https://tracknstick.com) •
+[ API Documentation](https://github.com/jayvicsanantonio/tracknstick-api) •
+[ Architecture](#-architecture)
 
 </div>
 
 ---
 
-## 🌟 Overview
+## Overview
 
 **Track N' Stick** is a cutting-edge habit tracking application built with
 modern web technologies, designed to help users build and maintain healthy
@@ -32,75 +32,75 @@ habits through an intuitive, data-driven interface. The application leverages
 the latest React 19 features, TypeScript strict mode, and a comprehensive PWA
 implementation to deliver a native-app-like experience across all platforms.
 
-### 🎯 Key Highlights
+### Key Highlights
 
-- **🏗️ Modern Architecture**: Feature-driven development with clean separation
-  of concerns
-- **⚡ Performance First**: Optimized with Vite, SWR data fetching, and smart
+- ** Modern Architecture**: Feature-driven development with clean separation of
+  concerns
+- ** Performance First**: Optimized with Vite, SWR data fetching, and smart
   caching strategies
-- **📱 PWA Excellence**: Installable, offline-capable, with auto-updates and
-  push notifications
-- **🔒 Enterprise Security**: Clerk authentication with JWT tokens and secure
-  API communication
-- **📊 Real-time Analytics**: Advanced progress tracking with achievement system
+- ** PWA Excellence**: Installable, offline-capable, with auto-updates and push
+  notifications
+- ** Enterprise Security**: Clerk authentication with JWT tokens and secure API
+  communication
+- ** Real-time Analytics**: Advanced progress tracking with achievement system
   and insights
-- **🎨 Design System**: Consistent UI with Radix primitives, Tailwind CSS v4,
-  and dark mode support
-- **🧪 Quality Assurance**: Comprehensive testing suite with Vitest, ESLint, and
+- ** Design System**: Consistent UI with Radix primitives, Tailwind CSS v4, and
+  dark mode support
+- ** Quality Assurance**: Comprehensive testing suite with Vitest, ESLint, and
   automated workflows
 
 ---
 
-## ✨ Features
+## Features
 
-### 📋 Core Functionality
+### Core Functionality
 
-| Feature                       | Description                                                        | Technology                  |
-| ----------------------------- | ------------------------------------------------------------------ | --------------------------- |
-| **🎯 Smart Habit Management** | Create, edit, and schedule habits with flexible frequency patterns | React 19, TypeScript        |
-| **📊 Progress Visualization** | Interactive charts, calendars, and completion analytics            | Recharts, Custom Components |
-| **🏆 Achievement System**     | Gamified experience with unlockable achievements and milestones    | Custom Achievement Engine   |
-| **🔄 Real-time Sync**         | Optimistic UI updates with automatic data synchronization          | SWR, Axios Interceptors     |
-| **🎵 Audio Feedback**         | Immersive sound notifications for habit completion                 | Web Audio API               |
-| **📱 Cross-platform PWA**     | Native-like experience on desktop and mobile devices               | Vite PWA Plugin             |
+| Feature                     | Description                                                        | Technology                  |
+| --------------------------- | ------------------------------------------------------------------ | --------------------------- |
+| ** Smart Habit Management** | Create, edit, and schedule habits with flexible frequency patterns | React 19, TypeScript        |
+| ** Progress Visualization** | Interactive charts, calendars, and completion analytics            | Recharts, Custom Components |
+| ** Achievement System**     | Gamified experience with unlockable achievements and milestones    | Custom Achievement Engine   |
+| ** Real-time Sync**         | Optimistic UI updates with automatic data synchronization          | SWR, Axios Interceptors     |
+| ** Audio Feedback**         | Immersive sound notifications for habit completion                 | Web Audio API               |
+| ** Cross-platform PWA**     | Native-like experience on desktop and mobile devices               | Vite PWA Plugin             |
 
-### 🚀 Advanced Capabilities
+### Advanced Capabilities
 
-- **📅 Smart Scheduling**: Custom frequency patterns (daily, weekly, specific
+- ** Smart Scheduling**: Custom frequency patterns (daily, weekly, specific
   days)
-- **📈 Streak Tracking**: Current and longest streak calculations with visual
+- ** Streak Tracking**: Current and longest streak calculations with visual
   indicators
-- **🌙 Dark Mode**: System-preference aware theme switching
-- **⚡ Offline Support**: Local caching with background sync when online
-- **🔔 Smart Notifications**: Achievement alerts and milestone celebrations
-- **📊 Historical Analytics**: Comprehensive progress history with date range
+- ** Dark Mode**: System-preference aware theme switching
+- ** Offline Support**: Local caching with background sync when online
+- ** Smart Notifications**: Achievement alerts and milestone celebrations
+- ** Historical Analytics**: Comprehensive progress history with date range
   filtering
-- **🎨 Custom Icons**: Extensive icon library with category-based organization
+- ** Custom Icons**: Extensive icon library with category-based organization
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-### 🎯 Frontend Architecture
+### Frontend Architecture
 
 ```
 src/
-├── 🎯 app/                    # Application core & routing
+├──  app/                    # Application core & routing
 │   ├── providers/             # React Context providers (Theme, Date)
 │   └── routes/                # React Router v7 configuration
-├── 🧩 features/               # Feature-driven modules
+├──  features/               # Feature-driven modules
 │   ├── habits/                # Habit management (CRUD, tracking, stats)
 │   ├── progress/              # Progress visualization & analytics
 │   └── layout/                # Application layout components
-├── 🔧 shared/                 # Reusable utilities & components
+├──  shared/                 # Reusable utilities & components
 │   ├── components/ui/         # Design system components (Radix UI)
 │   ├── services/api/          # API client configuration
 │   └── hooks/                 # Custom React hooks
-├── 🎨 icons/                  # SVG icon collections
-└── 📄 pages/                  # Route-level page components
+├──  icons/                  # SVG icon collections
+└──  pages/                  # Route-level page components
 ```
 
-### 🛠️ Technology Stack
+### Technology Stack
 
 #### **Frontend Core**
 
@@ -141,11 +141,11 @@ src/
 - **Optimization**: Vite's built-in code splitting and tree shaking
 - **Monitoring**: Performance API integration for metrics
 
-### 🔗 Backend Integration
+### Backend Integration
 
 The frontend integrates with a robust Node.js API backend:
 
-**🔗 API Repository**:
+** API Repository**:
 [tracknstick-api](https://github.com/jayvicsanantonio/tracknstick-api)
 
 #### **API Endpoints**
@@ -170,15 +170,15 @@ The frontend integrates with a robust Node.js API backend:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
-### 📋 Prerequisites
+### Prerequisites
 
 - **Node.js**: ≥20.0.0 (LTS recommended)
 - **Package Manager**: pnpm ≥8.0.0 (or npm/yarn)
 - **Git**: Latest version for version control
 
-### ⚡ Quick Start
+### Quick Start
 
 ```bash
 # Clone the repository
@@ -199,7 +199,7 @@ pnpm dev
 open http://localhost:5173
 ```
 
-### 🔧 Environment Configuration
+### Environment Configuration
 
 Create `.env.local` file in the project root:
 
@@ -216,7 +216,7 @@ VITE_API_HOST=https://api.tracknstick.com
 VITE_ANALYTICS_ID=your_analytics_id
 ```
 
-### 📦 Available Scripts
+### Available Scripts
 
 | Command         | Description                         | Use Case     |
 | --------------- | ----------------------------------- | ------------ |
@@ -231,9 +231,9 @@ VITE_ANALYTICS_ID=your_analytics_id
 
 ---
 
-## 🧪 Development Workflow
+## Development Workflow
 
-### 🔍 Code Quality Standards
+### Code Quality Standards
 
 - **TypeScript**: Strict mode enabled with comprehensive type checking
 - **ESLint**: React-specific rules with TypeScript integration
@@ -241,7 +241,7 @@ VITE_ANALYTICS_ID=your_analytics_id
 - **Husky**: Pre-commit hooks for automated quality checks
 - **Conventional Commits**: Standardized commit message format
 
-### 🧪 Testing Strategy
+### Testing Strategy
 
 ```bash
 # Unit & Integration Tests
@@ -255,7 +255,7 @@ pnpm lint:fix              # Auto-fix issues
 pnpm format                # Format all files
 ```
 
-### 📊 Performance Monitoring
+### Performance Monitoring
 
 - **Bundle Analysis**: Built-in Vite bundle analyzer
 - **Lighthouse Scores**: 95+ in all categories
@@ -264,9 +264,9 @@ pnpm format                # Format all files
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
-### 🏗️ Production Build
+### Production Build
 
 ```bash
 # Create optimized production build
@@ -279,7 +279,7 @@ pnpm preview
 # (Vercel, Netlify, AWS, etc.)
 ```
 
-### 📊 Build Output Analysis
+### Build Output Analysis
 
 The production build generates:
 
@@ -289,7 +289,7 @@ The production build generates:
 - **Service Worker**: PWA functionality with intelligent caching
 - **Source Maps**: Production debugging support
 
-### 🌐 Hosting Recommendations
+### Hosting Recommendations
 
 | Platform             | Features                                           | Best For                 |
 | -------------------- | -------------------------------------------------- | ------------------------ |
@@ -300,26 +300,26 @@ The production build generates:
 
 ---
 
-## 🏆 Progressive Web App Features
+## Progressive Web App Features
 
 Track N' Stick delivers a native app experience through advanced PWA
 implementation:
 
-### 📱 Installation & Offline Support
+### Installation & Offline Support
 
 - **Installable**: Add to home screen on mobile and desktop
 - **Offline Functionality**: Core features work without internet
 - **Background Sync**: Data synchronization when connection restored
 - **Update Notifications**: Automatic app updates with user control
 
-### 🔔 Native-like Features
+### Native-like Features
 
 - **Push Notifications**: Achievement alerts and reminders
 - **Splash Screen**: Branded loading experience
 - **App Shell**: Instant loading with cached shell
 - **Responsive Design**: Optimized for all screen sizes and orientations
 
-### ⚡ Performance Optimization
+### Performance Optimization
 
 - **Service Worker**: Intelligent caching strategies
 - **Precaching**: Critical resources cached on install
@@ -328,9 +328,9 @@ implementation:
 
 ---
 
-## 📊 Key Metrics & Achievements
+## Key Metrics & Achievements
 
-### 🎯 Performance Benchmarks
+### Performance Benchmarks
 
 - **Lighthouse Performance**: 98/100
 - **First Contentful Paint**: <1.2s
@@ -338,7 +338,7 @@ implementation:
 - **Cumulative Layout Shift**: <0.1
 - **Time to Interactive**: <2.8s
 
-### 📈 Technical Achievements
+### Technical Achievements
 
 - **Bundle Size**: <500KB gzipped (main bundle)
 - **Code Coverage**: >85% test coverage
@@ -348,12 +348,12 @@ implementation:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions from developers of all skill levels! Here's how to get
 involved:
 
-### 🔄 Development Process
+### Development Process
 
 1. **Fork** the repository
 2. **Clone** your fork locally
@@ -363,7 +363,7 @@ involved:
 5. **Push** to your branch (`git push origin feature/amazing-feature`)
 6. **Submit** a Pull Request with comprehensive description
 
-### 📋 Contribution Guidelines
+### Contribution Guidelines
 
 - **Code Style**: Follow existing patterns and ESLint rules
 - **Testing**: Add tests for new features and bug fixes
@@ -371,7 +371,7 @@ involved:
 - **Type Safety**: Maintain 100% TypeScript coverage
 - **Performance**: Ensure no performance regressions
 
-### 🐛 Issue Reporting
+### Issue Reporting
 
 - Use the issue template for bug reports
 - Provide reproduction steps and environment details
@@ -380,14 +380,14 @@ involved:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE)
 file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Design Inspiration**: Modern habit tracking applications and Material Design
 - **Icons**: [Lucide](https://lucide.dev) for beautiful, consistent iconography
@@ -398,9 +398,9 @@ file for details.
 
 <div align="center">
 
-**Built with ❤️ by [Jayvic San Antonio](https://github.com/jayvicsanantonio)**
+**Built with by [Jayvic San Antonio](https://github.com/jayvicsanantonio)**
 
-[⭐ Star this project](https://github.com/jayvicsanantonio/tracknstick.com) if
-you find it helpful!
+[ Star this project](https://github.com/jayvicsanantonio/tracknstick.com) if you
+find it helpful!
 
 </div>

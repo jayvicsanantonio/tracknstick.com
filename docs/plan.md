@@ -110,7 +110,7 @@ User Question → Embed → Search Pinecone → Get Book Chunks → Inject into 
 
 | Option               | Pros                           | Cons                      | Verdict        |
 | -------------------- | ------------------------------ | ------------------------- | -------------- |
-| **Pinecone**         | Managed, fast, proven at scale | External API call         | ✅ Chosen      |
+| **Pinecone**         | Managed, fast, proven at scale | External API call         | Chosen         |
 | Cloudflare Vectorize | Native to Workers              | Newer, less battle-tested | Considered     |
 | Qdrant               | Self-hosted control            | Ops overhead              | Not chosen     |
 | pgvector             | Uses existing Postgres         | D1 doesn't support it     | Not applicable |
@@ -248,14 +248,14 @@ pages:
 ```mermaid
 flowchart TB
     subgraph Collapsed
-        A[🤖 Circular Icon]
+        A[ Circular Icon]
     end
 
     subgraph Expanded
         B[Chat Header with Close Button]
         C[Message List]
         D[Input Field]
-        E[🤖 Circular Icon Active]
+        E[ Circular Icon Active]
     end
 
     A -->|Click| Expanded
@@ -442,11 +442,11 @@ source .env && npx tsx scripts/generate-embeddings.ts
 
 This implementation delivers a production-ready AI chatbot that:
 
-- ✅ **Answers only from Atomic Habits** → No hallucinations
-- ✅ **Streams responses in real-time** → Great UX
-- ✅ **Uses modern AI SDK patterns** → Clean, maintainable code
-- ✅ **Runs on Cloudflare edge** → Low latency globally
-- ✅ **Scales cost-effectively** → Pay per query
+- **Answers only from Atomic Habits** → No hallucinations
+- **Streams responses in real-time** → Great UX
+- **Uses modern AI SDK patterns** → Clean, maintainable code
+- **Runs on Cloudflare edge** → Low latency globally
+- **Scales cost-effectively** → Pay per query
 
 The modular architecture allows future expansion to include chat history,
 multiple knowledge sources, and additional features.

@@ -39,10 +39,10 @@ Before starting, ensure you have:
 | **Cloud**      | `AWS`                     | Most reliable, best Pinecone support        |
 | **Region**     | `us-east-1` (N. Virginia) | Closest to Cloudflare Workers AI processing |
 
-> 💡 **Why AWS us-east-1?** Cloudflare Workers AI primarily processes requests
-> in US data centers. Choosing `us-east-1` minimizes the roundtrip latency
-> between your Worker and Pinecone. 3. Click **"Create Index"** 4. Wait for the
-> index to be ready (usually 30-60 seconds)
+> **Why AWS us-east-1?** Cloudflare Workers AI primarily processes requests in
+> US data centers. Choosing `us-east-1` minimizes the roundtrip latency between
+> your Worker and Pinecone. 3. Click **"Create Index"** 4. Wait for the index to
+> be ready (usually 30-60 seconds)
 
 ### 1.3 Get Your API Key
 
@@ -50,7 +50,7 @@ Before starting, ensure you have:
 2. You'll see a default API key, or click **"Create API Key"**
 3. Copy the API key and save it securely
 
-> ⚠️ **Important**: Keep this key secret! Never commit it to git.
+> **Important**: Keep this key secret! Never commit it to git.
 
 ---
 
@@ -110,7 +110,7 @@ export CLOUDFLARE_API_TOKEN="your_cloudflare_api_token_here"
 export PINECONE_API_KEY="your_pinecone_api_key_here"
 ```
 
-> 💡 **Tip**: You can verify they're set by running:
+> **Tip**: You can verify they're set by running:
 >
 > ```bash
 > echo $CLOUDFLARE_ACCOUNT_ID
@@ -138,13 +138,13 @@ npx tsx scripts/ingest-atomic-habits.ts ~/Downloads/Atomic_Habits.pdf
 ### 4.2 Expected Output
 
 ```
-📄 Reading PDF: /path/to/atomic-habits.pdf
-✅ Extracted 450,000 characters from PDF
-✅ Created 892 chunks (avg 504 chars/chunk)
-✅ Saved chunks to data/chunks.json
-✅ Saved metadata to data/chunks-metadata.json
+ Reading PDF: /path/to/atomic-habits.pdf
+ Extracted 450,000 characters from PDF
+ Created 892 chunks (avg 504 chars/chunk)
+ Saved chunks to data/chunks.json
+ Saved metadata to data/chunks-metadata.json
 
-🎉 Step 1 complete! Next steps:
+ Step 1 complete! Next steps:
 ...
 ```
 
@@ -173,16 +173,16 @@ npx tsx scripts/generate-embeddings.ts
 ### 5.2 Expected Output
 
 ```
-📚 Loaded 892 chunks from data/chunks.json
-🔗 Connecting to Pinecone index: atomic-habits
+ Loaded 892 chunks from data/chunks.json
+ Connecting to Pinecone index: atomic-habits
 
-🚀 Generating embeddings and uploading to Pinecone...
-   ✅ Upserted 10/892 (1%)
-   ✅ Upserted 20/892 (2%)
+ Generating embeddings and uploading to Pinecone...
+    Upserted 10/892 (1%)
+    Upserted 20/892 (2%)
    ...
-   ✅ Upserted 892/892 (100%)
+    Upserted 892/892 (100%)
 
-🎉 All vectors uploaded to Pinecone!
+ All vectors uploaded to Pinecone!
 ```
 
 ### 5.3 Verify in Pinecone Dashboard
@@ -215,7 +215,7 @@ wrangler secret list
 You should see:
 
 ```
-🌀 Listing secrets for script "tracknstick-api"
+ Listing secrets for script "tracknstick-api"
 CLERK_SECRET_KEY: ****
 PINECONE_API_KEY: ****
 ```
@@ -239,7 +239,7 @@ wrangler deploy
 ### 7.2 Expected Output
 
 ```
-⛅️ wrangler 4.x.x
+ wrangler 4.x.x
 -------------------
 Total Upload: XXX KiB / gzip: XX KiB
 Uploaded tracknstick-api (X.XX sec)
