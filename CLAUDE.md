@@ -7,53 +7,62 @@ code in this repository.
 
 ### Essential Commands
 
-- `pnpm dev` - Start development server with hot reload (Vite)
-- `pnpm build` - Production build (TypeScript check + Vite build)
+- `pnpm dev` - Start development server with hot reload (requires `.env` with
+  `VITE_*` keys)
+- `pnpm build` - Production build (TypeScript project references + Vite bundle)
+- `pnpm preview` - Serve the latest build for smoke checks
 - `pnpm test` - Run tests in watch mode (Vitest)
-- `pnpm test:run` - Run tests once with coverage
-- `pnpm lint` - Check code with ESLint
-- `pnpm lint:fix` - Auto-fix ESLint issues
-- `pnpm format` - Format code with Prettier
+- `pnpm test:run` - Run tests once
+- `pnpm test:coverage` - Run tests with coverage report
+- `pnpm lint` / `pnpm lint:fix` - Check or auto-fix ESLint issues
+- `pnpm format` - Format with Prettier
+- `pnpm knip` - Find unused exports/dependencies
 
-### Testing
+### Run a single test file
 
-- `pnpm test:ui` - Run tests with Vitest UI
-- `pnpm test:coverage` - Generate test coverage reports
-- Test setup file: `src/testing/setup.ts`
-- Tests use jsdom environment with React Testing Library
+```
+pnpm vitest run src/path/to/file.test.tsx
+```
 
-### Quality Checks
+### Required Environment Variables
 
-Always run these before committing:
+- `VITE_CLERK_PUBLISHABLE_KEY` — Clerk auth key
+- `VITE_API_HOST` — Backend API base URL (e.g. `https://api.tracknstick.com`)
 
-1. `pnpm lint:fix` - Fix linting issues
-2. `pnpm test:run` - Ensure all tests pass
-3. `pnpm build` - Verify production build works
+Missing `VITE_API_HOST` throws at startup via `src/shared/utils/getConfig.ts`.
+
+### Quality Checks Before Committing
+
+1. `pnpm lint:fix`
+2. `pnpm test:run`
+3. `pnpm build`
 
 ## Architecture
 
-### Project Structure
-
-- **Feature-driven architecture** with clear separation of concerns
-- **Modern React 19** with TypeScript strict mode
-- **Progressive Web App** with offline capabilities via Vite PWA plugin
-
-### Key Directories
+### Module Layout
 
 ```
 src/
-├── app/                    # Application core (providers, routing)
-├── features/               # Feature modules (habits, progress, layout)
-│   ├── habits/            # Habit CRUD, tracking, state management
-│   ├── progress/          # Analytics, charts, achievements, calendar
-│   └── layout/            # App layout components
-├── shared/                # Reusable utilities and components
-│   ├── components/ui/     # Design system (Radix UI + shadcn/ui)
-│   ├── services/          # API client with Clerk auth
-│   ├── hooks/             # Custom React hooks
-│   └── utils/             # Utility functions
-├── pages/                 # Route-level components
-└── testing/               # Test utilities and setup
+├── app/                  # Bootstrap: providers, router config
+│   ├── providers/        # DateProvider, ThemeProvider (React context)
+│   └── routes/           # React Router v7 route definitions
+├── features/             # Domain slices (self-contained)
+│   ├── habits/           # Habit CRUD, toggling, state dialogs
+│   ├── progress/         # Streaks, calendar, achievements, charts
+│   ├── chat/             # AI chatbot (Atomic Habits RAG via Vercel AI SDK)
+│   ├── layout/           # App shell components
+│   └── offline/          # Offline-mode components
+├── pages/                # Route-level views (thin wrappers over features)
+├── shared/               # Cross-feature reusables
+│   ├── components/       # feedback/, layouts/, ui/ (shadcn/ui + Radix)
+│   ├── services/api/     # Axios instance with Clerk JWT interceptor
+│   ├── hooks/            # useTheme, useToast, useToggle, usePageTitle
+│   ├── utils/            # date/, formatting/, validation/, getConfig, navigation
+│   └── constants/        # Theme constants
+├── ui/                   # Primitive UI components (effects, modals, layout, theme)
+├── core/                 # Design tokens / CSS theme variables
+├── types/                # Global TypeScript types
+└── testing/              # Test helpers: setup.ts, mocks.tsx, utils.tsx
 ```
 
 ### Path Aliases
@@ -64,41 +73,63 @@ src/
 - `@shared/` → `src/shared/`
 - `@testing/` → `src/testing/`
 
-### Technology Stack
+### Data Flow
 
-- **Framework**: React 19 with TypeScript 5.8+
-- **Build**: Vite 6.3+ with fast HMR
-- **Styling**: Tailwind CSS v4 with Radix UI primitives
-- **State**: React Context + SWR for server state
-- **Authentication**: Clerk with JWT tokens
-- **Testing**: Vitest + React Testing Library
-- **PWA**: Service worker with Workbox caching strategies
+Each feature module follows this pattern:
+
+1. **API layer** (`features/*/api/`) — plain async functions using the shared
+   `axiosInstance`
+2. **SWR hooks** (`features/*/hooks/`) — wrap API calls with `useSWR` for
+   caching and revalidation
+3. **React Context** — `HabitsStateProvider` holds UI-only state (dialog
+   open/close, edit mode); it does **not** hold server data
+4. **Components** — consume SWR hooks for data and context for UI state
+
+The `useHabits` hook in `features/habits/hooks/` is the canonical example: it
+calls the habit API functions, does optimistic updates via `mutate`, and plays
+audio feedback on toggle.
 
 ### Authentication
 
-- Uses Clerk for auth with automatic token attachment
-- Axios interceptor adds Bearer tokens to API requests
-- API base URL configured via `VITE_API_HOST` environment variable
+Clerk is used for auth. The Axios instance at
+`shared/services/api/axiosInstance.ts` attaches a Bearer token by reading
+`window.Clerk.session.getToken()` in a request interceptor. No token is stored
+in React state.
 
-### Key Features
+### Routing
 
-- **Habit Management**: CRUD operations with frequency patterns
-- **Progress Tracking**: Calendar view, streaks, completion analytics
-- **Achievement System**: Gamified progress with unlockable achievements
-- **PWA Support**: Installable, offline-capable, background sync
-- **Real-time Updates**: Optimistic UI with SWR data fetching
+React Router v7 with a layout route at `/` (`RootLayout`). Pages: Dashboard
+(`/`), Habits (`/habits`), Progress (`/progress`). The chat widget is a floating
+component, not a route.
 
-### API Integration
+### AI Chat
 
-- REST API with endpoints for habits, progress, achievements
-- Axios instance with Clerk auth integration
-- SWR for efficient data fetching and caching
-- Optimistic updates for better UX
+The chat feature uses the Vercel AI SDK (`ai` / `@ai-sdk/react`) to stream
+responses from a backend endpoint. It is designed as a RAG chatbot grounded in
+"Atomic Habits" content.
 
-### Code Conventions
+### PWA
 
-- Feature modules export through index.ts files
-- Components use default exports, utilities use named exports
-- Strict TypeScript with comprehensive type coverage
-- ESLint + Prettier for code quality and formatting
-- Conventional commits with Husky pre-commit hooks
+Vite PWA plugin with Workbox. API calls to `api.tracknstick.com` use
+NetworkFirst caching; static assets use CacheFirst. SW filename is `sw.js`.
+
+## Testing
+
+- **Framework**: Vitest + React Testing Library (jsdom environment)
+- **Setup**: `src/testing/setup.ts` — extends `expect` with jest-dom matchers,
+  mocks `window.matchMedia`, `ResizeObserver`, `IntersectionObserver`
+- **Mocks**: `src/testing/mocks.tsx` — mocks Clerk, `useToggle`, and
+  `HabitsStateProvider`; import this in tests via the setup chain
+- **Render helper**: `renderWithRouter()` from `src/testing/utils.tsx` wraps
+  components with `ClerkProvider`, `HabitsStateProvider`, and a `MemoryRouter`
+- **Test file location**: `__tests__/` directories beside the code being tested,
+  named `*.test.tsx` or `*.spec.ts`
+
+## Code Conventions
+
+- Feature modules export public API through `index.ts` barrel files
+- Components use default exports; utilities and hooks use named exports
+- Tailwind classes composed with `clsx` + `tailwind-merge` (`cn()` helper)
+- Formatting: 2-space indent, single quotes (Prettier-enforced)
+- Commits: short imperative subject ("Fix Welcome overflow"); Husky +
+  lint-staged runs on pre-commit
