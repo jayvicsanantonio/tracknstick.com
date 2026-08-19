@@ -2,6 +2,19 @@ import { useMemo } from 'react';
 import { InsightData } from '@/features/progress/types/InsightData';
 import { CalendarDay } from '@/features/progress/types/CalendarDay';
 
+/**
+ * Local calendar date key, YYYY-MM-DD.
+ *
+ * Built from local components on purpose. toISOString() would convert to UTC
+ * first, shifting every cell by the offset and blanking the calendar for
+ * western timezones.
+ */
+function toLocalDateKey(date: Date): string {
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
 export function useProgressCalendar(
   insightData: InsightData[],
   currentDate: Date,
@@ -19,6 +32,14 @@ export function useProgressCalendar(
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
 
+  // Indexed by full date. Matching on day-of-month alone let a neighbouring
+  // month's row -- which the requested range can include, since its bounds are
+  // local midnights -- answer for a cell in this month.
+  const byDate = useMemo(
+    () => new Map(insightData.map((entry) => [entry.date, entry])),
+    [insightData],
+  );
+
   const calendarDays: CalendarDay[] = useMemo(() => {
     const today = new Date();
 
@@ -27,13 +48,15 @@ export function useProgressCalendar(
       const date = new Date(year, month, dayOfMonth);
       const isPast = date < today;
       const isToday = date.toDateString() === today.toDateString();
-      const dayData = insightData.find((d) => {
-        return parseInt(d.date.split('-')[2]) === dayOfMonth;
-      });
+
+      // The hook owns "a future day has no data" so the calendar component
+      // does not decide it a second time.
+      const dayData =
+        isPast || isToday ? byDate.get(toLocalDateKey(date)) : undefined;
 
       return { dayOfMonth, isPast, isToday, date, dayData };
     });
-  }, [daysInMonth, year, month, insightData]);
+  }, [daysInMonth, year, month, byDate]);
 
   return {
     changeMonth,

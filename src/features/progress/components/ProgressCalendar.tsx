@@ -89,19 +89,11 @@ const ProgressCalendar = memo(function ProgressCalendar({
             >
               {dayOfMonth}
             </span>
-            {isPast || isToday ? (
-              <CalendarDayCircle
-                dayData={dayData}
-                isPast={isPast}
-                isToday={isToday}
-              />
-            ) : (
-              <CalendarDayCircle
-                dayData={undefined}
-                isPast={false}
-                isToday={false}
-              />
-            )}
+            <CalendarDayCircle
+              dayData={dayData}
+              isPast={isPast}
+              isToday={isToday}
+            />
           </div>
         ))}
       </div>
