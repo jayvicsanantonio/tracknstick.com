@@ -25,12 +25,30 @@ import { Input } from '@shared/components/ui/input';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 
+/**
+ * A habit is archived once it has an end date. Spelled four different ways
+ * before -- twice in the tab filter, twice in the row badge.
+ */
+export const isArchived = (habit: Habit) => Boolean(habit.endDate);
+
+type OverviewTab = 'all' | 'active' | 'archived';
+
+// Exhaustive by type, so the filter needs no fallthrough default. The tab was
+// previously valued 'completed', which collides with Habit.completed -- a
+// different concept entirely (today's completion), and the label already said
+// "Archived".
+export const TAB_FILTER: Record<OverviewTab, (habit: Habit) => boolean> = {
+  all: () => true,
+  active: (habit) => !isArchived(habit),
+  archived: isArchived,
+};
+
 const HabitsOverview = memo(function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useAllHabits();
   const { openEditDialog } = useHabitsContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTab, setSelectedTab] = useState('all');
+  const [selectedTab, setSelectedTab] = useState<OverviewTab>('all');
   const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
 
   const handleDeleteHabit = useCallback((habit: Habit) => {
@@ -50,16 +68,12 @@ const HabitsOverview = memo(function HabitsOverview() {
 
   // Filter habits based on search term and selected tab
   const filteredHabits = useMemo(() => {
-    return habits.filter((habit) => {
-      const matchesSearch = habit.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-
-      if (selectedTab === 'all') return matchesSearch;
-      if (selectedTab === 'active') return matchesSearch && !habit.endDate;
-      if (selectedTab === 'completed') return matchesSearch && !!habit.endDate;
-      return matchesSearch;
-    });
+    const query = searchTerm.trim().toLowerCase();
+    return habits.filter(
+      (habit) =>
+        habit.name.toLowerCase().includes(query) &&
+        TAB_FILTER[selectedTab](habit),
+    );
   }, [habits, searchTerm, selectedTab]);
 
   if (isLoading) {
@@ -148,7 +162,7 @@ const HabitsOverview = memo(function HabitsOverview() {
               />
               <Tabs
                 value={selectedTab}
-                onValueChange={setSelectedTab}
+                onValueChange={(value) => setSelectedTab(value as OverviewTab)}
                 className="w-full sm:max-w-[300px]"
               >
                 <TabsList className="bg-(--color-muted) grid w-full grid-cols-3">
@@ -166,7 +180,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                   </TabsTrigger>
                   <TabsTrigger
                     className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-                    value="completed"
+                    value="archived"
                   >
                     Archived
                   </TabsTrigger>
@@ -250,12 +264,12 @@ const HabitsOverview = memo(function HabitsOverview() {
                               <td className="px-3 py-3 sm:px-4 sm:py-4">
                                 <span
                                   className={`rounded-full px-2 py-1 text-xs ${
-                                    habit.endDate
+                                    isArchived(habit)
                                       ? 'bg-(--color-muted) text-(--color-text-secondary)'
                                       : 'bg-(--color-brand-light) text-(--color-brand-text)'
                                   }`}
                                 >
-                                  {habit.endDate ? 'Archived' : 'Active'}
+                                  {isArchived(habit) ? 'Archived' : 'Active'}
                                 </span>
                               </td>
                               <td className="px-3 py-3 text-right sm:px-4 sm:py-4">
