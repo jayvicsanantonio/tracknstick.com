@@ -32,17 +32,6 @@ const datePickerCalendarStyles = `
     color: var(--color-card-foreground);
   }
   
-  .react-datepicker__header {
-    padding-top: 0.8em;
-    background-color: var(--color-surface-secondary);
-    border-bottom: 1px solid var(--color-border-primary);
-  }
-  
-  .dark .react-datepicker__header {
-    background-color: var(--color-surface-secondary);
-    border-bottom: 1px solid var(--color-border-primary);
-  }
-  
   .react-datepicker__navigation {
     top: 1em;
   }
