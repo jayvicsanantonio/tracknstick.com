@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import { axiosInstance } from '@shared/services/api/axiosInstance';
 import { Habit } from '@/features/habits/types/Habit';
 import { HabitStats } from '@/features/habits/types/HabitStats';
@@ -74,3 +75,29 @@ export const toggleHabitCompletion = async (
 
   return response.data;
 };
+
+// --- SWR cache keys -------------------------------------------------------
+// The URLs live here, so the keys derived from them do too. Previously each
+// hook built its own key inline and open-coded the invalidation rule, in two
+// mutually incompatible idioms.
+
+export const allHabitsKey = '/api/v1/habits';
+
+export const habitsForDateKey = (date: Date, timeZone: string) =>
+  `${allHabitsKey}?date=${date.toISOString()}&timeZone=${timeZone}`;
+
+export const habitStatsKey = (habitId: string, timeZone: string) =>
+  `${allHabitsKey}/${habitId}/stats?timeZone=${timeZone}`;
+
+/**
+ * Revalidates every habit list: the unfiltered one and every date-scoped one.
+ *
+ * Deliberately not a startsWith(allHabitsKey) sweep -- that would also match
+ * the per-habit stats keys, which are not lists.
+ */
+export const mutateHabitLists = () =>
+  mutate(
+    (key) =>
+      typeof key === 'string' &&
+      (key === allHabitsKey || key.startsWith(`${allHabitsKey}?date=`)),
+  );

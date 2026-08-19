@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState, useEffect, useMemo } from 'react';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { DateContext } from '@app/providers/DateContext';
 
@@ -13,6 +13,8 @@ import {
   updateHabit as apiUpdateHabit,
   deleteHabit as apiDeleteHabit,
   toggleHabitCompletion as apiToggleHabitCompletion,
+  habitsForDateKey,
+  mutateHabitLists,
 } from '@/features/habits/api';
 import { achievementApi } from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
@@ -62,9 +64,7 @@ export function useHabits(): UseHabitsReturn {
   }, [toast]);
 
   const habitsEndpointKey =
-    date && isSignedIn
-      ? `/api/v1/habits?date=${date.toISOString()}&timeZone=${timeZone}`
-      : null;
+    date && isSignedIn ? habitsForDateKey(date, timeZone) : null;
 
   const {
     data: fetchedHabits,
@@ -99,7 +99,7 @@ export function useHabits(): UseHabitsReturn {
         setDate(new Date());
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
-        void mutate('/api/v1/habits');
+        void mutateHabitLists();
         // Check for achievements after adding a habit
         void checkAchievements();
       } catch (err) {
@@ -135,7 +135,7 @@ export function useHabits(): UseHabitsReturn {
         });
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
-        void mutate('/api/v1/habits');
+        void mutateHabitLists();
       } catch (err) {
         console.error('Failed to update habit:', err);
         toast({
@@ -144,9 +144,8 @@ export function useHabits(): UseHabitsReturn {
             habitData.name ?? 'habit'
           }". Reverting changes.`,
         });
-        // Still need to invalidate both caches on error to ensure consistency
         void mutateHabits();
-        void mutate('/api/v1/habits');
+        void mutateHabitLists();
       }
     },
     [mutateHabits, toast],
@@ -164,16 +163,15 @@ export function useHabits(): UseHabitsReturn {
         toast({ description: `Habit "${habitName}" deleted.` });
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
-        void mutate('/api/v1/habits');
+        void mutateHabitLists();
       } catch (err) {
         console.error('Failed to delete habit:', err);
         toast({
           variant: 'destructive',
           description: `Failed to delete habit "${habitName}". Restoring habit.`,
         });
-        // Still need to invalidate both caches on error to ensure consistency
         void mutateHabits();
-        void mutate('/api/v1/habits');
+        void mutateHabitLists();
       }
     },
     [mutateHabits, toast],
