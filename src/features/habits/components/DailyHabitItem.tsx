@@ -22,11 +22,9 @@ const DailyHabitItem = memo(function DailyHabitItem({
   const Icon = HabitsIcons[habit.icon];
 
   const handleToggle = useCallback(() => {
-    if (habit.id) {
-      toggleHabit(habit.id).catch((error) => {
-        console.error('Failed to toggle habit:', error);
-      });
-    }
+    toggleHabit(habit.id).catch((error) => {
+      console.error('Failed to toggle habit:', error);
+    });
   }, [habit.id, toggleHabit]);
 
   const handleEdit = useCallback(() => {

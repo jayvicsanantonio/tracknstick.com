@@ -1,7 +1,21 @@
 import { mutate } from 'swr';
 import { axiosInstance } from '@shared/services/api/axiosInstance';
-import { Habit } from '@/features/habits/types/Habit';
+import { Habit, HabitPayload } from '@/features/habits/types/Habit';
+import HabitsIcons from '@/icons/habits';
 import { HabitStats } from '@/features/habits/types/HabitStats';
+
+const FALLBACK_ICON: keyof typeof HabitsIcons = 'Activity';
+
+/**
+ * The server types icon as an optional free string, while components index
+ * HabitsIcons with it directly -- an unknown key renders `undefined` and React
+ * throws "Element type is invalid". Normalising once here is the only place
+ * that assertion can actually be made true.
+ */
+const toKnownIcon = (icon: string | undefined): keyof typeof HabitsIcons =>
+  icon && icon in HabitsIcons
+    ? (icon as keyof typeof HabitsIcons)
+    : FALLBACK_ICON;
 
 export const fetchHabits = async (
   date?: Date,
@@ -13,7 +27,11 @@ export const fetchHabits = async (
   const response = await axiosInstance.get<Habit[]>('/api/v1/habits', {
     params,
   });
-  return response.data;
+
+  return response.data.map((habit) => ({
+    ...habit,
+    icon: toKnownIcon(habit.icon),
+  }));
 };
 
 export const fetchHabitStats = async (
@@ -30,7 +48,7 @@ export const fetchHabitStats = async (
 };
 
 export const addHabit = async (
-  habitData: Omit<Habit, 'id' | 'completed'>,
+  habitData: HabitPayload,
 ): Promise<{ message: string; habitId: string }> => {
   const response = await axiosInstance.post<{
     message: string;
@@ -41,7 +59,7 @@ export const addHabit = async (
 
 export const updateHabit = async (
   habitId: string,
-  habitData: Partial<Omit<Habit, 'id' | 'completed'>>,
+  habitData: Partial<HabitPayload>,
 ): Promise<{ message: string; habitId: string }> => {
   const response = await axiosInstance.put<{
     message: string;

@@ -3,7 +3,7 @@ import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
 import { Separator } from '@shared/components/ui/separator';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Habit } from '@/features/habits/types/Habit';
+import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import { Frequency } from '@/features/habits/types/Frequency';
 import HabitsIcons from '@/icons/habits';
 import { useHabits } from '@/features/habits/hooks/useHabits';
@@ -70,7 +70,7 @@ const HabitForm = memo(function HabitForm({
     try {
       if (!icon || !startDate) return;
 
-      const habitData = {
+      const habitData: HabitPayload = {
         name,
         icon,
         frequency,

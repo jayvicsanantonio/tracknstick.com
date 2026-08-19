@@ -6,7 +6,7 @@ import { DateContext } from '@app/providers/DateContext';
 import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
 import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
 import completedAllHabits from '@/assets/audio/completed-all-habits.mp3';
-import { Habit } from '@/features/habits/types/Habit';
+import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import {
   fetchHabits,
   addHabit as apiAddHabit,
@@ -26,10 +26,10 @@ interface UseHabitsReturn {
   error: unknown;
   animatingHabitId: string | null;
   mutateHabits: () => Promise<Habit[] | undefined>;
-  addHabit: (habitData: Omit<Habit, 'id' | 'completed'>) => Promise<void>;
+  addHabit: (habitData: HabitPayload) => Promise<void>;
   updateHabit: (
     habitId: string,
-    habitData: Partial<Omit<Habit, 'id' | 'completed'>>,
+    habitData: Partial<HabitPayload>,
   ) => Promise<void>;
   deleteHabit: (habitId: string, habitName: string) => Promise<void>;
   toggleHabit: (habitId: string) => Promise<void>;
@@ -90,7 +90,7 @@ export function useHabits(): UseHabitsReturn {
   }, [timeoutId]);
 
   const addHabit = useCallback(
-    async (habitData: Omit<Habit, 'id' | 'completed'>) => {
+    async (habitData: HabitPayload) => {
       try {
         await apiAddHabit(habitData);
         toast({
@@ -116,14 +116,26 @@ export function useHabits(): UseHabitsReturn {
   const habits = useMemo(() => fetchedHabits ?? [], [fetchedHabits]);
 
   const updateHabit = useCallback(
-    async (
-      habitId: string,
-      habitData: Partial<Omit<Habit, 'id' | 'completed'>>,
-    ) => {
+    async (habitId: string, habitData: Partial<HabitPayload>) => {
+      // The payload carries Date objects; the cache holds wire strings. Convert
+      // at this one merge point so the cache stays homogeneous instead of
+      // holding one element in a different shape until revalidation.
+      const optimistic: Partial<Habit> = {
+        ...habitData,
+        startDate: habitData.startDate?.toISOString(),
+        endDate: habitData.endDate?.toISOString(),
+      };
+
       void mutateHabits(
         (currentHabits) =>
           currentHabits?.map((h) =>
-            h.id === habitId ? { ...h, ...habitData } : h,
+            h.id === habitId
+              ? {
+                  ...h,
+                  ...optimistic,
+                  startDate: optimistic.startDate ?? h.startDate,
+                }
+              : h,
           ),
         false,
       );
