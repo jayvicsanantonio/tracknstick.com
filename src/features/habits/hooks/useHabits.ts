@@ -1,7 +1,7 @@
-import { useCallback, useContext, useState, useEffect, useMemo } from 'react';
+import {useCallback, useState, useEffect, useMemo } from 'react';
 import useSWR from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
-import { DateContext } from '@app/providers/DateContext';
+import { useDate } from '@app/providers/useDate';
 
 import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
 import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
@@ -41,7 +41,7 @@ export function useHabits(): UseHabitsReturn {
     typeof setTimeout
   > | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
-  const { date, setDate, timeZone } = useContext(DateContext);
+  const { date, setDate, timeZone } = useDate();
   const { isSignedIn } = useAuth();
 
   // Check for new achievements

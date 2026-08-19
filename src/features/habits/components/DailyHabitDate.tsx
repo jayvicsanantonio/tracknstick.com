@@ -1,13 +1,13 @@
-import { useContext, useEffect, useMemo, memo } from 'react';
+import {useEffect, useMemo, memo } from 'react';
 import { Button } from '@shared/components/ui/button';
-import { DateContext } from '@app/providers/DateContext';
+import { useDate } from '@app/providers/useDate';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 const DailyHabitDate = memo(function DailyHabitDate() {
   const { date, handlePreviousDate, handleNextDate, timeZone } =
-    useContext(DateContext);
+    useDate();
 
   const formattedDate = useMemo(() => {
     return date.toLocaleDateString('en-US', {

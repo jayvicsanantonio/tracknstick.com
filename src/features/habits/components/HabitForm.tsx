@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback, useMemo, memo } from 'react';
+import {useState, useCallback, useMemo, memo } from 'react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
 import { Separator } from '@shared/components/ui/separator';
@@ -11,7 +11,7 @@ import DatePickerField, { datePickerStyles } from './DatePickerField';
 import IconPicker from './IconPicker';
 import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
-import { DateContext } from '@app/providers/DateContext';
+import { useDate } from '@app/providers/useDate';
 import {
   getLocalEndOfDayUTC,
   getLocalStartofDayUTC,
@@ -25,7 +25,7 @@ const HabitForm = memo(function HabitForm({
   habit,
   toggleDialog,
 }: HabitFormProps) {
-  const { timeZone } = useContext(DateContext);
+  const { timeZone } = useDate();
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState<string>(habit?.name ?? '');

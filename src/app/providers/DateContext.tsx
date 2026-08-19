@@ -1,26 +1,24 @@
 import { createContext } from 'react';
 
-interface DateContextProps {
+export interface DateContextProps {
   date: Date;
   setDate: (date: Date) => void;
   handlePreviousDate: () => void;
   handleNextDate: () => void;
-  previousDate: Date;
-  nextDate: Date;
   timeZone: string;
   currentDate: Date;
 }
 
-export const DateContext = createContext<DateContextProps>({
-  date: new Date(),
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setDate: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  handlePreviousDate: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  handleNextDate: () => {},
-  previousDate: new Date(),
-  nextDate: new Date(),
-  timeZone: 'America/Los_Angeles',
-  currentDate: new Date(),
-});
+/**
+ * Undefined by default so useDate() can fail loudly outside the provider,
+ * matching ThemeContext.
+ *
+ * The previous default supplied a working-looking fake -- no-op setters and a
+ * hardcoded timeZone of 'America/Los_Angeles' -- so a component rendered
+ * outside the provider silently computed every date in the wrong zone rather
+ * than failing. In an app whose correctness is entirely timezone-dependent
+ * that is the worst possible default.
+ */
+export const DateContext = createContext<DateContextProps | undefined>(
+  undefined,
+);

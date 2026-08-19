@@ -1,11 +1,11 @@
-import { useContext } from 'react';
+import { } from 'react';
 import useSWR from 'swr';
 import { fetchHabitStats, habitStatsKey } from '@/features/habits/api';
-import { DateContext } from '@app/providers/DateContext';
+import { useDate } from '@app/providers/useDate';
 import { HabitStats } from '../types/HabitStats';
 
 export default function useHabitStats(habitId: string): HabitStats {
-  const { timeZone } = useContext(DateContext);
+  const { timeZone } = useDate();
   const habitStatsEndpointKey = habitStatsKey(habitId, timeZone);
   const { data: habitStats } = useSWR<HabitStats | null>(
     habitStatsEndpointKey,
