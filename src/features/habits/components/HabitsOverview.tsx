@@ -49,17 +49,21 @@ const HabitsOverview = memo(function HabitsOverview() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<OverviewTab>('all');
-  const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null);
+  // Only the id is local state. The habit itself is derived from the list, so
+  // the dialog cannot describe a habit that is no longer there -- SWR
+  // revalidates this list on window focus.
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDeleteHabit = useCallback((habit: Habit) => {
-    setHabitToDelete(habit);
+    setDeletingId(habit.id);
   }, []);
 
+  const habitToDelete = habits.find((habit) => habit.id === deletingId);
+
   const confirmDelete = useCallback(() => {
-    if (habitToDelete?.id) {
-      void deleteHabit(habitToDelete.id, habitToDelete.name);
-      setHabitToDelete(null);
-    }
+    if (!habitToDelete) return;
+    void deleteHabit(habitToDelete.id, habitToDelete.name);
+    setDeletingId(null);
   }, [habitToDelete, deleteHabit]);
 
   const navigateBack = useCallback(() => {
@@ -360,8 +364,8 @@ const HabitsOverview = memo(function HabitsOverview() {
       </div>
 
       <AlertDialog
-        open={!!habitToDelete}
-        onOpenChange={(open) => !open && setHabitToDelete(null)}
+        open={habitToDelete !== undefined}
+        onOpenChange={(open) => !open && setDeletingId(null)}
       >
         <AlertDialogContent className="bg-(--color-card) text-(--color-card-foreground)">
           <AlertDialogHeader>
