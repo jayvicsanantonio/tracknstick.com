@@ -1,6 +1,6 @@
 import useSWR, { SWRResponse } from 'swr';
 import { fetchProgressHistory } from '@/features/progress/api';
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
 import {
   getLocalStartofDayUTC,
@@ -22,41 +22,27 @@ const getMonthBoundaryDates = (date: Date, timeZone: string) => {
 };
 
 export default function useProgressHistory(selectedMonth: Date) {
-  const { date, timeZone } = useContext(DateContext);
-  const [monthStartDate, setMonthStartDate] = useState<Date>(() => {
-    const { startDate } = getMonthBoundaryDates(selectedMonth, timeZone);
-    return startDate;
-  });
-  const [monthEndDate, setMonthEndDate] = useState<Date>(() => {
-    const { endDate } = getMonthBoundaryDates(selectedMonth, timeZone);
-    return endDate;
-  });
+  const { timeZone } = useContext(DateContext);
 
-  useEffect(() => {
-    const { startDate, endDate } = getMonthBoundaryDates(
-      selectedMonth,
-      timeZone,
-    );
-    setMonthStartDate(startDate);
-    setMonthEndDate(endDate);
-  }, [selectedMonth, timeZone]);
+  // Derived, not mirrored into state. Holding these in useState and syncing
+  // them in an effect left one commit where selectedMonth had advanced but
+  // the boundaries had not, so that render used the previous month's SWR key
+  // -- already cached, so isLoading was false and the calendar drew last
+  // month's data on the new month's grid.
+  const { startDate, endDate } = useMemo(
+    () => getMonthBoundaryDates(selectedMonth, timeZone),
+    [selectedMonth, timeZone],
+  );
 
-  const cacheKey =
-    monthStartDate && monthEndDate
-      ? ([
-          'progressHistory',
-          date.toISOString(),
-          monthStartDate,
-          monthEndDate,
-        ] as const)
-      : (['progressHistory', date.toISOString()] as const);
+  // timeZone rather than the selected dashboard day: the fetcher does not use
+  // that day, so keying on it fragmented the cache at millisecond precision
+  // for identical requests.
+  const cacheKey = ['progressHistory', timeZone, startDate, endDate] as const;
 
   const { data, error, isLoading }: SWRResponse<HistoryDates[], Error> = useSWR<
     HistoryDates[],
     Error
-  >(cacheKey, () =>
-    fetchProgressHistory(timeZone, monthStartDate, monthEndDate),
-  );
+  >(cacheKey, () => fetchProgressHistory(timeZone, startDate, endDate));
 
   return {
     historyData: data ?? [],
