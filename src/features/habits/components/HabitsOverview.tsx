@@ -24,24 +24,11 @@ import { Tabs, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
 import { Input } from '@shared/components/ui/input';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
-
-/**
- * A habit is archived once it has an end date. Spelled four different ways
- * before -- twice in the tab filter, twice in the row badge.
- */
-export const isArchived = (habit: Habit) => Boolean(habit.endDate);
-
-type OverviewTab = 'all' | 'active' | 'archived';
-
-// Exhaustive by type, so the filter needs no fallthrough default. The tab was
-// previously valued 'completed', which collides with Habit.completed -- a
-// different concept entirely (today's completion), and the label already said
-// "Archived".
-export const TAB_FILTER: Record<OverviewTab, (habit: Habit) => boolean> = {
-  all: () => true,
-  active: (habit) => !isArchived(habit),
-  archived: isArchived,
-};
+import {
+  isArchived,
+  TAB_FILTER,
+  type OverviewTab,
+} from '@/features/habits/components/habitFilters';
 
 const HabitsOverview = memo(function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useAllHabits();

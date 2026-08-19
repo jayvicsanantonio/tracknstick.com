@@ -2,7 +2,7 @@
 // row badge both derive from
 
 import { describe, it, expect } from 'vitest';
-import { isArchived, TAB_FILTER } from '../HabitsOverview';
+import { isArchived, TAB_FILTER } from '../habitFilters';
 import type { Habit } from '@/features/habits/types/Habit';
 
 const habit = (overrides: Partial<Habit>): Habit => ({
