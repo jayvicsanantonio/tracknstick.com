@@ -43,60 +43,62 @@ function getTimezoneOffsetMs(dateTimeStr: string, timezone: string): number {
   return tzAsUtc - asUtc.getTime();
 }
 
-/**
- * Gets the UTC timestamp that corresponds to midnight (00:00:00) of the given date
- * in the specified timezone.
- *
- * @param date - The input date
- * @param timezone - The IANA timezone name (e.g., 'America/Los_Angeles')
- * @returns Date object representing the UTC time of midnight in the given timezone
- */
-export function getLocalStartofDayUTC(date: Date, timezone: string): Date {
-  // Get the date string (YYYY-MM-DD) in the target timezone
-  const formatter = new Intl.DateTimeFormat('en-CA', {
+type DayBoundary = 'start' | 'end';
+
+// The offset is probed at 23:59:59 while the instant is built from
+// 23:59:59.999. Keep both literals: using one for both shifts the end
+// boundary by a millisecond.
+const BOUNDARY = {
+  start: { probe: '00:00:00', instant: '00:00:00.000' },
+  end: { probe: '23:59:59', instant: '23:59:59.999' },
+} as const;
+
+/** The local calendar date an instant falls on, as YYYY-MM-DD. */
+function toLocalDateKey(date: Date, timezone: string): string {
+  return new Intl.DateTimeFormat('en-CA', {
     timeZone: timezone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  });
-  const dateStr = formatter.format(date);
-
-  // Calculate offset for start of day in target timezone
-  const startOffset = getTimezoneOffsetMs(`${dateStr}T00:00:00`, timezone);
-
-  // Start of day in target timezone = midnight in TZ converted to UTC
-  const localeStart = new Date(`${dateStr}T00:00:00Z`);
-  localeStart.setTime(localeStart.getTime() - startOffset);
-
-  return localeStart;
+  }).format(date);
 }
 
 /**
- * Gets the UTC timestamp that corresponds to end of day (23:59:59.999) of the given date
- * in the specified timezone.
+ * The UTC instant at one edge of the local day that `date` falls on.
  *
- * @param date - The input date
- * @param timezone - The IANA timezone name (e.g., 'America/Los_Angeles')
- * @returns Date object representing the UTC time of end of day in the given timezone
+ * The input's time of day is discarded: only its calendar date in `timezone`
+ * matters, which is why this is idempotent.
+ */
+function localDayBoundaryUTC(
+  date: Date,
+  timezone: string,
+  boundary: DayBoundary,
+): Date {
+  const dateStr = toLocalDateKey(date, timezone);
+  const { probe, instant } = BOUNDARY[boundary];
+
+  const result = new Date(`${dateStr}T${instant}Z`);
+  result.setTime(
+    result.getTime() - getTimezoneOffsetMs(`${dateStr}T${probe}`, timezone),
+  );
+
+  return result;
+}
+
+/**
+ * Gets the UTC timestamp that corresponds to midnight (00:00:00) of the given
+ * date in the specified timezone.
+ */
+export function getLocalStartofDayUTC(date: Date, timezone: string): Date {
+  return localDayBoundaryUTC(date, timezone, 'start');
+}
+
+/**
+ * Gets the UTC timestamp that corresponds to end of day (23:59:59.999) of the
+ * given date in the specified timezone.
  */
 export function getLocalEndOfDayUTC(date: Date, timezone: string): Date {
-  // Get the date string (YYYY-MM-DD) in the target timezone
-  const formatter = new Intl.DateTimeFormat('en-CA', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
-  const dateStr = formatter.format(date);
-
-  // Calculate offset for end of day in target timezone
-  const endOffset = getTimezoneOffsetMs(`${dateStr}T23:59:59`, timezone);
-
-  // End of day in target timezone = 23:59:59.999 in TZ converted to UTC
-  const localeEnd = new Date(`${dateStr}T23:59:59.999Z`);
-  localeEnd.setTime(localeEnd.getTime() - endOffset);
-
-  return localeEnd;
+  return localDayBoundaryUTC(date, timezone, 'end');
 }
 
 export default function formatDate(date: string | null): string {
