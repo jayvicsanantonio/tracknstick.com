@@ -1,3 +1,4 @@
+import '@testing/mocks';
 import { screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { renderWithRouter } from '@testing/utils';

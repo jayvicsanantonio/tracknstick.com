@@ -180,11 +180,6 @@ vi.mock('@shared/components/feedback/ErrorBoundary', () => {
 });
 
 // Mock error page component for testing error boundaries
-vi.mock('@/pages/ErrorPage', () => ({
-  default: () => {
-    throw new Error('Test error for error boundary');
-  },
-}));
 
 // Mock Welcome component
 vi.mock('@/features/layout/components/Welcome', () => ({

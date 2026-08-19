@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom';
 
-// Setup any global test configuration here
-import './mocks';
+// Global *environment* setup only.
+//
+// Component and page mocks live in ./mocks and are opt-in: a test that wants
+// the routing stubs imports '@testing/mocks' itself. Applying them here made
+// every suite render stubs, so a test could not exercise a real component.
 import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';

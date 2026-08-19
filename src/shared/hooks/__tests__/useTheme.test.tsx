@@ -1,13 +1,9 @@
 // Unit tests for the useTheme hook
 // Tests theme functionality and state management
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { ReactNode } from 'react';
-
-// Unmock for this specific test file
-vi.unmock('@app/providers/ThemeProvider');
-vi.unmock('@shared/hooks/useTheme');
 
 import ThemeProvider from '@app/providers/ThemeProvider';
 import { useTheme } from '@shared/hooks/useTheme';
