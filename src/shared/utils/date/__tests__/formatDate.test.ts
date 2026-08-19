@@ -38,7 +38,7 @@ describe('local day boundaries', () => {
       const date = new Date(iso);
       expect(
         getLocalStartofDayUTC(date, zone).getTime(),
-        `${zone} ${iso}`
+        `${zone} ${iso}`,
       ).toBeLessThan(getLocalEndOfDayUTC(date, zone).getTime());
     }
   });
@@ -49,10 +49,10 @@ describe('local day boundaries', () => {
       const expected = localDateKey(date, zone);
 
       expect(localDateKey(getLocalStartofDayUTC(date, zone), zone)).toBe(
-        expected
+        expected,
       );
       expect(localDateKey(getLocalEndOfDayUTC(date, zone), zone)).toBe(
-        expected
+        expected,
       );
     }
   });
@@ -86,7 +86,7 @@ describe('local day boundaries', () => {
     const date = new Date('2026-06-15T12:00:00Z');
     const zone = 'Pacific/Kiritimati';
     expect(localDateKey(getLocalStartofDayUTC(date, zone), zone)).toBe(
-      localDateKey(date, zone)
+      localDateKey(date, zone),
     );
   });
 });
