@@ -44,23 +44,22 @@ Missing `VITE_API_HOST` throws at startup via `src/shared/utils/getConfig.ts`.
 ```
 src/
 ├── app/                  # Bootstrap: providers, router config
-│   ├── providers/        # DateProvider, ThemeProvider (React context)
+│   ├── providers/        # DateProvider/useDate, ThemeProvider (React context)
 │   └── routes/           # React Router v7 route definitions
 ├── features/             # Domain slices (self-contained)
 │   ├── habits/           # Habit CRUD, toggling, state dialogs
 │   ├── progress/         # Streaks, calendar, achievements, charts
-│   ├── chat/             # AI chatbot (Atomic Habits RAG via Vercel AI SDK)
-│   ├── layout/           # App shell components
-│   └── offline/          # Offline-mode components
+│   ├── chat/             # AI chatbot (Atomic Habits RAG), floating widget
+│   └── layout/           # App shell components
 ├── pages/                # Route-level views (thin wrappers over features)
 ├── shared/               # Cross-feature reusables
 │   ├── components/       # feedback/, layouts/, ui/ (shadcn/ui + Radix)
 │   ├── services/api/     # Axios instance with Clerk JWT interceptor
-│   ├── hooks/            # useTheme, useToast, useToggle, usePageTitle
-│   ├── utils/            # date/, formatting/, validation/, getConfig, navigation
-│   └── constants/        # Theme constants
-├── ui/                   # Primitive UI components (effects, modals, layout, theme)
-├── core/                 # Design tokens / CSS theme variables
+│   ├── hooks/            # useTheme, use-toast, use-toggle, usePageTitle
+│   ├── utils/            # date/, getConfig, theme, frequencyLabel, utils
+│   └── constants/        # Theme storage key and default mode
+├── icons/                # Lucide icon maps (habits, miscellaneous)
+├── styles/               # index.css: Tailwind v4 setup and both theme palettes
 ├── types/                # Global TypeScript types
 └── testing/              # Test helpers: setup.ts, mocks.tsx, utils.tsx
 ```
@@ -88,6 +87,13 @@ Each feature module follows this pattern:
 The `useHabits` hook in `features/habits/hooks/` is the canonical example: it
 calls the habit API functions, does optimistic updates via `mutate`, and plays
 audio feedback on toggle.
+
+### Theming
+
+Both palettes are declared in `src/styles/index.css` (`:root` for light,
+`.dark` for dark). `index.html` applies the stored class before first paint;
+`ThemeProvider` only selects the mode and persists it. There is no
+JavaScript token map — adding a colour means adding it to both CSS blocks.
 
 ### Authentication
 
@@ -118,8 +124,10 @@ NetworkFirst caching; static assets use CacheFirst. SW filename is `sw.js`.
 - **Framework**: Vitest + React Testing Library (jsdom environment)
 - **Setup**: `src/testing/setup.ts` — extends `expect` with jest-dom matchers,
   mocks `window.matchMedia`, `ResizeObserver`, `IntersectionObserver`
-- **Mocks**: `src/testing/mocks.tsx` — mocks Clerk, `useToggle`, and
-  `HabitsStateProvider`; import this in tests via the setup chain
+- **Mocks**: `src/testing/mocks.tsx` — component and page stubs for the
+  routing tests. Opt-in: import `'@testing/mocks'` in a test that wants them.
+  It is deliberately *not* applied globally, so a test can render the real
+  component it is testing
 - **Render helper**: `renderWithRouter()` from `src/testing/utils.tsx` wraps
   components with `ClerkProvider`, `HabitsStateProvider`, and a `MemoryRouter`
 - **Test file location**: `__tests__/` directories beside the code being tested,
