@@ -22,13 +22,13 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
   return (
     <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       {/* Total Progress */}
-      <div className="bg-(--color-surface) dark:bg-(--color-brand-light) rounded-lg p-4 shadow-md">
+      <div className="rounded-lg bg-(--color-surface) p-4 shadow-md dark:bg-(--color-brand-light)">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-(--color-text-secondary) dark:text-(--color-brand-text-light) text-sm">
+            <p className="text-sm text-(--color-text-secondary) dark:text-(--color-brand-text-light)">
               Total Progress
             </p>
-            <p className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-2xl font-bold">
+            <p className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
               {earnedAchievements}/{totalAchievements}
             </p>
           </div>
@@ -37,11 +37,11 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
         <div className="mt-2">
           <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
             <div
-              className="from-(--color-brand-primary) to-(--color-brand-secondary) h-2 rounded-full bg-gradient-to-r"
+              className="h-2 rounded-full bg-gradient-to-r from-(--color-brand-primary) to-(--color-brand-secondary)"
               style={{ width: `${completionPercentage}%` }}
             />
           </div>
-          <p className="text-(--color-brand-primary) dark:text-(--color-brand-secondary) mt-1 text-sm font-medium">
+          <p className="mt-1 text-sm font-medium text-(--color-brand-primary) dark:text-(--color-brand-secondary)">
             {completionPercentage}% Complete
           </p>
         </div>
@@ -55,14 +55,14 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
         return (
           <div
             key={category}
-            className="bg-(--color-surface) dark:bg-(--color-brand-light) rounded-lg p-4 shadow-md"
+            className="rounded-lg bg-(--color-surface) p-4 shadow-md dark:bg-(--color-brand-light)"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-(--color-text-secondary) text-sm dark:text-gray-300">
+                <p className="text-sm text-(--color-text-secondary) dark:text-gray-300">
                   {getCategoryLabel(category)}
                 </p>
-                <p className="text-(--color-brand-tertiary) text-xl font-bold dark:text-gray-100">
+                <p className="text-xl font-bold text-(--color-brand-tertiary) dark:text-gray-100">
                   {data.earned}/{data.total}
                 </p>
               </div>
@@ -77,7 +77,7 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              <p className="text-(--color-text-secondary) mt-1 text-sm dark:text-gray-300">
+              <p className="mt-1 text-sm text-(--color-text-secondary) dark:text-gray-300">
                 {percentage}%
               </p>
             </div>

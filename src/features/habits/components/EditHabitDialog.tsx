@@ -28,7 +28,7 @@ export default function EditHabitDialog() {
       toggleIsOpen={toggleShowEditHabitDialog}
     >
       <DialogHeader>
-        <DialogTitle className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-2xl font-bold">
+        <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           {HabitIcon && <HabitIcon className="mr-2 inline-block h-8 w-8" />}
           {editingHabit?.name}
         </DialogTitle>
@@ -37,16 +37,16 @@ export default function EditHabitDialog() {
         </DialogDescription>
       </DialogHeader>
       <Tabs defaultValue="edit" className="w-full">
-        <TabsList className="bg-(--color-surface-tertiary) dark:bg-(--color-surface-secondary) mb-2 grid w-full grid-cols-2 overflow-hidden rounded-md sm:mb-4">
+        <TabsList className="mb-2 grid w-full grid-cols-2 overflow-hidden rounded-md bg-(--color-surface-tertiary) sm:mb-4 dark:bg-(--color-surface-secondary)">
           <TabsTrigger
             value="edit"
-            className="data-[state=active]:bg-(--color-active-brand) data-[state=active]:text-(--color-brand-tertiary) dark:focus:ring-(--color-brand-text-light) dark:data-[state=active]:bg-(--color-brand-primary) dark:data-[state=active]:text-(--color-text-inverse) dark:data-[state=inactive]:text-(--color-brand-text-light) py-1.5 text-xs font-medium sm:py-2 sm:text-sm"
+            className="py-1.5 text-xs font-medium data-[state=active]:bg-(--color-active-brand) data-[state=active]:text-(--color-brand-tertiary) sm:py-2 sm:text-sm dark:focus:ring-(--color-brand-text-light) dark:data-[state=active]:bg-(--color-brand-primary) dark:data-[state=active]:text-(--color-text-inverse) dark:data-[state=inactive]:text-(--color-brand-text-light)"
           >
             Edit
           </TabsTrigger>
           <TabsTrigger
             value="stats"
-            className="data-[state=active]:bg-(--color-active-brand) data-[state=active]:text-(--color-brand-tertiary) dark:focus:ring-(--color-brand-text-light) dark:data-[state=active]:bg-(--color-brand-primary) dark:data-[state=active]:text-(--color-text-inverse) dark:data-[state=inactive]:text-(--color-brand-text-light) py-1.5 text-xs font-medium sm:py-2 sm:text-sm"
+            className="py-1.5 text-xs font-medium data-[state=active]:bg-(--color-active-brand) data-[state=active]:text-(--color-brand-tertiary) sm:py-2 sm:text-sm dark:focus:ring-(--color-brand-text-light) dark:data-[state=active]:bg-(--color-brand-primary) dark:data-[state=active]:text-(--color-text-inverse) dark:data-[state=inactive]:text-(--color-brand-text-light)"
           >
             Stats
           </TabsTrigger>

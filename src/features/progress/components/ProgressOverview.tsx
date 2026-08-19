@@ -47,12 +47,12 @@ const ProgressOverview = memo(function ProgressOverview() {
         >
           <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
             <div>
-              <CardTitle className="text-(--color-foreground) mb-2 flex items-center gap-2 text-xl font-bold sm:text-2xl">
+              <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleNavigateBack}
-                  className="hover:bg-(--color-hover-surface) mr-2"
+                  className="mr-2 hover:bg-(--color-hover-surface)"
                   aria-label="Back to daily view"
                 >
                   <svg
@@ -80,14 +80,14 @@ const ProgressOverview = memo(function ProgressOverview() {
                 </Button>
                 Progress Overview
               </CardTitle>
-              <p className="text-(--color-text-secondary) text-sm">
+              <p className="text-sm text-(--color-text-secondary)">
                 View your progress in one place
               </p>
             </div>
           </CardHeader>
           <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
             <div className="mb-4 flex items-center justify-center">
-              <div className="text-(--color-brand-text) flex items-center space-x-8">
+              <div className="flex items-center space-x-8 text-(--color-brand-text)">
                 <StreakDisplayDays
                   value={currentStreak}
                   label="Current Streak"

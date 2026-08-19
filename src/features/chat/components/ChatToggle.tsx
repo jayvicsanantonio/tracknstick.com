@@ -13,7 +13,7 @@ export function ChatToggle({ isOpen, onClick }: ChatToggleProps) {
   return (
     <motion.button
       onClick={onClick}
-      className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+      className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       aria-label={isOpen ? 'Close chat' : 'Open chat'}

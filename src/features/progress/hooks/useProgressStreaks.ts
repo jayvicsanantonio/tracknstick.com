@@ -3,7 +3,7 @@ import {
   fetchProgressStreaks,
   ProgressStreaksResponse,
 } from '@/features/progress/api';
-import { } from 'react';
+import {} from 'react';
 import { useDate } from '@app/providers/useDate';
 
 export default function useProgressStreaks() {

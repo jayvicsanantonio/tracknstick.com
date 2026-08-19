@@ -62,13 +62,13 @@ function Card({
       {glow ? (
         <div
           aria-hidden
-          className="bg-(--color-brand-primary) pointer-events-none absolute -inset-2 -z-10 rounded-[inherit] opacity-20 blur-2xl transition-opacity duration-300 group-hover:opacity-30"
+          className="pointer-events-none absolute -inset-2 -z-10 rounded-[inherit] bg-(--color-brand-primary) opacity-20 blur-2xl transition-opacity duration-300 group-hover:opacity-30"
         />
       ) : null}
       {accent ? (
         <div
           aria-hidden
-          className="from-(--color-brand-light) via-(--color-border-brand) to-(--color-brand-light) pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-(--color-brand-light) via-(--color-border-brand) to-(--color-brand-light)"
         />
       ) : null}
       {props.children}
@@ -81,7 +81,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6',
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
         className,
       )}
       {...props}
@@ -93,7 +93,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('font-semibold leading-none tracking-tight', className)}
+      className={cn('leading-none font-semibold tracking-tight', className)}
       {...props}
     />
   );

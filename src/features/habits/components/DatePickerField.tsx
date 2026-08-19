@@ -160,7 +160,7 @@ const DatePickerField = memo(function DatePickerField({
         className="text-(--color-brand-text) dark:text-(--color-brand-text-light)"
       >
         {label}
-        {isRequired && <span className="text-(--color-error) ml-1">*</span>}
+        {isRequired && <span className="ml-1 text-(--color-error)">*</span>}
       </Label>
       <DatePicker
         selected={selected}

@@ -16,7 +16,7 @@ export default function AddHabitDialog() {
       toggleIsOpen={toggleShowAddHabitDialog}
     >
       <DialogHeader>
-        <DialogTitle className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-2xl font-bold">
+        <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           Add New Habit
         </DialogTitle>
         <DialogDescription className="sr-only">

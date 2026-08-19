@@ -74,7 +74,7 @@ export default function DatePickerInput({
         onClick={onClick}
         placeholder={placeholder}
         readOnly
-        className="dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light) cursor-pointer pl-10"
+        className="cursor-pointer pl-10 dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
         aria-label={placeholder ?? 'Select date'}
       />
     </div>

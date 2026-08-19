@@ -14,18 +14,18 @@ const NoHabits = memo(function NoHabits() {
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className="mx-auto max-w-md px-6 py-16 text-center"
     >
-      <div className="border-(--color-border-primary) mx-auto mb-4 flex size-12 items-center justify-center rounded-full border">
+      <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full border border-(--color-border-primary)">
         <CalendarX2
-          className="text-(--color-text-secondary) h-6 w-6"
+          className="h-6 w-6 text-(--color-text-secondary)"
           aria-hidden="true"
         />
       </div>
 
-      <h3 className="text-(--color-foreground) text-xl font-semibold tracking-tight">
+      <h3 className="text-xl font-semibold tracking-tight text-(--color-foreground)">
         No habits yet
       </h3>
 
-      <p className="text-(--color-text-secondary) mx-auto mt-2 max-w-prose text-sm sm:text-base">
+      <p className="mx-auto mt-2 max-w-prose text-sm text-(--color-text-secondary) sm:text-base">
         Start your streak by adding your first habit. Small steps today become
         big wins over time.
       </p>

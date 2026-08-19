@@ -12,11 +12,11 @@ export function ErrorFallback({
 }: ErrorFallbackProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
-      <h1 className="text-(--color-destructive) text-2xl font-bold">{title}</h1>
-      <p className="text-(--color-text-secondary) mt-4">{description}</p>
+      <h1 className="text-2xl font-bold text-(--color-destructive)">{title}</h1>
+      <p className="mt-4 text-(--color-text-secondary)">{description}</p>
       <button
         onClick={() => window.location.reload()}
-        className="bg-(--color-destructive) text-(--color-destructive-foreground) mt-4 rounded-md px-4 py-2 hover:opacity-90"
+        className="mt-4 rounded-md bg-(--color-destructive) px-4 py-2 text-(--color-destructive-foreground) hover:opacity-90"
       >
         Refresh Page
       </button>

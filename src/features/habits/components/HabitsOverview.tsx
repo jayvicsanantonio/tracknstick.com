@@ -74,9 +74,9 @@ const HabitsOverview = memo(function HabitsOverview() {
           variant="glass"
           className="flex w-full items-center justify-center rounded-xl p-8"
         >
-          <div className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 inline-flex items-center gap-4 rounded-full px-6 py-4 shadow-sm ring-1 ring-inset backdrop-blur-sm">
-            <span className="border-(--color-brand-primary) h-10 w-10 animate-spin rounded-full border-4 border-r-transparent" />
-            <span className="text-(--color-text-secondary) text-base font-medium sm:text-lg">
+          <div className="inline-flex items-center gap-4 rounded-full bg-(--color-surface)/80 px-6 py-4 shadow-sm ring-1 ring-(--color-border-primary)/40 backdrop-blur-sm ring-inset dark:bg-(--color-surface-secondary)/80">
+            <span className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-brand-primary) border-r-transparent" />
+            <span className="text-base font-medium text-(--color-text-secondary) sm:text-lg">
               Loading…
             </span>
           </div>
@@ -107,12 +107,12 @@ const HabitsOverview = memo(function HabitsOverview() {
         >
           <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
             <div>
-              <CardTitle className="text-(--color-foreground) mb-2 flex items-center gap-2 text-xl font-bold sm:text-2xl">
+              <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={navigateBack}
-                  className="hover:bg-(--color-hover-surface) mr-2"
+                  className="mr-2 hover:bg-(--color-hover-surface)"
                 >
                   <svg
                     className="h-5 w-5"
@@ -138,7 +138,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                 </Button>
                 Habits Overview
               </CardTitle>
-              <p className="text-(--color-text-secondary) text-sm">
+              <p className="text-sm text-(--color-text-secondary)">
                 Manage all your habits in one place
               </p>
             </div>
@@ -156,7 +156,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                 onValueChange={(value) => setSelectedTab(value as OverviewTab)}
                 className="w-full sm:max-w-[300px]"
               >
-                <TabsList className="bg-(--color-muted) grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-3 bg-(--color-muted)">
                   <TabsTrigger
                     className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
                     value="all"
@@ -194,29 +194,29 @@ const HabitsOverview = memo(function HabitsOverview() {
                   </p>
                 </motion.div>
               ) : (
-                <div className="border-(--color-border-primary) overflow-hidden rounded-lg border">
+                <div className="overflow-hidden rounded-lg border border-(--color-border-primary)">
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-(--color-surface-secondary) text-left">
                         <tr>
-                          <th className="text-(--color-text-secondary) px-3 py-3 text-xs font-medium sm:px-4 sm:text-sm">
+                          <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
                             Habit
                           </th>
-                          <th className="text-(--color-text-secondary) hidden px-3 py-3 text-xs font-medium sm:table-cell sm:px-4 sm:text-sm">
+                          <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:table-cell sm:px-4 sm:text-sm">
                             Frequency
                           </th>
-                          <th className="text-(--color-text-secondary) hidden px-3 py-3 text-xs font-medium sm:px-4 sm:text-sm md:table-cell">
+                          <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm md:table-cell">
                             Start Date
                           </th>
-                          <th className="text-(--color-text-secondary) px-3 py-3 text-xs font-medium sm:px-4 sm:text-sm">
+                          <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
                             Status
                           </th>
-                          <th className="text-(--color-text-secondary) px-3 py-3 text-right text-xs font-medium sm:px-4 sm:text-sm">
+                          <th className="px-3 py-3 text-right text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
                             Actions
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-(--color-border-primary) text-(--color-foreground) divide-y">
+                      <tbody className="divide-y divide-(--color-border-primary) text-(--color-foreground)">
                         {filteredHabits.map((habit) => {
                           const Icon = HabitsIcons[habit.icon];
                           return (
@@ -229,10 +229,10 @@ const HabitsOverview = memo(function HabitsOverview() {
                             >
                               <td className="px-3 py-3 sm:px-4 sm:py-4">
                                 <div className="flex items-center gap-2 sm:gap-3">
-                                  <div className="bg-(--color-brand-light) flex items-center justify-center rounded-full p-1.5 sm:p-2">
-                                    <Icon className="text-(--color-brand-primary) h-4 w-4 sm:h-5 sm:w-5" />
+                                  <div className="flex items-center justify-center rounded-full bg-(--color-brand-light) p-1.5 sm:p-2">
+                                    <Icon className="h-4 w-4 text-(--color-brand-primary) sm:h-5 sm:w-5" />
                                   </div>
-                                  <span className="text-(--color-foreground) line-clamp-1 text-sm font-medium sm:text-base">
+                                  <span className="line-clamp-1 text-sm font-medium text-(--color-foreground) sm:text-base">
                                     {habit.name}
                                   </span>
                                 </div>
@@ -242,14 +242,14 @@ const HabitsOverview = memo(function HabitsOverview() {
                                   {habit.frequency.map((day) => (
                                     <span
                                       key={day}
-                                      className="bg-(--color-brand-light) text-(--color-brand-text) rounded-full px-2 py-0.5 text-xs"
+                                      className="rounded-full bg-(--color-brand-light) px-2 py-0.5 text-xs text-(--color-brand-text)"
                                     >
                                       {day.substring(0, 3)}
                                     </span>
                                   ))}
                                 </div>
                               </td>
-                              <td className="text-(--color-foreground) hidden px-3 py-3 text-xs sm:px-4 sm:py-4 sm:text-sm md:table-cell">
+                              <td className="hidden px-3 py-3 text-xs text-(--color-foreground) sm:px-4 sm:py-4 sm:text-sm md:table-cell">
                                 {new Date(habit.startDate).toLocaleDateString()}
                               </td>
                               <td className="px-3 py-3 sm:px-4 sm:py-4">
@@ -269,7 +269,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => openEditDialog(habit)}
-                                    className="text-(--color-brand-primary) hover:bg-(--color-hover-surface) h-7 w-7 sm:h-8 sm:w-8"
+                                    className="h-7 w-7 text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:h-8 sm:w-8"
                                   >
                                     <svg
                                       className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -297,7 +297,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => handleDeleteHabit(habit)}
-                                    className="text-(--color-destructive) hover:bg-(--color-error-light) h-7 w-7 sm:h-8 sm:w-8"
+                                    className="h-7 w-7 text-(--color-destructive) hover:bg-(--color-error-light) sm:h-8 sm:w-8"
                                   >
                                     <svg
                                       className="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -370,7 +370,7 @@ const HabitsOverview = memo(function HabitsOverview() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-(--color-destructive) text-(--color-destructive-foreground) focus:ring-(--color-ring) hover:opacity-90"
+              className="bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring)"
             >
               Delete
             </AlertDialogAction>

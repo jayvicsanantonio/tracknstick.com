@@ -22,7 +22,7 @@ function DashboardPage() {
     >
       <div
         aria-hidden
-        className="bg-(--color-brand-light) pointer-events-none absolute -top-6 left-6 -z-10 h-24 w-24 rounded-full opacity-30 blur-2xl"
+        className="pointer-events-none absolute -top-6 left-6 -z-10 h-24 w-24 rounded-full bg-(--color-brand-light) opacity-30 blur-2xl"
       />
       <h1 className="sr-only">Daily Habit Tracker</h1>
       <DailyHabitTracker />

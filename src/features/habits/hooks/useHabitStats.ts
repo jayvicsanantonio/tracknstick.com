@@ -1,4 +1,4 @@
-import { } from 'react';
+import {} from 'react';
 import useSWR from 'swr';
 import { fetchHabitStats, habitStatsKey } from '@/features/habits/api';
 import { useDate } from '@app/providers/useDate';

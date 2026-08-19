@@ -35,7 +35,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
     <div key={habit.id} className="group flex flex-col items-center">
       <div className="relative mb-3">
         <button
-          className={`ring-(--color-border-primary)/40 relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:h-24 sm:w-24 md:h-28 md:w-28 ${
+          className={`relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:h-24 sm:w-24 md:h-28 md:w-28 ${
             habit.completed
               ? 'bg-(--color-brand-primary)/18 dark:bg-(--color-brand-primary)/20'
               : 'bg-(--color-surface)/60 dark:bg-(--color-surface-secondary)/40'
@@ -56,27 +56,27 @@ const DailyHabitItem = memo(function DailyHabitItem({
           ) : null}
           <Icon
             aria-hidden="true"
-            className={`text-(--color-brand-primary) relative z-10 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14`}
+            className={`relative z-10 h-10 w-10 text-(--color-brand-primary) sm:h-12 sm:w-12 md:h-14 md:w-14`}
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />
         </button>
         {isEditMode && (
           <Button
-            className="bg-(--color-brand-primary) text-(--color-text-inverse) shadow-(--color-brand-primary)/30 hover:bg-(--color-brand-primary) absolute -right-1 -top-1 z-10 h-6 w-6 rounded-full p-0 shadow-md sm:h-8 sm:w-8"
+            className="absolute -top-1 -right-1 z-10 h-6 w-6 rounded-full bg-(--color-brand-primary) p-0 text-(--color-text-inverse) shadow-(--color-brand-primary)/30 shadow-md hover:bg-(--color-brand-primary) sm:h-8 sm:w-8"
             onClick={handleEdit}
             aria-label={`Edit ${habit.name}`}
           >
             <Edit
               aria-hidden="true"
-              className="text-(--color-text-inverse) h-3 w-3 sm:h-4 sm:w-4"
+              className="h-3 w-3 text-(--color-text-inverse) sm:h-4 sm:w-4"
             />
           </Button>
         )}
       </div>
-      <span className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) line-clamp-1 max-w-full px-1 text-center text-xs font-semibold sm:text-sm">
+      <span className="line-clamp-1 max-w-full px-1 text-center text-xs font-semibold text-(--color-brand-tertiary) sm:text-sm dark:text-(--color-brand-text-light)">
         {habit.name}
       </span>
-      <span className="text-(--color-brand-text) dark:text-(--color-brand-text-light) mt-0.5 text-xs">
+      <span className="mt-0.5 text-xs text-(--color-brand-text) dark:text-(--color-brand-text-light)">
         {frequencyLabel(habit.frequency)}
       </span>
     </div>

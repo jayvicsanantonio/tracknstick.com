@@ -1,6 +1,6 @@
 import useSWR, { SWRResponse } from 'swr';
 import { fetchProgressHistory } from '@/features/progress/api';
-import {useMemo } from 'react';
+import { useMemo } from 'react';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
 import {
   getLocalStartofDayUTC,

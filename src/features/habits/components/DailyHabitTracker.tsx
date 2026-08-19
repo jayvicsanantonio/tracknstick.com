@@ -34,7 +34,7 @@ export default function DailyHabitTracker() {
 
   if (error) {
     return (
-      <div className="border-(--color-error-light) bg-(--color-error-light) text-(--color-error-text) dark:border-(--color-error) dark:bg-(--color-error-light) dark:text-(--color-error-text) rounded-lg border p-8 text-center">
+      <div className="rounded-lg border border-(--color-error-light) bg-(--color-error-light) p-8 text-center text-(--color-error-text) dark:border-(--color-error) dark:bg-(--color-error-light) dark:text-(--color-error-text)">
         Error loading habits. Please try again.
       </div>
     );
