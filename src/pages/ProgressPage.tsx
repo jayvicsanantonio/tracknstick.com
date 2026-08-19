@@ -1,6 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import ProgressOverview from '@/features/progress/components/ProgressOverview';
-import { useRouteMonitoring } from '@shared/utils/monitoring';
 import { motion } from 'framer-motion';
 
 /**
@@ -13,7 +12,6 @@ import { motion } from 'framer-motion';
  */
 function ProgressPage() {
   usePageTitle('Progress Overview');
-  useRouteMonitoring('/progress');
 
   return (
     <motion.section

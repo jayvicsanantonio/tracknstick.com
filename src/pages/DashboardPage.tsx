@@ -1,6 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import DailyHabitTracker from '@/features/habits/components/DailyHabitTracker';
-import { useRouteMonitoring } from '@shared/utils/monitoring';
 import { motion } from 'framer-motion';
 
 /**
@@ -13,7 +12,6 @@ import { motion } from 'framer-motion';
  */
 function DashboardPage() {
   usePageTitle('Dashboard');
-  useRouteMonitoring('/');
 
   return (
     <motion.section

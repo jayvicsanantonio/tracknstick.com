@@ -1,5 +1,4 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
-import { useRouteMonitoring } from '@shared/utils/monitoring';
 import { motion } from 'framer-motion';
 import { Chat } from '@/features/chat/components/Chat';
 
@@ -13,7 +12,6 @@ import { Chat } from '@/features/chat/components/Chat';
  */
 function ChatPage() {
   usePageTitle('Habit Coach');
-  useRouteMonitoring('/chat');
 
   return (
     <motion.section

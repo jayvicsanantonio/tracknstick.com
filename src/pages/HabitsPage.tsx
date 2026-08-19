@@ -1,6 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import HabitsOverview from '@/features/habits/components/HabitsOverview';
-import { useRouteMonitoring } from '@shared/utils/monitoring';
 import { motion } from 'framer-motion';
 
 /**
@@ -13,7 +12,6 @@ import { motion } from 'framer-motion';
  */
 function HabitsPage() {
   usePageTitle('Habits Overview');
-  useRouteMonitoring('/habits');
 
   return (
     <motion.section

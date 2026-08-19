@@ -7,7 +7,6 @@ import { Button } from '@shared/components/ui/button';
 import IconNavLink from './IconNavLink';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
-import { trackNavigationClick } from '@shared/utils/monitoring';
 
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
@@ -35,28 +34,16 @@ const Header = memo(function Header() {
               aria-label="User actions"
               className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2 rounded-full p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2"
             >
-              <IconNavLink
-                to="/"
-                onClick={trackNavigationClick}
-                aria-label="Daily Tracker"
-              >
+              <IconNavLink to="/" aria-label="Daily Tracker">
                 <Calendar
                   aria-hidden="true"
                   className="h-4 w-4 sm:h-6 sm:w-6"
                 />
               </IconNavLink>
-              <IconNavLink
-                to="/habits"
-                onClick={trackNavigationClick}
-                aria-label="Habits Overview"
-              >
+              <IconNavLink to="/habits" aria-label="Habits Overview">
                 <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
               </IconNavLink>
-              <IconNavLink
-                to="/progress"
-                onClick={trackNavigationClick}
-                aria-label="Progress Overview"
-              >
+              <IconNavLink to="/progress" aria-label="Progress Overview">
                 <BarChart2
                   aria-hidden="true"
                   className="h-4 w-4 sm:h-6 sm:w-6"
