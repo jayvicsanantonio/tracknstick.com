@@ -15,6 +15,20 @@
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Track N' Stick</title>
+    <script>
+      // Apply the stored theme before first paint. Without this the class is
+      // only set once React mounts, so the page renders one frame in the
+      // wrong palette on every load.
+      (function () {
+        try {
+          var stored = localStorage.getItem('track-n-stick-theme');
+          var mode = stored === 'light' || stored === 'dark' ? stored : 'dark';
+          document.documentElement.classList.add(mode);
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
 
   <body>
