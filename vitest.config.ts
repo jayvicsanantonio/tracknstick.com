@@ -8,6 +8,15 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/testing/setup.ts',
+    // Any module importing the API client pulls in getConfig(), which throws
+    // at module scope without these. Supplying them here keeps the suite
+    // self-contained rather than dependent on a developer's .env.local --
+    // which is why a test importing the api module passed locally and failed
+    // in CI.
+    env: {
+      VITE_API_HOST: 'http://api.test',
+      VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_stub',
+    },
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
