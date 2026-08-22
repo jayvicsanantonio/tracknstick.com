@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 
 import RootLayout from '@shared/components/layouts/RootLayout';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
-import ErrorBoundary from '@shared/components/feedback/ErrorBoundary';
+import RouteErrorBoundary from '@shared/components/feedback/RouteErrorBoundary';
 
 import DashboardPage from '@/pages/DashboardPage';
 import HabitsPage from '@/pages/HabitsPage';
@@ -23,7 +23,7 @@ const routes: RouteObject[] = [
   {
     path: '/',
     element: <RootLayout />,
-    errorElement: <ErrorBoundary />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         index: true,

@@ -52,7 +52,7 @@ const ProgressAchievements = memo(function ProgressAchievements({
       {/* Earned Achievements */}
       {earnedAchievements.length > 0 && (
         <div>
-          <h3 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mb-4 text-lg font-semibold">
+          <h3 className="mb-4 text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
             Earned ({earnedAchievements.length})
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -66,7 +66,7 @@ const ProgressAchievements = memo(function ProgressAchievements({
       {/* In Progress / Unearned Achievements */}
       {unearnedAchievements.length > 0 && (
         <div>
-          <h3 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) mb-4 text-lg font-semibold">
+          <h3 className="mb-4 text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
             In Progress ({unearnedAchievements.length})
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

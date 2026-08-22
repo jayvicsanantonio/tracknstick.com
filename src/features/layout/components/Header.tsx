@@ -7,7 +7,6 @@ import { Button } from '@shared/components/ui/button';
 import IconNavLink from './IconNavLink';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
-import { trackNavigationClick } from '@shared/utils/monitoring';
 
 const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
@@ -19,12 +18,12 @@ const Header = memo(function Header() {
   return (
     <header className="sticky top-0 z-40">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-4 sm:px-4 sm:py-8 md:px-8">
-        <div className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex items-center gap-2 rounded-full px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:px-3 sm:py-2">
+        <div className="flex items-center gap-2 rounded-full bg-(--color-surface)/80 px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:px-3 sm:py-2 dark:bg-(--color-surface-secondary)/80">
           <CheckCircle2
             aria-hidden="true"
-            className="text-(--color-brand-primary) h-6 w-6 shrink-0 sm:h-8 sm:w-8"
+            className="h-6 w-6 shrink-0 text-(--color-brand-primary) sm:h-8 sm:w-8"
           />
-          <span className="text-(--color-brand-primary) hidden pl-1 pr-2 text-lg font-bold sm:inline-block sm:text-xl md:text-2xl">
+          <span className="hidden pr-2 pl-1 text-lg font-bold text-(--color-brand-primary) sm:inline-block sm:text-xl md:text-2xl">
             Track N&apos; Stick
           </span>
         </div>
@@ -33,30 +32,18 @@ const Header = memo(function Header() {
             <div
               role="toolbar"
               aria-label="User actions"
-              className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2 rounded-full p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2"
+              className="flex gap-2 rounded-full bg-(--color-surface)/80 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:p-2 dark:bg-(--color-surface-secondary)/80"
             >
-              <IconNavLink
-                to="/"
-                onClick={trackNavigationClick}
-                aria-label="Daily Tracker"
-              >
+              <IconNavLink to="/" aria-label="Daily Tracker">
                 <Calendar
                   aria-hidden="true"
                   className="h-4 w-4 sm:h-6 sm:w-6"
                 />
               </IconNavLink>
-              <IconNavLink
-                to="/habits"
-                onClick={trackNavigationClick}
-                aria-label="Habits Overview"
-              >
+              <IconNavLink to="/habits" aria-label="Habits Overview">
                 <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
               </IconNavLink>
-              <IconNavLink
-                to="/progress"
-                onClick={trackNavigationClick}
-                aria-label="Progress Overview"
-              >
+              <IconNavLink to="/progress" aria-label="Progress Overview">
                 <BarChart2
                   aria-hidden="true"
                   className="h-4 w-4 sm:h-6 sm:w-6"
@@ -67,7 +54,7 @@ const Header = memo(function Header() {
                 role="separator"
                 aria-orientation="vertical"
                 aria-hidden="true"
-                className="bg-(--color-border-primary)/60 mx-1 w-px self-stretch rounded-full sm:mx-2"
+                className="mx-1 w-px self-stretch rounded-full bg-(--color-border-primary)/60 sm:mx-2"
               />
 
               <Button
@@ -138,7 +125,7 @@ const Header = memo(function Header() {
             <div
               role="toolbar"
               aria-label="User actions"
-              className="bg-(--color-surface)/80 dark:bg-(--color-surface-secondary)/80 ring-(--color-border-primary)/40 flex gap-2 rounded-full p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-inset backdrop-blur-xl backdrop-saturate-150 sm:gap-3 sm:p-2"
+              className="flex gap-2 rounded-full bg-(--color-surface)/80 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:p-2 dark:bg-(--color-surface-secondary)/80"
             >
               <Button
                 variant="brandTonal"

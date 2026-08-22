@@ -32,8 +32,8 @@ const Welcome = memo(function Welcome() {
       <div className="relative flex w-full flex-1 overflow-hidden">
         {/* Background Elements */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="bg-(--color-brand-light) absolute left-20 top-0 h-80 w-80 -translate-y-20 rounded-full opacity-20 blur-3xl" />
-          <div className="bg-(--color-accent) absolute right-0 top-40 h-96 w-96 rounded-full opacity-20 blur-3xl" />
+          <div className="absolute top-0 left-20 h-80 w-80 -translate-y-20 rounded-full bg-(--color-brand-light) opacity-20 blur-3xl" />
+          <div className="absolute top-40 right-0 h-96 w-96 rounded-full bg-(--color-accent) opacity-20 blur-3xl" />
         </div>
 
         <motion.div
@@ -55,14 +55,14 @@ const Welcome = memo(function Welcome() {
               {/* Left Side - Hero Content */}
               <div className="relative flex flex-1 flex-col items-center justify-center p-4 text-center sm:p-6 md:items-start md:p-8 md:text-left lg:p-12">
                 <div className="z-10 w-full max-w-lg md:max-w-none">
-                  <h1 className="text-(--color-brand-primary) dark:text-(--color-brand-text-light) mb-3 text-2xl font-extrabold tracking-tight sm:mb-4 sm:text-3xl md:text-4xl lg:text-6xl">
+                  <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-(--color-brand-primary) sm:mb-4 sm:text-3xl md:text-4xl lg:text-6xl dark:text-(--color-brand-text-light)">
                     {title}
                   </h1>
-                  <p className="text-(--color-brand-tertiary) dark:text-(--color-text-primary) mb-4 text-balance text-sm leading-relaxed sm:mb-6 sm:text-base md:text-lg lg:max-w-2xl lg:text-2xl">
+                  <p className="mb-4 text-sm leading-relaxed text-balance text-(--color-brand-tertiary) sm:mb-6 sm:text-base md:text-lg lg:max-w-2xl lg:text-2xl dark:text-(--color-text-primary)">
                     {subtitle}
                   </p>
                   <div className="space-y-1 sm:space-y-2">
-                    <p className="text-(--color-text-secondary) text-xs sm:text-sm">
+                    <p className="text-xs text-(--color-text-secondary) sm:text-sm">
                       Free to try. Your data stays private.
                     </p>
                   </div>
@@ -70,16 +70,16 @@ const Welcome = memo(function Welcome() {
               </div>
 
               {/* Divider */}
-              <div className="bg-(--color-border-primary) mx-8 my-3 h-px w-auto sm:mx-12 sm:my-4 md:mx-0 md:my-6 md:h-auto md:w-px lg:my-12" />
+              <div className="mx-8 my-3 h-px w-auto bg-(--color-border-primary) sm:mx-12 sm:my-4 md:mx-0 md:my-6 md:h-auto md:w-px lg:my-12" />
 
               {/* Right Side - Sign In Form */}
-              <div className="flex flex-1 justify-center pb-12 pt-4 sm:p-6 sm:pb-16 md:p-8 md:pb-8 lg:p-12">
+              <div className="flex flex-1 justify-center pt-4 pb-12 sm:p-6 sm:pb-16 md:p-8 md:pb-8 lg:p-12">
                 <div>
                   <div className="mb-3 text-center sm:mb-4">
-                    <h2 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-base font-semibold sm:text-lg">
+                    <h2 className="text-base font-semibold text-(--color-brand-tertiary) sm:text-lg dark:text-(--color-brand-text-light)">
                       Start Your Journey
                     </h2>
-                    <p className="text-(--color-text-secondary) mt-1 text-xs sm:text-sm">
+                    <p className="mt-1 text-xs text-(--color-text-secondary) sm:text-sm">
                       Transform intention into momentum
                     </p>
                   </div>

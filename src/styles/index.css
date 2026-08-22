@@ -16,11 +16,68 @@
   --breakpoint-xs: 480px;
 }
 
-/* Theme variables are now dynamically set by ThemeProvider */
-/* Default fallback values for initial render */
+/*
+  Theme palettes.
+
+  These are the single source of truth. They used to be duplicated: the token
+  objects in shared/constants/theme.ts were applied to the root element as
+  inline styles by ThemeProvider, and this file carried a hand-copied second
+  copy as "fallback values for initial render". Nothing kept the two in sync,
+  and because the JS ran in an effect after mount, a light-theme user saw a
+  frame of the dark palette on every load.
+
+  The `.dark` class is set by the inline bootstrap in index.html before first
+  paint, and thereafter by ThemeProvider.
+*/
 @layer base {
   :root {
-    /* Base theme tokens - these will be overridden by JavaScript */
+    --color-background: hsl(327, 73%, 97%);
+    --color-foreground: hsl(329, 36%, 6%);
+    --color-card: hsl(327, 100%, 98%);
+    --color-card-foreground: hsl(329, 36%, 6%);
+    --color-primary: hsl(327, 73%, 56%);
+    --color-primary-foreground: hsl(0, 0%, 100%);
+    --color-secondary: hsl(327, 73%, 97%);
+    --color-secondary-foreground: hsl(326, 84%, 14%);
+    --color-muted: hsl(327, 73%, 97%);
+    --color-muted-foreground: hsl(327, 73%, 56%);
+    --color-accent: hsl(327, 73%, 77%);
+    --color-accent-foreground: hsl(329, 36%, 6%);
+    --color-destructive: hsl(327, 84%, 25%);
+    --color-destructive-foreground: hsl(327, 100%, 98%);
+    --color-border: hsl(327, 73%, 87%);
+    --color-input: hsl(327, 73%, 87%);
+    --color-ring: hsl(327, 73%, 66%);
+    --color-brand-primary: hsl(327, 73%, 56%);
+    --color-brand-secondary: hsl(327, 84%, 46%);
+    --color-brand-tertiary: hsl(327, 84%, 25%);
+    --color-brand-light: hsl(327, 73%, 97%);
+    --color-brand-lighter: hsl(327, 100%, 98%);
+    --color-brand-text: hsl(327, 84%, 25%);
+    --color-brand-text-light: hsl(327, 73%, 66%);
+    --color-surface: hsl(327, 100%, 98%);
+    --color-surface-secondary: hsl(327, 73%, 97%);
+    --color-surface-tertiary: hsl(327, 73%, 87%);
+    --color-text-primary: hsl(329, 36%, 6%);
+    --color-text-secondary: hsl(327, 84%, 46%);
+    --color-text-tertiary: hsl(327, 73%, 56%);
+    --color-text-inverse: hsl(327, 100%, 98%);
+    --color-border-primary: hsl(327, 73%, 87%);
+    --color-border-secondary: hsl(327, 73%, 77%);
+    --color-border-brand: hsl(327, 73%, 77%);
+    --color-hover-surface: hsl(327, 73%, 97%);
+    --color-hover-brand: hsl(327, 73%, 87%);
+    --color-active-surface: hsl(327, 73%, 87%);
+    --color-active-brand: hsl(327, 73%, 77%);
+    --color-error: hsl(327, 84%, 25%);
+    --color-error-light: hsl(327, 73%, 97%);
+    --color-error-text: hsl(326, 84%, 14%);
+    --color-success: hsl(327, 73%, 56%);
+    --color-success-light: hsl(327, 73%, 97%);
+    --color-success-text: hsl(326, 84%, 14%);
+  }
+
+  .dark {
     --color-background: hsl(155, 100%, 4%);
     --color-foreground: hsl(152, 81%, 96%);
     --color-card: hsl(0, 0%, 6%);
@@ -38,8 +95,6 @@
     --color-border: hsl(215, 15%, 21%);
     --color-input: hsl(215, 15%, 21%);
     --color-ring: hsl(152, 72%, 67%);
-
-    /* Extended theme colors - managed by ThemeProvider */
     --color-brand-primary: hsl(160, 84%, 55%);
     --color-brand-secondary: hsl(160, 84%, 35%);
     --color-brand-tertiary: hsl(155, 58%, 46%);
@@ -70,7 +125,6 @@
   }
 }
 
-/* System preference handling removed - themes are now controlled by ThemeProvider */
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,

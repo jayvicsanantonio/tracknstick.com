@@ -40,7 +40,7 @@ const ProgressTabs = memo(function ProgressTabs({
 
   return (
     <Tabs defaultValue="calendar" className="w-full">
-      <TabsList className="bg-(--color-muted) grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-3 bg-(--color-muted)">
         <TabsTrigger
           value="calendar"
           className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
@@ -66,7 +66,7 @@ const ProgressTabs = memo(function ProgressTabs({
       <TabsContent value="calendar">
         <Card className="border-(--color-border-primary)">
           <CardHeader>
-            <h3 className="text-(--color-foreground) text-lg font-semibold">
+            <h3 className="text-lg font-semibold text-(--color-foreground)">
               Calendar
             </h3>
           </CardHeader>
@@ -90,7 +90,7 @@ const ProgressTabs = memo(function ProgressTabs({
       <TabsContent value="graph">
         <Card className="border-(--color-border-primary)">
           <CardHeader>
-            <h3 className="text-(--color-foreground) text-lg font-semibold">
+            <h3 className="text-lg font-semibold text-(--color-foreground)">
               Daily Completion Rates
             </h3>
           </CardHeader>
@@ -110,7 +110,7 @@ const ProgressTabs = memo(function ProgressTabs({
       <TabsContent value="achievements">
         <Card className="border-(--color-border-primary)">
           <CardHeader>
-            <h3 className="text-(--color-foreground) text-lg font-semibold">
+            <h3 className="text-lg font-semibold text-(--color-foreground)">
               Achievements
             </h3>
           </CardHeader>

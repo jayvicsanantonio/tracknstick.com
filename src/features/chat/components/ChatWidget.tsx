@@ -18,8 +18,8 @@ export function ChatWidget() {
       <div
         className={
           isOpen
-            ? 'fixed inset-0 z-50 sm:inset-auto sm:bottom-6 sm:right-6'
-            : 'fixed bottom-6 right-6 z-50'
+            ? 'fixed inset-0 z-50 sm:inset-auto sm:right-6 sm:bottom-6'
+            : 'fixed right-6 bottom-6 z-50'
         }
       >
         <AnimatePresence>

@@ -1,9 +1,9 @@
-import { useContext, useState, useCallback, useMemo, memo } from 'react';
+import { useState, useCallback, useMemo, memo } from 'react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
 import { Separator } from '@shared/components/ui/separator';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Habit } from '@/features/habits/types/Habit';
+import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import { Frequency } from '@/features/habits/types/Frequency';
 import HabitsIcons from '@/icons/habits';
 import { useHabits } from '@/features/habits/hooks/useHabits';
@@ -11,7 +11,7 @@ import DatePickerField, { datePickerStyles } from './DatePickerField';
 import IconPicker from './IconPicker';
 import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
-import { DateContext } from '@app/providers/DateContext';
+import { useDate } from '@app/providers/useDate';
 import {
   getLocalEndOfDayUTC,
   getLocalStartofDayUTC,
@@ -25,7 +25,7 @@ const HabitForm = memo(function HabitForm({
   habit,
   toggleDialog,
 }: HabitFormProps) {
-  const { timeZone } = useContext(DateContext);
+  const { timeZone } = useDate();
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState<string>(habit?.name ?? '');
@@ -70,7 +70,7 @@ const HabitForm = memo(function HabitForm({
     try {
       if (!icon || !startDate) return;
 
-      const habitData = {
+      const habitData: HabitPayload = {
         name,
         icon,
         frequency,
@@ -125,7 +125,7 @@ const HabitForm = memo(function HabitForm({
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className="text-(--color-brand-text) dark:text-(--color-brand-text-light) text-sm sm:text-base"
+              className="text-sm text-(--color-brand-text) sm:text-base dark:text-(--color-brand-text-light)"
             >
               Name
               <span className="text-(--color-error)">*</span>
@@ -173,7 +173,7 @@ const HabitForm = memo(function HabitForm({
           />
         </div>
 
-        <Separator className="bg-(--color-border-brand) dark:bg-(--color-brand-light) my-2" />
+        <Separator className="my-2 bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
 
         <FormActions
           isSubmitting={isSubmitting}

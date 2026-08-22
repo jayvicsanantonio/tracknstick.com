@@ -1,13 +1,9 @@
 // Unit tests for the useTheme hook
 // Tests theme functionality and state management
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { ReactNode } from 'react';
-
-// Unmock for this specific test file
-vi.unmock('@app/providers/ThemeProvider');
-vi.unmock('@shared/hooks/useTheme');
 
 import ThemeProvider from '@app/providers/ThemeProvider';
 import { useTheme } from '@shared/hooks/useTheme';
@@ -29,7 +25,7 @@ describe('useTheme', () => {
     const { result } = renderHook(() => useTheme(), { wrapper });
 
     expect(result.current.mode).toBe('dark');
-    expect(result.current.tokens).toBeDefined();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
   it('can toggle theme mode', () => {
@@ -64,18 +60,19 @@ describe('useTheme', () => {
     expect(result.current.mode).toBe('dark');
   });
 
-  it('provides correct tokens for each theme', () => {
+  it('drives the palette through the root class, not inline styles', () => {
+    // The palettes live in CSS keyed on :root and .dark, so the only thing
+    // the provider has to get right is which class is on the element.
     const { result } = renderHook(() => useTheme(), { wrapper });
 
-    // Dark theme tokens
-    expect(result.current.mode).toBe('dark');
-    expect(result.current.tokens.background).toContain('hsl(155');
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(document.documentElement.classList.contains('light')).toBe(false);
 
     act(() => {
       result.current.setMode('light');
     });
 
-    // Light theme tokens
-    expect(result.current.tokens.background).toContain('hsl(327');
+    expect(document.documentElement.classList.contains('light')).toBe(true);
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 });

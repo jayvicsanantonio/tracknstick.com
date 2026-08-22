@@ -37,10 +37,10 @@ const ProgressCalendar = memo(function ProgressCalendar({
         >
           <ChevronLeft
             aria-hidden="true"
-            className="text-(--color-text-primary) dark:text-(--color-brand-text-light) h-4 w-4"
+            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
           />
         </MonthNavButton>
-        <h3 className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-lg font-semibold">
+        <h3 className="text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           {selectedMonth.toLocaleString('default', {
             month: 'long',
             year: 'numeric',
@@ -49,7 +49,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
         <MonthNavButton onClick={handleNextMonth} ariaLabel="Next Month">
           <ChevronRight
             aria-hidden="true"
-            className="text-(--color-text-primary) dark:text-(--color-brand-text-light) h-4 w-4"
+            className="h-4 w-4 text-(--color-text-primary) dark:text-(--color-brand-text-light)"
           />
         </MonthNavButton>
       </div>
@@ -57,7 +57,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
         {daysOfWeek.map((day) => (
           <div
             key={day}
-            className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-center text-xs font-bold"
+            className="text-center text-xs font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)"
             role="columnheader"
             aria-label={day}
           >
@@ -89,19 +89,11 @@ const ProgressCalendar = memo(function ProgressCalendar({
             >
               {dayOfMonth}
             </span>
-            {isPast || isToday ? (
-              <CalendarDayCircle
-                dayData={dayData}
-                isPast={isPast}
-                isToday={isToday}
-              />
-            ) : (
-              <CalendarDayCircle
-                dayData={undefined}
-                isPast={false}
-                isToday={false}
-              />
-            )}
+            <CalendarDayCircle
+              dayData={dayData}
+              isPast={isPast}
+              isToday={isToday}
+            />
           </div>
         ))}
       </div>

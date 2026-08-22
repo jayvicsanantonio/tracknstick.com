@@ -51,7 +51,7 @@ const CalendarDayCircle = memo(function CalendarDayCircle({
         )}
       </svg>
       <div className="absolute inset-0 hidden items-center justify-center md:flex">
-        <span className="text-(--color-brand-tertiary) dark:text-(--color-brand-text-light) text-[0.6rem] font-medium">
+        <span className="text-[0.6rem] font-medium text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           {percent}%
         </span>
       </div>

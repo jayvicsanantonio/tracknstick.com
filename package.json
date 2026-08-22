@@ -6,6 +6,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm vite",
     "build": "pnpm tsc -b && pnpm vite build",
@@ -79,7 +80,8 @@
     "typescript-eslint": "^8.32.1",
     "vite": "^6.4.2",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "workbox-window": "^7.3.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -88,6 +90,14 @@
     ],
     "*.{json,md,css}": [
       "prettier --write"
+    ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@clerk/shared",
+      "@tailwindcss/oxide",
+      "esbuild",
+      "husky"
     ]
   }
 }

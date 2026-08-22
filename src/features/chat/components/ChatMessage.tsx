@@ -53,11 +53,11 @@ export function ChatMessage({ message }: ChatMessageProps) {
         )}
       >
         {isUser ? (
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
             {message.content}
           </p>
         ) : (
-          <div className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed [&>ol]:my-2 [&>p+p]:mt-2 [&>p]:m-0 [&>ul]:my-2">
+          <div className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed [&>ol]:my-2 [&>p]:m-0 [&>p+p]:mt-2 [&>ul]:my-2">
             <Markdown>{message.content}</Markdown>
           </div>
         )}

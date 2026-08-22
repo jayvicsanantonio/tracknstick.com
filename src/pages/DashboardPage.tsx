@@ -1,6 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import DailyHabitTracker from '@/features/habits/components/DailyHabitTracker';
-import { useRouteMonitoring } from '@shared/utils/monitoring';
 import { motion } from 'framer-motion';
 
 /**
@@ -13,7 +12,6 @@ import { motion } from 'framer-motion';
  */
 function DashboardPage() {
   usePageTitle('Dashboard');
-  useRouteMonitoring('/');
 
   return (
     <motion.section
@@ -24,7 +22,7 @@ function DashboardPage() {
     >
       <div
         aria-hidden
-        className="bg-(--color-brand-light) pointer-events-none absolute -top-6 left-6 -z-10 h-24 w-24 rounded-full opacity-30 blur-2xl"
+        className="pointer-events-none absolute -top-6 left-6 -z-10 h-24 w-24 rounded-full bg-(--color-brand-light) opacity-30 blur-2xl"
       />
       <h1 className="sr-only">Daily Habit Tracker</h1>
       <DailyHabitTracker />

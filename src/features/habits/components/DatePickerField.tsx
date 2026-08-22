@@ -32,17 +32,6 @@ const datePickerCalendarStyles = `
     color: var(--color-card-foreground);
   }
   
-  .react-datepicker__header {
-    padding-top: 0.8em;
-    background-color: var(--color-surface-secondary);
-    border-bottom: 1px solid var(--color-border-primary);
-  }
-  
-  .dark .react-datepicker__header {
-    background-color: var(--color-surface-secondary);
-    border-bottom: 1px solid var(--color-border-primary);
-  }
-  
   .react-datepicker__navigation {
     top: 1em;
   }
@@ -171,7 +160,7 @@ const DatePickerField = memo(function DatePickerField({
         className="text-(--color-brand-text) dark:text-(--color-brand-text-light)"
       >
         {label}
-        {isRequired && <span className="text-(--color-error) ml-1">*</span>}
+        {isRequired && <span className="ml-1 text-(--color-error)">*</span>}
       </Label>
       <DatePicker
         selected={selected}

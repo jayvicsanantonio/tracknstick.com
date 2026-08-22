@@ -5,8 +5,14 @@ import * as React from 'react';
 
 import type { ToastProps } from '@shared/components/ui/toast';
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+// The viewport is laid out to stack (flex-col-reverse), so a limit of 1
+// silently discarded concurrent messages from the 14 toast call sites.
+const TOAST_LIMIT = 3;
+
+// Roughly the exit animation. At 1_000_000 (16+ minutes) the "dismissed but
+// not yet removed" phase never completed within a session, so every toast
+// stayed in state and in toastTimeouts long after leaving the screen.
+const TOAST_REMOVE_DELAY = 1000;
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -46,6 +52,14 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
+const clearRemoveTimeout = (toastId: string) => {
+  const timeout = toastTimeouts.get(toastId);
+  if (timeout) {
+    clearTimeout(timeout);
+    toastTimeouts.delete(toastId);
+  }
+};
+
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
     return;
@@ -64,11 +78,22 @@ const addToRemoveQueue = (toastId: string) => {
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case 'ADD_TOAST':
+    case 'ADD_TOAST': {
+      const next = [action.toast, ...state.toasts];
+
+      // Anything pushed past the limit is dismissed rather than dropped, so
+      // it animates out and its removal timer is the same one every other
+      // toast uses. Dropping it here left a live timer for an id no longer
+      // in state.
+      next.slice(TOAST_LIMIT).forEach((t) => addToRemoveQueue(t.id));
+
       return {
         ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+        toasts: next
+          .slice(0, TOAST_LIMIT)
+          .concat(next.slice(TOAST_LIMIT).map((t) => ({ ...t, open: false }))),
       };
+    }
 
     case 'UPDATE_TOAST':
       return {
@@ -105,11 +130,13 @@ const reducer = (state: State, action: Action): State => {
     }
     case 'REMOVE_TOAST':
       if (action.toastId === undefined) {
+        state.toasts.forEach((t) => clearRemoveTimeout(t.id));
         return {
           ...state,
           toasts: [],
         };
       }
+      clearRemoveTimeout(action.toastId);
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
@@ -170,7 +197,9 @@ function useToast() {
         listeners.splice(index, 1);
       }
     };
-  }, [state]);
+    // setState is stable, and the subscription does not depend on state --
+    // resubscribing on every change was pure churn.
+  }, []);
 
   return {
     ...state,

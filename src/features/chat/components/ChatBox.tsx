@@ -55,6 +55,10 @@ export function ChatBox({ onClose }: ChatBoxProps) {
         content: m.content,
       }));
 
+      // Declared here so the catch can remove exactly the placeholder this
+      // call created, rather than every empty message in the conversation.
+      let assistantMessageId: string | null = null;
+
       try {
         const token = await getToken();
 
@@ -77,10 +81,11 @@ export function ChatBox({ onClose }: ChatBoxProps) {
         }
 
         // Create assistant message placeholder
-        const assistantMessageId = `assistant-${Date.now()}`;
+        const placeholderId = `assistant-${Date.now()}`;
+        assistantMessageId = placeholderId;
         setMessages((prev) => [
           ...prev,
-          { id: assistantMessageId, role: 'assistant', content: '' },
+          { id: placeholderId, role: 'assistant', content: '' },
         ]);
 
         // Read the streaming response
@@ -100,17 +105,20 @@ export function ChatBox({ onClose }: ChatBoxProps) {
           // Update the assistant message with accumulated content
           setMessages((prev) =>
             prev.map((m) =>
-              m.id === assistantMessageId
-                ? { ...m, content: assistantContent }
-                : m,
+              m.id === placeholderId ? { ...m, content: assistantContent } : m,
             ),
           );
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error';
         setError(message);
-        // Remove the empty assistant message if error occurred
-        setMessages((prev) => prev.filter((m) => m.content !== ''));
+        // Drop the placeholder only if nothing streamed into it. Filtering on
+        // empty content removed the user's own message too when it was empty.
+        setMessages((prev) =>
+          prev.filter(
+            (m) => !(m.id === assistantMessageId && m.content === ''),
+          ),
+        );
       } finally {
         setIsLoading(false);
       }

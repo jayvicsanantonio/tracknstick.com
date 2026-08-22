@@ -1,17 +1,8 @@
 // Theme utility functions for CSS custom properties and persistence
 // Handles theme token application and storage management
 
-import { ThemeMode, ThemeTokens } from '@shared/types/theme';
+import { ThemeMode } from '@shared/types/theme';
 import { THEME_STORAGE_KEY, DEFAULT_THEME_MODE } from '@shared/constants/theme';
-
-export function applyThemeTokensToRoot(tokens: ThemeTokens): void {
-  const root = document.documentElement;
-
-  Object.entries(tokens).forEach(([key, value]) => {
-    const cssVar = `--color-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-    root.style.setProperty(cssVar, value as string);
-  });
-}
 
 export function updateThemeClass(mode: ThemeMode): void {
   const root = document.documentElement;

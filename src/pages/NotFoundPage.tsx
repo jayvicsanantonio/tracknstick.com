@@ -1,5 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
-import { useAppNavigation } from '@shared/utils/navigation';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@shared/components/ui/button';
 
 /**
@@ -13,7 +13,7 @@ import { Button } from '@shared/components/ui/button';
 function NotFoundPage() {
   usePageTitle('Page Not Found');
 
-  const { goToDashboard } = useAppNavigation();
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-[calc(100vh-10rem)] flex-1 flex-col items-center justify-center px-4 py-16 sm:min-h-[calc(100vh-14rem)]">
@@ -34,11 +34,11 @@ function NotFoundPage() {
 
         {/* Navigation Options */}
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Button onClick={() => goToDashboard()} className="min-w-[140px]">
+          <Button onClick={() => void navigate('/')} className="min-w-[140px]">
             Go to Dashboard
           </Button>
           <Button
-            onClick={() => window.history.back()}
+            onClick={() => void navigate(-1)}
             variant="outline"
             className="min-w-[140px]"
           >

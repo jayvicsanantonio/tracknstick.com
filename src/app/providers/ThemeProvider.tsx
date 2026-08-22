@@ -1,12 +1,10 @@
-// Theme provider component managing theme state and persistence
-// Applies theme tokens to CSS custom properties and handles mode switching
+// Theme provider component managing theme mode and persistence
+// The palettes themselves live in CSS; this only selects between them
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ThemeContext } from '@app/providers/ThemeContext';
 import { ThemeMode, ThemeProviderProps } from '@shared/types/theme';
-import { themeConfigs } from '@shared/constants/theme';
 import {
-  applyThemeTokensToRoot,
   updateThemeClass,
   getInitialTheme,
   setStoredTheme,
@@ -16,13 +14,10 @@ import {
 export default function ThemeProvider({ children }: ThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>(() => getInitialTheme());
 
-  const tokens = useMemo(() => themeConfigs[mode], [mode]);
-
   useEffect(() => {
-    applyThemeTokensToRoot(tokens);
     updateThemeClass(mode);
     setStoredTheme(mode);
-  }, [mode, tokens]);
+  }, [mode]);
 
   const handleSetMode = useCallback((newMode: ThemeMode) => {
     setMode(newMode);
@@ -35,11 +30,10 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
   const contextValue = useMemo(
     () => ({
       mode,
-      tokens,
       setMode: handleSetMode,
       toggleMode,
     }),
-    [mode, tokens, handleSetMode, toggleMode],
+    [mode, handleSetMode, toggleMode],
   );
 
   return (

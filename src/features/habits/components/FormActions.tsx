@@ -25,7 +25,7 @@ const FormActions = memo(function FormActions({
           <Button
             type="button"
             variant="outline"
-            className="border-(--color-error) bg-(--color-surface) text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) dark:hover:border-(--color-error) dark:hover:bg-(--color-error) w-full text-sm sm:w-auto sm:text-base dark:bg-transparent"
+            className="w-full border-(--color-error) bg-(--color-surface) text-sm text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) sm:w-auto sm:text-base dark:bg-transparent dark:hover:border-(--color-error) dark:hover:bg-(--color-error)"
             onClick={handleDelete}
             disabled={isSubmitting}
           >
@@ -39,14 +39,14 @@ const FormActions = memo(function FormActions({
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="border-(--color-border-brand) text-(--color-brand-primary) hover:bg-(--color-hover-brand) hover:text-(--color-brand-secondary) dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:border-(--color-border-brand) dark:hover:bg-(--color-hover-brand) dark:hover:text-(--color-brand-text-light) text-sm sm:text-base"
+            className="border-(--color-border-brand) text-sm text-(--color-brand-primary) hover:bg-(--color-hover-brand) hover:text-(--color-brand-secondary) sm:text-base dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:border-(--color-border-brand) dark:hover:bg-(--color-hover-brand) dark:hover:text-(--color-brand-text-light)"
           >
             Cancel
           </Button>
         </DialogClose>
         <Button
           type="submit"
-          className="bg-(--color-brand-primary) text-(--color-text-inverse) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90 flex-1 text-sm sm:w-32 sm:flex-none sm:text-base"
+          className="flex-1 bg-(--color-brand-primary) text-sm text-(--color-text-inverse) hover:bg-(--color-brand-secondary) sm:w-32 sm:flex-none sm:text-base dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Saving...' : 'Save Changes'}

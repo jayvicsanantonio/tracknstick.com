@@ -1,13 +1,12 @@
-import { useContext, useEffect, useMemo, memo } from 'react';
+import { useEffect, useMemo, memo } from 'react';
 import { Button } from '@shared/components/ui/button';
-import { DateContext } from '@app/providers/DateContext';
+import { useDate } from '@app/providers/useDate';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 const DailyHabitDate = memo(function DailyHabitDate() {
-  const { date, handlePreviousDate, handleNextDate, timeZone } =
-    useContext(DateContext);
+  const { date, handlePreviousDate, handleNextDate, timeZone } = useDate();
 
   const formattedDate = useMemo(() => {
     return date.toLocaleDateString('en-US', {
@@ -41,21 +40,21 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         variant="ghost"
         size="icon"
         aria-label="Previous Date"
-        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm hover:shadow-md"
+        className="rounded-full border border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) shadow-sm hover:bg-(--color-hover-surface) hover:shadow-md"
       >
         <ChevronLeft aria-hidden="true" className="h-4 w-4" />
       </Button>
 
       <div className="relative text-center">
-        <div className="border-(--color-border-primary) bg-(--color-card) mx-auto inline-flex items-center gap-3 rounded-full border px-4 py-2 shadow-sm">
-          <h2 className="text-(--color-foreground) text-xl font-bold sm:text-2xl">
+        <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-(--color-border-primary) bg-(--color-card) px-4 py-2 shadow-sm">
+          <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
             {dayLabel}
           </h2>
-          <span className="text-(--color-brand-primary) text-sm sm:text-base">
+          <span className="text-sm text-(--color-brand-primary) sm:text-base">
             {formattedDate}
           </span>
         </div>
-        <div className="bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) mx-auto mt-2 h-0.5 w-28 rounded-full sm:w-36"></div>
+        <div className="mx-auto mt-2 h-0.5 w-28 rounded-full bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) sm:w-36"></div>
       </div>
 
       <Button
@@ -63,7 +62,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         variant="ghost"
         size="icon"
         aria-label="Next Date"
-        className="border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) hover:bg-(--color-hover-surface) rounded-full border shadow-sm hover:shadow-md"
+        className="rounded-full border border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) shadow-sm hover:bg-(--color-hover-surface) hover:shadow-md"
       >
         <ChevronRight aria-hidden="true" className="h-4 w-4" />
       </Button>

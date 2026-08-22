@@ -30,10 +30,10 @@ const AchievementCard = memo(function AchievementCard({
 
   return (
     <div
-      className={`bg-(--color-surface) dark:bg-(--color-brand-light) rounded-lg border-2 p-4 shadow-md transition-all duration-200 ${
+      className={`rounded-lg border-2 bg-(--color-surface) p-4 shadow-md transition-all duration-200 dark:bg-(--color-brand-light) ${
         isEarned
           ? 'border-(--color-brand-primary) bg-gradient-to-br from-yellow-50 to-orange-50 dark:border-yellow-400 dark:from-yellow-900/30 dark:to-orange-900/30'
-          : 'hover:border-(--color-brand-primary)/30 dark:hover:border-(--color-brand-primary)/50 border-transparent'
+          : 'border-transparent hover:border-(--color-brand-primary)/30 dark:hover:border-(--color-brand-primary)/50'
       } `}
     >
       {/* Achievement Header */}
@@ -67,13 +67,13 @@ const AchievementCard = memo(function AchievementCard({
             </h4>
 
             {isEarned && (
-              <div className="bg-(--color-brand-primary) rounded-full px-2 py-1 text-xs text-white">
+              <div className="rounded-full bg-(--color-brand-primary) px-2 py-1 text-xs text-white">
                 ✓ Earned
               </div>
             )}
           </div>
 
-          <p className="text-(--color-text-secondary) mb-3 text-xs dark:text-gray-300">
+          <p className="mb-3 text-xs text-(--color-text-secondary) dark:text-gray-300">
             {description}
           </p>
 
@@ -102,7 +102,7 @@ const AchievementCard = memo(function AchievementCard({
             </div>
 
             {isEarned && earnedAt && (
-              <span className="text-(--color-text-secondary) text-xs dark:text-gray-400">
+              <span className="text-xs text-(--color-text-secondary) dark:text-gray-400">
                 {new Date(earnedAt).toLocaleDateString()}
               </span>
             )}

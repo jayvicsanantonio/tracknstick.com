@@ -3,11 +3,11 @@ import {
   fetchProgressStreaks,
   ProgressStreaksResponse,
 } from '@/features/progress/api';
-import { useContext } from 'react';
-import { DateContext } from '@app/providers/DateContext';
+import {} from 'react';
+import { useDate } from '@app/providers/useDate';
 
 export default function useProgressStreaks() {
-  const { timeZone } = useContext(DateContext);
+  const { timeZone } = useDate();
   const {
     data,
     error,
