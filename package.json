@@ -6,6 +6,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "pnpm vite",
     "build": "pnpm tsc -b && pnpm vite build",
