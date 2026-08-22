@@ -1,4 +1,15 @@
+# Build-script approvals.
+#
+# pnpm 10.x moved these out of package.json's "pnpm" field, which newer
+# versions ignore with:
+#   [WARN] The "pnpm" field in package.json is no longer read by pnpm.
+#
+# pnpm generated this file listing these packages and asking for a true/false
+# each; the placeholder values it wrote ("set this to true or false") were
+# never answered. esbuild and @tailwindcss/oxide compile native binaries, and
+# husky's prepare step installs the git hooks.
 allowBuilds:
-  '@clerk/shared': set this to true or false
-  '@tailwindcss/oxide': set this to true or false
-  esbuild: set this to true or false
+  '@clerk/shared': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  husky: true
