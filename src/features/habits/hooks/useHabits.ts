@@ -16,7 +16,7 @@ import {
   habitsForDateKey,
   mutateHabitLists,
 } from '@/features/habits/api';
-import { achievementApi } from '@/features/progress/api';
+import { achievementApi, mutateProgress } from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
 
 interface UseHabitsReturn {
@@ -47,7 +47,7 @@ export function useHabits(): UseHabitsReturn {
   // Check for new achievements
   const checkAchievements = useCallback(async () => {
     try {
-      const result = await achievementApi.checkAchievements();
+      const result = await achievementApi.checkAchievements(timeZone);
       if (result.count > 0) {
         // Show toast for new achievements
         result.newAchievements.forEach((achievement) => {
@@ -61,7 +61,7 @@ export function useHabits(): UseHabitsReturn {
     } catch (error) {
       console.error('Failed to check achievements:', error);
     }
-  }, [toast]);
+  }, [toast, timeZone]);
 
   const habitsEndpointKey =
     date && isSignedIn ? habitsForDateKey(date, timeZone) : null;
@@ -100,6 +100,8 @@ export function useHabits(): UseHabitsReturn {
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
         void mutateHabitLists();
+        // A new habit changes how many were scheduled today.
+        void mutateProgress();
         // Check for achievements after adding a habit
         void checkAchievements();
       } catch (err) {
@@ -176,6 +178,7 @@ export function useHabits(): UseHabitsReturn {
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
         void mutateHabitLists();
+        void mutateProgress();
       } catch (err) {
         console.error('Failed to delete habit:', err);
         toast({
@@ -203,6 +206,8 @@ export function useHabits(): UseHabitsReturn {
         if (!date) throw new Error('Date context is not available');
         await apiToggleHabitCompletion(habitId, date, timeZone);
         void mutateHabits();
+        // Today's rate, the month's chart and both streaks all just moved.
+        void mutateProgress();
         // Check for achievements after toggling habit completion
         void checkAchievements();
       } catch (err) {

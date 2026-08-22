@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import { axiosInstance } from '@shared/services/api/axiosInstance';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
 
@@ -13,6 +14,11 @@ export interface ProgressStreaksResponse {
 /**
  * Fetches user's progress history showing completion rates by day
  * Includes user's timezone to ensure dates are calculated correctly
+ *
+ * Failures propagate. Swallowing them into an empty array made a broken
+ * endpoint indistinguishable from a month in which nothing was scheduled:
+ * SWR saw a successful empty result, so the calendar and the chart rendered
+ * as if the user simply had no history.
  */
 export const fetchProgressHistory = async (
   timeZone: string,
@@ -28,22 +34,18 @@ export const fetchProgressHistory = async (
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
-  try {
-    const response = await axiosInstance.get<ProgressHistoryResponse>(
-      '/api/v1/progress/history',
-      { params },
-    );
+  const response = await axiosInstance.get<ProgressHistoryResponse>(
+    '/api/v1/progress/history',
+    { params },
+  );
 
-    if (response.data?.history) {
-      return response.data.history;
-    } else {
-      console.error('Unexpected response format:', response.data);
-      return [];
-    }
-  } catch (error) {
-    console.error('Error fetching progress history:', error);
-    return [];
+  if (!Array.isArray(response.data?.history)) {
+    throw new Error(
+      'Progress history response did not contain a history array',
+    );
   }
+
+  return response.data.history;
 };
 
 /**
@@ -61,6 +63,30 @@ export const fetchProgressStreaks = async (
   );
   return response.data;
 };
+
+// --- SWR cache keys -------------------------------------------------------
+
+export const progressHistoryKey = (
+  timeZone: string,
+  startDate: Date,
+  endDate: Date,
+) => ['progressHistory', timeZone, startDate, endDate] as const;
+
+export const progressStreaksKey = (timeZone: string) =>
+  ['progressStreaks', timeZone] as const;
+
+/**
+ * Revalidates every progress view, whichever month or timezone it was keyed
+ * on. Completing a habit changes today's rate, the month's chart and both
+ * streaks, none of which the habit list's own mutate reaches -- so the
+ * Progress page went on showing the figures from before the toggle.
+ */
+export const mutateProgress = () =>
+  mutate(
+    (key) =>
+      Array.isArray(key) &&
+      (key[0] === 'progressHistory' || key[0] === 'progressStreaks'),
+  );
 
 // Export achievement API
 export { achievementApi } from './achievements';

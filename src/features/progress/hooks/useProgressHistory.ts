@@ -1,5 +1,8 @@
 import useSWR, { SWRResponse } from 'swr';
-import { fetchProgressHistory } from '@/features/progress/api';
+import {
+  fetchProgressHistory,
+  progressHistoryKey,
+} from '@/features/progress/api';
 import { useMemo } from 'react';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
 import {
@@ -37,7 +40,7 @@ export default function useProgressHistory(selectedMonth: Date) {
   // timeZone rather than the selected dashboard day: the fetcher does not use
   // that day, so keying on it fragmented the cache at millisecond precision
   // for identical requests.
-  const cacheKey = ['progressHistory', timeZone, startDate, endDate] as const;
+  const cacheKey = progressHistoryKey(timeZone, startDate, endDate);
 
   const { data, error, isLoading }: SWRResponse<HistoryDates[], Error> = useSWR<
     HistoryDates[],

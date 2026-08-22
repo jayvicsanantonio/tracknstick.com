@@ -31,6 +31,7 @@ export interface AchievementProgress {
   progressPercentage: number;
 }
 
+/** GET /api/v1/achievements/earned */
 export interface UserAchievement {
   id: string;
   key: string;
@@ -41,6 +42,22 @@ export interface UserAchievement {
   category: string;
   earnedAt: string;
   progressData?: Record<string, unknown>;
+}
+
+/**
+ * The abbreviated form the server sends for an achievement it has just
+ * awarded, or lists as recently earned. Deliberately not `Achievement`:
+ * neither response carries the requirement or progress fields, so typing
+ * them as present invited reads that are always undefined.
+ */
+export interface AchievementSummary {
+  id: string;
+  key: string;
+  name: string;
+  description: string;
+  icon?: string;
+  category: string;
+  earnedAt: string;
 }
 
 export interface AchievementStats {
@@ -54,11 +71,11 @@ export interface AchievementStats {
       earned: number;
     }
   >;
-  recentAchievements: UserAchievement[];
+  recentAchievements: AchievementSummary[];
 }
 
 export interface AchievementCheckResponse {
   message: string;
-  newAchievements: Achievement[];
+  newAchievements: Omit<AchievementSummary, 'earnedAt'>[];
   count: number;
 }

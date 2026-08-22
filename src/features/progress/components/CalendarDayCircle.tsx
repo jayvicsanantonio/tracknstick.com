@@ -50,11 +50,16 @@ const CalendarDayCircle = memo(function CalendarDayCircle({
           />
         )}
       </svg>
-      <div className="absolute inset-0 hidden items-center justify-center md:flex">
-        <span className="text-[0.6rem] font-medium text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
-          {percent}%
-        </span>
-      </div>
+      {/* A day that has not happened has no rate to report. The circle was
+          already hidden for those; the figure beside it was not, so every
+          future cell in the month read a flat 0%. */}
+      {showCircle && (
+        <div className="absolute inset-0 hidden items-center justify-center md:flex">
+          <span className="text-[0.6rem] font-medium text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+            {percent}%
+          </span>
+        </div>
+      )}
     </div>
   );
 });

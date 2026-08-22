@@ -9,11 +9,18 @@ import {
   AchievementCheckResponse,
 } from '../types/Achievement';
 
+/**
+ * Active days, perfect days and streaks are counts of the user's own
+ * calendar days, so the server needs to be told which calendar that is.
+ * Without it the API measures them in UTC and the badges disagree with the
+ * history calendar rendered beside them.
+ */
 export const achievementApi = {
   // Get all achievements with progress for the current user
-  async getAllAchievements(): Promise<Achievement[]> {
+  async getAllAchievements(timeZone: string): Promise<Achievement[]> {
     const response = await axiosInstance.get<{ achievements: Achievement[] }>(
       '/api/v1/achievements',
+      { params: { timeZone } },
     );
     return response.data.achievements;
   },
@@ -27,17 +34,20 @@ export const achievementApi = {
   },
 
   // Get achievement statistics for the current user
-  async getAchievementStats(): Promise<AchievementStats> {
+  async getAchievementStats(timeZone: string): Promise<AchievementStats> {
     const response = await axiosInstance.get<AchievementStats>(
       '/api/v1/achievements/stats',
+      { params: { timeZone } },
     );
     return response.data;
   },
 
   // Check for new achievements and award them to the user
-  async checkAchievements(): Promise<AchievementCheckResponse> {
+  async checkAchievements(timeZone: string): Promise<AchievementCheckResponse> {
     const response = await axiosInstance.post<AchievementCheckResponse>(
       '/api/v1/achievements/check',
+      undefined,
+      { params: { timeZone } },
     );
     return response.data;
   },

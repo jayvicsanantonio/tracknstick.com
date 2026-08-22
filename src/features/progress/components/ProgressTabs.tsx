@@ -18,11 +18,16 @@ import ProgressChart from './ProgressChart';
 
 const { BarChart2, Trophy, Calendar } = MiscellaneousIcons;
 
+const HISTORY_ERROR =
+  "We couldn't load your progress history. Please try again.";
+
 interface ProgressTabsProps {
   historyData: { date: string; completionRate: number }[];
   selectedMonth: Date;
   setSelectedMonth: React.Dispatch<React.SetStateAction<Date>>;
   isLoading: boolean;
+  /** The history request failed; an empty month would be a lie. */
+  hasError?: boolean;
 }
 
 const ProgressTabs = memo(function ProgressTabs({
@@ -30,6 +35,7 @@ const ProgressTabs = memo(function ProgressTabs({
   selectedMonth,
   setSelectedMonth,
   isLoading,
+  hasError = false,
 }: ProgressTabsProps) {
   const {
     achievements,
@@ -77,6 +83,10 @@ const ProgressTabs = memo(function ProgressTabs({
                   Loading calendar data...
                 </p>
               </div>
+            ) : hasError ? (
+              <p className="py-8 text-center text-(--color-text-secondary)">
+                {HISTORY_ERROR}
+              </p>
             ) : (
               <ProgressCalendar
                 insightData={historyData}
@@ -101,6 +111,10 @@ const ProgressTabs = memo(function ProgressTabs({
                   Loading chart data...
                 </p>
               </div>
+            ) : hasError ? (
+              <p className="py-8 text-center text-(--color-text-secondary)">
+                {HISTORY_ERROR}
+              </p>
             ) : (
               <ProgressChart data={historyData} />
             )}

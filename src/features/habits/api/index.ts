@@ -57,24 +57,25 @@ export const addHabit = async (
   return response.data;
 };
 
+// Only creation answers with an id; update and delete answer with a message
+// alone, so declaring a habitId on them described a field that never arrives.
 export const updateHabit = async (
   habitId: string,
   habitData: Partial<HabitPayload>,
-): Promise<{ message: string; habitId: string }> => {
-  const response = await axiosInstance.put<{
-    message: string;
-    habitId: string;
-  }>(`/api/v1/habits/${habitId}`, habitData);
+): Promise<{ message: string }> => {
+  const response = await axiosInstance.put<{ message: string }>(
+    `/api/v1/habits/${habitId}`,
+    habitData,
+  );
   return response.data;
 };
 
 export const deleteHabit = async (
   habitId: string,
-): Promise<{ message: string; habitId: string }> => {
-  const response = await axiosInstance.delete<{
-    message: string;
-    habitId: string;
-  }>(`/api/v1/habits/${habitId}`);
+): Promise<{ message: string }> => {
+  const response = await axiosInstance.delete<{ message: string }>(
+    `/api/v1/habits/${habitId}`,
+  );
   return response.data;
 };
 

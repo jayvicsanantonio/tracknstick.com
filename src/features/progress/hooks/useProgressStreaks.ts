@@ -1,6 +1,7 @@
 import useSWR, { SWRResponse } from 'swr';
 import {
   fetchProgressStreaks,
+  progressStreaksKey,
   ProgressStreaksResponse,
 } from '@/features/progress/api';
 import {} from 'react';
@@ -15,9 +16,7 @@ export default function useProgressStreaks() {
   }: SWRResponse<ProgressStreaksResponse, Error> = useSWR<
     ProgressStreaksResponse,
     Error
-  >(['progressStreaks', timeZone] as const, () =>
-    fetchProgressStreaks(timeZone),
-  );
+  >(progressStreaksKey(timeZone), () => fetchProgressStreaks(timeZone));
 
   return {
     currentStreak: data?.currentStreak ?? 0,

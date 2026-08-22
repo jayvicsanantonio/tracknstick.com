@@ -2,6 +2,7 @@
 // Provides data fetching and state management for achievements
 
 import { useState, useEffect, useCallback } from 'react';
+import { useDate } from '@app/providers/useDate';
 import { achievementApi } from '../api';
 import {
   Achievement,
@@ -10,6 +11,7 @@ import {
 } from '../types/Achievement';
 
 export function useAchievements() {
+  const { timeZone } = useDate();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [stats, setStats] = useState<AchievementStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,8 +24,8 @@ export function useAchievements() {
       setError(null);
 
       const [achievementsData, statsData] = await Promise.all([
-        achievementApi.getAllAchievements(),
-        achievementApi.getAchievementStats(),
+        achievementApi.getAllAchievements(timeZone),
+        achievementApi.getAchievementStats(timeZone),
       ]);
 
       setAchievements(achievementsData);
@@ -34,13 +36,13 @@ export function useAchievements() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [timeZone]);
 
   // Check for new achievements
   const checkNewAchievements =
     useCallback(async (): Promise<AchievementCheckResponse | null> => {
       try {
-        const result = await achievementApi.checkAchievements();
+        const result = await achievementApi.checkAchievements(timeZone);
 
         // Refresh data if new achievements were awarded
         if (result.count > 0) {
@@ -52,7 +54,7 @@ export function useAchievements() {
         console.error('Error checking achievements:', err);
         return null;
       }
-    }, [fetchAchievements]);
+    }, [fetchAchievements, timeZone]);
 
   // Initialize achievements (admin function)
   const initializeAchievements = useCallback(async () => {

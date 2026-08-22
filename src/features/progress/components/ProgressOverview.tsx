@@ -18,8 +18,11 @@ const ProgressOverview = memo(function ProgressOverview() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   // Use separate hooks for history and streaks
-  const { historyData, isLoading: isHistoryLoading } =
-    useProgressHistory(selectedMonth);
+  const {
+    historyData,
+    isLoading: isHistoryLoading,
+    error: historyError,
+  } = useProgressHistory(selectedMonth);
   const {
     currentStreak,
     longestStreak,
@@ -103,6 +106,7 @@ const ProgressOverview = memo(function ProgressOverview() {
               selectedMonth={selectedMonth}
               setSelectedMonth={setSelectedMonth}
               isLoading={isLoading}
+              hasError={Boolean(historyError)}
             />
           </CardContent>
         </Card>

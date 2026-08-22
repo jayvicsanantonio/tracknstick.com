@@ -1,19 +1,7 @@
 import { useMemo } from 'react';
 import { InsightData } from '@/features/progress/types/InsightData';
 import { CalendarDay } from '@/features/progress/types/CalendarDay';
-
-/**
- * Local calendar date key, YYYY-MM-DD.
- *
- * Built from local components on purpose. toISOString() would convert to UTC
- * first, shifting every cell by the offset and blanking the calendar for
- * western timezones.
- */
-function toLocalDateKey(date: Date): string {
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-}
+import { toDateKey } from '@/features/progress/utils/dateKeys';
 
 export function useProgressCalendar(
   insightData: InsightData[],
@@ -52,7 +40,7 @@ export function useProgressCalendar(
       // The hook owns "a future day has no data" so the calendar component
       // does not decide it a second time.
       const dayData =
-        isPast || isToday ? byDate.get(toLocalDateKey(date)) : undefined;
+        isPast || isToday ? byDate.get(toDateKey(date)) : undefined;
 
       return { dayOfMonth, isPast, isToday, date, dayData };
     });

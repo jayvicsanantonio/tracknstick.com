@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,6 +8,7 @@ import {
   Tooltip,
   Bar,
 } from 'recharts';
+import { fromDateKey } from '@/features/progress/utils/dateKeys';
 
 interface ProgressChartProps {
   data: { date: string; completionRate: number }[];
@@ -16,6 +17,13 @@ interface ProgressChartProps {
 const ProgressChart = memo(function ProgressChart({
   data,
 }: ProgressChartProps) {
+  // The API returns days newest first, which is what the streak fold wants.
+  // A chart has to read left to right, oldest first.
+  const chronological = useMemo(
+    () => [...data].sort((a, b) => a.date.localeCompare(b.date)),
+    [data],
+  );
+
   return (
     <div
       className="h-[400px]"
@@ -23,7 +31,7 @@ const ProgressChart = memo(function ProgressChart({
       aria-label="Bar chart showing daily completion rates for the selected month."
     >
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart data={chronological}>
           <CartesianGrid
             strokeDasharray="3 3"
             stroke="var(--color-border-primary)"
@@ -31,7 +39,7 @@ const ProgressChart = memo(function ProgressChart({
           <XAxis
             dataKey="date"
             tickFormatter={(value: string | number) =>
-              new Date(String(value)).getDate().toString()
+              fromDateKey(String(value)).getDate().toString()
             }
             label={{
               value: 'Day of Month',
@@ -55,7 +63,7 @@ const ProgressChart = memo(function ProgressChart({
           <Tooltip
             formatter={(value: number) => [`${value}%`, 'Completion Rate']}
             labelFormatter={(label: string | number) =>
-              `Date: ${new Date(String(label)).toLocaleDateString()}`
+              `Date: ${fromDateKey(String(label)).toLocaleDateString()}`
             }
             contentStyle={{
               backgroundColor: 'var(--color-card)',
