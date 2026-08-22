@@ -36,20 +36,20 @@ describe('NotFoundPage', () => {
   });
 
   it('"Go to Dashboard" navigates to /', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderAt(['/nope']);
 
     await user.click(screen.getByRole('button', { name: /go to dashboard/i }));
 
-    expect(screen.getByTestId('pathname')).toHaveTextContent('/');
+    expect(await screen.findByTestId('pathname')).toHaveTextContent('/');
   });
 
   it('"Go Back" returns to the previous entry through the router', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderAt(['/habits', '/nope']);
 
     await user.click(screen.getByRole('button', { name: /go back/i }));
 
-    expect(screen.getByTestId('pathname')).toHaveTextContent('/habits');
+    expect(await screen.findByTestId('pathname')).toHaveTextContent('/habits');
   });
 });

@@ -16,7 +16,9 @@ vi.mock('@clerk/clerk-react', () => ({
 // Feature flags no longer needed - routing is always enabled
 
 describe('Routing Integration Tests', () => {
-  const user = userEvent.setup();
+  // delay: null removes userEvent's artificial inter-event delay, which
+  // pushed these interactions past waitFor's 1s default on CI runners.
+  const user = userEvent.setup({ delay: null });
 
   beforeEach(() => {
     vi.clearAllMocks();
