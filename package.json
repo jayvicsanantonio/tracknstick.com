@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^2.0.109",
-    "@clerk/clerk-react": "^5.31.4",
+    "@clerk/clerk-react": "^5.61.3",
     "@radix-ui/react-alert-dialog": "^1.1.13",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-icons": "^1.3.2",
@@ -36,7 +36,7 @@
     "@radix-ui/react-toggle-group": "^1.1.9",
     "@rive-app/react-canvas": "^4.14.0",
     "ai": "^5.0.108",
-    "axios": "^1.15.0",
+    "axios": "^1.18.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.12.1",
@@ -78,9 +78,9 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
-    "vite": "^6.4.2",
+    "vite": "^6.4.3",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.2.4",
+    "vitest": "^3.2.6",
     "workbox-window": "^7.3.0"
   },
   "lint-staged": {
