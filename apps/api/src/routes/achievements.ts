@@ -27,9 +27,13 @@ app.get('/stats', requireAuth, achievementController.getAchievementStats);
 app.post('/check', requireAuth, achievementController.checkAchievements);
 
 // POST /api/v1/achievements/initialize - seeds the achievement catalogue.
-// INTENTIONALLY UNAUTHENTICATED, preserving existing behaviour. It takes no
-// user id and writes only the catalogue. Revisit if it is not needed by a
-// bootstrap step.
-app.post('/initialize', achievementController.initializeAchievements);
+// It takes no user id and writes only the catalogue, resetting each entry to
+// the definition in code. Signed-in callers only: it is a write, and nothing
+// about a bootstrap step needs it to be reachable anonymously.
+app.post(
+  '/initialize',
+  requireAuth,
+  achievementController.initializeAchievements
+);
 
 export { app as achievementRoutes };

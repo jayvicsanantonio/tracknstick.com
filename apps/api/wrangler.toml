@@ -28,6 +28,18 @@ database_id = "d828b4a9-4ae4-4af3-af29-be4c27ae42fc"
 [ai]
 binding = "AI"
 
+# Per-user limit on chat requests, applied after authentication.
+# namespace_id is an integer of our choosing that identifies this limiter
+# within the Cloudflare account; another binding using the same value would
+# share its counters.
+[[ratelimits]]
+name = "CHAT_RATE_LIMITER"
+namespace_id = "7301"
+
+  [ratelimits.simple]
+  limit = 10
+  period = 60
+
 # Secrets that need to be set via wrangler:
 # CLERK_SECRET_KEY - run: wrangler secret put CLERK_SECRET_KEY
 # PINECONE_API_KEY - run: wrangler secret put PINECONE_API_KEY

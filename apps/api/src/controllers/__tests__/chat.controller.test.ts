@@ -2,7 +2,12 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
-import { chat } from '../chat.controller.js';
+import { streamText } from 'ai';
+import {
+  chat,
+  MAX_CONTEXT_MESSAGES,
+  MAX_MESSAGE_CHARS,
+} from '../chat.controller.js';
 import * as chatService from '../../services/chat.service.js';
 
 vi.mock('ai', () => ({
@@ -99,5 +104,51 @@ describe('chat request validation', () => {
     });
 
     expect(spy).toHaveBeenCalledWith({}, 'k', 'second question');
+  });
+});
+
+describe('chat request size limits', () => {
+  beforeEach(() => {
+    vi.spyOn(chatService, 'retrieveContext').mockResolvedValue('');
+    vi.spyOn(chatService, 'getSystemPrompt').mockReturnValue('system');
+  });
+
+  it('accepts a message exactly at the length limit', async () => {
+    const res = await post({
+      messages: [{ role: 'user', content: 'a'.repeat(MAX_MESSAGE_CHARS) }],
+    });
+    expect(res.status).toBe(200);
+  });
+
+  it('rejects a message longer than the length limit', async () => {
+    const res = await post({
+      messages: [{ role: 'user', content: 'a'.repeat(MAX_MESSAGE_CHARS + 1) }],
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it('sends the model only the most recent messages, starting at a user turn', async () => {
+    // Alternating user/assistant turns that end on the user's newest question.
+    const total = MAX_CONTEXT_MESSAGES + 5;
+    const messages = Array.from({ length: total }, (_, i) => ({
+      role: i % 2 === 0 ? 'user' : 'assistant',
+      content: `message ${i}`,
+    }));
+
+    const res = await post({ messages });
+
+    expect(res.status).toBe(200);
+    const sent = vi.mocked(streamText).mock.lastCall![0].messages!;
+    // The window of MAX_CONTEXT_MESSAGES opens on an assistant turn here, so
+    // it is narrowed by one to open on the user turn that follows.
+    expect(sent).toHaveLength(MAX_CONTEXT_MESSAGES - 1);
+    expect(sent[0]).toEqual({
+      role: 'user',
+      content: `message ${total - MAX_CONTEXT_MESSAGES + 1}`,
+    });
+    expect(sent.at(-1)).toEqual({
+      role: 'user',
+      content: `message ${total - 1}`,
+    });
   });
 });
