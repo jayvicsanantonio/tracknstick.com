@@ -1,12 +1,23 @@
-name: Deploy to Cloudflare Workers
+name: Deploy API to Cloudflare Workers
 
 # Push to main is the only trigger. Merging a pull request already produces
 # that push, so a pull_request trigger would deploy each merge a second time,
 # and without a base-branch filter would also deploy merges into other branches.
+#
+# The paths filter keeps frontend-only changes from redeploying the API. The
+# lockfile and workspace files are listed because they decide which dependency
+# versions the Worker is bundled with.
 on:
   push:
     branches:
       - main
+    paths:
+      - 'apps/api/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.npmrc'
+      - '.node-version'
+      - '.github/workflows/deploy-api.yml'
 
 jobs:
   deploy:
@@ -34,17 +45,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm run build
+        run: pnpm --filter @tracknstick/api build
 
       # Deploy is the last gate before production, so the suite runs here too
       # rather than only on pull requests.
       - name: Test
-        run: pnpm test
+        run: pnpm --filter @tracknstick/api test
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: apps/api
+          packageManager: pnpm
         env:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}

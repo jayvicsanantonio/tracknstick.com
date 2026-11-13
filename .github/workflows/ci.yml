@@ -6,10 +6,13 @@ on:
       - main
   pull_request:
 
+# One job per app. Both always run: a change to the shared lockfile or the
+# workspace files can break either app, and the whole suite takes about a
+# minute.
 jobs:
-  verify:
+  web:
     runs-on: ubuntu-latest
-    name: Lint, typecheck, test and build
+    name: Web - lint, typecheck, test and build
 
     steps:
       - uses: actions/checkout@v4
@@ -29,12 +32,41 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm --filter @tracknstick/web lint
 
       - name: Test
-        run: pnpm test
+        run: pnpm --filter @tracknstick/web test:run
 
       # Runs tsc and the Vite bundle. The bundle step is the one that caught
       # the missing workbox-window dependency, which tsc alone cannot see.
       - name: Build
-        run: pnpm build
+        run: pnpm --filter @tracknstick/web build
+
+  api:
+    runs-on: ubuntu-latest
+    name: API - typecheck and test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The test environment loads the compiled entry point, so the build
+      # has to come first.
+      - name: Typecheck
+        run: pnpm --filter @tracknstick/api build
+
+      - name: Test
+        run: pnpm --filter @tracknstick/api test

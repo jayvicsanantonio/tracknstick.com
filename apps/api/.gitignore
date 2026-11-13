@@ -49,3 +49,10 @@ build/
 
 # Captured test output (regenerated locally; never a source of truth)
 test_output.txt
+
+# Source material and output of the chat ingestion scripts.
+# The book is copyrighted and its extracted text is a copy of it, so neither
+# belongs in the repository. Pass the path of your own copy to
+# scripts/ingest-atomic-habits.ts, which writes its output to data/.
+*.pdf
+data/
