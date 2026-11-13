@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { API_CACHE_NAME } from './src/shared/constants/apiCache';
 
 export default defineConfig({
   plugins: [
@@ -55,7 +56,9 @@ export default defineConfig({
             urlPattern: /^https:\/\/api\.tracknstick\.com\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              // Holds signed-in users' responses, keyed by URL alone.
+              // useClearApiCacheOnUserChange empties it when the user changes.
+              cacheName: API_CACHE_NAME,
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24, // 24 hours

@@ -3,6 +3,7 @@ import AddHabitDialog from '@features/habits/components/AddHabitDialog';
 import EditHabitDialog from '@features/habits/components/EditHabitDialog';
 import { PWAInstallPrompt } from '@shared/components/feedback/PWAInstallPrompt';
 import ErrorBoundary from '@shared/components/feedback/ErrorBoundary';
+import { useClearApiCacheOnUserChange } from '@shared/hooks/useClearApiCacheOnUserChange';
 import { ReactNode, memo } from 'react';
 
 interface AppProps {
@@ -21,6 +22,8 @@ const AppContent = memo(function AppContent({ children }: AppProps) {
 });
 
 function App({ children }: AppProps) {
+  useClearApiCacheOnUserChange();
+
   return (
     <ErrorBoundary>
       <div className="text-foreground min-h-screen px-2 [scroll-timeline-name:--wicked] sm:px-4 md:px-8">
