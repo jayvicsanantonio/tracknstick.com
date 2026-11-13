@@ -1,0 +1,87 @@
+import { D1Database } from '@cloudflare/workers-types';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { getSecurityConfig } from './config/security.js';
+import {
+  withFailureHandling,
+  withRateLimitFailureHandling,
+} from './middlewares/middlewareFailureHandler.js';
+import { createRateLimit } from './middlewares/rateLimitEnhanced.js';
+import logger from './utils/logger.js';
+import { habitRoutes } from './routes/habits.js';
+import progressRoutes from './routes/progress.js';
+import { achievementRoutes } from './routes/achievements.js';
+import { chatRoutes } from './routes/chat.js';
+import { healthRoutes } from './routes/health.js';
+import { errorHandlerEnhanced } from './middlewares/errorHandlerEnhanced.js';
+import { securityHeaders } from './middlewares/securityHeaders.js';
+
+const app = new Hono<{
+  Bindings: {
+    DB: D1Database;
+    ENVIRONMENT: string;
+    CLERK_SECRET_KEY: string;
+    CLERK_PUBLISHABLE_KEY: string;
+  };
+}>();
+
+// 3. Rate limiting - Block excessive requests before processing (with failure handling)
+app.use('*', withRateLimitFailureHandling(createRateLimit()));
+
+// 4. CORS - Handle cross-origin requests with environment-aware configuration (with failure handling)
+app.use(
+  '*',
+  withFailureHandling('cors_middleware', async (c, next) => {
+    const config = getSecurityConfig(c.env.ENVIRONMENT);
+    return cors({
+      origin: config.cors.origins,
+      allowMethods: config.cors.methods,
+      allowHeaders: config.cors.allowedHeaders,
+      credentials: config.cors.credentials,
+      maxAge: 86400,
+    })(c, next);
+  })
+);
+
+// 5. Security headers - Set security headers based on environment (with failure handling)
+app.use('*', withFailureHandling('security_headers', securityHeaders()));
+
+// Log application startup
+app.use('*', async (c, next) => {
+  logger.info(
+    `Application invocation in ${c.env.ENVIRONMENT || 'unknown'} environment`
+  );
+  await next();
+});
+
+// Set up API routes
+app.route('/api/v1/habits', habitRoutes);
+app.route('/api/v1/progress', progressRoutes);
+app.route('/api/v1/achievements', achievementRoutes);
+app.route('/api/v1/chat', chatRoutes);
+
+// Health check routes - no authentication required
+app.route('/health', healthRoutes);
+
+// 404 handler for unmatched routes
+app.notFound((c) => {
+  const { path } = c.req;
+  const { method } = c.req;
+  logger.warn(`Route not found: ${method} ${path}`);
+
+  return c.json(
+    {
+      error: {
+        message: `Cannot ${method} ${path}`,
+        code: 'not_found',
+      },
+    },
+    404
+  );
+});
+
+// Global error handler - Enhanced with environment awareness
+app.onError(errorHandlerEnhanced);
+
+// Export the app for the worker runtime
+export default app;

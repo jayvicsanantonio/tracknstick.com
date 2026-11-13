@@ -1,0 +1,88 @@
+{
+  "name": "tracknstick-api",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20.12.2",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "wrangler dev --remote",
+    "dev:local": "wrangler dev --local",
+    "build": "tsc",
+    "deploy": "wrangler deploy",
+    "format": "prettier --write \"**/*.{js,ts}\"",
+    "lint": "eslint . --ext .js,.ts",
+    "lint:fix": "eslint . --ext .js,.ts --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "db:setup": "node scripts/db.js setup",
+    "db:reset": "node scripts/db.js reset",
+    "db:migrate": "node scripts/db.js migrate",
+    "db:seed": "node scripts/db.js seed",
+    "db:query": "node scripts/db.js query",
+    "db:setup:remote": "node scripts/db.js setup --remote",
+    "db:reset:remote": "node scripts/db.js reset --remote",
+    "db:migrate:remote": "node scripts/db.js migrate --remote",
+    "db:seed:remote": "node scripts/db.js seed --remote",
+    "db:query:remote": "node scripts/db.js query --remote",
+    "predev": "pnpm run build",
+    "predeploy": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jayvicsanantonio/tracknstick-api.git"
+  },
+  "keywords": [
+    "api",
+    "cloudflare-workers",
+    "hono"
+  ],
+  "author": "Jayvic San Antonio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jayvicsanantonio/tracknstick-api/issues"
+  },
+  "homepage": "https://github.com/jayvicsanantonio/tracknstick-api#readme",
+  "description": "",
+  "dependencies": {
+    "@clerk/backend": "^2.33.9",
+    "@hono/zod-validator": "^0.5.0",
+    "@pinecone-database/pinecone": "6.1.3",
+    "ai": "5.0.108",
+    "hono": "^4.13.18",
+    "workers-ai-provider": "2.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250517.0",
+    "@types/node": "^22.15.18",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.4.0",
+    "miniflare": "4.20260111.0",
+    "prettier": "^3.5.3",
+    "tsx": "4.21.0",
+    "typescript": "^5.8.3",
+    "unpdf": "1.4.0",
+    "vitest": "^3.1.3",
+    "vitest-environment-miniflare": "2.14.4",
+    "wrangler": "^4.59.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@clerk/shared",
+      "esbuild",
+      "sharp",
+      "sqlite3",
+      "workerd"
+    ]
+  }
+}
