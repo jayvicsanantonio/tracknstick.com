@@ -5,6 +5,22 @@ import { z } from 'zod';
 import * as chatService from '../services/chat.service.js';
 import logger from '../utils/logger.js';
 
+// Bounds on what one chat request can cost. Every message sent here is
+// forwarded to a metered model, so neither the size of a message nor the
+// amount of history riding along with it is left to the client.
+export const MAX_MESSAGE_CHARS = 4000;
+export const MAX_CONTEXT_MESSAGES = 20;
+
+/**
+ * Keeps the most recent messages, opening on a user turn where there is one,
+ * so a long conversation costs no more than a short one.
+ */
+const toContextWindow = <T extends { role: string }>(messages: T[]): T[] => {
+  const recent = messages.slice(-MAX_CONTEXT_MESSAGES);
+  const firstUserTurn = recent.findIndex((m) => m.role === 'user');
+  return firstUserTurn > 0 ? recent.slice(firstUserTurn) : recent;
+};
+
 // AI SDK 5 sends message parts. Non-text parts (step-start, reasoning,
 // tool-*) are dropped rather than rejected, so a well-formed assistant turn
 // does not 400 the whole request.
@@ -43,8 +59,12 @@ const chatRequestSchema = z.object({
         .refine((m) => m.content.trim().length > 0, {
           message: 'Message must contain non-empty text',
         })
+        .refine((m) => m.content.length <= MAX_MESSAGE_CHARS, {
+          message: `Message must be at most ${MAX_MESSAGE_CHARS} characters`,
+        })
     )
-    .min(1, 'At least one message is required'),
+    .min(1, 'At least one message is required')
+    .transform(toContextWindow),
 });
 
 /**

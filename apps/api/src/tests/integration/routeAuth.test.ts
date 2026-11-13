@@ -28,21 +28,12 @@ describe('route auth posture', () => {
     ['GET', '/api/v1/achievements/earned'],
     ['GET', '/api/v1/achievements/stats'],
     ['POST', '/api/v1/achievements/check'],
+    ['POST', '/api/v1/achievements/initialize'],
     ['GET', '/api/v1/progress/history'],
     ['GET', '/api/v1/progress/streaks'],
     ['GET', '/api/v1/progress/overview'],
   ])('%s %s rejects an unauthenticated request', async (method, path) => {
     const res = await app.request(path, { method }, testEnv.env);
     expect(res.status).toBe(401);
-  });
-
-  it('POST /api/v1/achievements/initialize is intentionally public', async () => {
-    const res = await app.request(
-      '/api/v1/achievements/initialize',
-      { method: 'POST' },
-      testEnv.env
-    );
-    // Documents the current posture so a change to it is a deliberate edit.
-    expect(res.status).not.toBe(401);
   });
 })

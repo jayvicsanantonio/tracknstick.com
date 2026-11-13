@@ -71,12 +71,15 @@ describe('clerkMiddleware', () => {
       };
 
       mockClerkClient.authenticateRequest.mockResolvedValue(mockRequestState);
+      mockContext.env.ENVIRONMENT = 'production';
 
       await middleware(mockContext, mockNext);
 
+      // Tokens are only accepted when issued to an origin this environment
+      // serves. An empty list would switch Clerk's check off.
       expect(mockClerkClient.authenticateRequest).toHaveBeenCalledWith(
         mockContext.req.raw,
-        { authorizedParties: [] }
+        { authorizedParties: ['https://tracknstick.com'] }
       );
 
       expect(mockContext.set).toHaveBeenCalledWith('auth', {
@@ -90,6 +93,27 @@ describe('clerkMiddleware', () => {
         expect.anything()
       );
       expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('accepts the local development origins outside production', async () => {
+      mockClerkClient.authenticateRequest.mockResolvedValue({
+        isAuthenticated: true,
+        toAuth: () => ({ userId: 'user_123' }),
+      });
+      mockContext.env.ENVIRONMENT = 'development';
+
+      await middleware(mockContext, mockNext);
+
+      expect(mockClerkClient.authenticateRequest).toHaveBeenCalledWith(
+        mockContext.req.raw,
+        {
+          authorizedParties: [
+            'http://localhost:3000',
+            'http://localhost:5173',
+            'http://localhost:5174',
+          ],
+        }
+      );
     });
 
     it('authenticates when the token carries no session id', async () => {

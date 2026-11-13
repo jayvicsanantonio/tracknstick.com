@@ -4,13 +4,12 @@
 # versions ignore with:
 #   [WARN] The "pnpm" field in package.json is no longer read by pnpm.
 #
-# pnpm generated this file listing exactly these packages and asking for a
-# true/false each. All five genuinely need to build: workerd is the Workers
-# runtime wrangler executes, esbuild and sqlite3 compile native binaries, and
-# sharp ships platform binaries.
+# pnpm asks for a true/false per package that wants to run a build script.
+# Each of these genuinely needs to: workerd is the Workers runtime wrangler
+# executes, esbuild compiles a native binary, and sharp ships platform
+# binaries.
 allowBuilds:
   '@clerk/shared': true
   esbuild: true
   sharp: true
-  sqlite3: true
   workerd: true

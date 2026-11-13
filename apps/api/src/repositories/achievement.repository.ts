@@ -139,13 +139,26 @@ export class AchievementRepository {
   async initializeAchievements(): Promise<void> {
     const achievements = this.getDefaultAchievements();
 
+    // Upsert in place rather than INSERT OR REPLACE. REPLACE deletes the
+    // existing row and inserts one with a fresh id, and user_achievements
+    // cascades on that delete, taking every user's earned achievements with it.
     for (const achievement of achievements) {
       await this.db
         .prepare(
           `
-          INSERT OR REPLACE INTO achievements 
+          INSERT INTO achievements
           (key, name, description, icon, type, category, requirement_type, requirement_value, requirement_data, is_active)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(key) DO UPDATE SET
+            name = excluded.name,
+            description = excluded.description,
+            icon = excluded.icon,
+            type = excluded.type,
+            category = excluded.category,
+            requirement_type = excluded.requirement_type,
+            requirement_value = excluded.requirement_value,
+            requirement_data = excluded.requirement_data,
+            is_active = excluded.is_active
         `
         )
         .bind(

@@ -4,6 +4,7 @@
 import { createClerkClient } from '@clerk/backend';
 import type { Context, Next } from 'hono';
 import type { AuthContext } from '../types/index.js';
+import { getSecurityConfig } from '../config/security.js';
 import { UnauthorizedError } from '../utils/errors.js';
 import logger from '../utils/logger.js';
 
@@ -34,7 +35,10 @@ export const clerkMiddleware = () => async (c: Context, next: Next) => {
       const requestState = await clerkClient.authenticateRequest(c.req.raw, {
         publishableKey: c.env.CLERK_PUBLISHABLE_KEY,
         // jwtKey: c.env.CLERK_JWT_KEY, // Optional for networkless verification
-        authorizedParties: [],
+        // Accept only tokens issued to an origin this environment serves --
+        // the same list CORS allows. An empty list makes Clerk skip the
+        // check, so a token issued to any origin would be accepted.
+        authorizedParties: getSecurityConfig(c.env.ENVIRONMENT).cors.origins,
       });
 
       if (!requestState.isAuthenticated) {
