@@ -90,10 +90,10 @@ audio feedback on toggle.
 
 ### Theming
 
-Both palettes are declared in `src/styles/index.css` (`:root` for light,
-`.dark` for dark). `index.html` applies the stored class before first paint;
-`ThemeProvider` only selects the mode and persists it. There is no
-JavaScript token map — adding a colour means adding it to both CSS blocks.
+Both palettes are declared in `src/styles/index.css` (`:root` for light, `.dark`
+for dark). `index.html` applies the stored class before first paint;
+`ThemeProvider` only selects the mode and persists it. There is no JavaScript
+token map — adding a colour means adding it to both CSS blocks.
 
 ### Authentication
 
@@ -124,10 +124,10 @@ NetworkFirst caching; static assets use CacheFirst. SW filename is `sw.js`.
 - **Framework**: Vitest + React Testing Library (jsdom environment)
 - **Setup**: `src/testing/setup.ts` — extends `expect` with jest-dom matchers,
   mocks `window.matchMedia`, `ResizeObserver`, `IntersectionObserver`
-- **Mocks**: `src/testing/mocks.tsx` — component and page stubs for the
-  routing tests. Opt-in: import `'@testing/mocks'` in a test that wants them.
-  It is deliberately *not* applied globally, so a test can render the real
-  component it is testing
+- **Mocks**: `src/testing/mocks.tsx` — component and page stubs for the routing
+  tests. Opt-in: import `'@testing/mocks'` in a test that wants them. It is
+  deliberately _not_ applied globally, so a test can render the real component
+  it is testing
 - **Render helper**: `renderWithRouter()` from `src/testing/utils.tsx` wraps
   components with `ClerkProvider`, `HabitsStateProvider`, and a `MemoryRouter`
 - **Test file location**: `__tests__/` directories beside the code being tested,

@@ -1,3 +1,7 @@
+# The workspace: each app is its own package under apps/.
+packages:
+  - 'apps/*'
+
 # Build-script approvals.
 #
 # pnpm 10.x moved these out of package.json's "pnpm" field, which newer
