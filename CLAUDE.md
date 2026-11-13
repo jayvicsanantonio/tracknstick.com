@@ -3,141 +3,78 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
-## Development Commands
+## Repository Layout
 
-### Essential Commands
-
-- `pnpm dev` - Start development server with hot reload (requires `.env` with
-  `VITE_*` keys)
-- `pnpm build` - Production build (TypeScript project references + Vite bundle)
-- `pnpm preview` - Serve the latest build for smoke checks
-- `pnpm test` - Run tests in watch mode (Vitest)
-- `pnpm test:run` - Run tests once
-- `pnpm test:coverage` - Run tests with coverage report
-- `pnpm lint` / `pnpm lint:fix` - Check or auto-fix ESLint issues
-- `pnpm format` - Format with Prettier
-- `pnpm knip` - Find unused exports/dependencies
-
-### Run a single test file
+A pnpm workspace with two apps. Each app keeps its own `CLAUDE.md` with its
+architecture, conventions and testing notes; read that file before working
+inside the app.
 
 ```
-pnpm vitest run src/path/to/file.test.tsx
+apps/
+├── web/   # @tracknstick/web: React 19 + Vite PWA        -> apps/web/CLAUDE.md
+└── api/   # @tracknstick/api: Hono on Cloudflare Workers -> apps/api/CLAUDE.md
 ```
 
-### Required Environment Variables
+The web app calls the API at `/api/v1/*`. Request and response types are
+written separately in each app, so a change to an endpoint's shape needs
+edits in both.
 
-- `VITE_CLERK_PUBLISHABLE_KEY` — Clerk auth key
-- `VITE_API_HOST` — Backend API base URL (e.g. `https://api.tracknstick.com`)
+## Commands
 
-Missing `VITE_API_HOST` throws at startup via `src/shared/utils/getConfig.ts`.
+Install once at the root; both apps share the root `pnpm-lock.yaml`.
+
+- `pnpm install` - Install dependencies for both apps
+- `pnpm dev:web` - Start the web dev server
+- `pnpm dev:api` - Start the API locally against a local D1 database
+- `pnpm build` - Build both apps
+- `pnpm lint` - Lint the web app
+- `pnpm test` - Run both test suites once
+
+Run any other app script with a filter, or from inside the app's directory:
+
+```
+pnpm --filter @tracknstick/web test:run
+pnpm --filter @tracknstick/api db:setup
+```
+
+The API's test environment loads the compiled entry point, so run its
+`build` before its `test`. `pnpm test` at the root does this for you.
+
+The API's own `dev` script uses the remote Cloudflare resources, which are
+the production ones. Prefer `pnpm dev:api`.
 
 ### Quality Checks Before Committing
 
-1. `pnpm lint:fix`
-2. `pnpm test:run`
+1. `pnpm --filter @tracknstick/web lint:fix`
+2. `pnpm test`
 3. `pnpm build`
 
-## Architecture
+## Workspace Conventions
 
-### Module Layout
+- Add a dependency to the app that uses it:
+  `pnpm --filter @tracknstick/web add <package>`. The root `package.json`
+  holds only repository tooling (husky).
+- Build-script approvals for every package live in `pnpm-workspace.yaml`.
+- The pre-commit hook runs lint-staged inside `apps/web`. It has to start
+  there: with a single config, lint-staged runs its tasks from the directory
+  it was started in, and ESLint looks for its config from that directory.
+- After changing the workspace layout, reinstall from scratch
+  (`rm -rf node_modules apps/*/node_modules && pnpm install`). Installing
+  over an existing `node_modules` can leave the apps' direct dependencies out
+  of the root `node_modules`, and libraries then fail to find `@types/react`.
 
-```
-src/
-├── app/                  # Bootstrap: providers, router config
-│   ├── providers/        # DateProvider/useDate, ThemeProvider (React context)
-│   └── routes/           # React Router v7 route definitions
-├── features/             # Domain slices (self-contained)
-│   ├── habits/           # Habit CRUD, toggling, state dialogs
-│   ├── progress/         # Streaks, calendar, achievements, charts
-│   ├── chat/             # AI chatbot (Atomic Habits RAG), floating widget
-│   └── layout/           # App shell components
-├── pages/                # Route-level views (thin wrappers over features)
-├── shared/               # Cross-feature reusables
-│   ├── components/       # feedback/, layouts/, ui/ (shadcn/ui + Radix)
-│   ├── services/api/     # Axios instance with Clerk JWT interceptor
-│   ├── hooks/            # useTheme, use-toast, use-toggle, usePageTitle
-│   ├── utils/            # date/, getConfig, theme, frequencyLabel, utils
-│   └── constants/        # Theme storage key and default mode
-├── icons/                # Lucide icon maps (habits, miscellaneous)
-├── styles/               # index.css: Tailwind v4 setup and both theme palettes
-├── types/                # Global TypeScript types
-└── testing/              # Test helpers: setup.ts, mocks.tsx, utils.tsx
-```
+## CI and Deployment
 
-### Path Aliases
+- `.github/workflows/ci.yml` runs one job per app on every branch and pull
+  request.
+- The web app is built and deployed by Cloudflare Pages from this
+  repository. Its build settings (build command and output directory
+  `apps/web/dist`) are configured in the Cloudflare dashboard, not in a file
+  here.
+- The API is deployed by `.github/workflows/deploy-api.yml` on a push to
+  `main` that touches `apps/api`, the lockfile or the workspace files.
 
-- `@/` → `src/`
-- `@app/` → `src/app/`
-- `@features/` → `src/features/`
-- `@shared/` → `src/shared/`
-- `@testing/` → `src/testing/`
+## Commits
 
-### Data Flow
-
-Each feature module follows this pattern:
-
-1. **API layer** (`features/*/api/`) — plain async functions using the shared
-   `axiosInstance`
-2. **SWR hooks** (`features/*/hooks/`) — wrap API calls with `useSWR` for
-   caching and revalidation
-3. **React Context** — `HabitsStateProvider` holds UI-only state (dialog
-   open/close, edit mode); it does **not** hold server data
-4. **Components** — consume SWR hooks for data and context for UI state
-
-The `useHabits` hook in `features/habits/hooks/` is the canonical example: it
-calls the habit API functions, does optimistic updates via `mutate`, and plays
-audio feedback on toggle.
-
-### Theming
-
-Both palettes are declared in `src/styles/index.css` (`:root` for light,
-`.dark` for dark). `index.html` applies the stored class before first paint;
-`ThemeProvider` only selects the mode and persists it. There is no
-JavaScript token map — adding a colour means adding it to both CSS blocks.
-
-### Authentication
-
-Clerk is used for auth. The Axios instance at
-`shared/services/api/axiosInstance.ts` attaches a Bearer token by reading
-`window.Clerk.session.getToken()` in a request interceptor. No token is stored
-in React state.
-
-### Routing
-
-React Router v7 with a layout route at `/` (`RootLayout`). Pages: Dashboard
-(`/`), Habits (`/habits`), Progress (`/progress`). The chat widget is a floating
-component, not a route.
-
-### AI Chat
-
-The chat feature uses the Vercel AI SDK (`ai` / `@ai-sdk/react`) to stream
-responses from a backend endpoint. It is designed as a RAG chatbot grounded in
-"Atomic Habits" content.
-
-### PWA
-
-Vite PWA plugin with Workbox. API calls to `api.tracknstick.com` use
-NetworkFirst caching; static assets use CacheFirst. SW filename is `sw.js`.
-
-## Testing
-
-- **Framework**: Vitest + React Testing Library (jsdom environment)
-- **Setup**: `src/testing/setup.ts` — extends `expect` with jest-dom matchers,
-  mocks `window.matchMedia`, `ResizeObserver`, `IntersectionObserver`
-- **Mocks**: `src/testing/mocks.tsx` — component and page stubs for the
-  routing tests. Opt-in: import `'@testing/mocks'` in a test that wants them.
-  It is deliberately *not* applied globally, so a test can render the real
-  component it is testing
-- **Render helper**: `renderWithRouter()` from `src/testing/utils.tsx` wraps
-  components with `ClerkProvider`, `HabitsStateProvider`, and a `MemoryRouter`
-- **Test file location**: `__tests__/` directories beside the code being tested,
-  named `*.test.tsx` or `*.spec.ts`
-
-## Code Conventions
-
-- Feature modules export public API through `index.ts` barrel files
-- Components use default exports; utilities and hooks use named exports
-- Tailwind classes composed with `clsx` + `tailwind-merge` (`cn()` helper)
-- Formatting: 2-space indent, single quotes (Prettier-enforced)
-- Commits: short imperative subject ("Fix Welcome overflow"); Husky +
-  lint-staged runs on pre-commit
+Short imperative subject ("Fix Welcome overflow"), with a body when the
+reason is not obvious from the diff.

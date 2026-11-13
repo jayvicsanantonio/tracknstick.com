@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm run test:*)",
+      "Bash(pnpm run:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(git add:*)",
+      "Bash(git shortlog:*)",
+      "Bash(git log:*)",
+      "Bash(pnpm install:*)",
+      "Bash(mkdir:*)"
+    ]
+  },
+  "outputStyle": "Learning"
+}

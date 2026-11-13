@@ -1,3 +1,7 @@
+# The workspace: each app is its own package under apps/.
+packages:
+  - 'apps/*'
+
 # Build-script approvals.
 #
 # pnpm 10.x moved these out of package.json's "pnpm" field, which newer
@@ -6,10 +10,13 @@
 #
 # pnpm generated this file listing these packages and asking for a true/false
 # each; the placeholder values it wrote ("set this to true or false") were
-# never answered. esbuild and @tailwindcss/oxide compile native binaries, and
-# husky's prepare step installs the git hooks.
+# never answered. esbuild and @tailwindcss/oxide compile native binaries,
+# husky's prepare step installs the git hooks, workerd is the Workers runtime
+# wrangler executes, and sharp ships platform binaries.
 allowBuilds:
   '@clerk/shared': true
   '@tailwindcss/oxide': true
   esbuild: true
   husky: true
+  sharp: true
+  workerd: true
