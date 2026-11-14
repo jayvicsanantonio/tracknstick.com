@@ -1,8 +1,7 @@
 // Calls every endpoint of the real app, on a real local D1 database,
 // and checks each response body against its schema in the contracts package.
-// @vitest-environment node
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
 import type { ZodType } from 'zod';
 import {
@@ -25,7 +24,7 @@ import {
   updateHabitResponseSchema,
 } from '@tracknstick/contracts';
 import app from '../index.js';
-import { createMigratedDatabase } from './realD1.js';
+import { env as workerEnv } from 'cloudflare:workers';
 import { mockAuthentication } from './setup.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -42,7 +41,6 @@ function expectToMatchContract(schema: ZodType, body: unknown) {
 
 describe('API responses match the contracts package', () => {
   let db: D1Database;
-  let dispose: () => Promise<void>;
 
   let env: any;
 
@@ -55,8 +53,8 @@ describe('API responses match the contracts package', () => {
   let habitId: string;
   let plainHabitId: string;
 
-  beforeAll(async () => {
-    ({ db, dispose } = await createMigratedDatabase());
+  beforeAll(() => {
+    db = workerEnv.DB;
     env = {
       DB: db,
       ENVIRONMENT: 'test',
@@ -64,10 +62,6 @@ describe('API responses match the contracts package', () => {
       CLERK_PUBLISHABLE_KEY: 'test-clerk-publishable-key',
     };
     mockAuthentication('user_contract');
-  });
-
-  afterAll(async () => {
-    await dispose();
   });
 
   async function call(

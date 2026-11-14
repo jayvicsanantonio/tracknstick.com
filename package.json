@@ -12,7 +12,7 @@
     "dev:api": "pnpm --filter @tracknstick/api dev",
     "build": "pnpm -r build",
     "lint": "pnpm --filter @tracknstick/web lint && pnpm --filter @tracknstick/api lint",
-    "test": "pnpm --filter @tracknstick/contracts test && pnpm --filter @tracknstick/web test:run && pnpm --filter @tracknstick/api build && pnpm --filter @tracknstick/api test"
+    "test": "pnpm --filter @tracknstick/contracts test && pnpm --filter @tracknstick/web test:run && pnpm --filter @tracknstick/api test"
   },
   "devDependencies": {
     "husky": "^9.1.7"

@@ -1,10 +1,9 @@
 // Runs the progress history query against a real local D1 database.
 // Covers which day a completion counts toward, which depends on the user's timezone.
-// @vitest-environment node
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
-import { createMigratedDatabase } from '../../tests/realD1.js';
+import { env } from 'cloudflare:workers';
 import { getUserProgressHistory } from '../tracker.repository.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -16,14 +15,9 @@ const utcDateDaysAgo = (days: number) =>
 
 describe('getUserProgressHistory', () => {
   let db: D1Database;
-  let dispose: () => Promise<void>;
 
-  beforeAll(async () => {
-    ({ db, dispose } = await createMigratedDatabase());
-  });
-
-  afterAll(async () => {
-    await dispose();
+  beforeAll(() => {
+    db = env.DB;
   });
 
   async function addUserWithDailyHabit(userId: string): Promise<number> {

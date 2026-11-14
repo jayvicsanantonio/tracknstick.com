@@ -1,30 +1,16 @@
 // Runs the habit repository against a real local D1 database.
 // Covers what the repository logs when a write fails.
-// @vitest-environment node
 
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
-import { createMigratedDatabase } from '../../tests/realD1.js';
+import { env } from 'cloudflare:workers';
 import { createHabit } from '../habit.repository.js';
 
 describe('createHabit when the insert fails', () => {
   let db: D1Database;
-  let dispose: () => Promise<void>;
 
-  beforeAll(async () => {
-    ({ db, dispose } = await createMigratedDatabase());
-  });
-
-  afterAll(async () => {
-    await dispose();
+  beforeAll(() => {
+    db = env.DB;
   });
 
   afterEach(() => {

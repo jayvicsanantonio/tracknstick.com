@@ -1,94 +1,26 @@
+// Shared test setup: a Hono app with the test bindings, and a stand-in for Clerk.
+// The database is the workers project's real D1, migrated by applyMigrations.ts.
+
 import { vi } from 'vitest';
 import { Hono } from 'hono';
-import { D1Database } from '@cloudflare/workers-types';
+import { env as workerEnv } from 'cloudflare:workers';
 
 /**
- * A canned answer for queries whose SQL matches `match`.
- * Without this, one result had to serve every query in a request, so a test
- * could not express "the habits query returns X and the trackers query
- * returns Y" -- which is why divergent behaviour between the two went
- * unnoticed.
+ * A fresh app and the bindings to pass to app.request(). DB is the real D1
+ * database every test in the file shares, so a test that counts rows uses a
+ * user id of its own.
  */
-export interface QueryResponder {
-  match: string | RegExp;
-
-  result: any;
-}
-
-const matches = (sql: string, match: string | RegExp) =>
-  typeof match === 'string' ? sql.includes(match) : match.test(sql);
-
-/**
- * Creates a mock D1 database for testing.
- *
- * @param mockResults result for any query no responder matches
- * @param responders per-query results, first match wins
- */
-export function createMockD1Database(
-  mockResults: any,
-  responders: QueryResponder[] = []
-): D1Database {
-  const resultFor = (sql: string): any => {
-    const responder = responders.find((r) => matches(sql, r.match));
-    return responder ? responder.result : mockResults;
-  };
-
-  const mockD1 = {
-    prepare: vi.fn((sql: string) => {
-      const result = resultFor(sql ?? '');
-      return {
-        bind: vi.fn().mockReturnThis(),
-        first: vi
-          .fn()
-          .mockImplementation(() =>
-            Promise.resolve(result.results?.[0] ?? null)
-          ),
-        run: vi.fn().mockResolvedValue(result),
-        all: vi.fn().mockResolvedValue(result),
-      };
-    }),
-
-    batch: vi.fn().mockImplementation((statements: any[]) => {
-      // Each prepared statement carries the result its SQL resolved to
-
-      return Promise.resolve(
-        statements.map((s: any) => s?.__result ?? mockResults)
-      );
-    }),
-    // exec is intentionally omitted to test for missing methods
-  } as unknown as D1Database;
-
-  return mockD1;
-}
-
-/**
- * Creates a test environment with a mock Cloudflare Workers context
- */
-export function createTestEnv(responders: QueryResponder[] = []) {
-  const mockResults = {
-    results: [],
-    success: true,
-    meta: { changes: 1, last_row_id: 1 },
-  };
-
-  const mockDb = createMockD1Database(mockResults, responders);
-
-  // Mock Cloudflare environment bindings
+export function createTestEnv() {
   const env = {
     ENVIRONMENT: 'test',
     CLERK_SECRET_KEY: 'test-clerk-key',
     CLERK_PUBLISHABLE_KEY: 'test-clerk-publishable-key',
-    DB: mockDb,
+    DB: workerEnv.DB,
   };
 
   const app = new Hono();
 
-  return {
-    app,
-    env,
-    mockDb,
-    mockResults,
-  };
+  return { app, env };
 }
 
 // Mock Clerk state - must be prefixed with 'mock' for Vitest

@@ -1,24 +1,18 @@
 // Runs achievement catalogue seeding against a real local D1 database.
 // A stubbed D1 cannot show what a statement does to rows in other tables.
-// @vitest-environment node
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
-import { createMigratedDatabase } from '../../tests/realD1.js';
+import { env } from 'cloudflare:workers';
 import { AchievementRepository } from '../achievement.repository.js';
 
 describe('AchievementRepository.initializeAchievements', () => {
   let db: D1Database;
-  let dispose: () => Promise<void>;
   let repository: AchievementRepository;
 
-  beforeAll(async () => {
-    ({ db, dispose } = await createMigratedDatabase());
+  beforeAll(() => {
+    db = env.DB;
     repository = new AchievementRepository(db);
-  });
-
-  afterAll(async () => {
-    await dispose();
   });
 
   it('keeps achievements users have already earned when the catalogue is re-seeded', async () => {

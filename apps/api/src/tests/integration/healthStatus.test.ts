@@ -51,6 +51,15 @@ describe('health endpoints', () => {
     expect(res.status).toBe(503);
   });
 
+  it('reports an error when the database check returns no row', async () => {
+    const res = await app.request('/health/db', {}, envWith('empty'));
+    const body = (await res.json()) as { status: string; message: string };
+
+    expect(res.status).toBe(500);
+    expect(body.status).toBe('error');
+    expect(body.message).toBe('Database check failed');
+  });
+
   it('/db and /details agree that the database is unhealthy', async () => {
     const db = await app.request('/health/db', {}, envWith('throws'));
     const details = await app.request('/health/details', {}, envWith('throws'));

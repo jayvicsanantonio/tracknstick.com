@@ -1,4 +1,6 @@
-// Add this comment to suppress TypeScript errors during migration to Hono
+// Calls the habit routes through Hono against a real local D1 database.
+// Each test signs in as its own user, so rows from other tests in the file do not show.
+
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { createTestEnv, mockAuthentication, resetMocks } from '../setup.js';
 import { habitRoutes } from '../../routes/habits.js';
@@ -7,16 +9,20 @@ import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js'
 describe('Habits API Integration', () => {
   let app: any;
   let env: any;
-  let mockResults: any;
+
+  const habitData = {
+    name: 'New Habit',
+    icon: '🏃',
+    frequency: ['Mon', 'Wed', 'Fri'],
+    startDate: '2023-01-01T00:00:00Z',
+  };
 
   beforeEach(() => {
     resetMocks();
-    mockAuthentication();
 
     const testEnv = createTestEnv();
     app = testEnv.app;
     env = testEnv.env;
-    mockResults = testEnv.mockResults;
 
     // Add habit routes
     app.route('/habits', habitRoutes);
@@ -29,29 +35,28 @@ describe('Habits API Integration', () => {
     vi.restoreAllMocks();
   });
 
+  function send(method: string, path: string, body?: unknown) {
+    const headers: Record<string, string> = {
+      Authorization: 'Bearer test-token',
+    };
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+
+    return app.fetch(
+      new Request(`http://localhost${path}`, {
+        method,
+        headers,
+        body: body === undefined ? undefined : JSON.stringify(body),
+      }),
+      env
+    );
+  }
+
   describe('GET /habits', () => {
     it('should return a list of habits', async () => {
-      // Set up mock data
-      const habit = {
-        id: 1,
-        user_id: 'test-user-123',
-        name: 'Test Habit',
-        icon: '🏃',
-        frequency: 'Mon,Wed,Fri',
-        start_date: '2023-01-01T00:00:00Z',
-        streak: 5,
-      };
+      mockAuthentication('user_list');
+      await send('POST', '/habits', { ...habitData, name: 'Test Habit' });
 
-      // Configure mock results
-      mockResults.results = [habit];
-
-      // Make the request
-      const req = new Request('http://localhost/habits', {
-        headers: {
-          Authorization: 'Bearer test-token',
-        },
-      });
-      const res = await app.fetch(req, env);
+      const res = await send('GET', '/habits');
 
       expect(res.status).toBe(200);
 
@@ -64,53 +69,34 @@ describe('Habits API Integration', () => {
 
   describe('POST /habits', () => {
     it('should create a new habit', async () => {
-      // Set up mock data for successful creation
-      mockResults.meta.last_row_id = 42;
-      mockResults.success = true;
+      mockAuthentication('user_create');
 
-      // Create the request with habit data
-      const habitData = {
-        name: 'New Habit',
-        icon: '🏃',
-        frequency: ['Mon', 'Wed', 'Fri'],
-        startDate: '2023-01-01T00:00:00Z',
-      };
-
-      const req = new Request('http://localhost/habits', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer test-token',
-        },
-        body: JSON.stringify(habitData),
-      });
-
-      const res = await app.fetch(req, env);
+      const res = await send('POST', '/habits', habitData);
 
       // Check response
       expect(res.status).toBe(201);
 
       const data = await res.json();
-      expect(data).toHaveProperty('habitId', '42');
       expect(data).toHaveProperty('message', 'Habit created successfully');
+      expect(data.habitId).toMatch(/^\d+$/);
+
+      const row = await env.DB.prepare(
+        'SELECT user_id, name, frequency FROM habits WHERE id = ?'
+      )
+        .bind(Number(data.habitId))
+        .first();
+      expect(row).toEqual({
+        user_id: 'user_create',
+        name: 'New Habit',
+        frequency: 'Mon,Wed,Fri',
+      });
     });
 
     it('should validate the request body', async () => {
-      // Create request with invalid data (missing required name)
-      const invalidData = {
-        icon: '🏃',
-      };
+      mockAuthentication('user_invalid');
 
-      const req = new Request('http://localhost/habits', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer test-token',
-        },
-        body: JSON.stringify(invalidData),
-      });
-
-      const res = await app.fetch(req, env);
+      // Invalid data: the required name is missing
+      const res = await send('POST', '/habits', { icon: '🏃' });
 
       // Check response
       expect(res.status).toBe(400);
@@ -123,35 +109,23 @@ describe('Habits API Integration', () => {
 
   describe('DELETE /habits/:habitId', () => {
     it('should delete a habit', async () => {
-      // Set up mock data for the habit to be deleted
-      const habitId = 1;
-      const habit = {
-        id: habitId,
-        user_id: 'test-user-123',
+      mockAuthentication('user_delete');
+      const created = await send('POST', '/habits', {
+        ...habitData,
         name: 'Delete Me',
-      };
-
-      // Configure mock results
-      // First call (getHabitById) will return this habit
-      mockResults.results = [habit];
-      mockResults.success = true;
-      mockResults.meta.changes = 1;
-
-      // Make the delete request
-      const req = new Request(`http://localhost/habits/${habitId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Bearer test-token',
-        },
       });
+      const { habitId } = await created.json();
 
-      const res = await app.fetch(req, env);
+      const res = await send('DELETE', `/habits/${habitId}`);
 
       // Check response
       expect(res.status).toBe(200);
 
       const data = await res.json();
       expect(data).toHaveProperty('message', 'Habit deleted successfully');
+
+      const remaining = await send('GET', '/habits');
+      expect(await remaining.json()).toEqual([]);
     });
   });
 });
