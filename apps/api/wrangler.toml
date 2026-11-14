@@ -19,6 +19,8 @@ enabled = true
 port = 3000
 
 # D1 Database configuration
+# The schema is the set of numbered files in migrations/. `pnpm db:migrate`
+# applies them locally; the deploy workflow applies them to this database.
 [[d1_databases]]
 binding = "DB"
 database_name = "tracknstick-db"

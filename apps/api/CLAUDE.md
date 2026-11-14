@@ -5,17 +5,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Common Development Commands
 
 ### Development
-- `pnpm run dev` - Start development server with Wrangler (includes build)
-- `pnpm run dev:local` - Run with local D1 database instead of remote
+- `pnpm run dev` - Start development server with Wrangler against the local D1 database (includes build). The AI binding still calls Cloudflare, so this needs `wrangler login`
+- `pnpm run dev:local` - Same, with nothing remote: no login or network needed, but the chat endpoint cannot reach the AI model
+- `pnpm run dev:remote` - Runs on Cloudflare against the production database; avoid unless production data is needed
 - `pnpm run build` - Compile TypeScript to JavaScript
 
 ### Database Operations
-- `pnpm run db:setup` - Initialize local database with schema
-- `pnpm run db:migrate` - Run database migrations
-- `pnpm run db:seed` - Populate database with sample data
-- `pnpm run db:reset` - Drop all tables and recreate (destructive)
-- `pnpm run db:query` - Interactive database query tool
-- Add `--remote` flag to any db command to target production database
+- `pnpm run db:migrate` - Apply pending migrations to the local database
+- `pnpm run db:setup` - Same as `db:migrate`, for a first-time setup
+- `pnpm run db:seed` - Populate the local database with sample data
+- `pnpm run db:reset` - Delete the local database and rebuild it from the migrations
+- `pnpm run db:query` - Run a SQL query against the local database
+- `pnpm run db:migrate:remote` and `pnpm run db:query:remote` target the production database; `db:reset` and `db:seed` refuse to
+- Schema changes are new numbered files in `migrations/`, applied to production by the deploy workflow. See `migrations/README.md`
 
 ### Testing
 - `pnpm run test` - Run all tests with Vitest
@@ -127,6 +129,6 @@ Consistent response structure with data and meta information:
 ### Key Files to Reference
 - `src/index.ts` - Main application entry point with middleware setup
 - `src/types/index.ts` - TypeScript type definitions
-- `migrations/schema.sql` - Complete database schema
+- `migrations/` - Versioned database schema; `0001_initial_schema.sql` is the baseline
 - `wrangler.toml` - Cloudflare Workers configuration
 - `.cursor/rules/standards.mdc` - Project coding standards and conventions

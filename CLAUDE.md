@@ -34,14 +34,17 @@ Run any other app script with a filter, or from inside the app's directory:
 
 ```
 pnpm --filter @tracknstick/web test:run
-pnpm --filter @tracknstick/api db:setup
+pnpm --filter @tracknstick/api db:migrate
 ```
 
 The API's test environment loads the compiled entry point, so run its
 `build` before its `test`. `pnpm test` at the root does this for you.
 
-The API's own `dev` script uses the remote Cloudflare resources, which are
-the production ones. Prefer `pnpm dev:api`.
+The API develops against a local D1 database built from
+`apps/api/migrations`. Run `pnpm --filter @tracknstick/api db:migrate` once,
+and again after pulling new migrations. The API's `dev:remote` script
+connects to the production database instead; avoid it unless production data
+is needed.
 
 ### Quality Checks Before Committing
 
@@ -72,7 +75,11 @@ the production ones. Prefer `pnpm dev:api`.
   `apps/web/dist`) are configured in the Cloudflare dashboard, not in a file
   here.
 - The API is deployed by `.github/workflows/deploy-api.yml` on a push to
-  `main` that touches `apps/api`, the lockfile or the workspace files.
+  `main` that touches `apps/api`, the lockfile or the workspace files. It
+  applies pending database migrations to production before it deploys.
+- Schema changes are new numbered files in `apps/api/migrations`; see the
+  README there. Every `.sql` file in that folder is applied to production, so
+  nothing else belongs in it.
 
 ## Commits
 

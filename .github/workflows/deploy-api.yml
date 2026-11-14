@@ -52,6 +52,17 @@ jobs:
       - name: Test
         run: pnpm --filter @tracknstick/api test
 
+      # Bring the production database to the schema this code expects, before
+      # the code goes live. Wrangler applies only the migrations the database
+      # has not recorded yet. A migration that fails is rolled back and stops
+      # the job here, so the Worker is never deployed against a schema it does
+      # not expect.
+      - name: Apply database migrations
+        run: pnpm --filter @tracknstick/api exec wrangler d1 migrations apply tracknstick-db --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:

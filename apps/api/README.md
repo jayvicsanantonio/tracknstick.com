@@ -238,17 +238,19 @@ The API will be available at `http://localhost:3000`
 ### Development Scripts
 ```bash
 # Development
-pnpm run dev          # Start development server with hot reload
-pnpm run dev:local    # Run with local D1 database
+pnpm run dev          # Local database; the AI binding still calls Cloudflare (needs wrangler login)
+pnpm run dev:local    # Everything local, no login needed; chat cannot reach the AI model
+pnpm run dev:remote   # Runs on Cloudflare against the production database
 
 # Building & Deployment
 pnpm run build        # Compile TypeScript
 pnpm run deploy       # Deploy to Cloudflare Workers
 
 # Database Operations
-pnpm run db:migrate   # Run database migrations
-pnpm run db:seed      # Seed database with sample data
-pnpm run db:reset     # Reset database (destructive)
+pnpm run db:migrate   # Apply pending migrations to the local database
+pnpm run db:seed      # Seed the local database with sample data
+pnpm run db:reset     # Delete the local database and rebuild it from the migrations
+# Schema changes and how they reach production: see migrations/README.md
 
 # Code Quality
 pnpm run lint         # Run ESLint

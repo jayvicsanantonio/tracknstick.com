@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "husky",
     "dev:web": "pnpm --filter @tracknstick/web dev",
-    "dev:api": "pnpm --filter @tracknstick/api dev:local",
+    "dev:api": "pnpm --filter @tracknstick/api dev",
     "build": "pnpm -r build",
     "lint": "pnpm --filter @tracknstick/web lint",
     "test": "pnpm --filter @tracknstick/web test:run && pnpm --filter @tracknstick/api build && pnpm --filter @tracknstick/api test"

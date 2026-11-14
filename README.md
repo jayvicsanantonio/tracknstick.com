@@ -44,12 +44,24 @@ To run any other script from one app, use a filter:
 
 ```bash
 pnpm --filter @tracknstick/web test:coverage
-pnpm --filter @tracknstick/api db:setup
+pnpm --filter @tracknstick/api db:query "SELECT COUNT(*) FROM habits"
 ```
 
-`pnpm dev:api` runs the API's `dev:local` script. The API's own `dev` script
-(`pnpm --filter @tracknstick/api dev`) connects to the remote Cloudflare
-resources instead.
+The API develops against a local database built from the files in
+`apps/api/migrations`. Create it once, and run this again after pulling new
+migrations:
+
+```bash
+pnpm --filter @tracknstick/api db:migrate
+```
+
+How schema changes are written and reach production is described in
+[apps/api/migrations/README.md](apps/api/migrations/README.md).
+
+`pnpm dev:api` keeps the database local but still sends the chat feature's AI
+calls to Cloudflare, so it needs `wrangler login`. To run with nothing remote,
+use `pnpm --filter @tracknstick/api dev:local`; chat will not get answers in
+that mode.
 
 ## License
 
