@@ -22,7 +22,6 @@
     "knip": "knip"
   },
   "dependencies": {
-    "@ai-sdk/react": "^2.0.109",
     "@clerk/clerk-react": "^5.61.12",
     "@radix-ui/react-alert-dialog": "^1.1.13",
     "@radix-ui/react-dialog": "^1.1.13",
@@ -35,7 +34,6 @@
     "@radix-ui/react-toast": "^1.2.13",
     "@radix-ui/react-toggle-group": "^1.1.9",
     "@rive-app/react-canvas": "^4.14.0",
-    "ai": "^5.0.108",
     "axios": "^1.21.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -80,9 +78,9 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
-    "vite": "^6.4.2",
+    "vite": "^6.4.5",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.2.4",
+    "vitest": "^3.2.6",
     "workbox-window": "^7.3.0"
   },
   "lint-staged": {
