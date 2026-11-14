@@ -90,6 +90,38 @@ describe('chat request validation', () => {
     expect(res.status).toBe(400);
   });
 
+  it('says where each problem is and what it is', async () => {
+    const res = await post({
+      messages: [
+        { role: 'user', content: 'a real question' },
+        { role: 'user', content: '   ' },
+      ],
+    });
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.error.code).toBe('validation_error');
+    expect(body.error.message).toBe('Invalid request format');
+    expect(body.error.details).toEqual([
+      expect.objectContaining({
+        path: ['messages', 1],
+        message: 'Message must contain non-empty text',
+      }),
+    ]);
+  });
+
+  it('explains an empty conversation with the message we wrote', async () => {
+    const res = await post({ messages: [] });
+    const body = await res.json();
+
+    expect(body.error.details).toEqual([
+      expect.objectContaining({
+        path: ['messages'],
+        message: 'At least one message is required',
+      }),
+    ]);
+  });
+
   it('passes only the latest user text to retrieval', async () => {
     const spy = vi
       .spyOn(chatService, 'retrieveContext')

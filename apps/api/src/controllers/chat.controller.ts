@@ -110,7 +110,7 @@ export const chat = async (c: Context) => {
           error: {
             message: 'Invalid request format',
             code: 'validation_error',
-            details: error.errors,
+            details: error.issues,
           },
         },
         400
