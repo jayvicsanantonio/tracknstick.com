@@ -25,22 +25,17 @@ export const fetchProgressHistory = async (
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
-  try {
-    const response = await axiosInstance.get<ProgressHistoryResponse>(
-      '/api/v1/progress/history',
-      { params },
-    );
+  // A failure rejects, as fetchProgressStreaks does, so the page can show it
+  // rather than an empty calendar that reads as "no progress".
+  const response = await axiosInstance.get<ProgressHistoryResponse>(
+    '/api/v1/progress/history',
+    { params },
+  );
 
-    if (response.data?.history) {
-      return response.data.history;
-    } else {
-      console.error('Unexpected response format:', response.data);
-      return [];
-    }
-  } catch (error) {
-    console.error('Error fetching progress history:', error);
-    return [];
+  if (!Array.isArray(response.data?.history)) {
+    throw new Error('Unexpected progress history response');
   }
+  return response.data.history;
 };
 
 /**
@@ -60,4 +55,8 @@ export const fetchProgressStreaks = async (
 };
 
 // Export achievement API
-export { achievementApi } from './achievements';
+export {
+  achievementApi,
+  achievementsKey,
+  achievementStatsKey,
+} from './achievements';
