@@ -1,5 +1,4 @@
 import { SignIn } from '@clerk/clerk-react';
-import { useRive } from '@rive-app/react-canvas';
 import { Card } from '@shared/components/ui/card';
 import { useTheme } from '@shared/hooks/useTheme';
 import { motion } from 'framer-motion';
@@ -8,12 +7,6 @@ import { memo, useMemo } from 'react';
 const Welcome = memo(function Welcome() {
   const { mode } = useTheme();
   const isDark = mode === 'dark';
-
-  const { RiveComponent } = useRive({
-    src: '/rive/wicked-orbs.riv',
-    autoplay: true,
-    stateMachines: 'Pulse',
-  });
 
   const title = useMemo(
     () => (isDark ? 'Defy Gravity' : 'Sparkle Up'),
@@ -46,11 +39,6 @@ const Welcome = memo(function Welcome() {
             variant="glass"
             className="relative w-full max-w-7xl overflow-hidden rounded-2xl sm:rounded-3xl md:max-h-[calc(100vh-8rem)]"
           >
-            {/* Rive Animation Background */}
-            <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-10 sm:opacity-15 md:opacity-20 lg:opacity-30">
-              <RiveComponent className="h-[250px] w-[250px] sm:h-[300px] sm:w-[300px] md:h-[350px] md:w-[350px] lg:h-[460px] lg:w-[460px]" />
-            </div>
-
             <div className="flex min-h-full w-full flex-col items-center md:flex-row lg:flex-row">
               {/* Left Side - Hero Content */}
               <div className="relative flex flex-1 flex-col items-center justify-center p-4 text-center sm:p-6 md:items-start md:p-8 md:text-left lg:p-12">

@@ -5,8 +5,8 @@ import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import { ChatWidget } from '@/features/chat/components/ChatWidget';
 
-// Only signed-out visitors see the welcome page, and it carries the Rive
-// animation runtime, so signed-in users never download either.
+// Only signed-out visitors see the welcome page, so it loads on demand and
+// signed-in users never download it.
 const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
 
 /**
