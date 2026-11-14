@@ -51,9 +51,9 @@
     "@clerk/backend": "^2.33.9",
     "@pinecone-database/pinecone": "6.1.3",
     "@tracknstick/contracts": "workspace:*",
-    "ai": "5.0.108",
+    "ai": "5.0.207",
     "hono": "^4.13.18",
-    "workers-ai-provider": "2.0.0",
+    "workers-ai-provider": "2.0.2",
     "zod": "^4.6.7"
   },
   "devDependencies": {

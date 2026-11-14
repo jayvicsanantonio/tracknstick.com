@@ -64,7 +64,7 @@ High-level architecture and flow
        - /api/v1/achievements → src/routes/achievements.ts
        - /health → src/routes/health.ts (no auth required)
     6) notFound handler with structured JSON error
-    7) Global onError: errorHandlerEnhanced (environment-aware error responses)
+    7) Global onError: errorHandler (environment-aware error responses)
 - Authentication
   - Clerk JWT verification in src/middlewares/clerkMiddleware.ts (createClerkClient + authenticateRequest)
   - On success, sets c.set('auth') with userId, claims, and security metadata; many routes require this
@@ -75,9 +75,9 @@ High-level architecture and flow
 - Security configuration
   - src/config/security.ts exposes getSecurityConfig() based on environment detection (ENVIRONMENT or NODE_ENV)
   - Controls CORS origins/methods/headers, error detail disclosure, and toggles for security headers
-  - Rate limiting: a production-grade middleware (src/middlewares/rateLimitEnhanced.ts with createRateLimit) exists and is wrapped by withFailureHandling, but is currently commented out in src/index.ts. Enable if needed for deployment hardening.
+  - Rate limiting: a production-grade middleware (src/middlewares/rateLimit.ts with createRateLimit) exists and is wrapped by withFailureHandling, but is currently commented out in src/index.ts. Enable if needed for deployment hardening.
 - Error handling
-  - src/middlewares/errorHandlerEnhanced.ts formats errors per environment, maps BaseError subclasses (ValidationError, UnauthorizedError, ForbiddenError, RateLimitError, NotFoundError), and sanitizes details in production
+  - src/middlewares/errorHandler.ts formats errors per environment, maps BaseError subclasses (ValidationError, UnauthorizedError, ForbiddenError, RateLimitError, NotFoundError), and sanitizes details in production
   - Base error types live in src/utils/errors.ts
 - Logging
   - src/utils/logger.ts provides a small edge-compatible logger with child() support; requestLogger() binds a per-request logger on c.set('logger')
@@ -111,7 +111,7 @@ Important rules and notes from existing docs
   - API routes live under /api/v1/* and require Authorization: Bearer <JWT> (Clerk) except /health and achievements initialize
 - CLAUDE.md (accurate and current to this codebase)
   - Layered architecture: Routes → Controllers → Services → Repositories → Database
-  - Middleware chain: Clerk auth → validation → controller → enhanced error handling
+  - Middleware chain: Clerk auth → validation → controller → environment-aware error handling
   - Timezone-aware design and soft deletes are foundational
   - Key files to reference: src/index.ts, migrations/, wrangler.toml, src/types, and validators
 - Cursor rules in .cursor/rules/standards.mdc

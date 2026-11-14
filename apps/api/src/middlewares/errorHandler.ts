@@ -144,9 +144,9 @@ const PUBLIC_MESSAGE: Record<string, string> = {
 };
 
 /**
- * Enhanced error handler with environment awareness
+ * Error handler whose responses depend on the environment
  */
-export const errorHandlerEnhanced = (err: Error, c: Context<AppEnv>) => {
+export const errorHandler = (err: Error, c: Context<AppEnv>) => {
   const errorConfig = getSecurityConfig(c.env.ENVIRONMENT).errorHandling;
   const requestId = generateRequestId();
 

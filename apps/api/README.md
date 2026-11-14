@@ -7,15 +7,9 @@
 
 > **A modern, scalable habit tracking API built for the edge** - powering personal growth through consistent habit formation and intelligent progress analytics.
 
-<<<<<<< HEAD
 <img width="1667" height="1087" alt="Screenshot 2025-12-16 at 11 43 22 AM" src="https://github.com/user-attachments/assets/20bd926c-2375-4d6c-8fab-f36913ccff15" />
 
-
-
-## 🌟 Overview
-=======
-##  Overview
->>>>>>> 4d5691e (docs: Remove emojis from headings and list items across various documentation files.)
+## Overview
 
 TrackNStick API is a high-performance, serverless REST API that provides the backbone for habit tracking applications. Built with modern web technologies and deployed on Cloudflare's global edge network, it delivers sub-50ms response times worldwide while handling complex habit analytics with precision timezone support.
 
@@ -215,16 +209,17 @@ All API responses follow a consistent JSON structure:
 
 ### Quick Start
 ```bash
-# Clone the repository
-git clone https://github.com/jayvicsanantonio/tracknstick-api.git
-cd tracknstick-api
+# Clone the repository; the API lives in apps/api
+git clone https://github.com/jayvicsanantonio/tracknstick.com.git
+cd tracknstick.com
 
-# Install dependencies
+# Install dependencies for the whole workspace
 pnpm install
+cd apps/api
 
-# Setup environment variables
-cp .env.example .env
-# Edit .env with your Clerk credentials
+# Local secrets: wrangler dev reads them from .dev.vars (gitignored)
+cp .dev.vars.example .dev.vars
+# Edit .dev.vars with your Clerk development keys
 
 # Setup local database
 pnpm run db:setup

@@ -46,7 +46,7 @@ export const validateRequest =
       const result = schema.safeParse(data);
 
       if (!result.success) {
-        const formattedErrors = result.error.format();
+        const formattedErrors = z.treeifyError(result.error);
         throw new ValidationError('Validation failed', formattedErrors);
       }
 
@@ -60,7 +60,7 @@ export const validateRequest =
       }
 
       if (error instanceof z.ZodError) {
-        throw new ValidationError('Validation failed', error.format());
+        throw new ValidationError('Validation failed', z.treeifyError(error));
       }
 
       if (

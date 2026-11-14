@@ -7,7 +7,6 @@ import {
   withClerkFailureHandling,
   withRateLimitFailureHandling,
   getSecurityLogger,
-  middlewareChainMonitor,
 } from '../middlewareFailureHandler.js';
 import {
   UnauthorizedError,
@@ -197,63 +196,28 @@ describe('Middleware Failure Handler', () => {
     });
   });
 
-  describe('MiddlewareChainMonitor', () => {
-    beforeEach(() => {
-      // Reset the monitor state
-      middlewareChainMonitor.getFailureStats(); // This triggers reset check
-    });
-
-    it('should record middleware failures', () => {
-      middlewareChainMonitor.recordFailure('test_middleware');
-      middlewareChainMonitor.recordFailure('test_middleware');
-      middlewareChainMonitor.recordFailure('other_middleware');
-
-      const stats = middlewareChainMonitor.getFailureStats();
-
-      expect(stats.test_middleware).toBe(2);
-      expect(stats.other_middleware).toBe(1);
-    });
-
-    it('should provide failure statistics', () => {
-      middlewareChainMonitor.recordFailure('auth_middleware');
-      middlewareChainMonitor.recordFailure('rate_limit_middleware');
-      middlewareChainMonitor.recordFailure('auth_middleware');
-
-      const stats = middlewareChainMonitor.getFailureStats();
-
-      expect(stats.auth_middleware).toBe(2);
-      expect(stats.rate_limit_middleware).toBe(1);
-    });
-
-    it('should handle empty failure stats', () => {
-      const stats = middlewareChainMonitor.getFailureStats();
-
-      expect(Object.keys(stats).length).toBeGreaterThanOrEqual(0);
-    });
-  });
-
-  describe('Enhanced wrapper functions', () => {
-    it('should create enhanced Clerk middleware wrapper', () => {
+  describe('wrapper functions', () => {
+    it('should create a wrapped Clerk middleware', () => {
       const mockClerkMiddleware = vi.fn();
-      const enhanced = withClerkFailureHandling(mockClerkMiddleware);
+      const wrapped = withClerkFailureHandling(mockClerkMiddleware);
 
-      expect(typeof enhanced).toBe('function');
+      expect(typeof wrapped).toBe('function');
     });
 
-    it('should create enhanced rate limit middleware wrapper', () => {
+    it('should create a wrapped rate limit middleware', () => {
       const mockRateLimitMiddleware = vi.fn();
-      const enhanced = withRateLimitFailureHandling(mockRateLimitMiddleware);
+      const wrapped = withRateLimitFailureHandling(mockRateLimitMiddleware);
 
-      expect(typeof enhanced).toBe('function');
+      expect(typeof wrapped).toBe('function');
     });
 
     it('should handle Clerk middleware failures', async () => {
       const error = new UnauthorizedError('Clerk auth failed');
       const failingClerkMiddleware = vi.fn(() => Promise.reject(error));
 
-      const enhanced = withClerkFailureHandling(failingClerkMiddleware);
+      const wrapped = withClerkFailureHandling(failingClerkMiddleware);
 
-      await expect(enhanced(mockContext, mockNext)).rejects.toThrow(
+      await expect(wrapped(mockContext, mockNext)).rejects.toThrow(
         UnauthorizedError
       );
       expect(failingClerkMiddleware).toHaveBeenCalledWith(
@@ -266,9 +230,9 @@ describe('Middleware Failure Handler', () => {
       const error = new RateLimitError('Rate limit exceeded');
       const failingRateLimitMiddleware = vi.fn(() => Promise.reject(error));
 
-      const enhanced = withRateLimitFailureHandling(failingRateLimitMiddleware);
+      const wrapped = withRateLimitFailureHandling(failingRateLimitMiddleware);
 
-      await expect(enhanced(mockContext, mockNext)).rejects.toThrow(
+      await expect(wrapped(mockContext, mockNext)).rejects.toThrow(
         RateLimitError
       );
       expect(failingRateLimitMiddleware).toHaveBeenCalledWith(

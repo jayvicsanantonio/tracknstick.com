@@ -1,13 +1,8 @@
 // Unit tests for security configuration system
-// Tests environment detection, configuration loading, and validation
+// Tests environment detection and configuration loading
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  detectEnvironment,
-  getSecurityConfig,
-  validateSecurityConfig,
-  type SecurityConfig,
-} from '../security.js';
+import { detectEnvironment, getSecurityConfig } from '../security.js';
 
 describe('Security Configuration', () => {
   beforeEach(() => {
@@ -135,108 +130,6 @@ describe('Security Configuration', () => {
       ).toBeLessThan(
         devConfig.rateLimit.endpointLimits['/api/v1/habits'].limit
       );
-    });
-  });
-
-  describe('validateSecurityConfig', () => {
-    let validConfig: SecurityConfig;
-
-    beforeEach(() => {
-      validConfig = {
-        cors: {
-          origins: ['https://example.com'],
-          methods: ['GET', 'POST'],
-          allowedHeaders: ['Content-Type'],
-          credentials: true,
-        },
-        rateLimit: {
-          globalLimit: 100,
-          windowMs: 60000,
-          endpointLimits: {
-            '/api/test': { limit: 10, windowMs: 60000 },
-          },
-          skipSuccessfulRequests: false,
-          skipFailedRequests: false,
-        },
-        errorHandling: {
-          showStackTrace: false,
-          showErrorDetails: false,
-          logLevel: 'warn',
-        },
-        headers: {
-          enableHsts: true,
-          enableContentTypeOptions: true,
-          enableFrameOptions: true,
-          enableXssProtection: true,
-        },
-      };
-    });
-
-    it('should validate a correct configuration', () => {
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
-    });
-
-    it('should reject config with empty CORS origins', () => {
-      validConfig.cors.origins = [];
-
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('CORS origins must be specified');
-    });
-
-    it('should reject config with negative global rate limit', () => {
-      validConfig.rateLimit.globalLimit = -1;
-
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Global rate limit must be positive');
-    });
-
-    it('should reject config with zero rate limit window', () => {
-      validConfig.rateLimit.windowMs = 0;
-
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Rate limit window must be positive');
-    });
-
-    it('should reject config with negative endpoint rate limit', () => {
-      validConfig.rateLimit.endpointLimits['/api/test'].limit = -5;
-
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        'Rate limit for /api/test must be positive'
-      );
-    });
-
-    it('should reject config with zero endpoint window', () => {
-      validConfig.rateLimit.endpointLimits['/api/test'].windowMs = 0;
-
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        'Rate limit window for /api/test must be positive'
-      );
-    });
-
-    it('should collect multiple validation errors', () => {
-      validConfig.cors.origins = [];
-      validConfig.rateLimit.globalLimit = -1;
-      validConfig.rateLimit.windowMs = 0;
-
-      const result = validateSecurityConfig(validConfig);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toHaveLength(3);
     });
   });
 

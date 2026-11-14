@@ -24,7 +24,7 @@ const toContextWindow = <T extends { role: string }>(messages: T[]): T[] => {
 // does not 400 the whole request.
 const partSchema = z
   .object({ type: z.string(), text: z.string().optional() })
-  .passthrough();
+  .loose();
 
 /**
  * Produces the exact shape the rest of the pipeline consumes, so there is one

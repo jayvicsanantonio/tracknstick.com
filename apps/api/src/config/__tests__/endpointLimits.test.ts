@@ -2,7 +2,7 @@
 // A key that matches no route silently disables its own policy
 
 import { describe, it, expect } from 'vitest';
-import { getSecurityConfig, validateSecurityConfig } from '../security.js';
+import { getSecurityConfig } from '../security.js';
 
 // Mirrors the app.route() calls in src/index.ts
 const MOUNTED_PREFIXES = [
@@ -64,16 +64,23 @@ describe('production endpoint policy actually applies', () => {
   });
 });
 
-describe('shipped configs satisfy their own validator', () => {
-  // validateSecurityConfig has no runtime caller: getSecurityConfig never
-  // invokes it. Asserting it here is where the guard can actually act --
-  // a bad limit fails CI instead of shipping and validating nothing.
+describe('shipped configs', () => {
+  // Nothing checks the configs at runtime, so a bad origin list or limit
+  // fails here in CI instead of shipping.
   it.each(['development', 'production', 'test'])(
-    '%s config is valid',
+    '%s config has CORS origins and positive limits',
     (env) => {
-      const result = validateSecurityConfig(getSecurityConfig(env));
-      expect(result.errors).toEqual([]);
-      expect(result.valid).toBe(true);
+      const config = getSecurityConfig(env);
+
+      expect(config.cors.origins.length).toBeGreaterThan(0);
+      expect(config.rateLimit.globalLimit).toBeGreaterThan(0);
+      expect(config.rateLimit.windowMs).toBeGreaterThan(0);
+      for (const [endpoint, limit] of Object.entries(
+        config.rateLimit.endpointLimits
+      )) {
+        expect(limit.limit, `${endpoint} limit`).toBeGreaterThan(0);
+        expect(limit.windowMs, `${endpoint} window`).toBeGreaterThan(0);
+      }
     }
   );
 });

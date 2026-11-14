@@ -10,7 +10,7 @@ import {
 } from '../setup.js';
 import { achievementRoutes } from '../../routes/achievements.js';
 import progressRoutes from '../../routes/progress.js';
-import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
+import { errorHandler } from '../../middlewares/errorHandler.js';
 
 describe('route auth posture', () => {
   let app: any;
@@ -23,7 +23,7 @@ describe('route auth posture', () => {
     app = new Hono();
     app.route('/api/v1/achievements', achievementRoutes);
     app.route('/api/v1/progress', progressRoutes);
-    app.onError(errorHandlerEnhanced);
+    app.onError(errorHandler);
   });
 
   it.each([
