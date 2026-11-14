@@ -2,7 +2,12 @@
 // Tests authentication flows, rate limiting, CORS enforcement, and error handling
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { createTestEnv, resetMocks } from '../setup.js';
+import {
+  createTestEnv,
+  resetMocks,
+  takeUnauthenticatedRequestLogs,
+  takeConsole,
+} from '../setup.js';
 import app from '../../index.js';
 
 describe('Security Integration Tests', () => {
@@ -36,6 +41,8 @@ describe('Security Integration Tests', () => {
       });
       expect(body.error.requestId).toMatch(/^err_/);
       expect(body.error.timestamp).toBeDefined();
+
+      takeUnauthenticatedRequestLogs();
     });
 
     it('should reject requests with malformed Authorization header', async () => {
@@ -52,6 +59,8 @@ describe('Security Integration Tests', () => {
 
       const body: any = await response.json();
       expect(body.error.code).toBe('unauthorized');
+
+      takeUnauthenticatedRequestLogs();
     });
 
     it('should allow access to health endpoints without authentication', async () => {
@@ -216,6 +225,8 @@ describe('Security Integration Tests', () => {
         expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
         expect(response.headers.get('X-Frame-Options')).toBe('DENY');
       }
+
+      takeUnauthenticatedRequestLogs();
     });
   });
 
@@ -236,6 +247,10 @@ describe('Security Integration Tests', () => {
           code: expect.any(String),
         },
       });
+
+      expect(takeConsole('warn')).toEqual([
+        expect.stringContaining('Route not found: GET /api/v1/nonexistent'),
+      ]);
     });
 
     it('should handle malformed JSON requests gracefully', async () => {
@@ -254,6 +269,8 @@ describe('Security Integration Tests', () => {
       const body: any = await response.json();
       expect(body.error.code).toBe('unauthorized');
       expect(body.error.requestId).toMatch(/^err_/);
+
+      takeUnauthenticatedRequestLogs();
     });
 
     it('should include correlation IDs in error responses', async () => {
@@ -269,6 +286,8 @@ describe('Security Integration Tests', () => {
       expect(body.error.requestId).toBeDefined();
       expect(body.error.requestId).toMatch(/^err_\d+_[a-z0-9]+$/);
       expect(body.error.timestamp).toBeDefined();
+
+      takeUnauthenticatedRequestLogs();
     });
   });
 
@@ -295,6 +314,8 @@ describe('Security Integration Tests', () => {
 
       // Auth failure should be the final result
       expect(response.status).toBe(401);
+
+      takeUnauthenticatedRequestLogs();
     });
 
     it('should properly propagate errors through middleware chain', async () => {
@@ -312,6 +333,8 @@ describe('Security Integration Tests', () => {
       // Should still include middleware-set headers despite error
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
       expect(response.headers.get('X-RateLimit-Limit')).toBeDefined();
+
+      takeUnauthenticatedRequestLogs();
     });
 
     it('should handle middleware failures gracefully', async () => {
@@ -330,6 +353,8 @@ describe('Security Integration Tests', () => {
       // Should get some kind of error response, not a timeout or hang
       expect(response.status).toBeGreaterThanOrEqual(400);
       expect(response.status).toBeLessThan(600);
+
+      takeUnauthenticatedRequestLogs();
     });
   });
 
@@ -389,6 +414,8 @@ describe('Security Integration Tests', () => {
       // Should maintain security headers even in error responses
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
       expect(response.headers.get('X-RateLimit-Limit')).toBeDefined();
+
+      takeUnauthenticatedRequestLogs();
     });
   });
 });

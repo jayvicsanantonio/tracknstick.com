@@ -25,7 +25,11 @@ import {
 } from '@tracknstick/contracts';
 import app from '../index.js';
 import { env as workerEnv } from 'cloudflare:workers';
-import { mockAuthentication } from './setup.js';
+import {
+  mockAuthentication,
+  takeConsole,
+  takeUnauthenticatedRequestLogs,
+} from './setup.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const EVERY_DAY = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -98,6 +102,8 @@ describe('API responses match the contracts package', () => {
 
       expect(res.status).toBe(401);
       expectToMatchContract(errorResponseSchema, res.body);
+
+      takeUnauthenticatedRequestLogs();
     });
 
     it('a request that fails validation', async () => {
@@ -105,6 +111,10 @@ describe('API responses match the contracts package', () => {
 
       expect(res.status).toBe(400);
       expectToMatchContract(errorResponseSchema, res.body);
+
+      expect(takeConsole('warn')).toEqual([
+        expect.stringContaining('Client error occurred'),
+      ]);
     });
 
     it('a route that does not exist', async () => {
@@ -112,6 +122,10 @@ describe('API responses match the contracts package', () => {
 
       expect(res.status).toBe(404);
       expectToMatchContract(errorResponseSchema, res.body);
+
+      expect(takeConsole('warn')).toEqual([
+        expect.stringContaining('Route not found: GET /api/v1/nothing-here'),
+      ]);
     });
   });
 

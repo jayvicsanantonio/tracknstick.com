@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { calculateCurrentStreak, updateStreakInfo } from '../streakUtils.js';
+import { takeConsole } from '../../tests/setup.js';
 
 describe('streakUtils', () => {
   const timeZone = 'America/Los_Angeles';
@@ -53,6 +54,12 @@ describe('streakUtils', () => {
         'invalid-timezone'
       );
       expect(result).toBe(0);
+
+      expect(takeConsole('error')).toEqual([
+        expect.stringContaining(
+          'Invalid timeZone provided to calculateCurrentStreak: invalid-timezone'
+        ),
+      ]);
     });
 
     it('should calculate streak based on frequency', () => {

@@ -1,9 +1,27 @@
 // Test configuration for the API: most tests run inside workerd, the Workers runtime.
 // A few that need Node itself (child processes, the migration files on disk) run in Node.
 
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { cloudflareTest, readD1Migrations } from '@cloudflare/vitest-plugin';
 import { defineConfig } from 'vitest/config';
+
+// @pinecone-database/pinecone publishes source maps that point at its src/
+// folder, which it does not ship, so Vite warns each time a test loads it.
+// Loading the file without its sourceMappingURL comment removes the warning
+// and changes nothing else.
+const pineconeWithoutSourceMaps = {
+  name: 'pinecone-without-source-maps',
+  load(id: string) {
+    if (!id.includes('/@pinecone-database/pinecone/dist/')) return null;
+    const file = id.split('?')[0];
+    const code = readFileSync(file, 'utf8').replace(
+      /\n\/\/# sourceMappingURL=\S+\s*$/,
+      '\n'
+    );
+    return { code, map: null };
+  },
+};
 
 // Tests that need Node APIs workerd does not provide.
 const NODE_TESTS = [
@@ -17,6 +35,7 @@ export default defineConfig({
     projects: [
       {
         plugins: [
+          pineconeWithoutSourceMaps,
           cloudflareTest(async () => ({
             // The bindings are listed here rather than read from wrangler.toml:
             // its AI binding always calls Cloudflare, so loading it would make

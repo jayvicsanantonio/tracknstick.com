@@ -7,6 +7,7 @@ import type { AppEnv } from '../../types/index.js';
 import { z } from 'zod';
 import { validateRequest } from '../validateRequest.js';
 import { errorHandlerEnhanced } from '../errorHandlerEnhanced.js';
+import { takeConsole } from '../../tests/setup.js';
 
 const thingSchema = z
   .object({
@@ -78,6 +79,10 @@ describe('validateRequest', () => {
     expect(res.status).toBe(400);
     expect(body.error.code).toBe('validation_error');
     expect(body.error.message).toBe('Validation failed');
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 
   it('lists the messages for each failing field under that field', async () => {
@@ -90,6 +95,10 @@ describe('validateRequest', () => {
         expect(typeof message).toBe('string');
       }
     }
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 
   it('reports a field-level rule with the message we wrote', async () => {
@@ -97,6 +106,10 @@ describe('validateRequest', () => {
     const { details } = (await res.json()).error;
 
     expect(details.tags._errors).toEqual(['Tags must be unique.']);
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 
   it('reports a whole-object rule at the top level', async () => {
@@ -104,6 +117,10 @@ describe('validateRequest', () => {
     const { details } = (await res.json()).error;
 
     expect(details._errors).toEqual(['That name is not allowed.']);
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 
   it('treats a body that is not JSON as an empty object', async () => {
@@ -112,5 +129,9 @@ describe('validateRequest', () => {
 
     expect(res.status).toBe(400);
     expect(details.name._errors.length).toBeGreaterThan(0);
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 });
