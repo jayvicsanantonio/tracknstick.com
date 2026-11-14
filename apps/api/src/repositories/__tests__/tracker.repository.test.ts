@@ -1,164 +1,202 @@
-// Add this comment to suppress TypeScript errors during migration to Hono
+// Runs the tracker repository against a real local D1 database.
+// Covers which rows each function reads, writes and deletes.
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Mock } from 'vitest';
-import { D1Database } from '@cloudflare/workers-types';
+import { beforeAll, describe, expect, it } from 'vitest';
+import type { D1Database } from '@cloudflare/workers-types';
+import { env } from 'cloudflare:workers';
 import * as trackerRepository from '../tracker.repository.js';
 
-// Mock D1 database functions
-const mockD1Result: any = {
-  results: [],
-  success: true,
-  meta: { changes: 0, last_row_id: 0 },
-};
+const JUNE_START = '2023-06-01T00:00:00Z';
+const JUNE_END = '2023-06-30T23:59:59Z';
 
 describe('Tracker Repository', () => {
-  let mockDB: D1Database;
-  const userId = 'user123';
-  const habitId = 1;
-  const trackerRows = [
-    {
-      id: 1,
-      habit_id: 1,
-      timestamp: '2023-06-01T10:00:00Z',
-      notes: 'Test note 1',
-    },
-    {
-      id: 2,
-      habit_id: 1,
-      timestamp: '2023-06-02T10:00:00Z',
-      notes: 'Test note 2',
-    },
-  ];
+  let db: D1Database;
 
-  beforeEach(() => {
-    // Reset mocks
-    vi.resetAllMocks();
-
-    // Mock database
-    mockDB = {
-      prepare: vi.fn().mockImplementation(() => ({
-        bind: vi.fn().mockReturnThis(),
-        first: vi.fn().mockResolvedValue(null),
-        all: vi.fn().mockResolvedValue(mockD1Result),
-        run: vi.fn().mockResolvedValue(mockD1Result),
-      })),
-    } as unknown as D1Database;
-
-    // Set default mock returns
-    mockD1Result.results = [...trackerRows];
-    mockD1Result.meta = { changes: 1, last_row_id: 1 };
+  beforeAll(() => {
+    db = env.DB;
   });
 
+  async function addUserWithHabit(userId: string): Promise<number> {
+    await db
+      .prepare('INSERT INTO users (clerk_user_id) VALUES (?)')
+      .bind(userId)
+      .run();
+    const habit = await db
+      .prepare(
+        `INSERT INTO habits (user_id, name, frequency, start_date)
+         VALUES (?, 'Read', 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', '2023-01-01T00:00:00Z')
+         RETURNING id`
+      )
+      .bind(userId)
+      .first<{ id: number }>();
+    return habit!.id;
+  }
+
+  async function addTracker(
+    userId: string,
+    habitId: number,
+    timestamp: string
+  ): Promise<number> {
+    const tracker = await db
+      .prepare(
+        `INSERT INTO trackers (habit_id, user_id, timestamp)
+         VALUES (?, ?, ?) RETURNING id`
+      )
+      .bind(habitId, userId, timestamp)
+      .first<{ id: number }>();
+    return tracker!.id;
+  }
+
+  async function trackerIdsOf(habitId: number): Promise<number[]> {
+    const { results } = await db
+      .prepare('SELECT id FROM trackers WHERE habit_id = ? ORDER BY id')
+      .bind(habitId)
+      .all<{ id: number }>();
+    return results.map((row) => row.id);
+  }
+
   describe('findTrackersByDateRange', () => {
-    it('should return an empty array if no habit IDs provided', async () => {
+    it('returns an empty array if no habit IDs are given', async () => {
       const result = await trackerRepository.findTrackersByDateRange(
-        mockDB,
-        userId,
+        db,
+        'user_none',
         [],
-        '2023-06-01T00:00:00Z',
-        '2023-06-30T23:59:59Z'
+        JUNE_START,
+        JUNE_END
       );
 
       expect(result).toEqual([]);
-      expect(mockDB.prepare).not.toHaveBeenCalled();
     });
 
-    it('should query trackers for the given habits and date range', async () => {
-      await trackerRepository.findTrackersByDateRange(
-        mockDB,
-        userId,
-        [1, 2],
-        '2023-06-01T00:00:00Z',
-        '2023-06-30T23:59:59Z'
+    it("returns the user's trackers inside the range and nothing else", async () => {
+      const habitId = await addUserWithHabit('user_range');
+      const inRange = await addTracker(
+        'user_range',
+        habitId,
+        '2023-06-15T10:00:00Z'
       );
-
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('habit_id IN (?,?)')
+      await addTracker('user_range', habitId, '2023-07-01T10:00:00Z');
+      const deleted = await addTracker(
+        'user_range',
+        habitId,
+        '2023-06-16T10:00:00Z'
       );
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('timestamp >= ?')
-      );
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('timestamp <= ?')
-      );
-    });
-
-    it('should throw error if the database query fails', async () => {
-      // Mock failed query
-      const mockFailedResult = { ...mockD1Result, success: false };
-      const mockPrepare = mockDB.prepare as Mock;
-      mockPrepare.mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        all: vi.fn().mockResolvedValue(mockFailedResult),
-      });
-
-      await expect(
-        trackerRepository.findTrackersByDateRange(
-          mockDB,
-          userId,
-          [1],
-          '2023-06-01T00:00:00Z',
-          '2023-06-30T23:59:59Z'
+      await db
+        .prepare(
+          'UPDATE trackers SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?'
         )
-      ).rejects.toThrow('Failed to fetch trackers');
+        .bind(deleted)
+        .run();
+
+      const result = await trackerRepository.findTrackersByDateRange(
+        db,
+        'user_range',
+        [habitId],
+        JUNE_START,
+        JUNE_END
+      );
+
+      expect(result.map((tracker) => tracker.id)).toEqual([inRange]);
+    });
+
+    it("does not return another user's trackers for the same habit IDs", async () => {
+      const habitId = await addUserWithHabit('user_owner');
+      await addTracker('user_owner', habitId, '2023-06-15T10:00:00Z');
+
+      const result = await trackerRepository.findTrackersByDateRange(
+        db,
+        'user_stranger',
+        [habitId],
+        JUNE_START,
+        JUNE_END
+      );
+
+      expect(result).toEqual([]);
     });
   });
 
   describe('create', () => {
-    it('should create a new tracker', async () => {
-      const timestamp = '2023-06-15T10:00:00Z';
-      const notes = 'Test notes';
-      const lastRowId = 5;
+    it('inserts the tracker and returns its id', async () => {
+      const habitId = await addUserWithHabit('user_create');
 
-      mockD1Result.meta.last_row_id = lastRowId;
-
-      const result = await trackerRepository.create(
-        mockDB,
+      const trackerId = await trackerRepository.create(
+        db,
         habitId,
-        userId,
-        timestamp,
-        notes
+        'user_create',
+        '2023-06-15T10:00:00Z',
+        'Test notes'
       );
 
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT INTO trackers')
-      );
-      expect(result).toBe(lastRowId);
+      const row = await db
+        .prepare('SELECT habit_id, user_id, notes FROM trackers WHERE id = ?')
+        .bind(trackerId)
+        .first();
+      expect(row).toEqual({
+        habit_id: habitId,
+        user_id: 'user_create',
+        notes: 'Test notes',
+      });
     });
   });
 
   describe('removeTrackersByIds', () => {
-    it('should return 0 changes if no tracker IDs provided', async () => {
+    it('reports 0 changes if no tracker IDs are given', async () => {
       const result = await trackerRepository.removeTrackersByIds(
-        mockDB,
+        db,
         [],
-        habitId,
-        userId
+        1,
+        'user_none'
       );
 
       expect(result).toEqual({ changes: 0 });
-      expect(mockDB.prepare).not.toHaveBeenCalled();
     });
 
-    it('should delete trackers by IDs', async () => {
-      const trackerIds = [1, 2, 3];
-      mockD1Result.meta.changes = trackerIds.length;
+    it('deletes the given trackers and keeps the rest', async () => {
+      const habitId = await addUserWithHabit('user_remove');
+      const first = await addTracker(
+        'user_remove',
+        habitId,
+        '2023-06-01T10:00:00Z'
+      );
+      const second = await addTracker(
+        'user_remove',
+        habitId,
+        '2023-06-02T10:00:00Z'
+      );
+      const kept = await addTracker(
+        'user_remove',
+        habitId,
+        '2023-06-03T10:00:00Z'
+      );
 
       const result = await trackerRepository.removeTrackersByIds(
-        mockDB,
-        trackerIds,
+        db,
+        [first, second],
         habitId,
-        userId
+        'user_remove'
       );
 
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('DELETE FROM trackers')
+      expect(result).toEqual({ changes: 2 });
+      expect(await trackerIdsOf(habitId)).toEqual([kept]);
+    });
+
+    it("does not delete another user's trackers", async () => {
+      const habitId = await addUserWithHabit('user_victim');
+      const tracker = await addTracker(
+        'user_victim',
+        habitId,
+        '2023-06-01T10:00:00Z'
       );
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('id IN (?,?,?)')
+
+      const result = await trackerRepository.removeTrackersByIds(
+        db,
+        [tracker],
+        habitId,
+        'user_attacker'
       );
-      expect(result).toEqual({ changes: trackerIds.length });
+
+      expect(result).toEqual({ changes: 0 });
+      expect(await trackerIdsOf(habitId)).toEqual([tracker]);
     });
   });
 });

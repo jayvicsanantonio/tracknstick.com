@@ -1,19 +1,10 @@
 // Exercises the chat route's per-user rate limit with a real local limiter.
-// The limiter is Miniflare's implementation of the Rate Limiting binding.
-// @vitest-environment node
+// The limiter is the Rate Limiting binding vitest.config.ts gives the workers project.
 
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { env as workerEnv } from 'cloudflare:workers';
 import { Hono } from 'hono';
 import type { AppEnv } from '../../types/index.js';
-import { Miniflare } from 'miniflare';
 import { mockAuthentication } from '../../tests/setup.js';
 import { chatRoutes } from '../chat.js';
 import * as chatService from '../../services/chat.service.js';
@@ -28,38 +19,18 @@ vi.mock('workers-ai-provider', () => ({
   createWorkersAI: () => () => 'model',
 }));
 
-const REQUESTS_PER_MINUTE = 2;
+// The limit vitest.config.ts gives the binding, the same as wrangler.toml's.
+const REQUESTS_PER_MINUTE = 10;
 
 describe('chat route rate limit', () => {
-  let miniflare: Miniflare;
-
-  let env: any;
-
-  beforeAll(async () => {
-    miniflare = new Miniflare({
-      modules: true,
-      script: 'export default { fetch: () => new Response(null) }',
-      ratelimits: {
-        CHAT_RATE_LIMITER: {
-          simple: { limit: REQUESTS_PER_MINUTE, period: 60 },
-        },
-      },
-    });
-    const bindings = await miniflare.getBindings();
-
-    env = {
-      ENVIRONMENT: 'test',
-      CLERK_SECRET_KEY: 'test-clerk-key',
-      CLERK_PUBLISHABLE_KEY: 'test-clerk-publishable-key',
-      AI: {},
-      PINECONE_API_KEY: 'k',
-      CHAT_RATE_LIMITER: bindings.CHAT_RATE_LIMITER,
-    };
-  });
-
-  afterAll(async () => {
-    await miniflare.dispose();
-  });
+  const env = {
+    ENVIRONMENT: 'test',
+    CLERK_SECRET_KEY: 'test-clerk-key',
+    CLERK_PUBLISHABLE_KEY: 'test-clerk-publishable-key',
+    AI: {},
+    PINECONE_API_KEY: 'k',
+    CHAT_RATE_LIMITER: workerEnv.CHAT_RATE_LIMITER,
+  };
 
   beforeEach(() => {
     vi.spyOn(chatService, 'retrieveContext').mockResolvedValue('');

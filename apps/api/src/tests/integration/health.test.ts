@@ -1,29 +1,20 @@
-// Add this comment to suppress TypeScript errors during migration to Hono
+// Calls the health routes through Hono against a real local D1 database.
+// The failure cases, which need a database that misbehaves, are in healthStatus.test.ts.
+
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import type { Mock } from 'vitest';
 import { createTestEnv, resetMocks } from '../setup.js';
 import { healthRoutes } from '../../routes/health.js';
 
 describe('Health API Integration', () => {
   let app: any;
   let env: any;
-  let mockDb: any;
-  let mockResults: any;
 
   beforeEach(() => {
     const testEnv = createTestEnv();
     app = testEnv.app;
     env = testEnv.env;
-    mockDb = testEnv.mockDb;
-    mockResults = testEnv.mockResults;
 
     resetMocks();
-
-    // Configure the app with environment and routes
-    app.use('*', (c: any, next: any) => {
-      c.env = env;
-      return next();
-    });
 
     // Add health routes
     app.route('/health', healthRoutes);
@@ -35,8 +26,7 @@ describe('Health API Integration', () => {
 
   describe('GET /health', () => {
     it('should return a 200 OK response', async () => {
-      const req = new Request('http://localhost/health');
-      const res = await app.fetch(req);
+      const res = await app.request('/health', {}, env);
 
       expect(res.status).toBe(200);
 
@@ -49,17 +39,7 @@ describe('Health API Integration', () => {
 
   describe('GET /health/db', () => {
     it('should return OK when the database check passes', async () => {
-      // Mock a successful DB connection
-      mockResults.results = [{ db_check: 1 }];
-
-      const prepare = mockDb.prepare as Mock;
-      prepare.mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        first: vi.fn().mockResolvedValue({ db_check: 1 }),
-      });
-
-      const req = new Request('http://localhost/health/db');
-      const res = await app.fetch(req);
+      const res = await app.request('/health/db', {}, env);
 
       expect(res.status).toBe(200);
 
@@ -68,37 +48,11 @@ describe('Health API Integration', () => {
       expect(data).toHaveProperty('message', 'Database connection successful');
       expect(data).toHaveProperty('responseTime');
     });
-
-    it('should return error status when the database check fails', async () => {
-      // Mock a failed DB connection
-      const prepare = mockDb.prepare as Mock;
-      prepare.mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        first: vi.fn().mockResolvedValue(null),
-      });
-
-      const req = new Request('http://localhost/health/db');
-      const res = await app.fetch(req);
-
-      expect(res.status).toBe(500);
-
-      const data = await res.json();
-      expect(data).toHaveProperty('status', 'error');
-      expect(data).toHaveProperty('message', 'Database check failed');
-    });
   });
 
   describe('GET /health/details', () => {
     it('should return detailed health information', async () => {
-      // Mock a successful DB connection for details
-      const prepare = mockDb.prepare as Mock;
-      prepare.mockReturnValue({
-        bind: vi.fn().mockReturnThis(),
-        first: vi.fn().mockResolvedValue({ result: 1 }),
-      });
-
-      const req = new Request('http://localhost/health/details');
-      const res = await app.fetch(req);
+      const res = await app.request('/health/details', {}, env);
 
       expect(res.status).toBe(200);
 
