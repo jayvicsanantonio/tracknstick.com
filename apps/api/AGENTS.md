@@ -10,7 +10,7 @@ Use `pnpm` (Node >= 20.12). Run `pnpm dev` for the Wrangler dev server with a lo
 The codebase is TypeScript-first with strict ESLint (Airbnb base + TypeScript rules) and Prettier enforcement. Keep two-space indentation, 80-character lines, semicolons, and single quotes. Name files using `kebab-case` and classes or types in `PascalCase`; functions, variables, and route handlers stay camelCase. Prefer named exports and keep mocks beside the modules they support.
 
 ## Testing Guidelines
-Vitest with the Miniflare environment powers integration coverage. Place specs alongside air-facing modules using the `*.test.ts` suffix (e.g., `src/tests/integration/health.test.ts`). Run `pnpm test` for the suite, `pnpm test:watch` while iterating, and `pnpm test:coverage` before opening a pull request. Add shared fixtures through `src/tests/setup.ts` to reuse bindings or auth helpers.
+Vitest with `@cloudflare/vitest-plugin` runs the tests inside workerd, against a real D1 database. Place specs alongside air-facing modules using the `*.test.ts` suffix (e.g., `src/tests/integration/health.test.ts`). Run `pnpm test` for the suite, `pnpm test:watch` while iterating, and `pnpm test:coverage` before opening a pull request. Add shared fixtures through `src/tests/setup.ts` to reuse bindings or auth helpers.
 
 ## Commit & Pull Request Guidelines
 Follow the observed Conventional Commit style (`feat:`, `fix:`, `docs:`, `chore:`, `test:`). Keep subject lines under 72 characters and favor incremental commits over squashing late. Pull requests should summarize behavior changes, link to relevant issues or spec documents, note new environment variables, and show verification—test output, Wrangler preview URLs, or migration notes—so reviewers can reproduce results quickly.

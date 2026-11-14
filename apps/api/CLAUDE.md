@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm run test` - Run all tests with Vitest
 - `pnpm run test:watch` - Run tests in watch mode
 - `pnpm run test:coverage` - Generate test coverage report
-- Tests use Miniflare environment to simulate Cloudflare Workers runtime
+- Tests run inside workerd through `@cloudflare/vitest-plugin`; a few that need Node run in a separate Node project (see `vitest.config.ts`)
 
 ### Code Quality
 - `pnpm run lint` - Run ESLint
@@ -43,7 +43,7 @@ This is a **Cloudflare Workers API** built with **Hono.js** for a habit tracking
 - **Database**: Cloudflare D1 (serverless SQLite)
 - **Authentication**: Clerk (JWT-based auth with middleware validation)
 - **Validation**: Zod schemas with Hono middleware
-- **Testing**: Vitest with Miniflare for Workers simulation
+- **Testing**: Vitest with `@cloudflare/vitest-plugin`, which runs tests in workerd
 
 ### Application Layers
 ```
@@ -115,9 +115,9 @@ Consistent response structure with data and meta information:
 
 ### Testing Approach
 - **Unit Tests**: Test individual functions (utils, repositories, services)
-- **Integration Tests**: Test API endpoints with mocked D1 database
+- **Integration Tests**: Test API endpoints against a real D1 database: `env.DB` from `cloudflare:workers`, migrated for each test file by `src/tests/applyMigrations.ts`
 - **Test Setup**: Use `src/tests/setup.ts` for common test utilities
-- **Mocking**: Vitest mocks with Miniflare for Workers environment simulation
+- **Mocking**: Vitest mocks stand in for Clerk, the AI model and, in unit tests, the layer below the code under test. Database tests use the real D1; `healthStatus.test.ts` injects a failing database on purpose
 
 ### Important Implementation Details
 - **Timezone Handling**: All date calculations must consider user timezone using `getLocaleStartEnd()` utility

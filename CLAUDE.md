@@ -43,8 +43,9 @@ pnpm --filter @tracknstick/web test:run
 pnpm --filter @tracknstick/api db:migrate
 ```
 
-The API's test environment loads the compiled entry point, so run its
-`build` before its `test`. `pnpm test` at the root does this for you.
+The API's tests run inside workerd, the Workers runtime, through
+`@cloudflare/vitest-plugin`. Each test file gets its own real D1 database,
+migrated from `apps/api/migrations`; see `apps/api/vitest.config.ts`.
 
 The API develops against a local D1 database built from
 `apps/api/migrations`. Run `pnpm --filter @tracknstick/api db:migrate` once,

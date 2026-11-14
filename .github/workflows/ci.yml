@@ -66,8 +66,6 @@ jobs:
       - name: Lint
         run: pnpm --filter @tracknstick/api lint
 
-      # The test environment loads the compiled entry point, so the build
-      # has to come first.
       - name: Typecheck
         run: pnpm --filter @tracknstick/api build
 
