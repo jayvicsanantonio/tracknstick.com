@@ -9,5 +9,5 @@ test('shows the welcome page and no habit controls to a signed-out visitor', asy
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Welcome' })).toBeAttached();
-  await expect(page.getByRole('button', { name: 'Add Habit' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /add habit/i })).toHaveCount(0);
 });

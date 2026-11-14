@@ -23,7 +23,11 @@ setup('sign in as the test user', async ({ page }) => {
   await clerk.signIn({ page, emailAddress });
 
   await page.goto('/');
-  await expect(page.getByRole('button', { name: 'Add Habit' })).toBeVisible();
+  // exact: the empty state, shown to a user with no habits yet, has an
+  // "Add habit" button of its own.
+  await expect(
+    page.getByRole('button', { name: 'Add Habit', exact: true }),
+  ).toBeVisible();
 
   await page.context().storageState({ path: AUTH_FILE });
 });

@@ -13,7 +13,9 @@ const uniqueName = (label: string) => `${label} ${Date.now()}`;
  * the Add Habit dialog.
  */
 async function addHabit(page: Page, name: string) {
-  await page.getByRole('button', { name: 'Add Habit' }).click();
+  // The header's button. exact: the empty state has an "Add habit" button
+  // too while the user has no habits.
+  await page.getByRole('button', { name: 'Add Habit', exact: true }).click();
 
   const dialog = page.getByRole('dialog', { name: 'Add New Habit' });
   await dialog.getByLabel('Name').fill(name);
