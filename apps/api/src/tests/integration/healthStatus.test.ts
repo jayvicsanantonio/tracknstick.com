@@ -3,6 +3,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 import { healthRoutes } from '../../routes/health.js';
+import { takeConsole } from '../setup.js';
 
 function envWith(dbBehaviour: 'ok' | 'throws' | 'empty'): any {
   return {
@@ -49,6 +50,10 @@ describe('health endpoints', () => {
     expect(body.status).toBe('error');
     expect(body.components.database.status).toBe('error');
     expect(res.status).toBe(503);
+
+    expect(takeConsole('error')).toEqual([
+      expect.stringContaining('Database health check failed'),
+    ]);
   });
 
   it('reports an error when the database check returns no row', async () => {
@@ -58,6 +63,12 @@ describe('health endpoints', () => {
     expect(res.status).toBe(500);
     expect(body.status).toBe('error');
     expect(body.message).toBe('Database check failed');
+
+    expect(takeConsole('error')).toEqual([
+      expect.stringContaining(
+        'Database health check failed: no result returned'
+      ),
+    ]);
   });
 
   it('/db and /details agree that the database is unhealthy', async () => {
@@ -71,6 +82,11 @@ describe('health endpoints', () => {
     expect(detailsBody.status).toBe('error');
     expect(db.ok).toBe(false);
     expect(details.ok).toBe(false);
+
+    expect(takeConsole('error')).toEqual([
+      expect.stringContaining('Database health check failed'),
+      expect.stringContaining('Database health check failed'),
+    ]);
   });
 
   it('liveness stays ok without touching the database', async () => {

@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { createTestEnv, mockAuthentication, resetMocks } from '../setup.js';
+import {
+  createTestEnv,
+  mockAuthentication,
+  resetMocks,
+  takeConsole,
+  takeUnauthenticatedRequestLogs,
+} from '../setup.js';
 import progressRoutes from '../../routes/progress.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
 
@@ -94,6 +100,10 @@ describe('Progress API Integration Tests', () => {
       expect(response.status).toBe(400);
       const data = await response.json();
       expect(data).toHaveProperty('error');
+
+      expect(takeConsole('warn')).toEqual([
+        expect.stringContaining('Client error occurred'),
+      ]);
     });
   });
 
@@ -185,6 +195,8 @@ describe('Progress API Integration Tests', () => {
         const response = await app.request(endpoint, undefined, testEnv.env);
         expect(response.status).toBe(401);
       }
+
+      takeUnauthenticatedRequestLogs(endpoints.length);
     });
   });
 });

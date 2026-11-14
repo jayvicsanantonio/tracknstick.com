@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { env as workerEnv } from 'cloudflare:workers';
 import { Hono } from 'hono';
 import type { AppEnv } from '../../types/index.js';
-import { mockAuthentication } from '../../tests/setup.js';
+import { mockAuthentication, takeConsole } from '../../tests/setup.js';
 import { chatRoutes } from '../chat.js';
 import * as chatService from '../../services/chat.service.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
@@ -71,5 +71,18 @@ describe('chat route rate limit', () => {
 
     const otherUser = await ask('user_quiet');
     expect(otherUser.status).toBe(200);
+
+    const warnings = takeConsole('warn');
+    expect(warnings).toHaveLength(4);
+    expect(warnings).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('Security Event: rate_limit_exceeded'),
+        expect.stringContaining('Security Event: middleware_failure'),
+        expect.stringContaining(
+          'Request blocked due to middleware failure: rate_limit'
+        ),
+        expect.stringContaining('Client error occurred'),
+      ])
+    );
   });
 });

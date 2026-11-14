@@ -2,7 +2,12 @@
 // Previously a private handleError forced every failure to 500
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { createTestEnv, mockAuthentication, resetMocks } from '../setup.js';
+import {
+  createTestEnv,
+  mockAuthentication,
+  resetMocks,
+  takeConsole,
+} from '../setup.js';
 import progressRoutes from '../../routes/progress.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
 import * as progressService from '../../services/progress.service.js';
@@ -40,6 +45,10 @@ describe('Progress error envelope', () => {
     );
 
     expect(res.status).toBe(404);
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 
   it('propagates a ValidationError as 400, not 500', async () => {
@@ -54,6 +63,10 @@ describe('Progress error envelope', () => {
     );
 
     expect(res.status).toBe(400);
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 
   it('uses the app-wide error envelope, not a bare string', async () => {
@@ -70,5 +83,9 @@ describe('Progress error envelope', () => {
 
     expect(typeof body.error).toBe('object');
     expect(body.error.code).toBe('not_found');
+
+    expect(takeConsole('warn')).toEqual([
+      expect.stringContaining('Client error occurred'),
+    ]);
   });
 });

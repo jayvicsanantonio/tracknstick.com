@@ -2,7 +2,12 @@
 // Each test signs in as its own user, so rows from other tests in the file do not show.
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { createTestEnv, mockAuthentication, resetMocks } from '../setup.js';
+import {
+  createTestEnv,
+  mockAuthentication,
+  resetMocks,
+  takeConsole,
+} from '../setup.js';
 import { habitRoutes } from '../../routes/habits.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
 
@@ -104,6 +109,10 @@ describe('Habits API Integration', () => {
       const data = await res.json();
       expect(data).toHaveProperty('error');
       expect(data.error).toHaveProperty('code', 'validation_error');
+
+      expect(takeConsole('warn')).toEqual([
+        expect.stringContaining('Client error occurred'),
+      ]);
     });
   });
 

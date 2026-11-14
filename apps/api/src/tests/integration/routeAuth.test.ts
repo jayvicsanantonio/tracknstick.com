@@ -3,7 +3,11 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
-import { createTestEnv, resetMocks } from '../setup.js';
+import {
+  createTestEnv,
+  resetMocks,
+  takeUnauthenticatedRequestLogs,
+} from '../setup.js';
 import { achievementRoutes } from '../../routes/achievements.js';
 import progressRoutes from '../../routes/progress.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
@@ -34,5 +38,6 @@ describe('route auth posture', () => {
   ])('%s %s rejects an unauthenticated request', async (method, path) => {
     const res = await app.request(path, { method }, testEnv.env);
     expect(res.status).toBe(401);
+    takeUnauthenticatedRequestLogs();
   });
 });
