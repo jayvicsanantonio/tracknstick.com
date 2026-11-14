@@ -1,3 +1,21 @@
+import type { Ai, D1Database, RateLimit } from '@cloudflare/workers-types';
+
+/** The Worker's bindings: wrangler.toml's vars and bindings, and its secrets. */
+export interface Bindings {
+  DB: D1Database;
+  ENVIRONMENT: string;
+  CLERK_SECRET_KEY: string;
+  CLERK_PUBLISHABLE_KEY: string;
+  AI: Ai;
+  PINECONE_API_KEY: string;
+  CHAT_RATE_LIMITER: RateLimit;
+}
+
+/** The Hono environment shared by the app, its routes and their handlers. */
+export interface AppEnv {
+  Bindings: Bindings;
+}
+
 // Authentication context set by clerkMiddleware.
 // Only the fields something reads live here: every consumer uses userId,
 // and the error/security handlers use requestId for correlation.
@@ -13,9 +31,10 @@ export interface AuthContext {
 declare module 'hono' {
   interface ContextVariableMap {
     auth: AuthContext;
-    validated_json: any;
-    validated_query: any;
-    validated_param: any;
+    // Read these through getValidated(), which types them by their schema.
+    validated_json: unknown;
+    validated_query: unknown;
+    validated_param: unknown;
   }
 }
 

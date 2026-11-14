@@ -2,12 +2,13 @@
 // Handles HTTP requests for achievement-related operations
 
 import { Context } from 'hono';
+import type { AppEnv } from '../types/index.js';
 import * as achievementService from '../services/achievement.service.js';
 
 /**
  * Get all achievements for the authenticated user with progress
  */
-export const getAllAchievements = async (c: Context) => {
+export const getAllAchievements = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
 
   try {
@@ -28,7 +29,7 @@ export const getAllAchievements = async (c: Context) => {
 /**
  * Get only the achievements that the user has earned
  */
-export const getUserEarnedAchievements = async (c: Context) => {
+export const getUserEarnedAchievements = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
 
   try {
@@ -46,7 +47,9 @@ export const getUserEarnedAchievements = async (c: Context) => {
       type: ua.achievement?.type,
       category: ua.achievement?.category,
       earnedAt: ua.earnedAt,
-      progressData: ua.progressData ? JSON.parse(ua.progressData) : undefined,
+      progressData: ua.progressData
+        ? (JSON.parse(ua.progressData) as unknown)
+        : undefined,
     }));
 
     return c.json({ achievements: response });
@@ -62,7 +65,7 @@ export const getUserEarnedAchievements = async (c: Context) => {
 /**
  * Check for new achievements and award them to the user
  */
-export const checkAchievements = async (c: Context) => {
+export const checkAchievements = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
 
   try {
@@ -98,7 +101,7 @@ export const checkAchievements = async (c: Context) => {
 /**
  * Initialize achievements in the database (admin/setup endpoint)
  */
-export const initializeAchievements = async (c: Context) => {
+export const initializeAchievements = async (c: Context<AppEnv>) => {
   try {
     await achievementService.initializeAchievements(c.env.DB);
     return c.json({ message: 'Achievements initialized successfully' });
@@ -111,7 +114,7 @@ export const initializeAchievements = async (c: Context) => {
 /**
  * Get achievement statistics for the user
  */
-export const getAchievementStats = async (c: Context) => {
+export const getAchievementStats = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
 
   try {

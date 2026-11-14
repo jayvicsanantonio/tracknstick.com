@@ -35,9 +35,9 @@ export class AchievementRepository {
         ORDER BY category, type, requirement_value
       `
       )
-      .all();
+      .all<Record<string, unknown>>();
 
-    return results.results.map((row: any) => ({
+    return results.results.map((row) => ({
       id: row.id as number,
       key: row.key as string,
       name: row.name as string,
@@ -101,7 +101,7 @@ export class AchievementRepository {
   async earnAchievement(
     userId: string,
     achievementId: number,
-    progressData?: any
+    progressData?: unknown
   ): Promise<void> {
     await this.db
       .prepare(
@@ -189,7 +189,7 @@ export class AchievementRepository {
       perfectDays,
       notedCompletions,
       maxHabitsInOneDay,
-    ] = await this.db.batch([
+    ] = await this.db.batch<Record<string, unknown>>([
       this.db
         .prepare(
           `SELECT COUNT(*) as count FROM habits WHERE user_id = ? AND deleted_at IS NULL`
@@ -254,7 +254,7 @@ export class AchievementRepository {
            JOIN done dn ON dn.date = e.date
            WHERE e.total > 0 AND dn.completed >= e.total`
         )
-                .bind(userId, userId, userId),
+        .bind(userId, userId, userId),
       this.db
         .prepare(
           `SELECT COUNT(*) as count FROM trackers
@@ -274,8 +274,8 @@ export class AchievementRepository {
         .bind(userId),
     ]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const first = (r: any) => (r.results?.[0] ?? {}) as Record<string, unknown>;
+    const first = (r: D1Result<Record<string, unknown>>) =>
+      r.results?.[0] ?? {};
 
     return {
       totalHabits: (first(habitCount).count as number) || 0,

@@ -61,7 +61,7 @@ export function detectEnvironment(providedEnv?: string): Environment {
   }
 
   // 2. Check ENVIRONMENT variable from globalThis (compatibility)
-  const envVar = (globalThis as any).ENVIRONMENT;
+  const envVar = (globalThis as { ENVIRONMENT?: unknown }).ENVIRONMENT;
   if (
     envVar === 'development' ||
     envVar === 'production' ||

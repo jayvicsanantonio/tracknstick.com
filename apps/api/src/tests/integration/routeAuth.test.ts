@@ -9,9 +9,8 @@ import progressRoutes from '../../routes/progress.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
 
 describe('route auth posture', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let app: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let testEnv: any;
 
   beforeEach(() => {
@@ -36,4 +35,4 @@ describe('route auth posture', () => {
     const res = await app.request(path, { method }, testEnv.env);
     expect(res.status).toBe(401);
   });
-})
+});

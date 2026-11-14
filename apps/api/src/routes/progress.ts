@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import type { AppEnv } from '../types/index.js';
 import { clerkMiddleware } from '../middlewares/clerkMiddleware.js';
 import { withClerkFailureHandling } from '../middlewares/middlewareFailureHandler.js';
 import * as progressController from '../controllers/progress.controller.js';
@@ -9,7 +10,7 @@ import {
   progressStreaksSchema,
 } from '@tracknstick/contracts';
 
-const app = new Hono();
+const app = new Hono<AppEnv>();
 
 // Apply Clerk auth middleware to all routes, with the same failure
 // handling the habits and chat routes use.

@@ -2,7 +2,15 @@
 // Covers what the repository logs when a write fails.
 // @vitest-environment node
 
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
 import { createMigratedDatabase } from '../../tests/realD1.js';
 import { createHabit } from '../habit.repository.js';

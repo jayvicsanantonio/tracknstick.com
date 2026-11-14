@@ -1,12 +1,7 @@
 import { Hono } from 'hono';
 import { D1Database } from '@cloudflare/workers-types';
 import logger from '../utils/logger.js';
-
-type Bindings = {
-  DB: D1Database;
-  ENVIRONMENT: string;
-  CLERK_SECRET_KEY: string;
-};
+import type { AppEnv } from '../types/index.js';
 
 type ComponentStatus =
   | { status: 'ok'; responseTime: string }
@@ -16,7 +11,7 @@ type ComponentStatus =
  * Health check routes for monitoring the API
  * These routes are intentionally unauthenticated.
  */
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<AppEnv>();
 
 /**
  * Single owner for "is the database reachable". Both /db and /details
@@ -50,7 +45,7 @@ async function checkDatabase(db: D1Database): Promise<ComponentStatus> {
 }
 
 // Liveness check - does not touch the database
-app.get('/', async (c) => {
+app.get('/', (c) => {
   logger.info('Health check requested');
   return c.json({
     status: 'ok',

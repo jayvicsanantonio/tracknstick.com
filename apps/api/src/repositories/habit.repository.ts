@@ -6,7 +6,7 @@ import { HabitData } from '../controllers/habit.controller.js';
 import { NotFoundError } from '../utils/errors.js';
 import logger from '../utils/logger.js';
 
-interface HabitRow {
+export interface HabitRow {
   id: number;
   user_id: string;
   name: string;
@@ -200,11 +200,11 @@ export async function createHabit(
         error: result.error,
       });
       throw new Error(
-        `Failed to create habit: ${result.error || 'Unknown error'}`
+        `Failed to create habit: ${result.error ?? 'Unknown error'}`
       );
     }
 
-    return { habitId: result.meta.last_row_id as number };
+    return { habitId: result.meta.last_row_id };
   } catch (error) {
     logger.error(
       `Error in createHabit for user ${userId}:`,
@@ -245,7 +245,7 @@ export async function updateHabit(
   habitData: HabitData
 ): Promise<void> {
   // Check if habit exists and belongs to user
-  const existingHabit = await getHabitById(db, userId, habitId);
+  await getHabitById(db, userId, habitId);
 
   // Validate date consistency if both dates are provided
   if (habitData.startDate && habitData.endDate) {
@@ -282,7 +282,7 @@ export async function updateHabit(
 
   // Build the update query dynamically based on provided fields
   const updateFields: string[] = [];
-  const values: any[] = [];
+  const values: (string | number | null)[] = [];
 
   if (habitData.name !== undefined) {
     updateFields.push('name = ?');
@@ -308,13 +308,7 @@ export async function updateHabit(
   // Always handle endDate - if not provided, clear it (set to NULL)
   // This ensures updates without endDate remove any existing end date
   updateFields.push('end_date = ?');
-  values.push(
-    habitData.endDate === undefined
-      ? null
-      : habitData.endDate === null
-        ? null
-        : habitData.endDate
-  );
+  values.push(habitData.endDate ?? null);
 
   // Check if there are actual fields to update (excluding timestamp)
   if (updateFields.length === 0) {
@@ -508,13 +502,7 @@ export async function findTrackerForDay(
        ORDER BY timestamp DESC
        LIMIT 1`
     )
-    .bind(
-      habitId,
-      userId,
-      range.startISO,
-      range.endISO,
-      range.exactTimestamp
-    )
+    .bind(habitId, userId, range.startISO, range.endISO, range.exactTimestamp)
     .first<{ id: number }>();
 
   return result ?? null;
@@ -546,7 +534,7 @@ export async function createTracker(
     throw new Error('Failed to create tracker');
   }
 
-  return result.meta.last_row_id as number;
+  return result.meta.last_row_id;
 }
 
 // Get habit stats
@@ -585,7 +573,7 @@ export async function updateHabitStats(
 ): Promise<void> {
   // Build the update query dynamically based on provided fields
   const updateFields: string[] = [];
-  const values: any[] = [];
+  const values: (string | number | null)[] = [];
 
   if (stats.streak !== undefined) {
     updateFields.push('streak = ?');

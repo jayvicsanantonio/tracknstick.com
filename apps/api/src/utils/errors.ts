@@ -1,13 +1,13 @@
 export class BaseError extends Error {
   statusCode: number;
   code: string;
-  details?: any;
+  details?: unknown;
 
   constructor(
     message: string,
     statusCode = 500,
     code = 'internal_server_error',
-    details?: any
+    details?: unknown
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -19,7 +19,7 @@ export class BaseError extends Error {
 }
 
 export class ValidationError extends BaseError {
-  constructor(message = 'Validation error', details?: any) {
+  constructor(message = 'Validation error', details?: unknown) {
     super(message, 400, 'validation_error', details);
   }
 }

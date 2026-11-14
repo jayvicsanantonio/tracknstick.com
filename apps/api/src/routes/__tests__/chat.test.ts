@@ -12,6 +12,7 @@ import {
   vi,
 } from 'vitest';
 import { Hono } from 'hono';
+import type { AppEnv } from '../../types/index.js';
 import { Miniflare } from 'miniflare';
 import { mockAuthentication } from '../../tests/setup.js';
 import { chatRoutes } from '../chat.js';
@@ -31,7 +32,7 @@ const REQUESTS_PER_MINUTE = 2;
 
 describe('chat route rate limit', () => {
   let miniflare: Miniflare;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let env: any;
 
   beforeAll(async () => {
@@ -68,7 +69,7 @@ describe('chat route rate limit', () => {
   function ask(userId: string) {
     mockAuthentication(userId);
 
-    const app = new Hono();
+    const app = new Hono<AppEnv>();
     app.route('/api/v1/chat', chatRoutes);
     app.onError(errorHandlerEnhanced);
 

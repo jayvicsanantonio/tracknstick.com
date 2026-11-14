@@ -1,7 +1,6 @@
 // Unit tests for production-grade rate limiting middleware
 // Tests sliding window, endpoint-specific limits, and security configuration
 
-// @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   RateLimitMiddleware,
@@ -11,7 +10,7 @@ import { RateLimitError } from '../../utils/errors.js';
 
 // Mock security configuration
 vi.mock('../../config/security.js', () => ({
-  getSecurityConfig: vi.fn((env?: string) => ({
+  getSecurityConfig: vi.fn((_env?: string) => ({
     rateLimit: {
       globalLimit: 100,
       windowMs: 60000, // 1 minute
@@ -95,7 +94,7 @@ describe('RateLimitMiddleware', () => {
 
       // Simulate exceeding limit by setting count manually
       const key = 'ip:192.168.1.1:global:/api/test';
-      middleware['store'].set(key, {
+      (middleware as any).store.set(key, {
         count: 101,
         resetAt: Date.now() + 60000,
         firstRequest: Date.now(),
@@ -146,7 +145,7 @@ describe('RateLimitMiddleware', () => {
 
       // Simulate exceeding endpoint limit
       const key = 'ip:192.168.1.1:/api/auth';
-      middleware['store'].set(key, {
+      (middleware as any).store.set(key, {
         count: 11,
         resetAt: Date.now() + 60000,
         firstRequest: Date.now(),
@@ -233,7 +232,7 @@ describe('RateLimitMiddleware', () => {
 
       // Set up expired entry
       const key = 'ip:192.168.1.1:global:/api/test';
-      middleware['store'].set(key, {
+      (middleware as any).store.set(key, {
         count: 50,
         resetAt: Date.now() - 1000, // Expired 1 second ago
         firstRequest: Date.now() - 61000,
@@ -281,7 +280,7 @@ describe('RateLimitMiddleware', () => {
 
       // Simulate exceeding limit
       const key = 'ip:192.168.1.1:global:/api/test';
-      middleware['store'].set(key, {
+      (middleware as any).store.set(key, {
         count: 101,
         resetAt: Date.now() + 30000, // 30 seconds remaining
         firstRequest: Date.now(),
@@ -298,31 +297,31 @@ describe('RateLimitMiddleware', () => {
   });
 
   describe('cleanup functionality', () => {
-    it('should clean up expired entries', async () => {
+    it('should clean up expired entries', () => {
       // Add some expired entries
       const now = Date.now();
-      middleware['store'].set('expired1', {
+      (middleware as any).store.set('expired1', {
         count: 10,
         resetAt: now - 1000,
         firstRequest: now - 61000,
       });
-      middleware['store'].set('expired2', {
+      (middleware as any).store.set('expired2', {
         count: 5,
         resetAt: now - 2000,
         firstRequest: now - 62000,
       });
-      middleware['store'].set('active', {
+      (middleware as any).store.set('active', {
         count: 3,
         resetAt: now + 60000,
         firstRequest: now,
       });
 
-      expect(Array.from(middleware['store'].entries()).length).toBe(3);
+      expect(Array.from((middleware as any).store.entries()).length).toBe(3);
 
       // Trigger cleanup
-      middleware['cleanup']();
+      (middleware as any).cleanup();
 
-      expect(Array.from(middleware['store'].entries()).length).toBe(1);
+      expect(Array.from((middleware as any).store.entries()).length).toBe(1);
     });
   });
 
@@ -338,17 +337,17 @@ describe('RateLimitMiddleware', () => {
 
     it('should clear all data when requested', () => {
       // Add some data
-      middleware['store'].set('test', {
+      (middleware as any).store.set('test', {
         count: 1,
         resetAt: Date.now() + 60000,
         firstRequest: Date.now(),
       });
 
-      expect(Array.from(middleware['store'].entries()).length).toBe(1);
+      expect(Array.from((middleware as any).store.entries()).length).toBe(1);
 
       middleware.clear();
 
-      expect(Array.from(middleware['store'].entries()).length).toBe(0);
+      expect(Array.from((middleware as any).store.entries()).length).toBe(0);
     });
   });
 

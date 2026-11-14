@@ -1,7 +1,6 @@
 // Unit tests for environment-aware error handler
 // Tests information disclosure prevention and environment-specific behavior
 
-// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { errorHandlerEnhanced } from '../errorHandlerEnhanced.js';
 import {
@@ -15,7 +14,7 @@ import {
 import { HTTPException } from 'hono/http-exception';
 
 // Mock security configuration
-const mockSecurityConfig = {
+const mockSecurityConfig: Record<string, any> = {
   development: {
     errorHandling: {
       showStackTrace: true,

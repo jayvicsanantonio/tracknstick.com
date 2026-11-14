@@ -1,25 +1,21 @@
-// @ts-nocheck
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { createTestEnv, mockAuthentication, resetMocks } from '../setup.js';
 import progressRoutes from '../../routes/progress.js';
-import { clerkMiddleware } from '../../middlewares/clerkMiddleware.js';
 import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
 
 describe('Progress API Integration Tests', () => {
   let app: any;
-  let testDb: any;
   let authHeader: { headers: { Authorization: string } };
   let testEnv: any;
   let userId: string;
 
   // Set up test environment
-  beforeEach(async () => {
+  beforeEach(() => {
     resetMocks();
     mockAuthentication(); // Mock authentication without a specific user initially
 
     testEnv = createTestEnv();
     app = testEnv.app;
-    testDb = testEnv.mockDb; // Keep this line from original
     userId = 'test-user-123'; // Keep this line from original
     authHeader = { headers: { Authorization: 'Bearer test-token' } }; // Keep this line from original
 
@@ -38,7 +34,7 @@ describe('Progress API Integration Tests', () => {
   });
 
   // Clean up after tests
-  afterEach(async () => {
+  afterEach(() => {
     resetMocks();
     vi.restoreAllMocks();
   });
@@ -55,7 +51,7 @@ describe('Progress API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       const data = (await response.json()) as {
-        history: Array<{ date: string; completionRate: number }>;
+        history: { date: string; completionRate: number }[];
       };
       expect(data).toHaveProperty('history');
       expect(Array.isArray(data.history)).toBe(true);
@@ -135,7 +131,7 @@ describe('Progress API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       const data = (await response.json()) as {
-        history: Array<{ date: string; completionRate: number }>;
+        history: { date: string; completionRate: number }[];
         currentStreak: number;
         longestStreak: number;
       };
@@ -163,7 +159,7 @@ describe('Progress API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       const data = (await response.json()) as {
-        history: Array<{ date: string; completionRate: number }>;
+        history: { date: string; completionRate: number }[];
         currentStreak: number;
         longestStreak: number;
       };

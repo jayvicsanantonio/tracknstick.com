@@ -1,13 +1,12 @@
 // Security integration tests - End-to-end security pipeline validation
 // Tests authentication flows, rate limiting, CORS enforcement, and error handling
 
-// @ts-nocheck
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { createTestEnv, resetMocks } from '../setup.js';
 import app from '../../index.js';
 
 describe('Security Integration Tests', () => {
-  const { env: testEnv, mockDb } = createTestEnv();
+  const { env: testEnv } = createTestEnv();
 
   beforeEach(() => {
     resetMocks();
@@ -28,7 +27,7 @@ describe('Security Integration Tests', () => {
 
       expect(response.status).toBe(401);
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body).toMatchObject({
         error: {
           message: 'Authentication required',
@@ -51,7 +50,7 @@ describe('Security Integration Tests', () => {
 
       expect(response.status).toBe(401);
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body.error.code).toBe('unauthorized');
     });
 
@@ -64,7 +63,7 @@ describe('Security Integration Tests', () => {
 
       expect(response.status).toBe(200);
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body.status).toBe('ok');
     });
   });
@@ -230,7 +229,7 @@ describe('Security Integration Tests', () => {
 
       expect(response.status).toBe(404);
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body).toMatchObject({
         error: {
           message: expect.any(String),
@@ -252,7 +251,7 @@ describe('Security Integration Tests', () => {
 
       expect(response.status).toBe(401); // Auth happens first
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body.error.code).toBe('unauthorized');
       expect(body.error.requestId).toMatch(/^err_/);
     });
@@ -266,7 +265,7 @@ describe('Security Integration Tests', () => {
 
       expect(response.status).toBe(401);
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body.error.requestId).toBeDefined();
       expect(body.error.requestId).toMatch(/^err_\d+_[a-z0-9]+$/);
       expect(body.error.timestamp).toBeDefined();
@@ -357,7 +356,7 @@ describe('Security Integration Tests', () => {
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
       expect(response.headers.get('X-Frame-Options')).toBe('DENY');
 
-      const body = await response.json();
+      const body: any = await response.json();
       expect(body.status).toBe('ok');
     });
 
@@ -375,7 +374,7 @@ describe('Security Integration Tests', () => {
       // Should be blocked by authentication first
       expect(response.status).toBe(401);
 
-      const body = await response.json();
+      const body: any = await response.json();
 
       // Should have proper error structure
       expect(body).toMatchObject({

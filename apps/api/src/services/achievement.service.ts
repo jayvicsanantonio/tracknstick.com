@@ -2,10 +2,7 @@
 // Handles achievement processing, evaluation, and progress tracking
 
 import type { D1Database } from '@cloudflare/workers-types';
-import {
-  AchievementRepository,
-  type UserHabitStats,
-} from '../repositories/achievement.repository.js';
+import { AchievementRepository } from '../repositories/achievement.repository.js';
 import { getUserStreaks } from '../repositories/tracker.repository.js';
 import { measure, type UserStatsSnapshot } from './achievementMetrics.js';
 import type {
@@ -37,24 +34,24 @@ export class AchievementService {
     );
 
     return allAchievements.map((achievement) => {
-        const userAchievement = userAchievementMap.get(achievement.id);
-        const isEarned = !!userAchievement;
+      const userAchievement = userAchievementMap.get(achievement.id);
+      const isEarned = !!userAchievement;
 
-        return {
-          id: achievement.id.toString(),
-          key: achievement.key,
-          name: achievement.name,
-          description: achievement.description,
-          icon: achievement.icon,
-          type: achievement.type,
-          category: achievement.category,
-          requirementType: achievement.requirementType,
-          requirementValue: achievement.requirementValue,
-          requirementData: achievement.requirementData
-            ? JSON.parse(achievement.requirementData)
-            : undefined,
-          isEarned,
-          earnedAt: userAchievement?.earnedAt,
+      return {
+        id: achievement.id.toString(),
+        key: achievement.key,
+        name: achievement.name,
+        description: achievement.description,
+        icon: achievement.icon,
+        type: achievement.type,
+        category: achievement.category,
+        requirementType: achievement.requirementType,
+        requirementValue: achievement.requirementValue,
+        requirementData: achievement.requirementData
+          ? (JSON.parse(achievement.requirementData) as unknown)
+          : undefined,
+        isEarned,
+        earnedAt: userAchievement?.earnedAt,
         progress: isEarned
           ? undefined
           : this.calculateProgress(achievement, snapshot),

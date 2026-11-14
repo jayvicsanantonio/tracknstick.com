@@ -19,7 +19,6 @@ vi.mock('workers-ai-provider', () => ({
   createWorkersAI: () => () => 'model',
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildApp(): any {
   const app = new Hono();
   app.use('*', async (c, next) => {
@@ -32,7 +31,7 @@ function buildApp(): any {
 
 const ENV = { AI: {}, PINECONE_API_KEY: 'k' };
 
-async function post(body: unknown) {
+function post(body: unknown) {
   return buildApp().request(
     '/chat',
     {

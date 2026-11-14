@@ -3,6 +3,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { Hono } from 'hono';
+import type { AppEnv } from '../../types/index.js';
 import { z } from 'zod';
 import { validateRequest } from '../validateRequest.js';
 import { errorHandlerEnhanced } from '../errorHandlerEnhanced.js';
@@ -29,9 +30,8 @@ const listSchema = z.object({
 // The test environment includes error details in responses, like development.
 const ENV = { ENVIRONMENT: 'test' };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildApp(): any {
-  const app = new Hono();
+  const app = new Hono<AppEnv>();
   app.post('/things', validateRequest(thingSchema, 'json'), (c) =>
     c.json({ received: c.get('validated_json') })
   );

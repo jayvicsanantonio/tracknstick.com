@@ -1,23 +1,16 @@
-// @ts-nocheck
 // Add this comment to suppress TypeScript errors during migration to Hono
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { D1Database } from '@cloudflare/workers-types';
 import * as trackerRepository from '../tracker.repository.js';
 
 // Mock D1 database functions
-const mockD1Result = {
+const mockD1Result: any = {
   results: [],
   success: true,
   meta: { changes: 0, last_row_id: 0 },
 };
-
-const mockD1Prepare = vi.fn().mockReturnValue({
-  bind: vi.fn().mockReturnThis(),
-  first: vi.fn().mockResolvedValue(null),
-  all: vi.fn().mockResolvedValue(mockD1Result),
-  run: vi.fn().mockResolvedValue(mockD1Result),
-});
 
 describe('Tracker Repository', () => {
   let mockDB: D1Database;
@@ -94,7 +87,7 @@ describe('Tracker Repository', () => {
     it('should throw error if the database query fails', async () => {
       // Mock failed query
       const mockFailedResult = { ...mockD1Result, success: false };
-      const mockPrepare = mockDB.prepare as vi.Mock;
+      const mockPrepare = mockDB.prepare as Mock;
       mockPrepare.mockReturnValue({
         bind: vi.fn().mockReturnThis(),
         all: vi.fn().mockResolvedValue(mockFailedResult),

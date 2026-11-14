@@ -4,17 +4,18 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 import { healthRoutes } from '../../routes/health.js';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function envWith(dbBehaviour: 'ok' | 'throws' | 'empty'): any {
   return {
     ENVIRONMENT: 'test',
     DB: {
       prepare: () => ({
         bind: () => ({
-          first: async () => {
-            if (dbBehaviour === 'throws') throw new Error('connection refused');
-            if (dbBehaviour === 'empty') return null;
-            return { db_check: 1 };
+          first: () => {
+            if (dbBehaviour === 'throws') {
+              return Promise.reject(new Error('connection refused'));
+            }
+            if (dbBehaviour === 'empty') return Promise.resolve(null);
+            return Promise.resolve({ db_check: 1 });
           },
         }),
       }),
@@ -23,7 +24,6 @@ function envWith(dbBehaviour: 'ok' | 'throws' | 'empty'): any {
 }
 
 describe('health endpoints', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let app: any;
 
   beforeEach(() => {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Add this comment to suppress TypeScript errors during migration to Hono
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Context } from 'hono';
@@ -19,7 +18,7 @@ vi.mock('../../services/habit.service.js', () => ({
 }));
 
 describe('Habit Controller', () => {
-  let mockContext: Partial<Context>;
+  let mockContext: any;
   let mockDB: any;
   let mockClerkUserId: string;
 
@@ -59,7 +58,9 @@ describe('Habit Controller', () => {
       ];
 
       mockContext.queryData = { date: '2023-01-01', timeZone: 'UTC' };
-      vi.mocked(habitService.getHabitsForDate).mockResolvedValue(mockHabits);
+      vi.mocked(habitService.getHabitsForDate).mockResolvedValue(
+        mockHabits as any
+      );
 
       await habitController.getHabits(mockContext as Context);
 
@@ -82,7 +83,7 @@ describe('Habit Controller', () => {
       ];
 
       mockContext.queryData = {};
-      vi.mocked(habitService.getAllHabits).mockResolvedValue(mockHabits);
+      vi.mocked(habitService.getAllHabits).mockResolvedValue(mockHabits as any);
 
       await habitController.getHabits(mockContext as Context);
 
@@ -105,7 +106,9 @@ describe('Habit Controller', () => {
       };
 
       mockContext.jsonData = habitData;
-      vi.mocked(habitService.createHabit).mockResolvedValue({ habitId: 1 });
+      vi.mocked(habitService.createHabit).mockResolvedValue({
+        habitId: 1,
+      } as any);
 
       await habitController.createHabit(mockContext as Context);
 
@@ -184,7 +187,7 @@ describe('Habit Controller', () => {
         status: 'added',
         trackerId: 1,
         message: 'Tracker added',
-      });
+      } as any);
 
       await habitController.manageTracker(mockContext as Context);
 

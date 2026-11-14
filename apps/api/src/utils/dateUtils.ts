@@ -98,7 +98,10 @@ export function getLocaleStartEnd(
     );
   }
 
-  return getLocaleStartEndForDateKey(toLocalDateKey(utcDate, timeZone), timeZone);
+  return getLocaleStartEndForDateKey(
+    toLocalDateKey(utcDate, timeZone),
+    timeZone
+  );
 }
 
 /**
@@ -140,7 +143,7 @@ export function isValidTimeZone(timeZone: string): boolean {
   try {
     Intl.DateTimeFormat(undefined, { timeZone }).format(new Date());
     return true;
-  } catch (ex) {
+  } catch {
     return false;
   }
 }

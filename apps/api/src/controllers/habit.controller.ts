@@ -1,4 +1,14 @@
 import { Context } from 'hono';
+import {
+  createHabitSchema,
+  getHabitsByDateSchema,
+  getTrackersSchema,
+  habitIdParamSchema,
+  manageTrackerSchema,
+  updateHabitSchema,
+} from '@tracknstick/contracts';
+import { getValidated } from '../middlewares/validateRequest.js';
+import type { AppEnv } from '../types/index.js';
 import * as habitService from '../services/habit.service.js';
 
 // Define types for request data
@@ -19,9 +29,9 @@ export type TrackerResult =
 /**
  * Get habits for a specific date or all habits if no date provided.
  */
-export const getHabits = async (c: Context) => {
+export const getHabits = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { date, timeZone } = c.get('validated_query');
+  const { date, timeZone } = getValidated(c, 'query', getHabitsByDateSchema);
 
   try {
     let habits;
@@ -59,9 +69,9 @@ export const getHabits = async (c: Context) => {
 /**
  * Create a new habit.
  */
-export const createHabit = async (c: Context) => {
+export const createHabit = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const habitData = c.get('validated_json');
+  const habitData = getValidated(c, 'json', createHabitSchema);
 
   try {
     const result = await habitService.createHabit(userId, habitData, c.env.DB);
@@ -81,10 +91,10 @@ export const createHabit = async (c: Context) => {
 /**
  * Update an existing habit.
  */
-export const updateHabit = async (c: Context) => {
+export const updateHabit = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { habitId } = c.get('validated_param');
-  const habitData = c.get('validated_json');
+  const { habitId } = getValidated(c, 'param', habitIdParamSchema);
+  const habitData = getValidated(c, 'json', updateHabitSchema);
 
   try {
     await habitService.updateHabit(userId, habitId, habitData, c.env.DB);
@@ -101,9 +111,9 @@ export const updateHabit = async (c: Context) => {
 /**
  * Delete a specific habit.
  */
-export const deleteHabit = async (c: Context) => {
+export const deleteHabit = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { habitId } = c.get('validated_param');
+  const { habitId } = getValidated(c, 'param', habitIdParamSchema);
 
   try {
     await habitService.deleteHabit(userId, habitId, c.env.DB);
@@ -120,10 +130,10 @@ export const deleteHabit = async (c: Context) => {
 /**
  * Get tracker entries for a specific habit.
  */
-export const getTrackers = async (c: Context) => {
+export const getTrackers = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { habitId } = c.get('validated_param');
-  const { startDate, endDate } = c.get('validated_query');
+  const { habitId } = getValidated(c, 'param', habitIdParamSchema);
+  const { startDate, endDate } = getValidated(c, 'query', getTrackersSchema);
 
   try {
     const trackers = await habitService.getTrackersForHabit(
@@ -155,10 +165,14 @@ export const getTrackers = async (c: Context) => {
 /**
  * Add or remove a tracker entry for a habit on a specific date.
  */
-export const manageTracker = async (c: Context) => {
+export const manageTracker = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { habitId } = c.get('validated_param');
-  const { timestamp, timeZone, notes } = c.get('validated_json');
+  const { habitId } = getValidated(c, 'param', habitIdParamSchema);
+  const { timestamp, timeZone, notes } = getValidated(
+    c,
+    'json',
+    manageTrackerSchema
+  );
 
   try {
     const result = await habitService.manageTracker(
@@ -190,10 +204,9 @@ export const manageTracker = async (c: Context) => {
 /**
  * Get statistics for a specific habit.
  */
-export const getHabitStats = async (c: Context) => {
+export const getHabitStats = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { habitId } = c.get('validated_param');
-  const { timeZone } = c.get('validated_query');
+  const { habitId } = getValidated(c, 'param', habitIdParamSchema);
 
   try {
     const stats = await habitService.getHabitStats(userId, habitId, c.env.DB);
@@ -210,9 +223,9 @@ export const getHabitStats = async (c: Context) => {
 /**
  * Restore a soft deleted habit.
  */
-export const restoreHabit = async (c: Context) => {
+export const restoreHabit = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
-  const { habitId } = c.get('validated_param');
+  const { habitId } = getValidated(c, 'param', habitIdParamSchema);
 
   try {
     await habitService.restoreHabit(userId, habitId, c.env.DB);
@@ -225,4 +238,3 @@ export const restoreHabit = async (c: Context) => {
     throw error;
   }
 };
-

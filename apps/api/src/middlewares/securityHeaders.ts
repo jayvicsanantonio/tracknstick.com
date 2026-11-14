@@ -3,6 +3,7 @@
 
 import { Context, MiddlewareHandler, Next } from 'hono';
 import { getSecurityConfig } from '../config/security.js';
+import type { AppEnv } from '../types/index.js';
 
 /**
  * Sets security headers on the outgoing response.
@@ -14,8 +15,8 @@ import { getSecurityConfig } from '../config/security.js';
  * so headers set before next() are silently dropped. After next() the
  * context is finalized and c.header() writes straight to the response.
  */
-export const securityHeaders = (): MiddlewareHandler => {
-  return async (c: Context, next: Next) => {
+export const securityHeaders = (): MiddlewareHandler<AppEnv> => {
+  return async (c: Context<AppEnv>, next: Next) => {
     await next();
 
     const config = getSecurityConfig(c.env.ENVIRONMENT);

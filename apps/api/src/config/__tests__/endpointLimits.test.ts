@@ -59,7 +59,7 @@ describe('production endpoint policy actually applies', () => {
   it('exempts the health route from rate limiting', () => {
     const key = resolveKey(endpointLimits, '/health');
     expect(key).not.toBeNull();
-    const entry = endpointLimits[key as string];
+    const entry = endpointLimits[key!];
     expect(entry.skipIf?.('/health')).toBe(true);
   });
 });

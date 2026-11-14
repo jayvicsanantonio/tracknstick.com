@@ -1,4 +1,5 @@
 import { Context } from 'hono';
+import type { AppEnv } from '../types/index.js';
 import { streamText, type CoreMessage } from 'ai';
 import { createWorkersAI } from 'workers-ai-provider';
 import { z } from 'zod';
@@ -10,7 +11,7 @@ import logger from '../utils/logger.js';
  * Handle chat requests with streaming responses.
  * Uses RAG to retrieve relevant Atomic Habits context before generating response.
  */
-export const chat = async (c: Context) => {
+export const chat = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
 
   // Phase 1: fallible. Nothing has been committed to the wire yet, so this
@@ -20,7 +21,7 @@ export const chat = async (c: Context) => {
   let workersai: ReturnType<typeof createWorkersAI>;
 
   try {
-    const body = await c.req.json();
+    const body: unknown = await c.req.json();
     const { messages } = chatRequestSchema.parse(body);
 
     logger.info(
@@ -77,8 +78,7 @@ export const chat = async (c: Context) => {
   // be logged. onError gives that failure a destination other than the AI
   // SDK's default console.error.
   const result = streamText({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    model: workersai('@cf/meta/llama-3.1-8b-instruct' as any),
+    model: workersai('@cf/meta/llama-3.1-8b-instruct'),
     system: systemPrompt,
     messages: coreMessages,
     onError: ({ error }) => {

@@ -33,7 +33,7 @@ Install once at the root; both apps share the root `pnpm-lock.yaml`.
 - `pnpm dev:web` - Start the web dev server
 - `pnpm dev:api` - Start the API locally against a local D1 database
 - `pnpm build` - Build both apps
-- `pnpm lint` - Lint the web app
+- `pnpm lint` - Lint both apps
 - `pnpm test` - Run both test suites once
 
 Run any other app script with a filter, or from inside the app's directory:
@@ -54,7 +54,8 @@ is needed.
 
 ### Quality Checks Before Committing
 
-1. `pnpm --filter @tracknstick/web lint:fix`
+1. `pnpm --filter @tracknstick/web lint:fix` and
+   `pnpm --filter @tracknstick/api lint:fix`
 2. `pnpm test`
 3. `pnpm build`
 

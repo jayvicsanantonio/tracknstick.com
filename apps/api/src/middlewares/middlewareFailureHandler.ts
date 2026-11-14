@@ -8,6 +8,7 @@ import {
   RateLimitError,
 } from '../utils/errors.js';
 import logger from '../utils/logger.js';
+import type { AppEnv } from '../types/index.js';
 
 export interface SecurityEvent {
   type:
@@ -17,7 +18,7 @@ export interface SecurityEvent {
     | 'validation_failure';
   severity: 'low' | 'medium' | 'high' | 'critical';
   source: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   requestId?: string;
   userId?: string;
   ipAddress?: string;
@@ -44,7 +45,7 @@ class SecurityEventLogger {
    * Log a security event with proper context
    */
   logEvent(
-    context: Context,
+    context: Context<AppEnv>,
     event: Omit<
       SecurityEvent,
       'path' | 'method' | 'timestamp' | 'ipAddress' | 'userAgent'
@@ -69,24 +70,20 @@ class SecurityEventLogger {
     // Log with appropriate level based on severity
     switch (event.severity) {
       case 'critical':
-        logger.error(
-          `Security Event: ${event.type}`,
-          undefined,
-          securityEvent as any
-        );
+        logger.error(`Security Event: ${event.type}`, undefined, {
+          ...securityEvent,
+        });
         break;
       case 'high':
-        logger.error(
-          `Security Event: ${event.type}`,
-          undefined,
-          securityEvent as any
-        );
+        logger.error(`Security Event: ${event.type}`, undefined, {
+          ...securityEvent,
+        });
         break;
       case 'medium':
-        logger.warn(`Security Event: ${event.type}`, securityEvent as any);
+        logger.warn(`Security Event: ${event.type}`, { ...securityEvent });
         break;
       case 'low':
-        logger.info(`Security Event: ${event.type}`, securityEvent as any);
+        logger.info(`Security Event: ${event.type}`, { ...securityEvent });
         break;
     }
 
@@ -97,7 +94,7 @@ class SecurityEventLogger {
   /**
    * Log authentication failure
    */
-  logAuthFailure(context: Context, error: Error, source: string): void {
+  logAuthFailure(context: Context<AppEnv>, error: Error, source: string): void {
     this.logEvent(context, {
       type: 'auth_failure',
       severity: 'high',
@@ -115,7 +112,10 @@ class SecurityEventLogger {
   /**
    * Log rate limiting event
    */
-  logRateLimitExceeded(context: Context, details: Record<string, any>): void {
+  logRateLimitExceeded(
+    context: Context<AppEnv>,
+    details: Record<string, unknown>
+  ): void {
     this.logEvent(context, {
       type: 'rate_limit_exceeded',
       severity: 'medium',
@@ -127,7 +127,11 @@ class SecurityEventLogger {
   /**
    * Log validation failure
    */
-  logValidationFailure(context: Context, error: Error, source: string): void {
+  logValidationFailure(
+    context: Context<AppEnv>,
+    error: Error,
+    source: string
+  ): void {
     this.logEvent(context, {
       type: 'validation_failure',
       severity: 'low',
@@ -142,7 +146,11 @@ class SecurityEventLogger {
   /**
    * Log general middleware failure
    */
-  logMiddlewareFailure(context: Context, error: Error, source: string): void {
+  logMiddlewareFailure(
+    context: Context<AppEnv>,
+    error: Error,
+    source: string
+  ): void {
     const severity = this.determineSeverity(error);
 
     this.logEvent(context, {
@@ -179,11 +187,17 @@ class SecurityEventLogger {
  */
 export function withFailureHandling(
   middlewareName: string,
-  middleware: (c: Context, next: Next) => Promise<void | Response>
-): (c: Context, next: Next) => Promise<void | Response> {
+  middleware: (
+    c: Context<AppEnv, string>,
+    next: Next
+  ) => Promise<void | Response>
+): (c: Context<AppEnv, string>, next: Next) => Promise<void | Response> {
   const securityLogger = SecurityEventLogger.getInstance();
 
-  return async (c: Context, next: Next): Promise<void | Response> => {
+  return async (
+    c: Context<AppEnv, string>,
+    next: Next
+  ): Promise<void | Response> => {
     try {
       return await middleware(c, next);
     } catch (error: unknown) {
@@ -210,7 +224,7 @@ export function withFailureHandling(
             path: c.req.path,
             method: c.req.method,
             error: err.message,
-          } as any
+          }
         );
       }
 
@@ -246,7 +260,7 @@ export function withFailureHandling(
  * Enhanced Clerk middleware with failure handling
  */
 export function withClerkFailureHandling(
-  clerkMiddleware: (c: Context, next: Next) => Promise<void | Response>
+  clerkMiddleware: (c: Context<AppEnv>, next: Next) => Promise<void | Response>
 ) {
   return withFailureHandling('clerk_auth', clerkMiddleware);
 }
@@ -255,7 +269,10 @@ export function withClerkFailureHandling(
  * Enhanced rate limit middleware with failure handling
  */
 export function withRateLimitFailureHandling(
-  rateLimitMiddleware: (c: Context, next: Next) => Promise<void | Response>
+  rateLimitMiddleware: (
+    c: Context<AppEnv>,
+    next: Next
+  ) => Promise<void | Response>
 ) {
   return withFailureHandling('rate_limit', rateLimitMiddleware);
 }
@@ -264,8 +281,11 @@ export function withRateLimitFailureHandling(
  * Enhanced validation middleware with failure handling
  */
 export function withValidationFailureHandling(
-  validationMiddleware: (c: Context, next: Next) => Promise<void | Response>,
-  validatorName: string = 'validation'
+  validationMiddleware: (
+    c: Context<AppEnv>,
+    next: Next
+  ) => Promise<void | Response>,
+  validatorName = 'validation'
 ) {
   return withFailureHandling(validatorName, validationMiddleware);
 }
@@ -282,7 +302,7 @@ export const getSecurityLogger = (): SecurityEventLogger => {
  */
 export class MiddlewareChainMonitor {
   private static instance: MiddlewareChainMonitor;
-  private failureCounters: Map<string, number> = new Map();
+  private failureCounters = new Map<string, number>();
   private lastReset: number = Date.now();
   private readonly resetInterval: number = 15 * 60 * 1000; // 15 minutes
 
@@ -309,7 +329,7 @@ export class MiddlewareChainMonitor {
         {
           failures: newCount,
           timeWindow: '15 minutes',
-        } as any
+        }
       );
     }
   }

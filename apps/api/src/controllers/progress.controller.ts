@@ -1,4 +1,11 @@
 import { Context } from 'hono';
+import {
+  progressHistorySchema,
+  progressOverviewSchema,
+  progressStreaksSchema,
+} from '@tracknstick/contracts';
+import { getValidated } from '../middlewares/validateRequest.js';
+import type { AppEnv } from '../types/index.js';
 import * as progressService from '../services/progress.service.js';
 
 /**
@@ -6,9 +13,15 @@ import * as progressService from '../services/progress.service.js';
  * Date parameters only filter what data is returned to the client,
  * not what data is used for streak calculations
  */
-export async function getProgressHistory(c: Context): Promise<Response> {
+export async function getProgressHistory(
+  c: Context<AppEnv>
+): Promise<Response> {
   const { userId } = c.get('auth');
-  const { startDate, endDate, timeZone } = c.get('validated_query');
+  const { startDate, endDate, timeZone } = getValidated(
+    c,
+    'query',
+    progressHistorySchema
+  );
 
   const history = await progressService.getUserProgressHistory(
     c.env.DB,
@@ -26,9 +39,9 @@ export async function getProgressHistory(c: Context): Promise<Response> {
  * This endpoint always calculates based on a full year of data for accuracy
  * regardless of any date filters
  */
-export async function getStreaks(c: Context): Promise<Response> {
+export async function getStreaks(c: Context<AppEnv>): Promise<Response> {
   const { userId } = c.get('auth');
-  const { timeZone } = c.get('validated_query');
+  const { timeZone } = getValidated(c, 'query', progressStreaksSchema);
 
   const streaks = await progressService.getUserStreaks(
     c.env.DB,
@@ -44,9 +57,15 @@ export async function getStreaks(c: Context): Promise<Response> {
  * Date parameters only filter what history data is returned, while
  * streak calculations always use a full year of data for accuracy
  */
-export async function getProgressOverview(c: Context): Promise<Response> {
+export async function getProgressOverview(
+  c: Context<AppEnv>
+): Promise<Response> {
   const { userId } = c.get('auth');
-  const { startDate, endDate, timeZone } = c.get('validated_query');
+  const { startDate, endDate, timeZone } = getValidated(
+    c,
+    'query',
+    progressOverviewSchema
+  );
 
   const overview = await progressService.getUserProgressOverview(
     c.env.DB,

@@ -3,6 +3,7 @@
 
 import { Context, MiddlewareHandler, Next } from 'hono';
 import { RateLimitError } from '../utils/errors.js';
+import type { AppEnv } from '../types/index.js';
 
 /**
  * Rejects the request once the signed-in user has used up their chat allowance.
@@ -11,8 +12,8 @@ import { RateLimitError } from '../utils/errors.js';
  * CHAT_RATE_LIMITER binding in wrangler.toml. Counters are kept by Cloudflare
  * rather than in this isolate's memory, so they survive isolate eviction.
  */
-export const chatRateLimit = (): MiddlewareHandler => {
-  return async (c: Context, next: Next) => {
+export const chatRateLimit = (): MiddlewareHandler<AppEnv> => {
+  return async (c: Context<AppEnv>, next: Next) => {
     const { userId } = c.get('auth');
     const limiter: RateLimit = c.env.CHAT_RATE_LIMITER;
 

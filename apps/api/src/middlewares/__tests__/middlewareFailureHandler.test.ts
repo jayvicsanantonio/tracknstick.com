@@ -8,7 +8,6 @@ import {
   withRateLimitFailureHandling,
   getSecurityLogger,
   middlewareChainMonitor,
-  type SecurityEvent,
 } from '../middlewareFailureHandler.js';
 import {
   UnauthorizedError,
@@ -79,9 +78,7 @@ describe('Middleware Failure Handler', () => {
 
     it('should log security event and re-throw UnauthorizedError', async () => {
       const error = new UnauthorizedError('Authentication failed');
-      const failingMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingMiddleware = vi.fn(() => Promise.reject(error));
 
       const wrappedMiddleware = withFailureHandling(
         'auth_middleware',
@@ -96,9 +93,7 @@ describe('Middleware Failure Handler', () => {
 
     it('should log security event and re-throw RateLimitError', async () => {
       const error = new RateLimitError('Too many requests');
-      const failingMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingMiddleware = vi.fn(() => Promise.reject(error));
 
       const wrappedMiddleware = withFailureHandling(
         'rate_limit_middleware',
@@ -112,9 +107,10 @@ describe('Middleware Failure Handler', () => {
     });
 
     it('should handle non-Error objects gracefully', async () => {
-      const failingMiddleware = vi.fn(async () => {
-        throw 'String error';
-      });
+      const failingMiddleware = vi.fn(() =>
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the test covers a rejection that is not an Error
+        Promise.reject('String error')
+      );
 
       const wrappedMiddleware = withFailureHandling(
         'test_middleware',
@@ -128,9 +124,7 @@ describe('Middleware Failure Handler', () => {
 
     it('should log middleware failure with proper context', async () => {
       const error = new BaseError('Custom error', 500);
-      const failingMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingMiddleware = vi.fn(() => Promise.reject(error));
 
       const wrappedMiddleware = withFailureHandling(
         'custom_middleware',
@@ -216,8 +210,8 @@ describe('Middleware Failure Handler', () => {
 
       const stats = middlewareChainMonitor.getFailureStats();
 
-      expect(stats['test_middleware']).toBe(2);
-      expect(stats['other_middleware']).toBe(1);
+      expect(stats.test_middleware).toBe(2);
+      expect(stats.other_middleware).toBe(1);
     });
 
     it('should provide failure statistics', () => {
@@ -227,8 +221,8 @@ describe('Middleware Failure Handler', () => {
 
       const stats = middlewareChainMonitor.getFailureStats();
 
-      expect(stats['auth_middleware']).toBe(2);
-      expect(stats['rate_limit_middleware']).toBe(1);
+      expect(stats.auth_middleware).toBe(2);
+      expect(stats.rate_limit_middleware).toBe(1);
     });
 
     it('should handle empty failure stats', () => {
@@ -255,9 +249,7 @@ describe('Middleware Failure Handler', () => {
 
     it('should handle Clerk middleware failures', async () => {
       const error = new UnauthorizedError('Clerk auth failed');
-      const failingClerkMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingClerkMiddleware = vi.fn(() => Promise.reject(error));
 
       const enhanced = withClerkFailureHandling(failingClerkMiddleware);
 
@@ -272,9 +264,7 @@ describe('Middleware Failure Handler', () => {
 
     it('should handle rate limit middleware failures', async () => {
       const error = new RateLimitError('Rate limit exceeded');
-      const failingRateLimitMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingRateLimitMiddleware = vi.fn(() => Promise.reject(error));
 
       const enhanced = withRateLimitFailureHandling(failingRateLimitMiddleware);
 
@@ -293,9 +283,7 @@ describe('Middleware Failure Handler', () => {
       mockContext.get = vi.fn(() => undefined);
 
       const error = new Error('Test error');
-      const failingMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingMiddleware = vi.fn(() => Promise.reject(error));
 
       const wrappedMiddleware = withFailureHandling(
         'test_middleware',
@@ -311,9 +299,7 @@ describe('Middleware Failure Handler', () => {
       mockContext.req.header = vi.fn(() => undefined);
 
       const error = new Error('Test error');
-      const failingMiddleware = vi.fn(async () => {
-        throw error;
-      });
+      const failingMiddleware = vi.fn(() => Promise.reject(error));
 
       const wrappedMiddleware = withFailureHandling(
         'test_middleware',
