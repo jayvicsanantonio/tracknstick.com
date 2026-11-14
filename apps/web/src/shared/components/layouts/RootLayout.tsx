@@ -1,10 +1,13 @@
-import { memo } from 'react';
+import { lazy, memo, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
-import Welcome from '@/features/layout/components/Welcome';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import { ChatWidget } from '@/features/chat/components/ChatWidget';
+
+// Only signed-out visitors see the welcome page, and it carries the Rive
+// animation runtime, so signed-in users never download either.
+const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
 
 /**
  * Root layout component that handles authentication-based rendering
@@ -21,7 +24,9 @@ const RootLayout = memo(function RootLayout() {
       <main className="relative min-h-0 flex-1">
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
-          <Welcome />
+          <Suspense fallback={null}>
+            <Welcome />
+          </Suspense>
         </SignedOut>
         <SignedIn>
           <Outlet />

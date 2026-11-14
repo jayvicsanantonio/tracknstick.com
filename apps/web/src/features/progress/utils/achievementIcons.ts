@@ -1,20 +1,74 @@
 // Achievement icon mapping using Lucide React icons
 // Maps icon name strings to Lucide React components
 
-import * as Icons from 'lucide-react';
-import { LucideIcon } from 'lucide-react';
+import {
+  Activity,
+  Award,
+  BookOpen,
+  Building,
+  Calendar,
+  CheckCircle,
+  Crown,
+  Flame,
+  Heart,
+  Medal,
+  MessageSquare,
+  Moon,
+  RefreshCw,
+  Rocket,
+  Shield,
+  Sprout,
+  Star,
+  Sun,
+  Target,
+  Timer,
+  TrendingUp,
+  Trophy,
+  User,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
+
+// The icons the API's achievement catalogue names
+// (apps/api/src/repositories/achievement.repository.ts). Listing them, rather
+// than looking a name up in all of lucide-react, keeps every other lucide
+// icon out of the bundle. A catalogue icon added there needs adding here.
+const ACHIEVEMENT_ICONS: Record<string, LucideIcon> = {
+  Activity,
+  Award,
+  BookOpen,
+  Building,
+  Calendar,
+  CheckCircle,
+  Crown,
+  Flame,
+  Heart,
+  Medal,
+  MessageSquare,
+  Moon,
+  RefreshCw,
+  Rocket,
+  Shield,
+  Sprout,
+  Star,
+  Sun,
+  Target,
+  Timer,
+  TrendingUp,
+  Trophy,
+  User,
+  Zap,
+};
 
 // Get Lucide icon component by name
 export const getAchievementIcon = (iconName?: string): LucideIcon => {
-  if (!iconName) return Icons.Trophy;
+  if (!iconName) return Trophy;
 
-  // Get the icon component from Lucide React
-  const IconComponent = (Icons as unknown as Record<string, LucideIcon>)[
-    iconName
-  ];
-
-  // Return the icon or fallback to Trophy
-  return IconComponent ?? Icons.Trophy;
+  // Return the icon or fallback to Trophy. An own-property check, so a name
+  // such as "toString" does not find a property every object inherits.
+  return Object.prototype.hasOwnProperty.call(ACHIEVEMENT_ICONS, iconName)
+    ? ACHIEVEMENT_ICONS[iconName]
+    : Trophy;
 };
 
 // Get icon color class based on achievement category

@@ -53,11 +53,12 @@ function renderLayout() {
 }
 
 describe('RootLayout auth gate', () => {
-  it('shows Welcome and no routed content when signed out', () => {
+  it('shows Welcome and no routed content when signed out', async () => {
     mockAuth.isSignedIn = false;
     renderLayout();
 
-    expect(screen.getByTestId('welcome')).toBeInTheDocument();
+    // Welcome is lazy-loaded, so it appears once its module has loaded.
+    expect(await screen.findByTestId('welcome')).toBeInTheDocument();
     expect(screen.queryByTestId('outlet')).not.toBeInTheDocument();
   });
 
