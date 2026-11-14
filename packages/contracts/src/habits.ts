@@ -41,8 +41,8 @@ export const createHabitSchema = z
     name: z.string().min(1).max(100),
     icon: z.string().optional(),
     frequency: frequencySchema,
-    startDate: z.string().datetime(),
-    endDate: z.union([z.string().datetime(), z.null()]).optional(),
+    startDate: z.iso.datetime(),
+    endDate: z.union([z.iso.datetime(), z.null()]).optional(),
   })
   .refine(hasValidDateRange, { message: DATE_RANGE_MESSAGE });
 
@@ -51,8 +51,8 @@ export const updateHabitSchema = z
     name: z.string().min(1).max(100).optional(),
     icon: z.string().optional(),
     frequency: frequencySchema.optional(),
-    startDate: z.string().datetime(),
-    endDate: z.union([z.string().datetime(), z.null()]).optional(),
+    startDate: z.iso.datetime(),
+    endDate: z.union([z.iso.datetime(), z.null()]).optional(),
   })
   .refine(hasValidDateRange, { message: DATE_RANGE_MESSAGE });
 
@@ -61,7 +61,7 @@ export const habitIdParamSchema = z.object({
 });
 
 export const getHabitsByDateSchema = z.object({
-  date: z.string().datetime().optional(),
+  date: z.iso.datetime().optional(),
   timeZone: z.string().default('UTC'),
 });
 

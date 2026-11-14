@@ -256,21 +256,6 @@ export class RateLimitMiddleware {
   }
 
   /**
-   * Get current rate limit statistics (for monitoring)
-   */
-  getStats(c: Context<AppEnv>): {
-    totalKeys: number;
-    memoryUsage: number;
-    config: RateLimitConfig;
-  } {
-    return {
-      totalKeys: Array.from(this.store.entries()).length,
-      memoryUsage: JSON.stringify(Array.from(this.store.entries())).length,
-      config: this.getConfig(c),
-    };
-  }
-
-  /**
    * Clear all rate limit data (for testing)
    */
   clear(): void {

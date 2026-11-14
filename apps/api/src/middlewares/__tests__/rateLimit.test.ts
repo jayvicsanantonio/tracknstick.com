@@ -2,10 +2,7 @@
 // Tests sliding window, endpoint-specific limits, and security configuration
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import {
-  RateLimitMiddleware,
-  rateLimitMiddleware,
-} from '../rateLimitEnhanced.js';
+import { RateLimitMiddleware, rateLimitMiddleware } from '../rateLimit.js';
 import { RateLimitError } from '../../utils/errors.js';
 
 // Mock security configuration
@@ -326,15 +323,6 @@ describe('RateLimitMiddleware', () => {
   });
 
   describe('statistics and monitoring', () => {
-    it('should provide rate limiting statistics', () => {
-      const stats = middleware.getStats(mockContext);
-
-      expect(stats).toHaveProperty('totalKeys');
-      expect(stats).toHaveProperty('memoryUsage');
-      expect(stats).toHaveProperty('config');
-      expect(stats.config.globalLimit).toBe(100);
-    });
-
     it('should clear all data when requested', () => {
       // Add some data
       (middleware as any).store.set('test', {
@@ -357,7 +345,7 @@ describe('RateLimitMiddleware', () => {
     });
 
     it('should provide a convenience function', async () => {
-      const { createRateLimit } = await import('../rateLimitEnhanced.js');
+      const { createRateLimit } = await import('../rateLimit.js');
       const middlewareFunc = createRateLimit();
       expect(typeof middlewareFunc).toBe('function');
     });

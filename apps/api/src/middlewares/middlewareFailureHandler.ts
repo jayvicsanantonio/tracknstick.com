@@ -257,7 +257,7 @@ export function withFailureHandling(
 }
 
 /**
- * Enhanced Clerk middleware with failure handling
+ * Clerk middleware wrapped with failure handling
  */
 export function withClerkFailureHandling(
   clerkMiddleware: (c: Context<AppEnv>, next: Next) => Promise<void | Response>
@@ -266,7 +266,7 @@ export function withClerkFailureHandling(
 }
 
 /**
- * Enhanced rate limit middleware with failure handling
+ * Rate limit middleware wrapped with failure handling
  */
 export function withRateLimitFailureHandling(
   rateLimitMiddleware: (
@@ -278,83 +278,8 @@ export function withRateLimitFailureHandling(
 }
 
 /**
- * Enhanced validation middleware with failure handling
- */
-export function withValidationFailureHandling(
-  validationMiddleware: (
-    c: Context<AppEnv>,
-    next: Next
-  ) => Promise<void | Response>,
-  validatorName = 'validation'
-) {
-  return withFailureHandling(validatorName, validationMiddleware);
-}
-
-/**
  * Get security event logger instance for direct use
  */
 export const getSecurityLogger = (): SecurityEventLogger => {
   return SecurityEventLogger.getInstance();
 };
-
-/**
- * Middleware chain failure monitor - tracks failures across the entire chain
- */
-export class MiddlewareChainMonitor {
-  private static instance: MiddlewareChainMonitor;
-  private failureCounters = new Map<string, number>();
-  private lastReset: number = Date.now();
-  private readonly resetInterval: number = 15 * 60 * 1000; // 15 minutes
-
-  public static getInstance(): MiddlewareChainMonitor {
-    if (!MiddlewareChainMonitor.instance) {
-      MiddlewareChainMonitor.instance = new MiddlewareChainMonitor();
-    }
-    return MiddlewareChainMonitor.instance;
-  }
-
-  /**
-   * Record a middleware failure
-   */
-  recordFailure(middlewareName: string): void {
-    this.checkReset();
-    const current = this.failureCounters.get(middlewareName) || 0;
-    this.failureCounters.set(middlewareName, current + 1);
-
-    // Log excessive failures
-    const newCount = current + 1;
-    if (newCount > 10 && newCount % 5 === 0) {
-      logger.warn(
-        `High failure rate detected for middleware: ${middlewareName}`,
-        {
-          failures: newCount,
-          timeWindow: '15 minutes',
-        }
-      );
-    }
-  }
-
-  /**
-   * Get failure statistics
-   */
-  getFailureStats(): Record<string, number> {
-    this.checkReset();
-    return Object.fromEntries(this.failureCounters.entries());
-  }
-
-  /**
-   * Check if counters need to be reset
-   */
-  private checkReset(): void {
-    const now = Date.now();
-    if (now - this.lastReset > this.resetInterval) {
-      this.failureCounters.clear();
-      this.lastReset = now;
-    }
-  }
-}
-
-/**
- * Export singleton monitor instance
- */
-export const middlewareChainMonitor = MiddlewareChainMonitor.getInstance();

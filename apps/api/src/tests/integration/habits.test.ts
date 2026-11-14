@@ -9,7 +9,7 @@ import {
   takeConsole,
 } from '../setup.js';
 import { habitRoutes } from '../../routes/habits.js';
-import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
+import { errorHandler } from '../../middlewares/errorHandler.js';
 
 describe('Habits API Integration', () => {
   let app: any;
@@ -33,7 +33,7 @@ describe('Habits API Integration', () => {
     app.route('/habits', habitRoutes);
 
     // Global error handler
-    app.onError(errorHandlerEnhanced);
+    app.onError(errorHandler);
   });
 
   afterEach(() => {

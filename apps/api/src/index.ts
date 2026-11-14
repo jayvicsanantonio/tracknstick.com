@@ -8,14 +8,14 @@ import {
   withFailureHandling,
   withRateLimitFailureHandling,
 } from './middlewares/middlewareFailureHandler.js';
-import { createRateLimit } from './middlewares/rateLimitEnhanced.js';
+import { createRateLimit } from './middlewares/rateLimit.js';
 import logger from './utils/logger.js';
 import { habitRoutes } from './routes/habits.js';
 import progressRoutes from './routes/progress.js';
 import { achievementRoutes } from './routes/achievements.js';
 import { chatRoutes } from './routes/chat.js';
 import { healthRoutes } from './routes/health.js';
-import { errorHandlerEnhanced } from './middlewares/errorHandlerEnhanced.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 import { securityHeaders } from './middlewares/securityHeaders.js';
 import type { AppEnv } from './types/index.js';
 
@@ -76,8 +76,8 @@ app.notFound((c) => {
   );
 });
 
-// Global error handler - Enhanced with environment awareness
-app.onError(errorHandlerEnhanced);
+// Global error handler: response detail depends on the environment
+app.onError(errorHandler);
 
 // Export the app for the worker runtime
 export default app;

@@ -2,7 +2,7 @@
 // Tests information disclosure prevention and environment-specific behavior
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { errorHandlerEnhanced } from '../errorHandlerEnhanced.js';
+import { errorHandler } from '../errorHandler.js';
 import {
   NotFoundError,
   ValidationError,
@@ -57,7 +57,7 @@ vi.mock('../../utils/logger.js', () => ({
   },
 }));
 
-describe('errorHandlerEnhanced', () => {
+describe('errorHandler', () => {
   let mockContext: any;
 
   beforeEach(() => {
@@ -87,7 +87,7 @@ describe('errorHandlerEnhanced', () => {
     it('should hide error details in production', () => {
       const error = new Error('Sensitive internal error message');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(500);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -104,7 +104,7 @@ describe('errorHandlerEnhanced', () => {
       const error = new Error('Test error');
       error.stack = 'Error: Test error\n    at someFunction';
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       const jsonCall = mockContext.json.mock.calls[0][0];
       expect(jsonCall.error.details).toBeUndefined();
@@ -117,7 +117,7 @@ describe('errorHandlerEnhanced', () => {
         token: 'sensitive-token',
       });
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(400);
       const jsonCall = mockContext.json.mock.calls[0][0];
@@ -128,7 +128,7 @@ describe('errorHandlerEnhanced', () => {
     it('should use generic message for unauthorized errors', () => {
       const error = new UnauthorizedError('Invalid JWT signature detected');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(401);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -151,7 +151,7 @@ describe('errorHandlerEnhanced', () => {
     it('should show detailed error messages in development', () => {
       const error = new Error('Detailed internal error for debugging');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(500);
       const jsonCall = mockContext.json.mock.calls[0][0];
@@ -165,7 +165,7 @@ describe('errorHandlerEnhanced', () => {
       error.stack =
         'Error: Test error\n    at someFunction\n    at anotherFunction';
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       const jsonCall = mockContext.json.mock.calls[0][0];
       expect(jsonCall.error.details).toEqual({
@@ -183,7 +183,7 @@ describe('errorHandlerEnhanced', () => {
         age: 'must be a number',
       });
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       const jsonCall = mockContext.json.mock.calls[0][0];
       expect(jsonCall.error.message).toBe('Validation failed');
@@ -198,7 +198,7 @@ describe('errorHandlerEnhanced', () => {
     it('should handle NotFoundError correctly', () => {
       const error = new NotFoundError('User not found');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(404);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -214,7 +214,7 @@ describe('errorHandlerEnhanced', () => {
     it('should handle ForbiddenError correctly', () => {
       const error = new ForbiddenError('Access denied to admin area');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(403);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -230,7 +230,7 @@ describe('errorHandlerEnhanced', () => {
     it('should handle RateLimitError correctly', () => {
       const error = new RateLimitError('Too many requests');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(429);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -246,7 +246,7 @@ describe('errorHandlerEnhanced', () => {
     it('should handle HTTPException correctly', () => {
       const error = new HTTPException(422, { message: 'Unprocessable entity' });
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(422);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -266,7 +266,7 @@ describe('errorHandlerEnhanced', () => {
         'business_logic_error'
       );
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(409);
       expect(mockContext.json).toHaveBeenCalledWith({
@@ -287,7 +287,7 @@ describe('errorHandlerEnhanced', () => {
       );
       error.name = 'SqliteError';
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(500);
       const jsonCall = mockContext.json.mock.calls[0][0];
@@ -303,7 +303,7 @@ describe('errorHandlerEnhanced', () => {
       );
       error.name = 'SqliteError';
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       const jsonCall = mockContext.json.mock.calls[0][0];
       expect(jsonCall.error.message).toBe(
@@ -324,7 +324,7 @@ describe('errorHandlerEnhanced', () => {
         secretKey: 'super-secret',
       });
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       const jsonCall = mockContext.json.mock.calls[0][0];
       expect(jsonCall.error.details).toEqual({
@@ -353,7 +353,7 @@ describe('errorHandlerEnhanced', () => {
       });
 
       const error = new Error('Test error');
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(logger.error).toHaveBeenCalledWith(
         'Server error occurred',
@@ -373,12 +373,12 @@ describe('errorHandlerEnhanced', () => {
     it('should generate unique request IDs for error tracking', () => {
       const error = new Error('Test error');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
       const firstRequestId = mockContext.json.mock.calls[0][0].error.requestId;
 
       // Clear mocks and test again
       mockContext.json.mockClear();
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
       const secondRequestId = mockContext.json.mock.calls[0][0].error.requestId;
 
       expect(firstRequestId).not.toEqual(secondRequestId);
@@ -391,7 +391,7 @@ describe('errorHandlerEnhanced', () => {
     it('falls back to 500 for an out-of-range statusCode', () => {
       const error = new BaseError('weird', 9999, 'business_logic_error');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(500);
     });
@@ -399,7 +399,7 @@ describe('errorHandlerEnhanced', () => {
     it('passes a valid statusCode through unchanged', () => {
       const error = new BaseError('conflict', 409, 'conflict');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(mockContext.status).toHaveBeenCalledWith(409);
     });
@@ -410,7 +410,7 @@ describe('errorHandlerEnhanced', () => {
       const { default: logger } = await import('../../utils/logger.js');
       const error = new ValidationError('Invalid input');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(logger.warn).toHaveBeenCalledWith(
         'Client error occurred',
@@ -423,7 +423,7 @@ describe('errorHandlerEnhanced', () => {
       const { default: logger } = await import('../../utils/logger.js');
       const error = new Error('Internal server error');
 
-      errorHandlerEnhanced(error, mockContext);
+      errorHandler(error, mockContext);
 
       expect(logger.error).toHaveBeenCalledWith(
         'Server error occurred',

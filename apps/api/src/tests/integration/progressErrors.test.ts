@@ -9,7 +9,7 @@ import {
   takeConsole,
 } from '../setup.js';
 import progressRoutes from '../../routes/progress.js';
-import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
+import { errorHandler } from '../../middlewares/errorHandler.js';
 import * as progressService from '../../services/progress.service.js';
 import { NotFoundError, ValidationError } from '../../utils/errors.js';
 
@@ -25,7 +25,7 @@ describe('Progress error envelope', () => {
     testEnv = createTestEnv();
     app = testEnv.app;
     app.route('/api/v1/progress', progressRoutes);
-    app.onError(errorHandlerEnhanced);
+    app.onError(errorHandler);
   });
 
   afterEach(() => {

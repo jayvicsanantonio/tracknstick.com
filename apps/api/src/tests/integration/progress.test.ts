@@ -7,7 +7,7 @@ import {
   takeUnauthenticatedRequestLogs,
 } from '../setup.js';
 import progressRoutes from '../../routes/progress.js';
-import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
+import { errorHandler } from '../../middlewares/errorHandler.js';
 
 describe('Progress API Integration Tests', () => {
   let app: any;
@@ -36,7 +36,7 @@ describe('Progress API Integration Tests', () => {
     app.route('/api/v1/progress', progressRoutes);
 
     // Global error handler
-    app.onError(errorHandlerEnhanced);
+    app.onError(errorHandler);
   });
 
   // Clean up after tests

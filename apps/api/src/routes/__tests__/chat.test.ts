@@ -8,7 +8,7 @@ import type { AppEnv } from '../../types/index.js';
 import { mockAuthentication, takeConsole } from '../../tests/setup.js';
 import { chatRoutes } from '../chat.js';
 import * as chatService from '../../services/chat.service.js';
-import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js';
+import { errorHandler } from '../../middlewares/errorHandler.js';
 
 vi.mock('ai', () => ({
   streamText: vi.fn(() => ({
@@ -42,7 +42,7 @@ describe('chat route rate limit', () => {
 
     const app = new Hono<AppEnv>();
     app.route('/api/v1/chat', chatRoutes);
-    app.onError(errorHandlerEnhanced);
+    app.onError(errorHandler);
 
     return app.request(
       '/api/v1/chat',

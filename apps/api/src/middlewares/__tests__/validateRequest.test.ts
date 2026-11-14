@@ -6,13 +6,13 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../../types/index.js';
 import { z } from 'zod';
 import { validateRequest } from '../validateRequest.js';
-import { errorHandlerEnhanced } from '../errorHandlerEnhanced.js';
+import { errorHandler } from '../errorHandler.js';
 import { takeConsole } from '../../tests/setup.js';
 
 const thingSchema = z
   .object({
     name: z.string().min(1),
-    when: z.string().datetime(),
+    when: z.iso.datetime(),
     tags: z
       .array(z.string())
       .refine((tags) => new Set(tags).size === tags.length, {
@@ -39,7 +39,7 @@ function buildApp(): any {
   app.get('/things', validateRequest(listSchema, 'query'), (c) =>
     c.json({ received: c.get('validated_query') })
   );
-  app.onError(errorHandlerEnhanced);
+  app.onError(errorHandler);
   return app;
 }
 
@@ -90,8 +90,8 @@ describe('validateRequest', () => {
     const { details } = (await res.json()).error;
 
     for (const field of ['name', 'when']) {
-      expect(details[field]._errors.length).toBeGreaterThan(0);
-      for (const message of details[field]._errors) {
+      expect(details.properties[field].errors.length).toBeGreaterThan(0);
+      for (const message of details.properties[field].errors) {
         expect(typeof message).toBe('string');
       }
     }
@@ -105,7 +105,7 @@ describe('validateRequest', () => {
     const res = await postThing({ ...validThing, tags: ['a', 'a'] });
     const { details } = (await res.json()).error;
 
-    expect(details.tags._errors).toEqual(['Tags must be unique.']);
+    expect(details.properties.tags.errors).toEqual(['Tags must be unique.']);
 
     expect(takeConsole('warn')).toEqual([
       expect.stringContaining('Client error occurred'),
@@ -116,7 +116,7 @@ describe('validateRequest', () => {
     const res = await postThing({ ...validThing, name: 'forbidden' });
     const { details } = (await res.json()).error;
 
-    expect(details._errors).toEqual(['That name is not allowed.']);
+    expect(details.errors).toEqual(['That name is not allowed.']);
 
     expect(takeConsole('warn')).toEqual([
       expect.stringContaining('Client error occurred'),
@@ -128,7 +128,7 @@ describe('validateRequest', () => {
     const { details } = (await res.json()).error;
 
     expect(res.status).toBe(400);
-    expect(details.name._errors.length).toBeGreaterThan(0);
+    expect(details.properties.name.errors.length).toBeGreaterThan(0);
 
     expect(takeConsole('warn')).toEqual([
       expect.stringContaining('Client error occurred'),
