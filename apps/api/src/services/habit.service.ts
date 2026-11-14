@@ -2,28 +2,12 @@ import { D1Database } from '@cloudflare/workers-types';
 import { HabitData, TrackerResult } from '../controllers/habit.controller.js';
 import * as habitRepository from '../repositories/habit.repository.js';
 import * as trackerRepository from '../repositories/tracker.repository.js';
-import { NotFoundError } from '../utils/errors.js';
 import {
   getLocaleStartEnd,
   isValidTimeZone,
   safeDateParse,
 } from '../utils/dateUtils.js';
-import {
-  calculateDailyStreak,
-  calculateNonDailyStreak,
-} from '../utils/streakUtils.js';
 import logger from '../utils/logger.js';
-
-// Interface definitions
-interface TrackerRow {
-  id: number;
-  habit_id: number;
-  user_id: string;
-  timestamp: string;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 /**
  * One habit as the API presents it. Both list endpoints emit this shape, so
@@ -45,8 +29,7 @@ interface HabitListItem {
 
 // HabitRow.frequency is a comma-joined string; parsed in exactly one place.
 const toHabitListItem = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  row: any,
+  row: habitRepository.HabitRow,
   completed: boolean
 ): HabitListItem => ({
   id: row.id.toString(),
@@ -319,13 +302,7 @@ export const manageTracker = async (
       };
     }
 
-    await updateHabitStreakInfo(
-      db,
-      userId,
-      habitId,
-      habit.frequency,
-      timeZone
-    );
+    await updateHabitStreakInfo(db, userId, habitId, habit.frequency, timeZone);
 
     logger.info('Tracker toggled', { userId, habitId, status: result.status });
 
@@ -347,7 +324,7 @@ async function updateHabitStreakInfo(
   userId: string,
   habitId: string,
   frequency: string,
-  timeZone: string = 'UTC'
+  timeZone = 'UTC'
 ): Promise<void> {
   try {
     // Get all active (non-deleted) trackers for this habit

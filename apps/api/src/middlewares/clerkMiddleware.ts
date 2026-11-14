@@ -7,6 +7,7 @@ import type { AuthContext } from '../types/index.js';
 import { getSecurityConfig } from '../config/security.js';
 import { UnauthorizedError } from '../utils/errors.js';
 import logger from '../utils/logger.js';
+import type { AppEnv } from '../types/index.js';
 
 /**
  * Generates a unique request ID for tracking
@@ -15,7 +16,7 @@ function generateRequestId(): string {
   return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export const clerkMiddleware = () => async (c: Context, next: Next) => {
+export const clerkMiddleware = () => async (c: Context<AppEnv>, next: Next) => {
   try {
     // Validate that secret key is available
     if (!c.env.CLERK_SECRET_KEY) {
@@ -26,9 +27,6 @@ export const clerkMiddleware = () => async (c: Context, next: Next) => {
     const clerkClient = createClerkClient({
       secretKey: c.env.CLERK_SECRET_KEY,
     });
-
-    // Set the Clerk client in context
-    c.set('clerk', clerkClient);
 
     try {
       // Use Clerk's authenticateRequest method (recommended for HTTP requests)
@@ -108,13 +106,11 @@ export const clerkMiddleware = () => async (c: Context, next: Next) => {
     }
 
     // Log unexpected errors but don't expose details
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Authentication middleware error', {
-      path: c.req.path,
-      method: c.req.method,
-      error: errorMessage,
-    } as any);
+    logger.error(
+      'Authentication middleware error',
+      error instanceof Error ? error : undefined,
+      { path: c.req.path, method: c.req.method }
+    );
 
     throw new UnauthorizedError('Authentication required');
   }

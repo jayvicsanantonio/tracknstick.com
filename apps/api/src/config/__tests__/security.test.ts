@@ -7,7 +7,6 @@ import {
   getSecurityConfig,
   validateSecurityConfig,
   type SecurityConfig,
-  type Environment,
 } from '../security.js';
 
 describe('Security Configuration', () => {
@@ -133,7 +132,9 @@ describe('Security Configuration', () => {
       );
       expect(
         prodConfig.rateLimit.endpointLimits['/api/v1/habits'].limit
-      ).toBeLessThan(devConfig.rateLimit.endpointLimits['/api/v1/habits'].limit);
+      ).toBeLessThan(
+        devConfig.rateLimit.endpointLimits['/api/v1/habits'].limit
+      );
     });
   });
 

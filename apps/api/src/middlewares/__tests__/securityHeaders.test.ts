@@ -8,7 +8,7 @@ import { securityHeaders } from '../securityHeaders.js';
 function buildApp(handler: (c: never) => Response) {
   const app = new Hono();
   app.use('*', securityHeaders());
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   app.get('/', handler as any);
   return app;
 }
@@ -26,7 +26,6 @@ const EXPECTED = [
 
 describe('securityHeaders', () => {
   it('sets headers on a c.json response', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const app = buildApp(((c: any) => c.json({ ok: true })) as never);
     const res = await app.fetch(new Request('http://x/'), ENV);
 
@@ -48,7 +47,6 @@ describe('securityHeaders', () => {
   });
 
   it('omits HSTS outside production', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const app = buildApp(((c: any) => c.json({ ok: true })) as never);
     const res = await app.fetch(new Request('http://x/'), {
       ENVIRONMENT: 'development',

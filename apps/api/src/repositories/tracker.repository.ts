@@ -1,10 +1,12 @@
 // Data access for trackers (habit completions) in D1.
 // Also builds the progress history and streak figures from those rows.
 import { D1Database } from '@cloudflare/workers-types';
-import { NotFoundError } from '../utils/errors.js';
 import { computeStreaks } from '../utils/streakUtils.js';
-import { getLocaleStartEndForDateKey, isValidTimeZone } from '../utils/dateUtils.js';
-import { TrackerInsert, Tracker } from '../types/d1.js';
+import {
+  getLocaleStartEndForDateKey,
+  isValidTimeZone,
+} from '../utils/dateUtils.js';
+import { Tracker } from '../types/d1.js';
 
 interface TrackerRow {
   id: number;
@@ -208,7 +210,7 @@ export async function create(
     throw new Error('Failed to create tracker');
   }
 
-  return result.meta.last_row_id as number;
+  return result.meta.last_row_id;
 }
 
 /**
@@ -281,8 +283,8 @@ export async function getUserProgressHistory(
   userId: string,
   startDate?: string,
   endDate?: string,
-  timeZone: string = 'UTC'
-): Promise<Array<{ date: string; completionRate: number }>> {
+  timeZone = 'UTC'
+): Promise<{ date: string; completionRate: number }[]> {
   try {
     if (!isValidTimeZone(timeZone)) {
       console.warn(`Invalid timezone "${timeZone}", falling back to UTC`);
@@ -333,13 +335,13 @@ export async function getUserProgressHistory(
       throw new Error('Failed to fetch habits for progress history');
     }
 
-    const habits = habitsResult.results as Array<{
+    const habits = habitsResult.results as {
       id: number;
       frequency: string;
       start_date: string;
       end_date: string | null;
       deleted_at: string | null;
-    }>;
+    }[];
 
     if (habits.length === 0) {
       return [];
@@ -374,10 +376,10 @@ export async function getUserProgressHistory(
       throw new Error('Failed to fetch trackers for progress history');
     }
 
-    const trackers = trackersResult.results as Array<{
+    const trackers = trackersResult.results as {
       habit_id: number;
       timestamp: string;
-    }>;
+    }[];
 
     // The calendar date (YYYY-MM-DD) an instant falls on in the user's
     // timezone. One formatter serves every tracker row in the request;
@@ -398,7 +400,7 @@ export async function getUserProgressHistory(
 
     // Calculate completion rate for each date
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const history: Array<{ date: string; completionRate: number }> = [];
+    const history: { date: string; completionRate: number }[] = [];
 
     for (const dateStr of dates) {
       // Get day of week for this date
@@ -488,7 +490,7 @@ export async function getUserProgressHistory(
 export async function getUserStreaks(
   db: D1Database,
   userId: string,
-  timeZone: string = 'UTC'
+  timeZone = 'UTC'
 ): Promise<{ currentStreak: number; longestStreak: number }> {
   try {
     if (!isValidTimeZone(timeZone)) {

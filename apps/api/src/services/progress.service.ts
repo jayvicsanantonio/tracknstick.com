@@ -18,8 +18,8 @@ export async function getUserProgressHistory(
   userId: string,
   startDate?: string,
   endDate?: string,
-  timeZone: string = 'UTC'
-): Promise<Array<{ date: string; completionRate: number }>> {
+  timeZone = 'UTC'
+): Promise<{ date: string; completionRate: number }[]> {
   try {
     logger.info(
       `Fetching progress history for user ${userId} in timezone ${timeZone}`
@@ -52,7 +52,7 @@ export async function getUserProgressHistory(
 export async function getUserStreaks(
   db: D1Database,
   userId: string,
-  timeZone: string = 'UTC'
+  timeZone = 'UTC'
 ): Promise<{ currentStreak: number; longestStreak: number }> {
   try {
     logger.info(
@@ -81,9 +81,9 @@ export async function getUserProgressOverview(
   userId: string,
   startDate?: string,
   endDate?: string,
-  timeZone: string = 'UTC'
+  timeZone = 'UTC'
 ): Promise<{
-  history: Array<{ date: string; completionRate: number }>;
+  history: { date: string; completionRate: number }[];
   currentStreak: number;
   longestStreak: number;
 }> {

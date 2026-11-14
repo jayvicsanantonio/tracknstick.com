@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Add this comment to suppress TypeScript errors during migration to Hono
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { createTestEnv, mockAuthentication, resetMocks } from '../setup.js';
@@ -8,7 +7,6 @@ import { errorHandlerEnhanced } from '../../middlewares/errorHandlerEnhanced.js'
 describe('Habits API Integration', () => {
   let app: any;
   let env: any;
-  let mockDb: any;
   let mockResults: any;
 
   beforeEach(() => {
@@ -18,7 +16,6 @@ describe('Habits API Integration', () => {
     const testEnv = createTestEnv();
     app = testEnv.app;
     env = testEnv.env;
-    mockDb = testEnv.mockDb;
     mockResults = testEnv.mockResults;
 
     // Add habit routes

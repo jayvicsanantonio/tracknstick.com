@@ -7,12 +7,13 @@ import { BaseError } from '../utils/errors.js';
 import { StatusCodes, toStatusCode } from '../utils/statusCodes.js';
 import { getSecurityConfig } from '../config/security.js';
 import logger from '../utils/logger.js';
+import type { AppEnv } from '../types/index.js';
 
 interface ErrorResponse {
   error: {
     message: string;
     code: string;
-    details?: any;
+    details?: unknown;
     requestId?: string;
     timestamp?: string;
   };
@@ -50,7 +51,7 @@ function getErrorCodeFromStatus(status: number): string {
 /**
  * Sanitize error details for production environment
  */
-function sanitizeErrorDetails(details: any, showDetails: boolean): any {
+function sanitizeErrorDetails(details: unknown, showDetails: boolean): unknown {
   if (!showDetails) {
     return undefined;
   }
@@ -64,7 +65,7 @@ function sanitizeErrorDetails(details: any, showDetails: boolean): any {
   }
 
   if (details && typeof details === 'object') {
-    const sanitized: any = {};
+    const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(details)) {
       // Skip sensitive fields that might leak information
       if (
@@ -107,7 +108,10 @@ function formatErrorMessage(
 /**
  * Extract meaningful error context for logging
  */
-function extractErrorContext(c: Context, error: Error): Record<string, any> {
+function extractErrorContext(
+  c: Context<AppEnv>,
+  error: Error
+): Record<string, unknown> {
   const auth = c.get('auth');
 
   return {
@@ -142,7 +146,7 @@ const PUBLIC_MESSAGE: Record<string, string> = {
 /**
  * Enhanced error handler with environment awareness
  */
-export const errorHandlerEnhanced = (err: Error, c: Context) => {
+export const errorHandlerEnhanced = (err: Error, c: Context<AppEnv>) => {
   const errorConfig = getSecurityConfig(c.env.ENVIRONMENT).errorHandling;
   const requestId = generateRequestId();
 
@@ -151,7 +155,7 @@ export const errorHandlerEnhanced = (err: Error, c: Context) => {
   errorContext.requestId = requestId;
 
   // Log error with appropriate level
-  const logData: Record<string, any> = {
+  const logData: Record<string, unknown> = {
     ...errorContext,
     ...(errorConfig.showStackTrace && err.stack ? { stack: err.stack } : {}),
   };

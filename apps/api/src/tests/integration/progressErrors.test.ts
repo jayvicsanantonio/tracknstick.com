@@ -9,9 +9,8 @@ import * as progressService from '../../services/progress.service.js';
 import { NotFoundError, ValidationError } from '../../utils/errors.js';
 
 describe('Progress error envelope', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let app: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let testEnv: any;
   const authHeader = { headers: { Authorization: 'Bearer test-token' } };
 

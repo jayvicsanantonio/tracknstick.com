@@ -4,15 +4,27 @@
 import { Context, MiddlewareHandler, Next } from 'hono';
 import { z } from 'zod';
 import { ValidationError } from '../utils/errors.js';
+import type { AppEnv } from '../types/index.js';
 
 type ValidateTarget = 'json' | 'query' | 'param';
+
+/**
+ * The value validateRequest stored for a target, typed as the output of the
+ * schema the route validated it with. Pass that same schema: it is used only
+ * for its type.
+ */
+export const getValidated = <T extends z.ZodTypeAny>(
+  c: Context<AppEnv>,
+  target: ValidateTarget,
+  _schema: T
+): z.output<T> => c.get(`validated_${target}`) as z.output<T>;
 
 export const validateRequest =
   <T extends z.ZodTypeAny>(
     schema: T,
     target: ValidateTarget = 'json'
-  ): MiddlewareHandler =>
-  async (c: Context, next: Next) => {
+  ): MiddlewareHandler<AppEnv> =>
+  async (c: Context<AppEnv>, next: Next) => {
     try {
       let data: unknown;
 

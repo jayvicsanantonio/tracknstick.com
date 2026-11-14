@@ -1,10 +1,11 @@
 // Unit tests for secure Clerk JWT authentication middleware
 // Tests proper token verification and error handling scenarios
 
-// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createClerkClient } from '@clerk/backend';
 import { clerkMiddleware } from '../clerkMiddleware.js';
 import { UnauthorizedError } from '../../utils/errors.js';
+import logger from '../../utils/logger.js';
 
 // Mock Clerk client with new authenticateRequest API
 const mockClerkClient = {
@@ -25,9 +26,9 @@ vi.mock('../../utils/logger.js', () => ({
 }));
 
 describe('clerkMiddleware', () => {
-  let mockContext;
-  let mockNext;
-  let middleware;
+  let mockContext: any;
+  let mockNext: any;
+  let middleware: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -228,13 +229,31 @@ describe('clerkMiddleware', () => {
       expect(mockNext).not.toHaveBeenCalled();
     });
 
+    it('logs an unexpected failure with the error and the request', async () => {
+      const failure = new Error('Clerk client could not be created');
+      vi.mocked(createClerkClient).mockImplementationOnce(() => {
+        throw failure;
+      });
+
+      await expect(middleware(mockContext, mockNext)).rejects.toThrow(
+        UnauthorizedError
+      );
+
+      expect(logger.error).toHaveBeenCalledWith(
+        'Authentication middleware error',
+        failure,
+        { path: '/api/test', method: 'GET' }
+      );
+    });
+
     it('should propagate UnauthorizedError instances without wrapping', async () => {
       mockContext.env.CLERK_SECRET_KEY = undefined;
 
-      const error = await middleware(mockContext, mockNext).catch((e) => e);
+      const error = await middleware(mockContext, mockNext).catch(
+        (e: unknown) => e as Error
+      );
 
       expect(error.message).toBe('Service configuration error');
     });
   });
-
 });

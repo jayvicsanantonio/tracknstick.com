@@ -43,7 +43,7 @@ function expectToMatchContract(schema: ZodType, body: unknown) {
 describe('API responses match the contracts package', () => {
   let db: D1Database;
   let dispose: () => Promise<void>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let env: any;
 
   const now = new Date();
@@ -91,7 +91,7 @@ describe('API responses match the contracts package', () => {
     );
 
     // The body is checked against a schema by each test, so it is left untyped.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const responseBody: any = await res.json();
     return { status: res.status, body: responseBody };
   }

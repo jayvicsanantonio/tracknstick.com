@@ -72,9 +72,10 @@ const DATES = [
 describe('getLocaleStartEndForDateKey', () => {
   it.each(ZONES)('matches the reference implementation in %s', (zone) => {
     for (const date of DATES) {
-      expect(getLocaleStartEndForDateKey(date, zone), `${zone} ${date}`).toEqual(
-        referenceBounds(date, zone)
-      );
+      expect(
+        getLocaleStartEndForDateKey(date, zone),
+        `${zone} ${date}`
+      ).toEqual(referenceBounds(date, zone));
     }
   });
 
@@ -94,7 +95,10 @@ describe('getLocaleStartEndForDateKey', () => {
     // The hazard the date-key entry point exists to avoid: deriving the key
     // from noon UTC lands on the next local day in UTC+13/+14.
     for (const zone of ['Pacific/Kiritimati', 'Pacific/Apia']) {
-      const { localeStartISO } = getLocaleStartEndForDateKey('2026-06-15', zone);
+      const { localeStartISO } = getLocaleStartEndForDateKey(
+        '2026-06-15',
+        zone
+      );
       expect(toLocalDateKey(new Date(localeStartISO), zone), zone).toBe(
         '2026-06-15'
       );

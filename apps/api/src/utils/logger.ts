@@ -14,7 +14,7 @@ const LEVEL_RANK: Record<LogLevel, number> = {
 
 export class Logger {
   private context: string;
-  private defaultMetadata: Record<string, any>;
+  private defaultMetadata: Record<string, unknown>;
   /**
    * Immutable on purpose. A Workers isolate serves concurrent requests off
    * one module scope, so a mutable level on the shared root logger would
@@ -24,7 +24,7 @@ export class Logger {
 
   constructor(
     context: string,
-    defaultMetadata: Record<string, any> = {},
+    defaultMetadata: Record<string, unknown> = {},
     minLevel: LogLevel = 'info'
   ) {
     this.context = context;
@@ -42,7 +42,7 @@ export class Logger {
   private formatMessage(
     message: string,
     level: LogLevel,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, unknown> = {}
   ): string {
     const timestamp = new Date().toISOString();
     const combinedMetadata = { ...this.defaultMetadata, ...metadata };
@@ -57,7 +57,7 @@ export class Logger {
   /**
    * Log a debug message
    */
-  debug(message: string, metadata: Record<string, any> = {}): void {
+  debug(message: string, metadata: Record<string, unknown> = {}): void {
     if (!this.shouldLog('debug')) return;
     console.debug(this.formatMessage(message, 'debug', metadata));
   }
@@ -65,7 +65,7 @@ export class Logger {
   /**
    * Log an info message
    */
-  info(message: string, metadata: Record<string, any> = {}): void {
+  info(message: string, metadata: Record<string, unknown> = {}): void {
     if (!this.shouldLog('info')) return;
     console.info(this.formatMessage(message, 'info', metadata));
   }
@@ -73,7 +73,7 @@ export class Logger {
   /**
    * Log a warning message
    */
-  warn(message: string, metadata: Record<string, any> = {}): void {
+  warn(message: string, metadata: Record<string, unknown> = {}): void {
     if (!this.shouldLog('warn')) return;
     console.warn(this.formatMessage(message, 'warn', metadata));
   }
@@ -84,7 +84,7 @@ export class Logger {
   error(
     message: string,
     error?: Error,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, unknown> = {}
   ): void {
     if (!this.shouldLog('error')) return;
     const errorMetadata = error
@@ -104,7 +104,7 @@ export class Logger {
    */
   child(
     context: string,
-    metadata: Record<string, any> = {},
+    metadata: Record<string, unknown> = {},
     minLevel: LogLevel = this.minLevel
   ): Logger {
     const childContext = `${this.context}:${context}`;

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import type { AppEnv } from '../types/index.js';
 import { clerkMiddleware } from '../middlewares/clerkMiddleware.js';
 import {
   withClerkFailureHandling,
@@ -8,7 +9,7 @@ import { chatRateLimit } from '../middlewares/chatRateLimit.js';
 import * as chatController from '../controllers/chat.controller.js';
 
 // Create a sub-application for chat
-const app = new Hono();
+const app = new Hono<AppEnv>();
 
 // Apply Clerk auth middleware to all routes with failure handling
 app.use('*', withClerkFailureHandling(clerkMiddleware()));

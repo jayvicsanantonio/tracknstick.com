@@ -13,6 +13,7 @@ import {
   type EndpointLimit,
 } from '../config/security.js';
 import logger from '../utils/logger.js';
+import type { AppEnv } from '../types/index.js';
 
 interface RateLimitEntry {
   count: number;
@@ -53,7 +54,7 @@ export class RateLimitMiddleware {
    * module-scope singleton, so caching the first request's config pinned the
    * wrong limits for the isolate's whole life.
    */
-  private getConfig(c: Context): RateLimitConfig {
+  private getConfig(c: Context<AppEnv>): RateLimitConfig {
     return getSecurityConfig(c.env.ENVIRONMENT).rateLimit;
   }
 
@@ -82,7 +83,10 @@ export class RateLimitMiddleware {
   /**
    * Get rate limit configuration for a specific endpoint
    */
-  private getEndpointConfig(c: Context, path: string): EndpointLimit | null {
+  private getEndpointConfig(
+    c: Context<AppEnv>,
+    path: string
+  ): EndpointLimit | null {
     const config = this.getConfig(c);
 
     // Check for exact path match first
@@ -104,7 +108,7 @@ export class RateLimitMiddleware {
    * Generate rate limit key for tracking
    */
   private generateKey(
-    c: Context,
+    c: Context<AppEnv>,
     identifier: string,
     path: string,
     endpointConfig: EndpointLimit | null
@@ -129,7 +133,7 @@ export class RateLimitMiddleware {
   /**
    * Get identifier for rate limiting (user ID preferred, then IP)
    */
-  private getIdentifier(c: Context): string {
+  private getIdentifier(c: Context<AppEnv>): string {
     // Always IP-based. This middleware is registered globally in index.ts,
     // before the route sub-apps mount clerkMiddleware, so no authenticated
     // identity exists yet at this point in the chain.
@@ -156,8 +160,8 @@ export class RateLimitMiddleware {
   /**
    * Create the rate limiting middleware
    */
-  middleware(): MiddlewareHandler {
-    return async (c: Context, next: Next) => {
+  middleware(): MiddlewareHandler<AppEnv> {
+    return async (c: Context<AppEnv>, next: Next) => {
       const path = c.req.path;
       const method = c.req.method;
 
@@ -254,7 +258,7 @@ export class RateLimitMiddleware {
   /**
    * Get current rate limit statistics (for monitoring)
    */
-  getStats(c: Context): {
+  getStats(c: Context<AppEnv>): {
     totalKeys: number;
     memoryUsage: number;
     config: RateLimitConfig;
@@ -287,6 +291,6 @@ export const rateLimitMiddleware = new RateLimitMiddleware();
 /**
  * Convenience function to get the rate limiting middleware
  */
-export const createRateLimit = (): MiddlewareHandler => {
+export const createRateLimit = (): MiddlewareHandler<AppEnv> => {
   return rateLimitMiddleware.middleware();
 };

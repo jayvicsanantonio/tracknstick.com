@@ -1,11 +1,6 @@
 // Entry point of the Track N' Stick API Worker.
 // Builds the Hono app: global middleware, the /api/v1 and /health routes, and the error handler.
 
-import type {
-  Ai,
-  D1Database,
-  RateLimit,
-} from '@cloudflare/workers-types';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { getSecurityConfig } from './config/security.js';
@@ -22,18 +17,9 @@ import { chatRoutes } from './routes/chat.js';
 import { healthRoutes } from './routes/health.js';
 import { errorHandlerEnhanced } from './middlewares/errorHandlerEnhanced.js';
 import { securityHeaders } from './middlewares/securityHeaders.js';
+import type { AppEnv } from './types/index.js';
 
-const app = new Hono<{
-  Bindings: {
-    DB: D1Database;
-    ENVIRONMENT: string;
-    CLERK_SECRET_KEY: string;
-    CLERK_PUBLISHABLE_KEY: string;
-    AI: Ai;
-    PINECONE_API_KEY: string;
-    CHAT_RATE_LIMITER: RateLimit;
-  };
-}>();
+const app = new Hono<AppEnv>();
 
 // 3. Rate limiting - Block excessive requests before processing (with failure handling)
 app.use('*', withRateLimitFailureHandling(createRateLimit()));

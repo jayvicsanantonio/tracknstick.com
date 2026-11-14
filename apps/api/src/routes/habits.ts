@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import type { AppEnv } from '../types/index.js';
 import { clerkMiddleware } from '../middlewares/clerkMiddleware.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 import { withClerkFailureHandling } from '../middlewares/middlewareFailureHandler.js';
@@ -6,7 +7,7 @@ import * as habitValidator from '@tracknstick/contracts';
 import * as habitController from '../controllers/habit.controller.js';
 
 // Create a sub-application for habits
-const app = new Hono();
+const app = new Hono<AppEnv>();
 
 // Apply Clerk auth middleware to all routes with failure handling
 app.use('*', withClerkFailureHandling(clerkMiddleware()));

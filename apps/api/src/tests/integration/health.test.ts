@@ -1,6 +1,6 @@
-// @ts-nocheck
 // Add this comment to suppress TypeScript errors during migration to Hono
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { createTestEnv, resetMocks } from '../setup.js';
 import { healthRoutes } from '../../routes/health.js';
 
@@ -20,7 +20,7 @@ describe('Health API Integration', () => {
     resetMocks();
 
     // Configure the app with environment and routes
-    app.use('*', (c, next) => {
+    app.use('*', (c: any, next: any) => {
       c.env = env;
       return next();
     });
@@ -52,7 +52,7 @@ describe('Health API Integration', () => {
       // Mock a successful DB connection
       mockResults.results = [{ db_check: 1 }];
 
-      const prepare = mockDb.prepare as vi.Mock;
+      const prepare = mockDb.prepare as Mock;
       prepare.mockReturnValue({
         bind: vi.fn().mockReturnThis(),
         first: vi.fn().mockResolvedValue({ db_check: 1 }),
@@ -71,7 +71,7 @@ describe('Health API Integration', () => {
 
     it('should return error status when the database check fails', async () => {
       // Mock a failed DB connection
-      const prepare = mockDb.prepare as vi.Mock;
+      const prepare = mockDb.prepare as Mock;
       prepare.mockReturnValue({
         bind: vi.fn().mockReturnThis(),
         first: vi.fn().mockResolvedValue(null),
@@ -91,7 +91,7 @@ describe('Health API Integration', () => {
   describe('GET /health/details', () => {
     it('should return detailed health information', async () => {
       // Mock a successful DB connection for details
-      const prepare = mockDb.prepare as vi.Mock;
+      const prepare = mockDb.prepare as Mock;
       prepare.mockReturnValue({
         bind: vi.fn().mockReturnThis(),
         first: vi.fn().mockResolvedValue({ result: 1 }),

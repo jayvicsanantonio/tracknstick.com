@@ -31,7 +31,7 @@ export function calculateCurrentStreak(
 
   try {
     Intl.DateTimeFormat(undefined, { timeZone });
-  } catch (ex) {
+  } catch {
     logger.error(
       `Invalid timeZone provided to calculateCurrentStreak: ${timeZone}`
     );
@@ -99,7 +99,7 @@ export function updateStreakInfo(
 
   try {
     Intl.DateTimeFormat(undefined, { timeZone });
-  } catch (ex) {
+  } catch {
     logger.error(`Invalid timeZone provided to updateStreakInfo: ${timeZone}`);
     return currentStats;
   }
@@ -205,7 +205,7 @@ export function calculateNonDailyStreak(
   });
 
   // Start from today and walk backwards through the scheduled days
-  let currentDate = new Date(today);
+  const currentDate = new Date(today);
   let streak = 0;
   let missedScheduledDay = false;
 
@@ -252,7 +252,7 @@ export function calculateLongestStreakFromTrackers(
   try {
     // Validate timezone
     Intl.DateTimeFormat(undefined, { timeZone });
-  } catch (ex) {
+  } catch {
     logger.error(`Invalid timeZone provided: ${timeZone}`);
     return 0;
   }
@@ -279,7 +279,7 @@ export function calculateLongestStreakFromTrackers(
   const endDate = new Date(completionDates[completionDates.length - 1]);
   const completionSet = new Set(completionDates);
 
-  let currentDate = new Date(startDate);
+  const currentDate = new Date(startDate);
   const dayFormatter = new Intl.DateTimeFormat('en-US', {
     timeZone,
     weekday: 'short',
@@ -318,7 +318,7 @@ export function getMostRecentCompletionDate(
   try {
     // Validate timezone
     Intl.DateTimeFormat(undefined, { timeZone });
-  } catch (ex) {
+  } catch {
     logger.error(`Invalid timeZone provided: ${timeZone}`);
     return null;
   }
