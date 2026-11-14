@@ -1,5 +1,5 @@
-// @ts-nocheck
-// Add this comment to suppress TypeScript errors during migration to Hono
+// Data access for trackers (habit completions) in D1.
+// Also builds the progress history and streak figures from those rows.
 import { D1Database } from '@cloudflare/workers-types';
 import { NotFoundError } from '../utils/errors.js';
 import { computeStreaks } from '../utils/streakUtils.js';
@@ -46,13 +46,13 @@ export async function findTrackersByDateRange(
        AND deleted_at IS NULL`
     )
     .bind(...params)
-    .all();
+    .all<TrackerRow>();
 
   if (!trackers.success) {
     throw new Error('Failed to fetch trackers');
   }
 
-  return trackers.results as TrackerRow[];
+  return trackers.results;
 }
 
 /**
@@ -88,13 +88,13 @@ export async function findTrackersByHabitAndDateRange(
   const result = await db
     .prepare(sql)
     .bind(...params)
-    .all();
+    .all<Tracker>();
 
   if (!result.success) {
     throw new Error('Failed to fetch trackers by habit and date range');
   }
 
-  return result.results as Tracker[];
+  return result.results;
 }
 
 /**
@@ -230,13 +230,13 @@ export async function findAllByHabit(
   const result = await db
     .prepare(sql)
     .bind(...params)
-    .all();
+    .all<Tracker>();
 
   if (!result.success) {
     throw new Error('Failed to fetch all trackers for habit');
   }
 
-  return result.results as Tracker[];
+  return result.results;
 }
 
 /**
@@ -256,13 +256,13 @@ export async function getAllTrackersForHabit(
        ORDER BY timestamp DESC`
     )
     .bind(userId, habitId)
-    .all();
+    .all<TrackerRow>();
 
   if (!trackers.success) {
     throw new Error(`Failed to fetch trackers for habit ${habitId}`);
   }
 
-  return trackers.results as TrackerRow[];
+  return trackers.results;
 }
 
 /**

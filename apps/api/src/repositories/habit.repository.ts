@@ -1,5 +1,5 @@
-// @ts-nocheck
-// Add this comment to suppress TypeScript errors during migration to Hono
+// Data access for habits in D1: users, habit rows, their stats and their trackers.
+// Its only caller is the habit service.
 
 import { D1Database } from '@cloudflare/workers-types';
 import { HabitData } from '../controllers/habit.controller.js';
@@ -56,9 +56,11 @@ export async function ensureUserExists(
       .run();
 
     if (!result.success) {
-      logger.error(`Failed to create user with clerk_user_id: ${clerkUserId}`, {
-        result,
-      });
+      logger.error(
+        `Failed to create user with clerk_user_id: ${clerkUserId}`,
+        undefined,
+        { result }
+      );
       throw new Error(
         `Failed to create user with clerk_user_id: ${clerkUserId}`
       );
@@ -68,7 +70,10 @@ export async function ensureUserExists(
     // will succeed even if the user was created by another concurrent request
   } catch (error) {
     // Handle specific SQLite constraint violations gracefully
-    if (error.message?.includes('UNIQUE constraint failed')) {
+    if (
+      error instanceof Error &&
+      error.message.includes('UNIQUE constraint failed')
+    ) {
       // Another request created the user concurrently, this is fine
       logger.info(`User ${clerkUserId} was created by concurrent request`);
       return;
@@ -76,7 +81,7 @@ export async function ensureUserExists(
 
     logger.error(
       `Error in ensureUserExists for clerk_user_id: ${clerkUserId}`,
-      { error }
+      error instanceof Error ? error : undefined
     );
     throw error;
   }
@@ -101,14 +106,14 @@ export async function getAllHabits(
     `
     )
     .bind(userId)
-    .all();
+    .all<HabitRow>();
 
   if (!habits.success) {
-    logger.error('Failed to fetch all habits', { userId });
+    logger.error('Failed to fetch all habits', undefined, { userId });
     throw new Error('Failed to fetch all habits');
   }
 
-  return habits.results as HabitRow[];
+  return habits.results;
 }
 
 // Get habits for a given date
@@ -142,14 +147,17 @@ export async function getHabitsByDate(
       `%,${dayOfWeek}`, // Pattern: ",Fri" (end)
       dayOfWeek // Pattern: "Fri" (exact match)
     )
-    .all();
+    .all<HabitRow>();
 
   if (!habits.success) {
-    logger.error('Failed to fetch habits by date', { userId, date });
+    logger.error('Failed to fetch habits by date', undefined, {
+      userId,
+      date,
+    });
     throw new Error('Failed to fetch habits by date');
   }
 
-  return habits.results as HabitRow[];
+  return habits.results;
 }
 
 // Create a new habit
@@ -164,11 +172,7 @@ export async function createHabit(
 
     const { name, icon, frequency, startDate, endDate } = habitData;
 
-    const frequencyString = Array.isArray(frequency)
-      ? frequency.join(',')
-      : typeof frequency === 'string'
-        ? frequency
-        : frequency?.join(',') || '';
+    const frequencyString = frequency?.join(',') ?? '';
 
     const result = await db
       .prepare(
@@ -190,7 +194,7 @@ export async function createHabit(
       .run();
 
     if (!result.success) {
-      logger.error('Failed to create habit', {
+      logger.error('Failed to create habit', undefined, {
         userId,
         habitData,
         error: result.error,
@@ -202,10 +206,11 @@ export async function createHabit(
 
     return { habitId: result.meta.last_row_id as number };
   } catch (error) {
-    logger.error(`Error in createHabit for user ${userId}:`, {
-      error,
-      habitData,
-    });
+    logger.error(
+      `Error in createHabit for user ${userId}:`,
+      error instanceof Error ? error : undefined,
+      { habitData }
+    );
     throw error;
   }
 }
@@ -221,7 +226,7 @@ export async function getHabitById(
       'SELECT * FROM habits WHERE id = ? AND user_id = ? AND deleted_at IS NULL'
     )
     .bind(habitId, userId)
-    .first();
+    .first<HabitRow>();
 
   if (!habit) {
     throw new NotFoundError(
@@ -229,7 +234,7 @@ export async function getHabitById(
     );
   }
 
-  return habit as HabitRow;
+  return habit;
 }
 
 // Update an existing habit
@@ -263,7 +268,7 @@ export async function updateHabit(
       `
       )
       .bind(habitId, userId)
-      .first();
+      .first<{ earliest_timestamp: string | null }>();
 
     if (earliestTracker?.earliest_timestamp) {
       const newStartDate = new Date(habitData.startDate);
@@ -290,11 +295,7 @@ export async function updateHabit(
   }
 
   if (habitData.frequency !== undefined) {
-    const frequencyString = Array.isArray(habitData.frequency)
-      ? habitData.frequency.join(',')
-      : typeof habitData.frequency === 'string'
-        ? habitData.frequency
-        : habitData.frequency?.join(',') || '';
+    const frequencyString = habitData.frequency.join(',');
     updateFields.push('frequency = ?');
     values.push(frequencyString);
   }
@@ -477,9 +478,9 @@ export async function getTrackers(
     `
     )
     .bind(habitId, userId, startDate, endDate)
-    .all();
+    .all<TrackerRow>();
 
-  return trackers.results as TrackerRow[];
+  return trackers.results;
 }
 
 // Add or remove a tracker for a habit

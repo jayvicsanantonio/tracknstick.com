@@ -1,4 +1,11 @@
-import { D1Database } from '@cloudflare/workers-types';
+// Entry point of the Track N' Stick API Worker.
+// Builds the Hono app: global middleware, the /api/v1 and /health routes, and the error handler.
+
+import type {
+  Ai,
+  D1Database,
+  RateLimit,
+} from '@cloudflare/workers-types';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { getSecurityConfig } from './config/security.js';
@@ -22,6 +29,9 @@ const app = new Hono<{
     ENVIRONMENT: string;
     CLERK_SECRET_KEY: string;
     CLERK_PUBLISHABLE_KEY: string;
+    AI: Ai;
+    PINECONE_API_KEY: string;
+    CHAT_RATE_LIMITER: RateLimit;
   };
 }>();
 

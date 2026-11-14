@@ -1,4 +1,6 @@
-// @ts-nocheck
+// Request validation middleware: parses the JSON body, query or route params with a zod schema.
+// Stores the parsed value on the context, and turns a failure into a ValidationError.
+
 import { Context, MiddlewareHandler, Next } from 'hono';
 import { z } from 'zod';
 import { ValidationError } from '../utils/errors.js';
