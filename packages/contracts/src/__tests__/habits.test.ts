@@ -8,9 +8,9 @@ import {
   getHabitStatsSchema,
   manageTrackerSchema,
   updateHabitSchema,
-} from '../habit.validator.js';
+} from '../habits.js';
 
-describe('habit.validator', () => {
+describe('habit request schemas', () => {
   describe('getHabitsByDateSchema', () => {
     it('applies the UTC default when timeZone is omitted', () => {
       const result = getHabitsByDateSchema.parse({

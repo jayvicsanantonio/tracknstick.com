@@ -42,6 +42,25 @@ export default tseslint.config(
       ...react.configs['jsx-runtime'].rules,
       'react/prop-types': 'off',
       'prettier/prettier': 'error',
+      // The web app takes only types from the contracts package. A value
+      // import would bundle zod and every schema for no runtime use.
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@tracknstick/contracts',
+              allowTypeImports: true,
+              message: 'Import only types from the contracts package.',
+            },
+            {
+              name: 'zod',
+              allowTypeImports: true,
+              message: 'Validation belongs to the API; use contract types.',
+            },
+          ],
+        },
+      ],
     },
   },
 );

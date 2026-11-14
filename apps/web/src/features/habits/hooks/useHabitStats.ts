@@ -16,10 +16,9 @@ export default function useHabitStats(habitId: string): HabitStats {
       streak: 0,
       longestStreak: 0,
       totalCompletions: 0,
-      // Not today's date. Substituting one made a habit that has never been
-      // completed read as completed today, and made formatDate's 'Never'
-      // branch unreachable while loading.
-      lastCompleted: null,
+      // No lastCompleted, rather than today's date. Substituting one made a
+      // habit that has never been completed read as completed today, and made
+      // formatDate's 'Never' branch unreachable while loading.
     }
   );
 }

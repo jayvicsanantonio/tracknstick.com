@@ -35,17 +35,18 @@ describe('useHabitStats', () => {
 
     const { result } = renderHook(() => useHabitStats('1'), { wrapper });
 
-    expect(result.current.lastCompleted).toBeNull();
+    expect(result.current.lastCompleted).toBeUndefined();
     // What the user actually sees, which used to be today's date
     expect(formatDate(result.current.lastCompleted)).toBe('Never');
   });
 
-  it('passes through a null lastCompleted from the API', async () => {
+  it('reports no completion date for a habit never completed', async () => {
+    // The API leaves lastCompleted out, rather than sending null, for a
+    // habit that has never been completed.
     vi.mocked(habitsApi.fetchHabitStats).mockResolvedValue({
       streak: 0,
       longestStreak: 0,
       totalCompletions: 0,
-      lastCompleted: null,
     });
 
     const { result } = renderHook(() => useHabitStats('1'), { wrapper });
@@ -53,7 +54,9 @@ describe('useHabitStats', () => {
     await waitFor(() =>
       expect(vi.mocked(habitsApi.fetchHabitStats)).toHaveBeenCalled(),
     );
-    await waitFor(() => expect(result.current.lastCompleted).toBeNull());
+    await waitFor(() => expect(result.current.totalCompletions).toBe(0));
+    expect(result.current.lastCompleted).toBeUndefined();
+    expect(formatDate(result.current.lastCompleted)).toBe('Never');
   });
 
   it('passes through a real lastCompleted from the API', async () => {

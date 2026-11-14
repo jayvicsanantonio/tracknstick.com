@@ -1,7 +1,7 @@
 // Progress date params normalise to one calendar-date representation
 
 import { describe, it, expect } from 'vitest';
-import { progressHistorySchema } from '../progress.validator.js';
+import { progressHistorySchema } from '../progress.js';
 
 describe('progressHistorySchema', () => {
   it('accepts the documented YYYY-MM-DD form', () => {

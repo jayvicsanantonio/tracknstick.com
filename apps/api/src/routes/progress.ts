@@ -7,7 +7,7 @@ import {
   progressHistorySchema,
   progressOverviewSchema,
   progressStreaksSchema,
-} from '../validators/progress.validator.js';
+} from '@tracknstick/contracts';
 
 const app = new Hono();
 

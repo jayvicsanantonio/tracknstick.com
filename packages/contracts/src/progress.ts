@@ -1,4 +1,9 @@
+// Request and response shapes for the progress endpoints (/api/v1/progress).
+// The API validates requests with these schemas; the web app takes its types from them.
+
 import { z } from 'zod';
+
+// --- Requests -------------------------------------------------------------
 
 const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -53,3 +58,41 @@ export const progressOverviewSchema = progressHistorySchema;
 export const progressStreaksSchema = z.object({
   timeZone: z.string().default('UTC'),
 });
+
+export type ProgressHistoryQuery = z.input<typeof progressHistorySchema>;
+export type ProgressOverviewQuery = z.input<typeof progressOverviewSchema>;
+export type ProgressStreaksQuery = z.input<typeof progressStreaksSchema>;
+
+// --- Responses ------------------------------------------------------------
+
+/** One calendar day and the share of that day's habits that were completed. */
+export const progressHistoryEntrySchema = z.object({
+  date: z.string(),
+  completionRate: z.number(),
+});
+
+export const progressHistoryResponseSchema = z.object({
+  history: z.array(progressHistoryEntrySchema),
+});
+
+export const progressStreaksResponseSchema = z.object({
+  currentStreak: z.number(),
+  longestStreak: z.number(),
+});
+
+export const progressOverviewResponseSchema = z.object({
+  history: z.array(progressHistoryEntrySchema),
+  currentStreak: z.number(),
+  longestStreak: z.number(),
+});
+
+export type ProgressHistoryEntry = z.infer<typeof progressHistoryEntrySchema>;
+export type ProgressHistoryResponse = z.infer<
+  typeof progressHistoryResponseSchema
+>;
+export type ProgressStreaksResponse = z.infer<
+  typeof progressStreaksResponseSchema
+>;
+export type ProgressOverviewResponse = z.infer<
+  typeof progressOverviewResponseSchema
+>;

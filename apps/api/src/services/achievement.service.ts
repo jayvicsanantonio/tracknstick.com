@@ -8,12 +8,11 @@ import {
 } from '../repositories/achievement.repository.js';
 import { getUserStreaks } from '../repositories/tracker.repository.js';
 import { measure, type UserStatsSnapshot } from './achievementMetrics.js';
-import {
-  Achievement,
-  UserAchievement,
-  AchievementResponse,
+import type {
   AchievementProgress,
-} from '../types/index.js';
+  AchievementResponse,
+} from '@tracknstick/contracts';
+import { Achievement, UserAchievement } from '../types/index.js';
 
 export class AchievementService {
   private repository: AchievementRepository;

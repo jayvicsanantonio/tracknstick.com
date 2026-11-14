@@ -1,5 +1,12 @@
 import { mutate } from 'swr';
 import { axiosInstance } from '@shared/services/api/axiosInstance';
+import type {
+  CreateHabitResponse,
+  DeleteHabitResponse,
+  HabitListResponse,
+  ToggleTrackerResponse,
+  UpdateHabitResponse,
+} from '@tracknstick/contracts';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import { HabitStats } from '@/features/habits/types/HabitStats';
@@ -24,9 +31,12 @@ export const fetchHabits = async (
   const params =
     date && timeZone ? { date: date.toISOString(), timeZone } : undefined;
 
-  const response = await axiosInstance.get<Habit[]>('/api/v1/habits', {
-    params,
-  });
+  const response = await axiosInstance.get<HabitListResponse>(
+    '/api/v1/habits',
+    {
+      params,
+    },
+  );
 
   return response.data.map((habit) => ({
     ...habit,
@@ -49,32 +59,31 @@ export const fetchHabitStats = async (
 
 export const addHabit = async (
   habitData: HabitPayload,
-): Promise<{ message: string; habitId: string }> => {
-  const response = await axiosInstance.post<{
-    message: string;
-    habitId: string;
-  }>('/api/v1/habits', habitData);
+): Promise<CreateHabitResponse> => {
+  const response = await axiosInstance.post<CreateHabitResponse>(
+    '/api/v1/habits',
+    habitData,
+  );
   return response.data;
 };
 
 export const updateHabit = async (
   habitId: string,
   habitData: Partial<HabitPayload>,
-): Promise<{ message: string; habitId: string }> => {
-  const response = await axiosInstance.put<{
-    message: string;
-    habitId: string;
-  }>(`/api/v1/habits/${habitId}`, habitData);
+): Promise<UpdateHabitResponse> => {
+  const response = await axiosInstance.put<UpdateHabitResponse>(
+    `/api/v1/habits/${habitId}`,
+    habitData,
+  );
   return response.data;
 };
 
 export const deleteHabit = async (
   habitId: string,
-): Promise<{ message: string; habitId: string }> => {
-  const response = await axiosInstance.delete<{
-    message: string;
-    habitId: string;
-  }>(`/api/v1/habits/${habitId}`);
+): Promise<DeleteHabitResponse> => {
+  const response = await axiosInstance.delete<DeleteHabitResponse>(
+    `/api/v1/habits/${habitId}`,
+  );
   return response.data;
 };
 
@@ -82,14 +91,14 @@ export const toggleHabitCompletion = async (
   habitId: string,
   date: Date,
   timeZone: string,
-): Promise<{ message: string; trackerId?: string }> => {
-  const response = await axiosInstance.post<{
-    message: string;
-    trackerId?: string;
-  }>(`/api/v1/habits/${habitId}/trackers`, {
-    timestamp: date.toISOString(),
-    timeZone,
-  });
+): Promise<ToggleTrackerResponse> => {
+  const response = await axiosInstance.post<ToggleTrackerResponse>(
+    `/api/v1/habits/${habitId}/trackers`,
+    {
+      timestamp: date.toISOString(),
+      timeZone,
+    },
+  );
 
   return response.data;
 };

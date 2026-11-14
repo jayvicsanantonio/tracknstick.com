@@ -4,10 +4,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 import { streamText } from 'ai';
 import {
-  chat,
   MAX_CONTEXT_MESSAGES,
   MAX_MESSAGE_CHARS,
-} from '../chat.controller.js';
+} from '@tracknstick/contracts';
+import { chat } from '../chat.controller.js';
 import * as chatService from '../../services/chat.service.js';
 
 vi.mock('ai', () => ({

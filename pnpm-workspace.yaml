@@ -1,6 +1,8 @@
-# The workspace: each app is its own package under apps/.
+# The workspace: each app is its own package under apps/, and code shared
+# between them lives under packages/.
 packages:
   - 'apps/*'
+  - 'packages/*'
 
 # Build-script approvals.
 #

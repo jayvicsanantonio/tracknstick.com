@@ -48,27 +48,3 @@ export interface UserAchievement {
   progressData?: string;
   achievement?: Achievement;
 }
-
-export interface AchievementProgress {
-  achievementId: number;
-  currentValue: number;
-  targetValue: number;
-  isEarned: boolean;
-  progressPercentage: number;
-}
-
-export interface AchievementResponse {
-  id: string;
-  key: string;
-  name: string;
-  description: string;
-  icon?: string;
-  type: string;
-  category: string;
-  requirementType: string;
-  requirementValue: number;
-  requirementData?: any;
-  isEarned: boolean;
-  earnedAt?: string;
-  progress?: AchievementProgress;
-}
