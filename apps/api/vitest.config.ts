@@ -9,6 +9,7 @@ import { defineConfig } from 'vitest/config';
 const NODE_TESTS = [
   'src/tests/dbScript.test.ts',
   'src/tests/migrations.test.ts',
+  'src/tests/vitestVersions.test.ts',
 ];
 
 export default defineConfig({

@@ -61,6 +61,13 @@
     "@cloudflare/workers-types": "^4.20250517.0",
     "@eslint/js": "^9.27.0",
     "@types/node": "^22.15.18",
+    "@vitest/expect": "4.1.12",
+    "@vitest/mocker": "4.1.12",
+    "@vitest/pretty-format": "4.1.12",
+    "@vitest/runner": "4.1.12",
+    "@vitest/snapshot": "4.1.12",
+    "@vitest/spy": "4.1.12",
+    "@vitest/utils": "4.1.12",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
@@ -71,7 +78,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
     "unpdf": "1.4.0",
-    "vitest": "^4.1.12",
+    "vitest": "4.1.12",
     "wrangler": "^4.59.1"
   }
 }
