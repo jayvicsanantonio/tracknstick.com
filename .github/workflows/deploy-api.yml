@@ -5,14 +5,16 @@ name: Deploy API to Cloudflare Workers
 # and without a base-branch filter would also deploy merges into other branches.
 #
 # The paths filter keeps frontend-only changes from redeploying the API. The
-# lockfile and workspace files are listed because they decide which dependency
-# versions the Worker is bundled with.
+# contracts package is listed because the Worker bundles its schemas, and the
+# lockfile and workspace files because they decide which dependency versions
+# the Worker is bundled with.
 on:
   push:
     branches:
       - main
     paths:
       - 'apps/api/**'
+      - 'packages/contracts/**'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.npmrc'

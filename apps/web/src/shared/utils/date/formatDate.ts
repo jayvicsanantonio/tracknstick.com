@@ -101,7 +101,7 @@ export function getLocalEndOfDayUTC(date: Date, timezone: string): Date {
   return localDayBoundaryUTC(date, timezone, 'end');
 }
 
-export default function formatDate(date: string | null): string {
+export default function formatDate(date?: string | null): string {
   if (!date) {
     return 'Never';
   }

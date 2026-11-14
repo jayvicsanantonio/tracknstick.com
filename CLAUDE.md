@@ -5,19 +5,25 @@ code in this repository.
 
 ## Repository Layout
 
-A pnpm workspace with two apps. Each app keeps its own `CLAUDE.md` with its
-architecture, conventions and testing notes; read that file before working
-inside the app.
+A pnpm workspace with two apps and one shared package. Each app keeps its
+own `CLAUDE.md` with its architecture, conventions and testing notes; read
+that file before working inside the app.
 
 ```
 apps/
-├── web/   # @tracknstick/web: React 19 + Vite PWA        -> apps/web/CLAUDE.md
-└── api/   # @tracknstick/api: Hono on Cloudflare Workers -> apps/api/CLAUDE.md
+├── web/        # @tracknstick/web: React 19 + Vite PWA        -> apps/web/CLAUDE.md
+└── api/        # @tracknstick/api: Hono on Cloudflare Workers -> apps/api/CLAUDE.md
+packages/
+└── contracts/  # @tracknstick/contracts: zod schemas for every request and response
 ```
 
-The web app calls the API at `/api/v1/*`. Request and response types are
-written separately in each app, so a change to an endpoint's shape needs
-edits in both.
+The web app calls the API at `/api/v1/*`. Each request and response shape is
+defined once, in `packages/contracts`: the API validates requests with its
+schemas, and the web app imports only its types (`import type`; ESLint
+rejects a value import, which would bundle zod). The package is plain
+TypeScript source with no build step. `apps/api/src/tests/contract.test.ts`
+calls every endpoint on a real local D1 database and checks each response
+against its schema, so a change to an endpoint's shape starts there.
 
 ## Commands
 
@@ -68,14 +74,15 @@ is needed.
 
 ## CI and Deployment
 
-- `.github/workflows/ci.yml` runs one job per app on every branch and pull
-  request.
+- `.github/workflows/ci.yml` runs one job per package on every branch and
+  pull request.
 - The web app is built and deployed by Cloudflare Pages from this
   repository. Its build settings (build command and output directory
   `apps/web/dist`) are configured in the Cloudflare dashboard, not in a file
   here.
 - The API is deployed by `.github/workflows/deploy-api.yml` on a push to
-  `main` that touches `apps/api`, the lockfile or the workspace files. It
+  `main` that touches `apps/api`, `packages/contracts`, the lockfile or the
+  workspace files. It
   applies pending database migrations to production before it deploys.
 - Schema changes are new numbered files in `apps/api/migrations`; see the
   README there. Every `.sql` file in that folder is applied to production, so

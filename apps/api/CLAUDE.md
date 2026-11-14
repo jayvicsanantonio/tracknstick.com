@@ -110,7 +110,7 @@ Consistent response structure with data and meta information:
 - Follow the established layered architecture
 - Keep controllers thin - delegate business logic to services
 - Use repositories for all database operations
-- Place validation schemas in dedicated validator files
+- Request and response schemas live in `packages/contracts`, shared with the web app
 - Maintain timezone utilities in `utils/dateUtils.ts` and `utils/streakUtils.ts`
 
 ### Testing Approach

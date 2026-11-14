@@ -1,14 +1,11 @@
+import type {
+  ProgressHistoryResponse,
+  ProgressStreaksResponse,
+} from '@tracknstick/contracts';
 import { axiosInstance } from '@shared/services/api/axiosInstance';
 import { HistoryDates } from '@/features/progress/types/HistoryDates';
 
-export interface ProgressHistoryResponse {
-  history: HistoryDates[];
-}
-
-export interface ProgressStreaksResponse {
-  currentStreak: number;
-  longestStreak: number;
-}
+export type { ProgressHistoryResponse, ProgressStreaksResponse };
 
 /**
  * Fetches user's progress history showing completion rates by day
