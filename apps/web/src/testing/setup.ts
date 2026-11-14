@@ -1,3 +1,5 @@
+// Test environment setup for the web app: jest-dom matchers, browser APIs jsdom lacks,
+// and a guard that fails any test which writes a warning or error to the console.
 import '@testing-library/jest-dom';
 
 // Global *environment* setup only.
@@ -5,16 +7,39 @@ import '@testing-library/jest-dom';
 // Component and page mocks live in ./mocks and are opt-in: a test that wants
 // the routing stubs imports '@testing/mocks' itself. Applying them here made
 // every suite render stubs, so a test could not exercise a real component.
-import { expect, afterEach, vi } from 'vitest';
+import { expect, afterEach, beforeEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers);
 
-// Cleanup after each test
+// Test output stays clean: a warning or error a test does not expect, such
+// as React's act() warning, fails that test with the message. A test that
+// expects one spies on console itself, which keeps the call from reaching
+// this guard.
+let unexpectedOutput: string[] = [];
+
+for (const level of ['warn', 'error'] as const) {
+  console[level] = (...args: unknown[]) => {
+    unexpectedOutput.push(`console.${level}: ${args.map(String).join(' ')}`);
+  };
+}
+
+beforeEach(() => {
+  unexpectedOutput = [];
+});
+
 afterEach(() => {
+  // Unmount first, so a failing check below cannot leave this test's DOM
+  // behind for the next one.
   cleanup();
+
+  if (unexpectedOutput.length > 0) {
+    throw new Error(
+      `The test wrote to the console:\n${unexpectedOutput.join('\n')}`,
+    );
+  }
 });
 
 // Mock window.matchMedia

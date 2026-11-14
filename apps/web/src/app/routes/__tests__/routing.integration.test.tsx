@@ -1,6 +1,6 @@
 import '@testing/mocks';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouter } from '@testing/utils';
 
@@ -136,22 +136,24 @@ describe('Routing Integration Tests', () => {
         expect(router.state.location.pathname).toBe('/progress');
       });
 
-      // Go back in history
-      void router.navigate(-1);
+      // Go back in history. A navigation the test starts itself, rather
+      // than through a click, updates router state outside React's event
+      // handling, so it runs inside act().
+      await act(() => router.navigate(-1));
 
       await waitFor(() => {
         expect(router.state.location.pathname).toBe('/habits');
       });
 
       // Go back again
-      void router.navigate(-1);
+      await act(() => router.navigate(-1));
 
       await waitFor(() => {
         expect(router.state.location.pathname).toBe('/');
       });
 
       // Go forward
-      void router.navigate(1);
+      await act(() => router.navigate(1));
 
       await waitFor(() => {
         expect(router.state.location.pathname).toBe('/habits');
