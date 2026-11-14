@@ -379,6 +379,13 @@ export async function getUserProgressHistory(
       timestamp: string;
     }>;
 
+    // The calendar date (YYYY-MM-DD) an instant falls on in the user's
+    // timezone. One formatter serves every tracker row in the request;
+    // constructing an Intl.DateTimeFormat per row is the slow part.
+    const dateKeyFormatter = new Intl.DateTimeFormat('en-CA', { timeZone });
+    const trackerDateKey = (instant: Date): string =>
+      dateKeyFormatter.format(instant);
+
     // Build a map of tracker completions by date (in user's timezone)
     const trackersByDate = new Map<string, Set<number>>();
     for (const tracker of trackers) {
