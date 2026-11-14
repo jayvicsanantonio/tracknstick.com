@@ -105,3 +105,35 @@ describe('migrated database', () => {
     expect(user).toEqual({ clerk_user_id: 'user_existing' });
   });
 });
+
+describe('the leftover knex tables', () => {
+  let db: D1Database;
+  let dispose: () => Promise<void>;
+
+  beforeAll(async () => {
+    ({ db, dispose } = await createMigratedDatabase());
+  });
+
+  afterAll(async () => {
+    await dispose();
+  });
+
+  it('are dropped from a database that still has them, as production does', async () => {
+    // Production still holds the bookkeeping tables of the knex setup that
+    // preceded wrangler migrations. Nothing reads them.
+    await db.batch([
+      db.prepare(
+        'CREATE TABLE knex_migrations (id INTEGER PRIMARY KEY, name TEXT, batch INTEGER, migration_time DATETIME)'
+      ),
+      db.prepare(
+        'CREATE TABLE knex_migrations_lock (`index` INTEGER PRIMARY KEY, is_locked INTEGER)'
+      ),
+    ]);
+
+    await applyMigrations(db);
+
+    const tables = await namesOf(db, 'table');
+    expect(tables).not.toContain('knex_migrations');
+    expect(tables).not.toContain('knex_migrations_lock');
+  });
+});

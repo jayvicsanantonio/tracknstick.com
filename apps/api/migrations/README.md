@@ -13,6 +13,9 @@ fails if a file here is not named like `0002_add_something.sql`.
 
 - `0001_initial_schema.sql` - The baseline: every table and index the API had
   when it moved to versioned migrations. It is not edited again.
+- `0002_drop_knex_tables.sql` - Drops `knex_migrations` and
+  `knex_migrations_lock`, left in production by the knex setup that came
+  before wrangler migrations.
 
 ## Changing the Schema
 
