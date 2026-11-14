@@ -18,16 +18,23 @@ const ProgressOverview = memo(function ProgressOverview() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
   // Use separate hooks for history and streaks
-  const { historyData, isLoading: isHistoryLoading } =
-    useProgressHistory(selectedMonth);
+  const {
+    historyData,
+    isLoading: isHistoryLoading,
+    error: historyError,
+  } = useProgressHistory(selectedMonth);
   const {
     currentStreak,
     longestStreak,
     isLoading: isStreaksLoading,
+    error: streaksError,
   } = useProgressStreaks();
 
   // Combine loading states
   const isLoading = isHistoryLoading || isStreaksLoading;
+  // Either failure hides the figures: zeros and an empty calendar would read
+  // as "no progress" rather than "could not load".
+  const loadFailed = Boolean(historyError ?? streaksError);
 
   const handleNavigateBack = useCallback(() => {
     void navigate('/');
@@ -86,24 +93,36 @@ const ProgressOverview = memo(function ProgressOverview() {
             </div>
           </CardHeader>
           <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
-            <div className="mb-4 flex items-center justify-center">
-              <div className="flex items-center space-x-8 text-(--color-brand-text)">
-                <StreakDisplayDays
-                  value={currentStreak}
-                  label="Current Streak"
+            {loadFailed ? (
+              <p
+                role="alert"
+                className="py-12 text-center text-(--color-text-secondary)"
+              >
+                Your progress could not be loaded. Check your connection and try
+                again.
+              </p>
+            ) : (
+              <>
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="flex items-center space-x-8 text-(--color-brand-text)">
+                    <StreakDisplayDays
+                      value={currentStreak}
+                      label="Current Streak"
+                    />
+                    <StreakDisplayDays
+                      value={longestStreak}
+                      label="Longest Streak"
+                    />
+                  </div>
+                </div>
+                <ProgressTabs
+                  historyData={historyData}
+                  selectedMonth={selectedMonth}
+                  setSelectedMonth={setSelectedMonth}
+                  isLoading={isLoading}
                 />
-                <StreakDisplayDays
-                  value={longestStreak}
-                  label="Longest Streak"
-                />
-              </div>
-            </div>
-            <ProgressTabs
-              historyData={historyData}
-              selectedMonth={selectedMonth}
-              setSelectedMonth={setSelectedMonth}
-              isLoading={isLoading}
-            />
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

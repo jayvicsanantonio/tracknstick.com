@@ -1,40 +1,49 @@
 // Hook for managing achievements data
 // Provides data fetching and state management for achievements
 
-import { useState, useEffect, useCallback } from 'react';
-import { achievementApi } from '../api';
+import { useState, useCallback } from 'react';
+import useSWR from 'swr';
+import { achievementApi, achievementsKey, achievementStatsKey } from '../api';
 import {
   Achievement,
   AchievementStats,
   AchievementCheckResponse,
 } from '../types/Achievement';
 
+const logLoadError = (err: unknown) => {
+  console.error('Error fetching achievements:', err);
+};
+
 export function useAchievements() {
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [stats, setStats] = useState<AchievementStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: achievements,
+    error: achievementsError,
+    isLoading: achievementsLoading,
+    mutate: mutateAchievements,
+  } = useSWR<Achievement[], Error>(
+    achievementsKey,
+    () => achievementApi.getAllAchievements(),
+    { onError: logLoadError },
+  );
+  const {
+    data: stats,
+    error: statsError,
+    isLoading: statsLoading,
+    mutate: mutateStats,
+  } = useSWR<AchievementStats, Error>(
+    achievementStatsKey,
+    () => achievementApi.getAchievementStats(),
+    { onError: logLoadError },
+  );
 
-  // Fetch all achievements
-  const fetchAchievements = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // A failed initialize, which is not a load and so has no SWR error.
+  const [actionError, setActionError] = useState<string | null>(null);
 
-      const [achievementsData, statsData] = await Promise.all([
-        achievementApi.getAllAchievements(),
-        achievementApi.getAchievementStats(),
-      ]);
-
-      setAchievements(achievementsData);
-      setStats(statsData);
-    } catch (err) {
-      console.error('Error fetching achievements:', err);
-      setError('Failed to load achievements. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Fetch the achievements and their stats again
+  const refetch = useCallback(async () => {
+    setActionError(null);
+    await Promise.all([mutateAchievements(), mutateStats()]);
+  }, [mutateAchievements, mutateStats]);
 
   // Check for new achievements
   const checkNewAchievements =
@@ -44,7 +53,7 @@ export function useAchievements() {
 
         // Refresh data if new achievements were awarded
         if (result.count > 0) {
-          await fetchAchievements();
+          await refetch();
         }
 
         return result;
@@ -52,34 +61,33 @@ export function useAchievements() {
         console.error('Error checking achievements:', err);
         return null;
       }
-    }, [fetchAchievements]);
+    }, [refetch]);
 
   // Initialize achievements (admin function)
   const initializeAchievements = useCallback(async () => {
     try {
       await achievementApi.initializeAchievements();
-      await fetchAchievements(); // Refresh data after initialization
+      await refetch(); // Refresh data after initialization
     } catch (err) {
       console.error('Error initializing achievements:', err);
-      setError('Failed to initialize achievements.');
+      setActionError('Failed to initialize achievements.');
     }
-  }, [fetchAchievements]);
+  }, [refetch]);
 
   // Refresh achievements data
   const refresh = useCallback(() => {
-    void fetchAchievements();
-  }, [fetchAchievements]);
+    void refetch();
+  }, [refetch]);
 
-  // Auto-fetch on mount
-  useEffect(() => {
-    void fetchAchievements();
-  }, [fetchAchievements]);
+  const loadFailed = Boolean(achievementsError ?? statsError);
 
   return {
-    achievements,
-    stats,
-    loading,
-    error,
+    achievements: achievements ?? [],
+    stats: stats ?? null,
+    loading: achievementsLoading || statsLoading,
+    error:
+      actionError ??
+      (loadFailed ? 'Failed to load achievements. Please try again.' : null),
     checkNewAchievements,
     initializeAchievements,
     refresh,

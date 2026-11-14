@@ -50,3 +50,7 @@ export const achievementApi = {
     return response.data;
   },
 };
+
+// SWR cache keys. The URLs live here, so the keys derived from them do too.
+export const achievementsKey = '/api/v1/achievements';
+export const achievementStatsKey = '/api/v1/achievements/stats';

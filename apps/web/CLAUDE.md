@@ -110,9 +110,10 @@ component, not a route.
 
 ### AI Chat
 
-The chat feature uses the Vercel AI SDK (`ai` / `@ai-sdk/react`) to stream
-responses from a backend endpoint. It is designed as a RAG chatbot grounded in
-"Atomic Habits" content.
+The chat panel (`features/chat/components/ChatBox.tsx`) posts the conversation
+to the API's `/api/v1/chat` endpoint with `fetch` and reads the streamed text
+response itself. It is designed as a RAG chatbot grounded in "Atomic Habits"
+content.
 
 ### PWA
 
