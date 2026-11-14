@@ -76,17 +76,17 @@ export default defineConfig({
     }),
   ],
   build: {
-    chunkSizeWarningLimit: 3000, // Increase warning limit to 3MB
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
+          // react-dom/client is the entry the app imports; without it the
+          // chunk came out empty and React DOM stayed in the main bundle.
+          vendor: ['react', 'react-dom', 'react-dom/client'],
           ui: [
             '@radix-ui/react-dialog',
             '@radix-ui/react-tabs',
             '@radix-ui/react-toast',
           ],
-          charts: ['recharts'],
           icons: ['lucide-react'],
           clerk: ['@clerk/clerk-react'],
         },

@@ -1,7 +1,12 @@
-import { useState } from 'react';
+// The floating chat button, and the chat panel it opens.
+// The panel and its markdown renderer download the first time it opens, not with the page.
+import { lazy, Suspense, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChatToggle } from './ChatToggle';
-import { ChatBox } from './ChatBox';
+
+const ChatBox = lazy(() =>
+  import('./ChatBox').then((module) => ({ default: module.ChatBox })),
+);
 
 /**
  * Floating chat widget that appears on all pages.
@@ -31,7 +36,9 @@ export function ChatWidget() {
               transition={{ duration: 0.2, ease: 'easeOut' }}
               className="h-full w-full sm:h-auto sm:w-auto"
             >
-              <ChatBox onClose={() => setIsOpen(false)} />
+              <Suspense fallback={null}>
+                <ChatBox onClose={() => setIsOpen(false)} />
+              </Suspense>
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,21 +1,23 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 import RootLayout from '@shared/components/layouts/RootLayout';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
 import RouteErrorBoundary from '@shared/components/feedback/RouteErrorBoundary';
 
-import DashboardPage from '@/pages/DashboardPage';
-import HabitsPage from '@/pages/HabitsPage';
-import ProgressPage from '@/pages/ProgressPage';
-import NotFoundPage from '@/pages/NotFoundPage';
+// Each page loads with its route, so the first page does not download the
+// others: the progress charts, for one, load only on /progress.
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const HabitsPage = lazy(() => import('@/pages/HabitsPage'));
+const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 /**
  * Route configuration with React Router v7.7 best practices
  * Features:
  * - Type-safe route definitions
  * - Error boundaries for each route
- * - Suspense boundaries for future lazy loading
+ * - Suspense boundaries around the lazy-loaded pages
  * - Proper error handling
  * - Layout-based route structure
  */
@@ -66,7 +68,7 @@ const routes: RouteObject[] = [
  * Enhanced with:
  * - Better error handling
  * - Type safety
- * - Future-ready for lazy loading
+ * - Pages loaded on demand
  * - Consistent loading states
  */
 export const router = createBrowserRouter(routes);
