@@ -48,6 +48,33 @@ describe('habit.validator', () => {
   });
 });
 
+describe('datetime fields', () => {
+  const habit = { name: 'Read', frequency: ['Mon'] };
+
+  it('accepts the format the web app sends', () => {
+    // The web app serialises every date with Date.prototype.toISOString().
+    const sent = new Date('2026-01-10T08:30:00Z').toISOString();
+
+    expect(
+      createHabitSchema.safeParse({ ...habit, startDate: sent }).success
+    ).toBe(true);
+    expect(getHabitsByDateSchema.safeParse({ date: sent }).success).toBe(true);
+  });
+
+  it('requires seconds', () => {
+    // RFC 3339 requires seconds, so minute precision is rejected.
+    const minutePrecision = '2026-01-10T08:30Z';
+
+    expect(
+      createHabitSchema.safeParse({ ...habit, startDate: minutePrecision })
+        .success
+    ).toBe(false);
+    expect(
+      getHabitsByDateSchema.safeParse({ date: minutePrecision }).success
+    ).toBe(false);
+  });
+});
+
 describe('date-range invariant (shared by create and update)', () => {
   const base = {
     name: 'Read',

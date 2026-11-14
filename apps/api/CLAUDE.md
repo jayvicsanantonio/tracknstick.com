@@ -87,7 +87,7 @@ Authorization: Bearer <jwt-token>
 ```
 
 ### Validation Middleware
-Uses `@hono/zod-validator` with custom `validateRequest` middleware:
+Uses Zod schemas with the custom `validateRequest` middleware:
 ```typescript
 validateRequest(schema, 'json' | 'query' | 'param')
 ```
