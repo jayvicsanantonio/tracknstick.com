@@ -132,6 +132,8 @@ NetworkFirst caching; static assets use CacheFirst. SW filename is `sw.js`.
   components with `ClerkProvider`, `HabitsStateProvider`, and a `MemoryRouter`
 - **Test file location**: `__tests__/` directories beside the code being tested,
   named `*.test.tsx` or `*.spec.ts`
+- **End-to-end**: Playwright tests in `e2e/`, named `*.e2e.ts`, run the app
+  against the local API signed in as a Clerk test user. See `e2e/README.md`
 
 ## Code Conventions
 

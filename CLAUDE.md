@@ -35,6 +35,8 @@ Install once at the root; both apps share the root `pnpm-lock.yaml`.
 - `pnpm build` - Build both apps
 - `pnpm lint` - Lint both apps
 - `pnpm test` - Run both test suites once
+- `pnpm test:e2e` - Run the Playwright end-to-end tests against both apps,
+  signed in as the Clerk test user; see `apps/web/e2e/README.md`
 
 Run any other app script with a filter, or from inside the app's directory:
 

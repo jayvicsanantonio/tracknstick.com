@@ -6,9 +6,9 @@ on:
       - main
   pull_request:
 
-# One job per package. All always run: a change to the shared lockfile, the
-# workspace files or the contracts package can break either app, and the
-# whole suite takes about a minute.
+# One job per package, plus end-to-end tests of both apps together. All
+# always run: a change to the shared lockfile, the workspace files or the
+# contracts package can break either app.
 jobs:
   web:
     runs-on: ubuntu-latest
@@ -98,3 +98,50 @@ jobs:
 
       - name: Test
         run: pnpm --filter @tracknstick/contracts test
+
+  e2e:
+    runs-on: ubuntu-latest
+    name: E2E - web and API in a browser
+    # Holds the Clerk development keys and the test user's email. The
+    # environment has no protection rules, so pull request runs can use it.
+    environment: e2e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm --filter @tracknstick/web exec playwright install --with-deps chromium
+
+      # wrangler dev reads the API's secrets from .dev.vars, as it does on a
+      # developer machine. The runner is discarded after the job.
+      - name: Write the API's local secrets
+        run: |
+          {
+            echo "ENVIRONMENT=development"
+            echo "CLERK_SECRET_KEY=$CLERK_SECRET_KEY"
+            echo "CLERK_PUBLISHABLE_KEY=$CLERK_PUBLISHABLE_KEY"
+          } > apps/api/.dev.vars
+        env:
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+
+      - name: Run end-to-end tests
+        run: pnpm test:e2e
+        env:
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          E2E_CLERK_USER_EMAIL: ${{ secrets.E2E_CLERK_USER_EMAIL }}

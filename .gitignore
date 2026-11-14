@@ -36,3 +36,5 @@ playwright-report/
 test-results/
 playwright-report/
 test-results/
+# Saved sign-in state for the end-to-end tests: a live session for the test user
+apps/web/e2e/.auth/

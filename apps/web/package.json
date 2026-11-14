@@ -18,6 +18,7 @@
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
     "knip": "knip"
   },
   "dependencies": {
@@ -51,7 +52,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@clerk/testing": "^1.14.12",
     "@eslint/js": "^9.27.0",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/vite": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
