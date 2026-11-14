@@ -1,62 +1,92 @@
-# Database Schema
+# Database Migrations
 
-This directory contains the complete database schema for the TrackNStick API.
+The database schema is the set of numbered `.sql` files in this directory,
+applied in file-name order. Wrangler records which files a database has
+already run in a `d1_migrations` table, so each file runs once per database.
 
-## Schema File
+**Only migration files belong here.** Wrangler treats every `.sql` file in
+this directory as a migration and applies it to production. Seed data lives in
+`scripts/seed.sql` for that reason, and a test (`src/tests/migrations.test.ts`)
+fails if a file here is not named like `0002_add_something.sql`.
 
-- `schema.sql` - Complete database schema with all tables, indexes, and constraints
+## Files
 
-## Database Management
+- `0001_initial_schema.sql` - The baseline: every table and index the API had
+  when it moved to versioned migrations. It is not edited again.
 
-Use the simplified database management commands:
+## Changing the Schema
 
-### Local Development
+1. Create the next file:
+
+   ```bash
+   pnpm exec wrangler d1 migrations create tracknstick-db add_something
+   ```
+
+2. Write the SQL for the change in the new file.
+3. Apply it to your local database and try it out:
+
+   ```bash
+   pnpm db:migrate
+   ```
+
+4. Open a pull request. When it merges, the deploy workflow applies the new
+   file to production and then deploys the code.
+
+Two rules keep this safe:
+
+- **Never edit or delete a file that has been merged.** Databases that have
+  already run it will not run it again. Write a new migration instead.
+- **Make each change work with the code that is already live.** The migration
+  runs shortly before the new code is deployed, so for that moment the old
+  code runs against the new schema. Add columns and tables first; remove or
+  rename them in a later migration, once no deployed code uses them.
+
+If a migration fails in the deploy workflow, wrangler rolls it back, the job
+stops, and the API is not deployed.
+
+## Local Development
+
+`pnpm dev` uses a local database that wrangler keeps under `.wrangler/state`.
 
 ```bash
-# Setup database (apply schema)
-pnpm db:setup
-
-# Reset database (drop tables, recreate from schema)
-pnpm db:reset
-
-# Apply schema (same as setup)
+# Create or update the local database from the migrations
 pnpm db:migrate
 
 # Add sample data
 pnpm db:seed
 
+# Start over: delete the local database and rebuild it from the migrations
+pnpm db:reset
+
 # Run SQL queries
 pnpm db:query "SELECT COUNT(*) FROM habits"
 ```
 
-### Remote Production
+Stop `pnpm dev` before running `pnpm db:reset`.
 
-Add `:remote` to any command:
+## Production
 
 ```bash
-# Setup remote database
-pnpm db:setup:remote
+# List migrations production has not run yet
+pnpm exec wrangler d1 migrations list tracknstick-db --remote
 
-# Reset remote database (DESTRUCTIVE - drops all data)
-pnpm db:reset:remote
+# Apply them by hand (the deploy workflow normally does this)
+pnpm db:migrate:remote
 
-# Query remote database
+# Query production
 pnpm db:query:remote "SELECT COUNT(*) FROM users"
 ```
 
-## Schema Changes
+`db:reset` and `db:seed` refuse to run against production. D1 keeps its own
+point-in-time history (Time Travel), which is the way to recover production
+data:
 
-1. Edit the `schema.sql` file directly
-2. Run `pnpm db:reset` to apply changes (WARNING: destroys existing data)
-3. For production, backup data first, then run `pnpm db:reset:remote`
-
-## Seeding Data
-
-The `pnpm db:seed` command will create a `seed.sql` file with sample data if one doesn't exist, then apply it to your database.
+```bash
+pnpm exec wrangler d1 time-travel info tracknstick-db
+```
 
 ## Help
 
-For all available commands:
 ```bash
 pnpm db:setup help
 ```

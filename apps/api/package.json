@@ -9,8 +9,9 @@
   },
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "dev": "wrangler dev --remote",
+    "dev": "wrangler dev",
     "dev:local": "wrangler dev --local",
+    "dev:remote": "wrangler dev --remote",
     "build": "tsc",
     "deploy": "wrangler deploy",
     "format": "prettier --write \"**/*.{js,ts}\"",
@@ -24,12 +25,10 @@
     "db:migrate": "node scripts/db.js migrate",
     "db:seed": "node scripts/db.js seed",
     "db:query": "node scripts/db.js query",
-    "db:setup:remote": "node scripts/db.js setup --remote",
-    "db:reset:remote": "node scripts/db.js reset --remote",
     "db:migrate:remote": "node scripts/db.js migrate --remote",
-    "db:seed:remote": "node scripts/db.js seed --remote",
     "db:query:remote": "node scripts/db.js query --remote",
     "predev": "pnpm run build",
+    "predev:remote": "pnpm run build",
     "predeploy": "pnpm run build"
   },
   "repository": {

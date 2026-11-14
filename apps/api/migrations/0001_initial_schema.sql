@@ -1,5 +1,10 @@
--- TrackNStick Complete Database Schema
--- Single source of truth for all database structure
+-- Baseline schema: the tables and indexes the API had when it moved to
+-- versioned migrations.
+--
+-- Every statement uses IF NOT EXISTS, so applying this to a database that
+-- already has the schema changes nothing and only records the migration as
+-- applied. Later schema changes go in new, higher-numbered files; this one is
+-- not edited again.
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (

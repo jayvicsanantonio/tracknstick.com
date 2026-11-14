@@ -14,8 +14,9 @@ Common commands
 - Install dependencies
   - pnpm install
 - Development server (Cloudflare Workers via Wrangler)
-  - pnpm run dev            # uses wrangler dev (port 3000)
-  - pnpm run dev:local      # wrangler dev --local (uses local D1)
+  - pnpm run dev            # wrangler dev (port 3000, local D1, AI binding via Cloudflare)
+  - pnpm run dev:local      # wrangler dev --local (remote bindings off; no login needed)
+  - pnpm run dev:remote     # wrangler dev --remote (production D1)
 - Build and deploy
   - pnpm run build          # tsc -> dist/
   - pnpm run deploy         # wrangler deploy (predeploy builds)
@@ -29,13 +30,13 @@ Common commands
   - pnpm run test:coverage  # coverage (text, json, html)
   - Run a single file: pnpm run test -- src/utils/dateUtils.test.ts
   - Run a single test by name: pnpm run test -- -t "should compute start/end"
-- Database (Cloudflare D1 via scripts/db.js; add --remote to target production)
-  - pnpm run db:setup           # apply migrations/schema.sql
-  - pnpm run db:migrate         # same as setup (single-schema approach)
-  - pnpm run db:seed            # seed (creates migrations/seed.sql if missing)
-  - pnpm run db:reset           # destructive: drop tables then re-apply schema
+- Database (Cloudflare D1 via scripts/db.js; local unless the script name ends in :remote)
+  - pnpm run db:migrate         # apply pending files in migrations/
+  - pnpm run db:setup           # same as db:migrate
+  - pnpm run db:seed            # load scripts/seed.sql (local only)
+  - pnpm run db:reset           # delete the local database, then re-apply migrations (local only)
   - pnpm run db:query "SELECT COUNT(*) FROM users"
-  - Remote variants: db:setup:remote | db:migrate:remote | db:seed:remote | db:reset:remote | db:query:remote "SQL"
+  - Remote variants: db:migrate:remote | db:query:remote "SQL"
 - Performance testing (k6)
   - k6 run scripts/performance-test.js
   - Env vars: API_URL, AUTH_TOKEN (e.g., API_URL=https://api.tracknstick.com AUTH_TOKEN={{AUTH_TOKEN}} k6 run scripts/performance-test.js)
@@ -85,7 +86,7 @@ High-level architecture and flow
   - Controllers (src/controllers/**): Thin; pull validated inputs from context, call services, shape responses
   - Services (src/services/**): Business logic orchestration, timezone-aware calculations, batching and composition
   - Repositories (src/repositories/**): D1 SQL access; include user bootstrap ensureUserExists and soft delete patterns
-- Data model (Cloudflare D1 / SQLite) — see migrations/schema.sql
+- Data model (Cloudflare D1 / SQLite) — see migrations/
   - users: clerk_user_id is the external key used across tables
   - habits: frequency is stored as a comma-separated list of day codes (e.g., "Mon,Wed,Fri"); soft delete via deleted_at
   - trackers: habit completion records; UNIQUE(habit_id, timestamp); soft delete via deleted_at
@@ -112,7 +113,7 @@ Important rules and notes from existing docs
   - Layered architecture: Routes → Controllers → Services → Repositories → Database
   - Middleware chain: Clerk auth → validation → controller → enhanced error handling
   - Timezone-aware design and soft deletes are foundational
-  - Key files to reference: src/index.ts, migrations/schema.sql, wrangler.toml, src/types, and validators
+  - Key files to reference: src/index.ts, migrations/, wrangler.toml, src/types, and validators
 - Cursor rules in .cursor/rules/standards.mdc
   - Note: portions appear legacy (referencing Express/Knex/helmet). Keep the generally applicable parts: layered separation (controllers/services/repositories), RESTful endpoints, naming conventions, and code style enforced by ESLint/Prettier. Use Hono + Cloudflare Workers conventions present in this repo instead of Express.
 

@@ -1,5 +1,5 @@
 // ABOUTME: Unified database management script for Cloudflare D1 operations
-// ABOUTME: Handles setup, migration, reset, seeding, and query operations
+// ABOUTME: Handles migrations, local reset, seeding, and query operations
 
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -10,12 +10,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DB_NAME = 'tracknstick-db';
-const MIGRATIONS_DIR = path.join(__dirname, '..', 'migrations');
+const PROJECT_DIR = path.join(__dirname, '..');
+
+// The seed file lives beside this script, not in migrations/. Wrangler applies
+// every .sql file in migrations/ as a migration, production included.
+const SEED_FILE = path.join(__dirname, 'seed.sql');
+
+// Where wrangler keeps the local database that `wrangler dev` uses.
+const LOCAL_STATE_DIR = path.join(PROJECT_DIR, '.wrangler', 'state');
 
 // Get command line arguments
 const [, , command, ...args] = process.argv;
 const isRemote = args.includes('--remote');
-const remoteFlag = isRemote ? '--remote' : '';
+const targetFlag = isRemote ? '--remote' : '--local';
 
 // Helper function to execute wrangler commands
 function executeWrangler(command, options = {}) {
@@ -23,7 +30,7 @@ function executeWrangler(command, options = {}) {
     console.log(`🚀 Executing: ${command}`);
     const result = execSync(`pnpm exec wrangler ${command}`, {
       stdio: 'inherit',
-      cwd: path.join(__dirname, '..'),
+      cwd: PROJECT_DIR,
       ...options,
     });
     return result;
@@ -33,83 +40,58 @@ function executeWrangler(command, options = {}) {
   }
 }
 
-// Setup: Apply single schema file
+// Stops a command that must never touch the remote (production) database.
+function requireLocal(commandName) {
+  if (isRemote) {
+    console.error(
+      `❌ ${commandName} only runs against the local database. ` +
+        'Production changes go through migration files: see migrations/README.md.'
+    );
+    process.exit(1);
+  }
+}
+
+// Migrate: Apply every migration the database has not seen yet
+async function migrate() {
+  console.log(`📊 Running migrations ${isRemote ? '(REMOTE)' : '(LOCAL)'}`);
+
+  executeWrangler(`d1 migrations apply ${DB_NAME} ${targetFlag}`);
+
+  console.log('✅ Migrations applied!');
+}
+
+// Setup: Bring a database to the current schema, which is what migrate does
 async function setup() {
   console.log(`🏗️  Setting up database ${isRemote ? '(REMOTE)' : '(LOCAL)'}`);
 
-  const schemaFile = path.join(MIGRATIONS_DIR, 'schema.sql');
-
-  if (!fs.existsSync(schemaFile)) {
-    console.log('❌ Schema file not found at migrations/schema.sql');
-    return;
-  }
-
-  console.log('📄 Applying schema.sql...');
-  executeWrangler(`d1 execute ${DB_NAME} --file=${schemaFile} ${remoteFlag}`);
+  await migrate();
 
   console.log('✅ Database setup complete!');
 }
 
-// Reset: Drop all tables and recreate from schema
+// Reset: Throw away the local database and rebuild it from the migrations
 async function reset() {
-  console.log(`🔄 Resetting database ${isRemote ? '(REMOTE)' : '(LOCAL)'}`);
+  requireLocal('reset');
 
-  // Drop all tables to start fresh, from the same file that lists them.
-  // The previous inline command named only three of the five tables and then
-  // reported "All tables dropped".
-  const resetFile = path.join(MIGRATIONS_DIR, 'reset.sql');
-  if (!fs.existsSync(resetFile)) {
-    console.error(`❌ Missing ${resetFile}`);
-    process.exit(1);
-  }
+  console.log('🔄 Resetting database (LOCAL)');
 
-  console.log('📄 Applying reset.sql...');
-  executeWrangler(`d1 execute ${DB_NAME} --file=${resetFile} ${remoteFlag}`);
+  // Removing wrangler's local state is what empties the database. Unlike a
+  // list of DROP TABLE statements, it cannot fall out of step with the schema.
+  fs.rmSync(LOCAL_STATE_DIR, { recursive: true, force: true });
+  console.log('🗑️  Local database removed');
 
-  console.log('🗑️  All tables dropped');
-
-  // Reapply schema
-  const schemaFile = path.join(MIGRATIONS_DIR, 'schema.sql');
-  if (fs.existsSync(schemaFile)) {
-    console.log('📄 Applying schema.sql...');
-    executeWrangler(`d1 execute ${DB_NAME} --file=${schemaFile} ${remoteFlag}`);
-  }
+  await migrate();
 
   console.log('✅ Database reset complete!');
 }
 
-// Migrate: Same as setup for single schema approach
-async function migrate() {
-  console.log(`📊 Running migrations ${isRemote ? '(REMOTE)' : '(LOCAL)'}`);
-  console.log('ℹ️  With single schema approach, migrate = setup');
-
-  await setup();
-}
-
 // Seed: Add sample/test data
 async function seed() {
-  console.log(`🌱 Seeding database ${isRemote ? '(REMOTE)' : '(LOCAL)'}`);
+  requireLocal('seed');
 
-  const seedFile = path.join(MIGRATIONS_DIR, 'seed.sql');
+  console.log('🌱 Seeding database (LOCAL)');
 
-  if (!fs.existsSync(seedFile)) {
-    console.log('⚠️  No seed file found. Creating sample seed...');
-
-    const sampleSeed = `-- Sample seed data
-INSERT OR IGNORE INTO users (clerk_user_id) VALUES ('user_test123');
-
-INSERT OR IGNORE INTO habits (user_id, name, icon, frequency, start_date)
-VALUES
-  ('user_test123', 'Morning Exercise', '🏃', 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', '2024-01-01'),
-  ('user_test123', 'Read Books', '📚', 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', '2024-01-01'),
-  ('user_test123', 'Drink Water', '💧', 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', '2024-01-01');
-`;
-
-    fs.writeFileSync(seedFile, sampleSeed);
-    console.log('📄 Created sample seed file');
-  }
-
-  executeWrangler(`d1 execute ${DB_NAME} --file=${seedFile} ${remoteFlag}`);
+  executeWrangler(`d1 execute ${DB_NAME} --file=${SEED_FILE} ${targetFlag}`);
   console.log('✅ Database seeded!');
 }
 
@@ -126,7 +108,7 @@ async function query() {
     `🔍 Executing query ${isRemote ? '(REMOTE)' : '(LOCAL)'}: ${sqlQuery}`
   );
   executeWrangler(
-    `d1 execute ${DB_NAME} --command="${sqlQuery}" ${remoteFlag}`
+    `d1 execute ${DB_NAME} --command="${sqlQuery}" ${targetFlag}`
   );
 }
 
@@ -135,21 +117,22 @@ function showHelp() {
   console.log(`
 📚 Database Management Commands:
 
-  pnpm db:setup          Setup database (apply all migrations)
-  pnpm db:reset          Clear all data and reapply schema
-  pnpm db:migrate        Apply pending migrations
-  pnpm db:seed           Add sample/test data
-  pnpm db:query "SQL"    Execute a SQL query
+  pnpm db:migrate        Apply pending migrations to the local database
+  pnpm db:setup          Same as db:migrate, for a first-time setup
+  pnpm db:reset          Delete the local database and rebuild it from the migrations
+  pnpm db:seed           Add sample/test data to the local database
+  pnpm db:query "SQL"    Execute a SQL query against the local database
 
-Remote Operations (add --remote to any command):
-  pnpm db:setup:remote   Setup remote database
-  pnpm db:reset:remote   Reset remote database
-  pnpm db:migrate:remote Apply migrations to remote
+Remote (production) operations:
+  pnpm db:migrate:remote      Apply pending migrations to production
+  pnpm db:query:remote "SQL"  Execute a SQL query against production
+
+  reset and seed never run against production.
 
 Examples:
-  pnpm db:setup
+  pnpm db:migrate
   pnpm db:query "SELECT COUNT(*) FROM habits"
-  pnpm db:reset:remote
+  pnpm db:reset
 `);
 }
 
