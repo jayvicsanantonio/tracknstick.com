@@ -91,9 +91,17 @@ audio feedback on toggle.
 ### Theming
 
 Both palettes are declared in `src/styles/index.css` (`:root` for light, `.dark`
-for dark). `index.html` applies the stored class before first paint;
-`ThemeProvider` only selects the mode and persists it. There is no JavaScript
-token map — adding a colour means adding it to both CSS blocks.
+for dark). `public/applyStoredTheme.js`, loaded from `index.html`, applies the
+stored class before first paint; `ThemeProvider` only selects the mode and
+persists it. There is no JavaScript token map — adding a colour means adding it
+to both CSS blocks.
+
+### Security Headers
+
+`public/_headers` sets the security headers and the Content-Security-Policy that
+Cloudflare Pages sends with every page. The policy allows no inline script: put
+script in a file. A new third-party host the app loads from or calls has to be
+added to the policy, and to `src/__tests__/securityHeaders.test.ts`.
 
 ### Authentication
 

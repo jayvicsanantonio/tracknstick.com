@@ -50,6 +50,8 @@
         border-radius: 6px;
         font-weight: 600;
         cursor: pointer;
+        display: inline-block;
+        text-decoration: none;
         transition: background-color 0.2s;
       }
       .button:hover {
@@ -87,9 +89,9 @@
         Don't worry though, any changes you make will sync once your connection
         is restored.
       </p>
-      <button class="button" onclick="window.location.reload()">
-        Try Again
-      </button>
+      <!-- A link to this page rather than a reload handler, which the
+           Content-Security-Policy would block -->
+      <a class="button" href="">Try Again</a>
     </div>
   </body>
 </html>
