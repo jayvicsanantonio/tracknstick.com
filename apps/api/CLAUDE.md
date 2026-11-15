@@ -23,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm run test` - Run all tests with Vitest
 - `pnpm run test:watch` - Run tests in watch mode
 - `pnpm run test:coverage` - Generate test coverage report
+- `pnpm exec vitest run src/utils/__tests__/dateUtils.test.ts` - Run one file; add `-t "<test name>"` to run one test
 - Tests run inside workerd through `@cloudflare/vitest-plugin`; a few that need Node run in a separate Node project (see `vitest.config.ts`)
 
 ### Code Quality
@@ -80,8 +81,10 @@ Routes → Controllers → Services → Repositories → Database
 
 ## Request/Response Patterns
 
+Every endpoint, with its request and response schemas, is listed in `docs/api.md`.
+
 ### Authentication
-All API routes require valid Clerk JWT token in Authorization header:
+Every `/api/v1/*` route requires a valid Clerk JWT token in the Authorization header; the `/health` routes do not:
 ```
 Authorization: Bearer <jwt-token>
 ```
@@ -93,16 +96,7 @@ validateRequest(schema, 'json' | 'query' | 'param')
 ```
 
 ### Response Format
-Consistent response structure with data and meta information:
-```json
-{
-  "data": { /* response payload */ },
-  "meta": {
-    "timestamp": "2025-01-15T10:30:00.000Z",
-    "timezone": "America/New_York"
-  }
-}
-```
+Responses are the payload itself, with no envelope; each endpoint's shape is its response schema in `packages/contracts`. Every error is `{ "error": { "message", "code", ... } }` (`errorResponseSchema`).
 
 ## Development Guidelines
 
@@ -110,6 +104,7 @@ Consistent response structure with data and meta information:
 - Follow the established layered architecture
 - Keep controllers thin - delegate business logic to services
 - Use repositories for all database operations
+- Every query on user data filters by the authenticated user's ID, so one user can never read or change another's
 - Request and response schemas live in `packages/contracts`, shared with the web app
 - Maintain timezone utilities in `utils/dateUtils.ts` and `utils/streakUtils.ts`
 
@@ -123,6 +118,9 @@ Consistent response structure with data and meta information:
 - **Timezone Handling**: All date calculations must consider user timezone using `getLocaleStartEnd()` utility
 - **Streak Calculations**: Different logic for daily vs non-daily habits in `streakUtils.ts`
 - **Soft Deletes**: Never hard delete habits/trackers - use `deleted_at` timestamp
+- **Tracker Toggle**: `POST /habits/:habitId/trackers` removes the day's tracker if there is one, otherwise adds one, then updates the habit's streak counters
+- **Progress**: History and streaks are computed in SQL in `tracker.repository.ts` (a recursive CTE over the days, matched against each habit's frequency)
+- **Secrets**: Never commit them. Locally they live in `.dev.vars` (gitignored, from `.dev.vars.example`); in production they are Worker secrets set with `wrangler secret put`
 - **Error Handling**: Use custom error classes from `utils/errors.ts` with proper HTTP status codes
 - **Logging**: Structured logging with `utils/logger.ts` for debugging and monitoring
 
@@ -131,4 +129,10 @@ Consistent response structure with data and meta information:
 - `src/types/index.ts` - TypeScript type definitions
 - `migrations/` - Versioned database schema; `0001_initial_schema.sql` is the baseline
 - `wrangler.toml` - Cloudflare Workers configuration
-- `.cursor/rules/standards.mdc` - Project coding standards and conventions
+
+### Further Documentation
+- `docs/api.md` - Every endpoint and the contracts schema for its request and response
+- `docs/ERD.md` - The database schema and what each table holds
+- `docs/operations.md` - Deployment, secrets, health checks, logs and local troubleshooting
+- `docs/PRD.md` - What the API is for and where it could go
+- `migrations/README.md` - How to write a migration

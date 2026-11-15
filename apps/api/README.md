@@ -11,7 +11,7 @@
 
 ## Overview
 
-TrackNStick API is a high-performance, serverless REST API that provides the backbone for habit tracking applications. Built with modern web technologies and deployed on Cloudflare's global edge network, it delivers sub-50ms response times worldwide while handling complex habit analytics with precision timezone support.
+TrackNStick API is a high-performance, serverless REST API that provides the backbone for habit tracking applications. Built with modern web technologies and deployed on Cloudflare's global edge network, it handles habit analytics with precise timezone support.
 
 ** Live Frontend Application:** [Track N' Stick Web App](https://tracknstick.com/) *(React + TypeScript)*
 
@@ -75,10 +75,11 @@ graph TB
 | **Runtime** | Cloudflare Workers | Serverless edge computing platform |
 | **Framework** | Hono.js | Ultra-fast web framework optimized for edge |
 | **Language** | TypeScript 5.8+ | Type-safe development with modern ES features |
-| **Database** | Cloudflare D1 | Serverless SQLite with global replication |
+| **Database** | Cloudflare D1 | Serverless SQLite |
 | **Authentication** | Clerk | Modern auth platform with JWT tokens |
 | **Validation** | Zod | Runtime type validation and schema parsing |
-| **Testing** | Vitest | Fast unit and integration testing |
+| **AI** | Workers AI + Pinecone | The habit coach chat, grounded in "Atomic Habits" |
+| **Testing** | Vitest + Playwright | Unit and integration tests in workerd against a real D1; end-to-end tests with the web app |
 | **Code Quality** | ESLint + Prettier | Automated linting and formatting |
 
 ---
@@ -87,15 +88,16 @@ graph TB
 
 ###  Habit Management
 - **CRUD Operations**: Complete habit lifecycle management
-- **Flexible Scheduling**: Support for daily, weekly, and custom frequency patterns
+- **Flexible Scheduling**: A habit is due on any chosen days of the week, between a start and an optional end date
 - **Smart Defaults**: Intelligent habit creation with timezone-aware scheduling
-- **Bulk Operations**: Efficient multi-habit management
+- **Delete and Restore**: Deleted habits keep their history and can be restored
 
 ###  Advanced Analytics
 - **Real-time Streak Calculation**: Current and longest streaks with timezone accuracy
 - **Progress Insights**: Daily, weekly, and monthly completion rates
 - **Trend Analysis**: Historical data analysis for pattern recognition
 - **Achievement System**: Milestone tracking and progress celebrations
+- **Habit Coach Chat**: Streamed answers grounded in "Atomic Habits", from passages retrieved for each question
 
 ###  Timezone Intelligence
 - **Global Support**: Accurate tracking across all IANA timezones
@@ -115,88 +117,31 @@ graph TB
 
 ### Base URL
 ```
-https://tracknstick-api.workers.dev/api/v1
+https://tracknstick-api.hi-00e.workers.dev/api/v1
 ```
 
 ### Authentication
-All endpoints require a valid JWT token in the Authorization header:
+Every `/api/v1` endpoint requires a Clerk session token in the Authorization header; `/health` does not:
 ```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
-### Core Endpoints
+### Endpoints
+[`docs/api.md`](docs/api.md) lists every endpoint (habits, trackers, progress, achievements, chat and health) with the zod schema in `packages/contracts` that defines its request and response.
 
-#### Habits Management
 ```bash
-# Get all habits for authenticated user
-GET /habits?date=2025-01-15&timeZone=America/New_York
+# Habits due on a day, with that day's completion in the user's time zone
+GET /habits?date=2025-01-15T00:00:00.000Z&timeZone=America/New_York
 
-# Create a new habit
-POST /habits
-{
-  "name": "Morning Meditation",
-  "icon": "",
-  "frequency": ["Mon", "Wed", "Fri"],
-  "startDate": "2025-01-01T00:00:00.000Z"
-}
-
-# Update habit
-PUT /habits/:habitId
-
-# Delete habit
-DELETE /habits/:habitId
-
-# Toggle habit completion
+# Toggle a habit's completion for a day
 POST /habits/:habitId/trackers
 {
   "timestamp": "2025-01-15T08:00:00.000Z",
-  "timeZone": "America/New_York",
-  "notes": "Completed 10-minute session"
+  "timeZone": "America/New_York"
 }
 ```
 
-#### Progress Analytics
-```bash
-# Get progress history with timezone support
-GET /progress/history?timeZone=America/Los_Angeles&startDate=2025-01-01T08:00:00.000Z&endDate=2025-01-31T07:59:59.999Z
-
-# Get current and longest streaks
-GET /progress/streaks?timeZone=Europe/London
-
-# Get comprehensive progress overview
-GET /progress/overview?timeZone=Asia/Tokyo
-```
-
-#### Health Check
-```bash
-# System health status
-GET /health
-```
-
-### Response Format
-All API responses follow a consistent JSON structure:
-
-**Success Response:**
-```json
-{
-  "data": { /* response data */ },
-  "meta": {
-    "timestamp": "2025-01-15T10:30:00.000Z",
-    "timezone": "America/New_York"
-  }
-}
-```
-
-**Error Response:**
-```json
-{
-  "error": {
-    "message": "Invalid timezone provided",
-    "code": "VALIDATION_ERROR",
-    "details": { /* additional error context */ }
-  }
-}
-```
+Responses are the payload itself. Errors are `{ "error": { "message", "code" } }`, with `details` for validation failures outside production.
 
 ---
 
@@ -264,39 +209,19 @@ pnpm run test:coverage # Generate coverage report
 
 ```
 src/
-├── controllers/       # HTTP request handlers
-│   ├── habit.controller.ts
-│   ├── progress.controller.ts
-│   └── achievement.controller.ts
-├── routes/           # API route definitions
-│   ├── habits.ts
-│   ├── progress.ts
-│   └── achievements.ts
-├── services/         # Business logic layer
-│   ├── habit.service.ts
-│   ├── progress.service.ts
-│   └── achievement.service.ts
-├── repositories/     # Data access layer
-│   ├── habit.repository.ts
-│   ├── tracker.repository.ts
-│   └── achievement.repository.ts
-├── middlewares/      # Request processing middleware
-│   ├── clerkMiddleware.ts
-│   ├── validateRequest.ts
-│   ├── errorHandler.ts
-│   └── rateLimit.ts
-├── validators/       # Request validation schemas
-│   ├── habit.validator.ts
-│   ├── progress.validator.ts
-│   └── achievement.validator.ts
-├── utils/           # Shared utilities
-│   ├── timezone.ts  # Timezone conversion utilities
-│   ├── dateUtils.ts # Date manipulation helpers
-│   ├── streakUtils.ts # Streak calculation logic
-│   └── errors.ts    # Custom error classes
-├── types/           # TypeScript type definitions
-└── index.ts         # Application entry point
+├── controllers/   # HTTP handlers: habits, progress, achievements, chat
+├── routes/        # Route definitions, auth and request validation
+├── services/      # Business logic
+├── repositories/  # D1 queries: habits, trackers, achievements
+├── middlewares/   # Clerk auth, rate limits, security headers, validation, errors
+├── config/        # Environment-aware security settings
+├── utils/         # Dates and time zones, streaks, errors, logging
+├── types/         # Bindings and shared types
+├── tests/         # Test setup, contract and integration tests
+└── index.ts       # The Worker: middleware and routes
 ```
+
+Request and response schemas live in `packages/contracts`; the database schema is built from `migrations/` ([ERD](docs/ERD.md)).
 
 ---
 
@@ -350,15 +275,6 @@ GET /progress/history?timeZone=America/Los_Angeles
 
 ---
 
-##  Performance Metrics
-
-- **Response Time**: <50ms average globally (edge deployment)
-- **Availability**: 99.9% uptime SLA via Cloudflare infrastructure
-- **Scalability**: Automatically scales from 0 to millions of requests
-- **Database**: Sub-10ms D1 query times with global replication
-
----
-
 ##  Security Implementation
 
 ### Authentication Flow
@@ -392,7 +308,7 @@ GET /progress/history?timeZone=America/Los_Angeles
 ### Phase 3: Social Features
 - [ ] Habit sharing and community challenges
 - [ ] Friend connections and accountability partners
-- [ ] Achievement badges and gamification
+- [ ] Points and levels on top of achievements
 
 ### Phase 4: Integration & Automation
 - [ ] Calendar integration (Google, Outlook)
@@ -409,34 +325,24 @@ We welcome contributions! Please see our contributing guidelines:
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
 3. **Follow** our coding standards (ESLint + Prettier)
 4. **Add** comprehensive tests
-5. **Commit** with conventional commit format
+5. **Commit** with a short imperative subject ("Fix streak rollover")
 6. **Push** to your branch
 7. **Open** a Pull Request
 
 ### Development Standards
 - **TypeScript**: Strict mode enabled, full type coverage
-- **Testing**: All new features require tests (>90% coverage)
+- **Testing**: All new features require tests
 - **Documentation**: API changes must include documentation updates
 - **Performance**: Edge-optimized code, minimal dependencies
 
 ---
 
-##  Project Statistics
-
-- **Lines of Code**: ~5,000+ TypeScript lines
-- **Test Coverage**: 90%+
-- **API Endpoints**: 15+ RESTful endpoints
-- **Database Tables**: 4 optimized tables with proper indexing
-- **Deployment Regions**: 300+ Cloudflare edge locations globally
-
----
-
 ##  Support & Contact
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/jayvicsanantonio/tracknstick-api/issues)
-- **Documentation**: [Comprehensive API docs](https://github.com/jayvicsanantonio/tracknstick-api/wiki)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/jayvicsanantonio/tracknstick.com/issues)
+- **Documentation**: [`docs/`](docs/): the API reference, the database schema, operations and the product brief
 - **Developer**: Jayvic San Antonio
-- **Frontend Repository**: [TrackNStick Web App](https://github.com/jayvicsanantonio/tracknstick.com)
+- **Web App**: [`apps/web`](../web), in this repository
 
 ---
 
@@ -450,6 +356,6 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 
 **Built with ️ for developers who value quality, performance, and user experience**
 
-[ Star this repo](https://github.com/jayvicsanantonio/tracknstick-api) | [ Report Bug](https://github.com/jayvicsanantonio/tracknstick-api/issues) | [ Request Feature](https://github.com/jayvicsanantonio/tracknstick-api/issues)
+[ Star this repo](https://github.com/jayvicsanantonio/tracknstick.com) | [ Report Bug](https://github.com/jayvicsanantonio/tracknstick.com/issues) | [ Request Feature](https://github.com/jayvicsanantonio/tracknstick.com/issues)
 
 </div>

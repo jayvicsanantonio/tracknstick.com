@@ -15,9 +15,8 @@
 _A modern, feature-rich Progressive Web Application for habit tracking with
 real-time analytics, achievement system, and seamless user experience._
 
-[ Live Demo](https://tracknstick.com) •
-[ API Documentation](https://github.com/jayvicsanantonio/tracknstick-api) •
-[ Architecture](#-architecture)
+[ Live Demo](https://tracknstick.com) • [ API Documentation](../api/docs/api.md)
+• [ Architecture](#-architecture)
 
 </div>
 
@@ -142,24 +141,11 @@ src/
 
 ### Backend Integration
 
-The frontend integrates with a robust Node.js API backend:
-
-** API Repository**:
-[tracknstick-api](https://github.com/jayvicsanantonio/tracknstick-api)
-
-#### **API Endpoints**
-
-| Endpoint                      | Method | Description                               | Features                         |
-| ----------------------------- | ------ | ----------------------------------------- | -------------------------------- |
-| `/api/v1/habits`              | GET    | Fetch habits with date/timezone filtering | Query params, pagination         |
-| `/api/v1/habits`              | POST   | Create new habit                          | Validation, duplicate prevention |
-| `/api/v1/habits/:id`          | PUT    | Update existing habit                     | Partial updates, optimistic UI   |
-| `/api/v1/habits/:id`          | DELETE | Remove habit                              | Cascade deletion of trackers     |
-| `/api/v1/habits/:id/trackers` | POST   | Toggle habit completion                   | Timezone-aware date handling     |
-| `/api/v1/progress/history`    | GET    | Historical completion data                | Date range filtering, analytics  |
-| `/api/v1/progress/streaks`    | GET    | Current and longest streaks               | Real-time calculations           |
-| `/api/v1/achievements`        | GET    | User achievements with progress           | Gamification system              |
-| `/api/v1/achievements/check`  | POST   | Check for new achievements                | Auto-awarding logic              |
+The frontend calls the API in [`apps/api`](../api) (Hono on Cloudflare Workers)
+at `VITE_API_HOST`, under `/api/v1`. Every endpoint, and the zod schema in
+`packages/contracts` that defines its request and response, is listed in the
+[API reference](../api/docs/api.md). The web app imports only the types from
+that package.
 
 #### **Authentication Flow**
 
@@ -173,8 +159,9 @@ The frontend integrates with a robust Node.js API backend:
 
 ### Prerequisites
 
-- **Node.js**: ≥20.0.0 (LTS recommended)
-- **Package Manager**: pnpm ≥8.0.0 (or npm/yarn)
+- **Node.js**: 22 (see `.node-version`)
+- **Package Manager**: pnpm, at the version `packageManager` in the root
+  `package.json` pins
 - **Git**: Latest version for version control
 
 ### Quick Start
@@ -184,15 +171,15 @@ The frontend integrates with a robust Node.js API backend:
 git clone git@github.com:jayvicsanantonio/tracknstick.com.git
 cd tracknstick.com
 
-# Install dependencies (pnpm recommended for performance)
+# Install dependencies for the whole workspace
 pnpm install
 
 # Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your configuration
+cp apps/web/.env.example apps/web/.env.local
+# Edit apps/web/.env.local with your configuration
 
-# Start development server
-pnpm dev
+# Start the development server
+pnpm dev:web
 
 # Open browser
 open http://localhost:5173
@@ -200,33 +187,34 @@ open http://localhost:5173
 
 ### Environment Configuration
 
-Create `.env.local` file in the project root:
+Create `apps/web/.env.local`:
 
 ```bash
 # Authentication (Clerk)
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_key_here
 
-# API Configuration
-VITE_API_HOST=https://api.tracknstick.com
-# For local development:
+# API Configuration: the production API
+VITE_API_HOST=https://tracknstick-api.hi-00e.workers.dev
+# Or the local API (pnpm dev:api); then use the Clerk development key above
 # VITE_API_HOST=http://localhost:3000
-
-# Optional: Analytics & Monitoring
-VITE_ANALYTICS_ID=your_analytics_id
 ```
 
 ### Available Scripts
 
-| Command         | Description                         | Use Case     |
-| --------------- | ----------------------------------- | ------------ |
-| `pnpm dev`      | Start development server with HMR   | Development  |
-| `pnpm build`    | Production build with optimizations | Deployment   |
-| `pnpm preview`  | Preview production build locally    | Testing      |
-| `pnpm lint`     | Run ESLint with TypeScript rules    | Code quality |
-| `pnpm lint:fix` | Auto-fix linting issues             | Code cleanup |
-| `pnpm format`   | Format code with Prettier           | Code style   |
-| `pnpm test`     | Run tests in watch mode             | Development  |
-| `pnpm test:run` | Run tests once with coverage        | CI/CD        |
+| Command              | Description                           | Use Case     |
+| -------------------- | ------------------------------------- | ------------ |
+| `pnpm dev`           | Start development server with HMR     | Development  |
+| `pnpm build`         | Production build with optimizations   | Deployment   |
+| `pnpm preview`       | Preview production build locally      | Testing      |
+| `pnpm lint`          | Run ESLint with TypeScript rules      | Code quality |
+| `pnpm lint:fix`      | Auto-fix linting issues               | Code cleanup |
+| `pnpm format`        | Format code with Prettier             | Code style   |
+| `pnpm test`          | Run tests in watch mode               | Development  |
+| `pnpm test:run`      | Run tests once                        | CI/CD        |
+| `pnpm test:coverage` | Run tests once with a coverage report | Code quality |
+
+End-to-end tests run from the repository root with `pnpm test:e2e`; see
+[`e2e/README.md`](e2e/README.md).
 
 ---
 
@@ -238,7 +226,7 @@ VITE_ANALYTICS_ID=your_analytics_id
 - **ESLint**: React-specific rules with TypeScript integration
 - **Prettier**: Automatic code formatting with Tailwind CSS plugin
 - **Husky**: Pre-commit hooks for automated quality checks
-- **Conventional Commits**: Standardized commit message format
+- **Commits**: Short imperative subjects ("Fix Welcome overflow")
 
 ### Testing Strategy
 
@@ -254,13 +242,6 @@ pnpm lint:fix              # Auto-fix issues
 pnpm format                # Format all files
 ```
 
-### Performance Monitoring
-
-- **Bundle Analysis**: Built-in Vite bundle analyzer
-- **Lighthouse Scores**: 95+ in all categories
-- **Core Web Vitals**: Optimized for excellent user experience
-- **PWA Audit**: Perfect PWA compliance scores
-
 ---
 
 ## Deployment
@@ -274,9 +255,13 @@ pnpm build
 # Preview production build locally
 pnpm preview
 
-# Deploy to your hosting provider
-# (Vercel, Netlify, AWS, etc.)
 ```
+
+Cloudflare Pages builds and deploys the web app from this repository on every
+push; a branch gets a preview at `<branch>.tracknstick-com.pages.dev`. The build
+command and the output directory `apps/web/dist` are set in the Cloudflare
+dashboard. `public/_headers` sets the security headers and the
+Content-Security-Policy that Pages sends with every page.
 
 ### Build Output Analysis
 
@@ -286,16 +271,6 @@ The production build generates:
 - **CSS Optimization**: Purged Tailwind CSS with critical path inlining
 - **Asset Optimization**: Compressed images and optimized fonts
 - **Service Worker**: PWA functionality with intelligent caching
-- **Source Maps**: Production debugging support
-
-### Hosting Recommendations
-
-| Platform             | Features                                           | Best For                 |
-| -------------------- | -------------------------------------------------- | ------------------------ |
-| **Vercel**           | Zero-config, automatic deployments, edge functions | Next.js apps, global CDN |
-| **Netlify**          | Form handling, serverless functions, split testing | Static sites, PWAs       |
-| **AWS Amplify**      | Full-stack deployment, CI/CD, backend integration  | Enterprise applications  |
-| **Firebase Hosting** | Global CDN, SSL, custom domains                    | Google ecosystem         |
 
 ---
 
@@ -307,13 +282,12 @@ implementation:
 ### Installation & Offline Support
 
 - **Installable**: Add to home screen on mobile and desktop
-- **Offline Functionality**: Core features work without internet
-- **Background Sync**: Data synchronization when connection restored
-- **Update Notifications**: Automatic app updates with user control
+- **Offline Shell**: The app shell and static assets are precached, so the app
+  opens without a connection
+- **Automatic Updates**: A new version installs itself in the background
 
 ### Native-like Features
 
-- **Push Notifications**: Achievement alerts and reminders
 - **Splash Screen**: Branded loading experience
 - **App Shell**: Instant loading with cached shell
 - **Responsive Design**: Optimized for all screen sizes and orientations
@@ -322,28 +296,7 @@ implementation:
 
 - **Service Worker**: Intelligent caching strategies
 - **Precaching**: Critical resources cached on install
-- **Runtime Caching**: API responses and assets cached as needed
 - **Network Fallbacks**: Graceful degradation when offline
-
----
-
-## Key Metrics & Achievements
-
-### Performance Benchmarks
-
-- **Lighthouse Performance**: 98/100
-- **First Contentful Paint**: <1.2s
-- **Largest Contentful Paint**: <2.5s
-- **Cumulative Layout Shift**: <0.1
-- **Time to Interactive**: <2.8s
-
-### Technical Achievements
-
-- **Bundle Size**: <500KB gzipped (main bundle)
-- **Code Coverage**: >85% test coverage
-- **Type Safety**: 100% TypeScript coverage
-- **Accessibility**: WCAG 2.1 AA compliant
-- **PWA Score**: 100/100 (Perfect PWA)
 
 ---
 
@@ -357,8 +310,7 @@ involved:
 1. **Fork** the repository
 2. **Clone** your fork locally
 3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-4. **Commit** your changes following
-   [Conventional Commits](https://conventionalcommits.org/)
+4. **Commit** your changes with short imperative subjects
 5. **Push** to your branch (`git push origin feature/amazing-feature`)
 6. **Submit** a Pull Request with comprehensive description
 
@@ -367,7 +319,7 @@ involved:
 - **Code Style**: Follow existing patterns and ESLint rules
 - **Testing**: Add tests for new features and bug fixes
 - **Documentation**: Update README and inline comments
-- **Type Safety**: Maintain 100% TypeScript coverage
+- **Type Safety**: TypeScript strict mode, with no `any`
 - **Performance**: Ensure no performance regressions
 
 ### Issue Reporting
@@ -381,8 +333,8 @@ involved:
 
 ## License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE)
-file for details.
+This project is licensed under the **MIT License** - see the
+[LICENSE](../../LICENSE) file for details.
 
 ---
 
