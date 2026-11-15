@@ -31,7 +31,6 @@ describe('route auth posture', () => {
     ['GET', '/api/v1/achievements/earned'],
     ['GET', '/api/v1/achievements/stats'],
     ['POST', '/api/v1/achievements/check'],
-    ['POST', '/api/v1/achievements/initialize'],
     ['GET', '/api/v1/progress/history'],
     ['GET', '/api/v1/progress/streaks'],
     ['GET', '/api/v1/progress/overview'],

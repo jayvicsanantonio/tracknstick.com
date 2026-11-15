@@ -14,11 +14,10 @@ type Metric = (s: UserStatsSnapshot) => number;
  * Registered achievements are measurable from the snapshot. Anything absent
  * is explicitly unmeasurable and reports no progress rather than a false 0%.
  *
- * Keyed by `key` rather than `type` or `requirement_type` on purpose: it needs
- * no schema change and no re-seed. Re-seeding would be actively dangerous,
- * because initializeAchievements uses INSERT OR REPLACE, which on SQLite
- * deletes and reinserts with a new id -- and user_achievements.achievement_id
- * cascades on delete.
+ * Keyed by `key` rather than `type` or `requirement_type` on purpose: `key` is
+ * the stable name of an achievement, the one the seed migration
+ * (migrations/0003_seed_achievements.sql) upserts by, so it needs no schema
+ * change.
  */
 export const METRICS: Record<string, Metric> = {
   // Habits created

@@ -31,14 +31,4 @@ app.get('/stats', requireAuth, achievementController.getAchievementStats);
 // POST /api/v1/achievements/check - Check and award new achievements
 app.post('/check', requireAuth, achievementController.checkAchievements);
 
-// POST /api/v1/achievements/initialize - seeds the achievement catalogue.
-// It takes no user id and writes only the catalogue, resetting each entry to
-// the definition in code. Signed-in callers only: it is a write, and nothing
-// about a bootstrap step needs it to be reachable anonymously.
-app.post(
-  '/initialize',
-  requireAuth,
-  achievementController.initializeAchievements
-);
-
 export { app as achievementRoutes };

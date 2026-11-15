@@ -2,7 +2,6 @@
 // These endpoints take no request body or query, so there are no request schemas.
 
 import { z } from 'zod';
-import { messageResponseSchema } from './common.js';
 
 export const ACHIEVEMENT_TYPES = [
   'habit_creation',
@@ -121,8 +120,6 @@ export const checkAchievementsResponseSchema = z.object({
   count: z.number(),
 });
 
-/** POST /achievements/initialize */
-export const initializeAchievementsResponseSchema = messageResponseSchema;
 
 export type AchievementProgress = z.infer<typeof achievementProgressSchema>;
 export type AchievementResponse = z.infer<typeof achievementSchema>;
@@ -142,7 +139,4 @@ export type AwardedAchievementResponse = z.infer<
 >;
 export type CheckAchievementsResponse = z.infer<
   typeof checkAchievementsResponseSchema
->;
-export type InitializeAchievementsResponse = z.infer<
-  typeof initializeAchievementsResponseSchema
 >;

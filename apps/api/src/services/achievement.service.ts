@@ -88,10 +88,6 @@ export class AchievementService {
     return newlyEarned;
   }
 
-  async initializeAchievements(): Promise<void> {
-    await this.repository.initializeAchievements();
-  }
-
   /**
    * Builds the one consistent read of user state that every rule measures.
    * Required rather than optional: an absent snapshot previously meant two
@@ -169,9 +165,4 @@ export const checkAndAwardAchievements = async (
 ): Promise<Achievement[]> => {
   const service = createAchievementService(db);
   return service.checkAndAwardAchievements(userId);
-};
-
-export const initializeAchievements = async (db: D1Database): Promise<void> => {
-  const service = createAchievementService(db);
-  return service.initializeAchievements();
 };

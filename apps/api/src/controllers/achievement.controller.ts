@@ -99,19 +99,6 @@ export const checkAchievements = async (c: Context<AppEnv>) => {
 };
 
 /**
- * Initialize achievements in the database (admin/setup endpoint)
- */
-export const initializeAchievements = async (c: Context<AppEnv>) => {
-  try {
-    await achievementService.initializeAchievements(c.env.DB);
-    return c.json({ message: 'Achievements initialized successfully' });
-  } catch (error) {
-    console.error('Error in initializeAchievements controller:', error);
-    throw error;
-  }
-};
-
-/**
  * Get achievement statistics for the user
  */
 export const getAchievementStats = async (c: Context<AppEnv>) => {

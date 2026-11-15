@@ -41,14 +41,6 @@ export const achievementApi = {
     );
     return response.data;
   },
-
-  // Initialize achievements in the database (admin/setup)
-  async initializeAchievements(): Promise<{ message: string }> {
-    const response = await axiosInstance.post<{ message: string }>(
-      '/api/v1/achievements/initialize',
-    );
-    return response.data;
-  },
 };
 
 // SWR cache keys. The URLs live here, so the keys derived from them do too.

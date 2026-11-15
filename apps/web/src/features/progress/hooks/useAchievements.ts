@@ -36,12 +36,8 @@ export function useAchievements() {
     { onError: logLoadError },
   );
 
-  // A failed initialize, which is not a load and so has no SWR error.
-  const [actionError, setActionError] = useState<string | null>(null);
-
   // Fetch the achievements and their stats again
   const refetch = useCallback(async () => {
-    setActionError(null);
     await Promise.all([mutateAchievements(), mutateStats()]);
   }, [mutateAchievements, mutateStats]);
 
@@ -63,17 +59,6 @@ export function useAchievements() {
       }
     }, [refetch]);
 
-  // Initialize achievements (admin function)
-  const initializeAchievements = useCallback(async () => {
-    try {
-      await achievementApi.initializeAchievements();
-      await refetch(); // Refresh data after initialization
-    } catch (err) {
-      console.error('Error initializing achievements:', err);
-      setActionError('Failed to initialize achievements.');
-    }
-  }, [refetch]);
-
   // Refresh achievements data
   const refresh = useCallback(() => {
     void refetch();
@@ -85,11 +70,8 @@ export function useAchievements() {
     achievements: achievements ?? [],
     stats: stats ?? null,
     loading: achievementsLoading || statsLoading,
-    error:
-      actionError ??
-      (loadFailed ? 'Failed to load achievements. Please try again.' : null),
+    error: loadFailed ? 'Failed to load achievements. Please try again.' : null,
     checkNewAchievements,
-    initializeAchievements,
     refresh,
   };
 }
