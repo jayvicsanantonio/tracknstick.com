@@ -32,6 +32,14 @@ const NODE_TESTS = [
 
 export default defineConfig({
   test: {
+    // Istanbul rather than V8: the Workers runtime does not support V8's
+    // native coverage, so the workers project would not be measured.
+    coverage: {
+      provider: 'istanbul',
+      include: ['src/**/*.ts'],
+      exclude: ['src/**/*.test.ts', 'src/tests/**', 'src/**/__tests__/**'],
+      reporter: ['text', 'json', 'html'],
+    },
     projects: [
       {
         plugins: [

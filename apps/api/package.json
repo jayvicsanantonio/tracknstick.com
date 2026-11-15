@@ -61,6 +61,7 @@
     "@cloudflare/workers-types": "^4.20250517.0",
     "@eslint/js": "^9.27.0",
     "@types/node": "^22.15.18",
+    "@vitest/coverage-istanbul": "4.1.12",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
