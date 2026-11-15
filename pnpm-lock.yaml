@@ -141,9 +141,6 @@ importers:
       '@radix-ui/react-toggle-group':
         specifier: ^1.1.9
         version: 1.1.9(@types/react-dom@19.1.5(@types/react@19.1.4))(@types/react@19.1.4)(react-dom@19.1.10(react@19.1.10))(react@19.1.10)
-      '@rive-app/react-canvas':
-        specifier: ^4.14.0
-        version: 4.23.0(react@19.1.10)
       axios:
         specifier: ^1.21.1
         version: 1.21.1
@@ -2663,14 +2660,6 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
-
-  '@rive-app/canvas@2.31.0':
-    resolution: {integrity: sha512-JS8p0NVRHjvng6E54RMpQRW6aaAzV9R1t1MLKIiiJvrh8ZcnVUZ5yDvrYptD2rWhuq3aPlWQwz5iOdAHYbHQtA==}
-
-  '@rive-app/react-canvas@4.23.0':
-    resolution: {integrity: sha512-qj3uYH6GYMpJ9hNjN6TCl+KqaCagEAgt9ZWoZ70ppMmdrMGytmPDP5dxJgP5+PVoVjzAroESJsmwa9TnVvLPug==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0
 
   '@rollup/plugin-babel@5.3.1':
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
@@ -8347,13 +8336,6 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.4
       '@types/react-dom': 19.1.5(@types/react@19.1.4)
-
-  '@rive-app/canvas@2.31.0': {}
-
-  '@rive-app/react-canvas@4.23.0(react@19.1.10)':
-    dependencies:
-      '@rive-app/canvas': 2.31.0
-      react: 19.1.10
 
   '@rollup/plugin-babel@5.3.1(@babel/core@7.29.13)(@types/babel__core@7.20.5)(rollup@2.80.0)':
     dependencies:
