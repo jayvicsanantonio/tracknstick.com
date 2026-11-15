@@ -269,9 +269,11 @@ const HabitsOverview = memo(function HabitsOverview() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => openEditDialog(habit)}
+                                    aria-label={`Edit ${habit.name}`}
                                     className="h-7 w-7 text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:h-8 sm:w-8"
                                   >
                                     <svg
+                                      aria-hidden="true"
                                       className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                                       viewBox="0 0 24 24"
                                       fill="none"
@@ -297,9 +299,11 @@ const HabitsOverview = memo(function HabitsOverview() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => handleDeleteHabit(habit)}
+                                    aria-label={`Delete ${habit.name}`}
                                     className="h-7 w-7 text-(--color-destructive) hover:bg-(--color-error-light) sm:h-8 sm:w-8"
                                   >
                                     <svg
+                                      aria-hidden="true"
                                       className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                                       viewBox="0 0 24 24"
                                       fill="none"

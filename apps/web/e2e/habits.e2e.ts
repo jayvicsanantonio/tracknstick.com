@@ -19,8 +19,11 @@ async function addHabit(page: Page, name: string) {
 
   const dialog = page.getByRole('dialog', { name: 'Add New Habit' });
   await dialog.getByLabel('Name').fill(name);
-  // The icon choices have no accessible names, so this picks one by its id.
-  await dialog.locator('label:has(#Activity)').click();
+  // The radio is visually hidden under its icon, so click the choice that
+  // holds it, as a user would.
+  const activity = page.getByRole('radio', { name: 'Activity' });
+  await dialog.locator('label', { has: activity }).click();
+  await expect(dialog.getByRole('radio', { name: 'Activity' })).toBeChecked();
   for (const day of EVERY_DAY) {
     await dialog.getByRole('button', { name: day, exact: true }).click();
   }
@@ -68,9 +71,7 @@ test('deletes a habit from the habits overview', async ({ page }) => {
   const row = page.getByRole('row').filter({ hasText: name });
   await expect(row).toBeVisible();
 
-  // The row's edit and delete buttons have no accessible names; delete is
-  // the second.
-  await row.getByRole('button').nth(1).click();
+  await row.getByRole('button', { name: `Delete ${name}` }).click();
   const confirm = page.getByRole('alertdialog', { name: 'Delete Habit' });
   await confirm.getByRole('button', { name: 'Delete' }).click();
 
