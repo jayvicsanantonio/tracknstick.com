@@ -1,9 +1,18 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { API_CACHE_NAME } from './src/shared/constants/apiCache';
+import {
+  API_CACHE_NAME,
+  apiCacheUrlPattern,
+} from './src/shared/constants/apiCache';
+
+// The API host this build calls: from the .env files, or from the
+// environment, where Cloudflare Pages sets it. The service worker only exists
+// in production builds, so the production files are the ones read. Without a
+// host there is no API to cache, and the rule below is left out.
+const { VITE_API_HOST } = loadEnv('production', __dirname, 'VITE_');
 
 export default defineConfig({
   plugins: [
@@ -52,22 +61,27 @@ export default defineConfig({
               },
             },
           },
-          {
-            urlPattern: /^https:\/\/api\.tracknstick\.com\/api\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              // Holds signed-in users' responses, keyed by URL alone.
-              // useClearApiCacheOnUserChange empties it when the user changes.
-              cacheName: API_CACHE_NAME,
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
+          ...(VITE_API_HOST
+            ? [
+                {
+                  urlPattern: apiCacheUrlPattern(VITE_API_HOST),
+                  handler: 'NetworkFirst' as const,
+                  options: {
+                    // Holds signed-in users' responses, keyed by URL alone.
+                    // useClearApiCacheOnUserChange empties it when the user
+                    // changes.
+                    cacheName: API_CACHE_NAME,
+                    expiration: {
+                      maxEntries: 100,
+                      maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                    },
+                    cacheableResponse: {
+                      statuses: [0, 200],
+                    },
+                  },
+                },
+              ]
+            : []),
         ],
         inlineWorkboxRuntime: true,
       },

@@ -117,8 +117,11 @@ content.
 
 ### PWA
 
-Vite PWA plugin with Workbox. API calls to `api.tracknstick.com` use
-NetworkFirst caching; static assets use CacheFirst. SW filename is `sw.js`.
+Vite PWA plugin with Workbox (`generateSW`, `autoUpdate`). The build is
+precached, and Google Fonts use CacheFirst. Requests under `/api/` at the
+build's `VITE_API_HOST` use NetworkFirst, in a cache that
+`useClearApiCacheOnUserChange` empties when the signed-in user changes; a build
+without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
 
 ## Testing
 
