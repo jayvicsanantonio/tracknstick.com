@@ -10,13 +10,13 @@ import { chatRoutes } from '../chat.js';
 import * as chatService from '../../services/chat.service.js';
 import { errorHandler } from '../../middlewares/errorHandler.js';
 
-vi.mock('ai', () => ({
+// Only the model call is stubbed: the rest of the AI SDK, and the Workers AI
+// provider that builds the model, are the real ones.
+vi.mock('ai', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('ai')>()),
   streamText: vi.fn(() => ({
     toTextStreamResponse: () => new Response('streamed'),
   })),
-}));
-vi.mock('workers-ai-provider', () => ({
-  createWorkersAI: () => () => 'model',
 }));
 
 // The limit vitest.config.ts gives the binding, the same as wrangler.toml's.

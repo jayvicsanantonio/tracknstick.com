@@ -10,13 +10,13 @@ import {
 import { chat } from '../chat.controller.js';
 import * as chatService from '../../services/chat.service.js';
 
-vi.mock('ai', () => ({
+// Only the model call is stubbed: the rest of the AI SDK, and the Workers AI
+// provider that builds the model, are the real ones.
+vi.mock('ai', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('ai')>()),
   streamText: vi.fn(() => ({
     toTextStreamResponse: () => new Response('streamed'),
   })),
-}));
-vi.mock('workers-ai-provider', () => ({
-  createWorkersAI: () => () => 'model',
 }));
 
 function buildApp(): any {
@@ -156,6 +156,17 @@ describe('chat request size limits', () => {
       messages: [{ role: 'user', content: 'a'.repeat(MAX_MESSAGE_CHARS + 1) }],
     });
     expect(res.status).toBe(400);
+  });
+
+  it('asks Gemma 4 26B on Workers AI for the reply', async () => {
+    const res = await post({
+      messages: [{ role: 'user', content: 'how do I start?' }],
+    });
+
+    expect(res.status).toBe(200);
+    expect(vi.mocked(streamText).mock.lastCall![0].model).toMatchObject({
+      modelId: '@cf/google/gemma-4-26b-a4b-it',
+    });
   });
 
   it('sends the model only the most recent messages, starting at a user turn', async () => {

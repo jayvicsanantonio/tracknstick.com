@@ -1,6 +1,6 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 import { embed } from 'ai';
-import { createWorkersAI } from 'workers-ai-provider';
+import { createAI } from 'agents/models/ai-sdk';
 import logger from '../utils/logger.js';
 
 // Pinecone index name for Atomic Habits content
@@ -34,10 +34,10 @@ export async function retrieveContext(
 
   try {
     // Generate embedding for the user's query using AI SDK
-    const workersai = createWorkersAI({ binding: ai });
+    const workersAI = createAI({ binding: ai });
 
     const { embedding } = await embed({
-      model: workersai.textEmbeddingModel('@cf/baai/bge-base-en-v1.5'),
+      model: workersAI.embedding('@cf/baai/bge-base-en-v1.5'),
       value: query,
     });
 

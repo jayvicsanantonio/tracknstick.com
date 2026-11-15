@@ -1,7 +1,7 @@
 import { Context } from 'hono';
 import type { AppEnv } from '../types/index.js';
-import { streamText, type CoreMessage } from 'ai';
-import { createWorkersAI } from 'workers-ai-provider';
+import { streamText, type ModelMessage } from 'ai';
+import { createAI } from 'agents/models/ai-sdk';
 import { z } from 'zod';
 import { chatRequestSchema } from '@tracknstick/contracts';
 import * as chatService from '../services/chat.service.js';
@@ -17,8 +17,8 @@ export const chat = async (c: Context<AppEnv>) => {
   // Phase 1: fallible. Nothing has been committed to the wire yet, so this
   // is the only region where a status code is still negotiable.
   let systemPrompt: string;
-  let coreMessages: CoreMessage[];
-  let workersai: ReturnType<typeof createWorkersAI>;
+  let modelMessages: ModelMessage[];
+  let workersAI: ReturnType<typeof createAI>;
 
   try {
     const body: unknown = await c.req.json();
@@ -40,9 +40,9 @@ export const chat = async (c: Context<AppEnv>) => {
 
     logger.info(`Retrieved RAG context of ${context.length} characters`);
 
-    workersai = createWorkersAI({ binding: c.env.AI });
+    workersAI = createAI({ binding: c.env.AI });
     systemPrompt = chatService.getSystemPrompt(context);
-    coreMessages = messages as CoreMessage[];
+    modelMessages = messages as ModelMessage[];
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return c.json(
@@ -78,9 +78,9 @@ export const chat = async (c: Context<AppEnv>) => {
   // be logged. onError gives that failure a destination other than the AI
   // SDK's default console.error.
   const result = streamText({
-    model: workersai('@cf/meta/llama-3.1-8b-instruct'),
+    model: workersAI('@cf/google/gemma-4-26b-a4b-it'),
     system: systemPrompt,
-    messages: coreMessages,
+    messages: modelMessages,
     onError: ({ error }) => {
       logger.error(
         `Chat stream failed mid-response for user ${userId}`,
