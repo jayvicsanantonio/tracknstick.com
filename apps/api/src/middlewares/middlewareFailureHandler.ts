@@ -11,11 +11,7 @@ import logger from '../utils/logger.js';
 import type { AppEnv } from '../types/index.js';
 
 export interface SecurityEvent {
-  type:
-    | 'middleware_failure'
-    | 'auth_failure'
-    | 'rate_limit_exceeded'
-    | 'validation_failure';
+  type: 'middleware_failure' | 'rate_limit_exceeded' | 'validation_failure';
   severity: 'low' | 'medium' | 'high' | 'critical';
   source: string;
   details: Record<string, unknown>;
@@ -89,24 +85,6 @@ class SecurityEventLogger {
 
     // In production, you might want to send these events to a SIEM or security monitoring system
     // Example: await sendToSecurityMonitoring(securityEvent);
-  }
-
-  /**
-   * Log authentication failure
-   */
-  logAuthFailure(context: Context<AppEnv>, error: Error, source: string): void {
-    this.logEvent(context, {
-      type: 'auth_failure',
-      severity: 'high',
-      source,
-      details: {
-        error: error.message,
-        errorType: error.constructor.name,
-        authorizationHeader: context.req.header('Authorization')
-          ? 'present'
-          : 'missing',
-      },
-    });
   }
 
   /**
@@ -201,15 +179,17 @@ export function withFailureHandling(
     try {
       return await middleware(c, next);
     } catch (error: unknown) {
+      // An ordinary 401: the error handler logs it once, with its reason.
+      // The events below are for failures of the middleware itself.
+      if (error instanceof UnauthorizedError) throw error;
+
       const err = error instanceof Error ? error : new Error(String(error));
 
       // Log the middleware failure with security context
       securityLogger.logMiddlewareFailure(c, err, middlewareName);
 
       // Handle specific error types with appropriate logging
-      if (err instanceof UnauthorizedError) {
-        securityLogger.logAuthFailure(c, err, middlewareName);
-      } else if (err instanceof RateLimitError) {
+      if (err instanceof RateLimitError) {
         securityLogger.logRateLimitExceeded(c, {
           middleware: middlewareName,
           error: err.message,
@@ -236,11 +216,6 @@ export function withFailureHandling(
      * Determine if request should be blocked based on error type
      */
     function shouldBlockRequest(error: Error): boolean {
-      // Block requests on authentication failures
-      if (error instanceof UnauthorizedError) {
-        return true;
-      }
-
       // Block requests on rate limit exceeded
       if (error instanceof RateLimitError) {
         return true;

@@ -66,36 +66,23 @@ export function takeConsole(level: ConsoleLevel): string[] {
   return lines;
 }
 
-// What one unauthenticated request logs: the Clerk middleware's two
-// warnings, the failure handler's warning and two security events, and the
-// error handler's client-error line.
-const UNAUTHENTICATED_REQUEST_LOGS: Record<'warn' | 'error', RegExp[]> = {
-  warn: [
-    /Authentication failed - user not signed in/,
-    /\] Authentication failed (?!-)/,
-    /Request blocked due to middleware failure: clerk_auth/,
-    /Client error occurred/,
-  ],
-  error: [/Security Event: auth_failure/, /Security Event: middleware_failure/],
-};
-
 /**
  * Asserts that the test's warnings and errors so far are exactly what
- * `count` rejected, unauthenticated requests log, and takes them.
+ * `count` rejected, unauthenticated requests log, and takes them: one
+ * "Client error occurred" warning each, naming why the request was rejected,
+ * and no errors.
  */
-export function takeUnauthenticatedRequestLogs(count = 1): void {
-  for (const level of ['warn', 'error'] as const) {
-    const lines = takeConsole(level);
-    for (const pattern of UNAUTHENTICATED_REQUEST_LOGS[level]) {
-      expect(
-        lines.filter((line) => pattern.test(line)),
-        `console.${level} lines matching ${String(pattern)}`
-      ).toHaveLength(count);
-    }
-    expect(lines).toHaveLength(
-      UNAUTHENTICATED_REQUEST_LOGS[level].length * count
-    );
+export function takeUnauthenticatedRequestLogs(
+  count = 1,
+  reason: 'missing_token' | 'rejected_token' = 'missing_token'
+): void {
+  const warnings = takeConsole('warn');
+  expect(warnings).toHaveLength(count);
+  for (const line of warnings) {
+    expect(line).toContain('Client error occurred');
+    expect(line).toContain(`"reason":"${reason}"`);
   }
+  expect(takeConsole('error')).toEqual([]);
 }
 
 /**

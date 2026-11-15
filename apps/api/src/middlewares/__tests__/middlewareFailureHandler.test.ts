@@ -13,6 +13,7 @@ import {
   RateLimitError,
   BaseError,
 } from '../../utils/errors.js';
+import logger from '../../utils/logger.js';
 
 // Mock logger
 vi.mock('../../utils/logger.js', () => ({
@@ -75,7 +76,7 @@ describe('Middleware Failure Handler', () => {
       expect(mockNext).toHaveBeenCalled();
     });
 
-    it('should log security event and re-throw UnauthorizedError', async () => {
+    it('re-throws an UnauthorizedError without logging it, leaving that to the error handler', async () => {
       const error = new UnauthorizedError('Authentication failed');
       const failingMiddleware = vi.fn(() => Promise.reject(error));
 
@@ -88,6 +89,8 @@ describe('Middleware Failure Handler', () => {
         UnauthorizedError
       );
       expect(failingMiddleware).toHaveBeenCalledWith(mockContext, mockNext);
+      expect(logger.warn).not.toHaveBeenCalled();
+      expect(logger.error).not.toHaveBeenCalled();
     });
 
     it('should log security event and re-throw RateLimitError', async () => {
@@ -142,16 +145,6 @@ describe('Middleware Failure Handler', () => {
 
     beforeEach(() => {
       securityLogger = getSecurityLogger();
-    });
-
-    it('should log authentication failure with high severity', () => {
-      const error = new UnauthorizedError('Invalid token');
-
-      securityLogger.logAuthFailure(mockContext, error, 'clerk_middleware');
-
-      // Verify that the error logger was called (implementation logs to console.error for high severity)
-      expect(mockContext.req.header).toHaveBeenCalledWith('CF-Connecting-IP');
-      expect(mockContext.req.header).toHaveBeenCalledWith('User-Agent');
     });
 
     it('should log rate limit exceeded with medium severity', () => {
