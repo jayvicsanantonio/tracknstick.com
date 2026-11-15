@@ -120,10 +120,10 @@ content.
 ### PWA
 
 Vite PWA plugin with Workbox (`generateSW`, `autoUpdate`). The build is
-precached, and Google Fonts use CacheFirst. A NetworkFirst rule in
-`vite.config.ts` matches `https://api.tracknstick.com/api/`; the production API
-is at `tracknstick-api.hi-00e.workers.dev`, so that rule does not apply to it.
-SW filename is `sw.js`.
+precached, and Google Fonts use CacheFirst. Requests under `/api/` at the
+build's `VITE_API_HOST` use NetworkFirst, in a cache that
+`useClearApiCacheOnUserChange` empties when the signed-in user changes; a build
+without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
 
 ## Testing
 

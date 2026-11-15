@@ -296,6 +296,8 @@ implementation:
 
 - **Service Worker**: Intelligent caching strategies
 - **Precaching**: Critical resources cached on install
+- **Runtime Caching**: API responses are fetched fresh when online and served
+  from a 24-hour cache when offline, emptied when the signed-in user changes
 - **Network Fallbacks**: Graceful degradation when offline
 
 ---
