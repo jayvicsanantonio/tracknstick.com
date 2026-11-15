@@ -19,6 +19,37 @@ export const ACHIEVEMENT_CATEGORIES = [
   'milestones',
 ] as const;
 
+/**
+ * The lucide icon names the achievement catalogue uses. The web app draws
+ * each one, so a catalogue icon not listed here would show as a fallback.
+ */
+export const ACHIEVEMENT_ICONS = [
+  'Activity',
+  'Award',
+  'BookOpen',
+  'Building',
+  'Calendar',
+  'CheckCircle',
+  'Crown',
+  'Flame',
+  'Heart',
+  'Medal',
+  'MessageSquare',
+  'Moon',
+  'RefreshCw',
+  'Rocket',
+  'Shield',
+  'Sprout',
+  'Star',
+  'Sun',
+  'Target',
+  'Timer',
+  'TrendingUp',
+  'Trophy',
+  'User',
+  'Zap',
+] as const;
+
 export const ACHIEVEMENT_REQUIREMENT_TYPES = [
   'count',
   'streak',
@@ -45,7 +76,7 @@ export const achievementSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
-  icon: z.string().optional(),
+  icon: z.enum(ACHIEVEMENT_ICONS).optional(),
   type: z.enum(ACHIEVEMENT_TYPES),
   category: z.enum(ACHIEVEMENT_CATEGORIES),
   requirementType: z.enum(ACHIEVEMENT_REQUIREMENT_TYPES),
@@ -67,7 +98,7 @@ export const earnedAchievementSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
-  icon: z.string().optional(),
+  icon: z.enum(ACHIEVEMENT_ICONS).optional(),
   type: z.enum(ACHIEVEMENT_TYPES),
   category: z.enum(ACHIEVEMENT_CATEGORIES),
   earnedAt: z.string(),
@@ -85,7 +116,7 @@ export const recentAchievementSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
-  icon: z.string().optional(),
+  icon: z.enum(ACHIEVEMENT_ICONS).optional(),
   category: z.enum(ACHIEVEMENT_CATEGORIES),
   earnedAt: z.string(),
 });
@@ -108,7 +139,7 @@ export const awardedAchievementSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
-  icon: z.string().optional(),
+  icon: z.enum(ACHIEVEMENT_ICONS).optional(),
   type: z.enum(ACHIEVEMENT_TYPES),
   category: z.enum(ACHIEVEMENT_CATEGORIES),
 });
@@ -121,6 +152,7 @@ export const checkAchievementsResponseSchema = z.object({
 });
 
 
+export type AchievementIcon = (typeof ACHIEVEMENT_ICONS)[number];
 export type AchievementProgress = z.infer<typeof achievementProgressSchema>;
 export type AchievementResponse = z.infer<typeof achievementSchema>;
 export type AchievementListResponse = z.infer<

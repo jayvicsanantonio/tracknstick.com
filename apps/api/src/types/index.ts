@@ -1,4 +1,5 @@
 import type { Ai, D1Database, RateLimit } from '@cloudflare/workers-types';
+import type { AchievementIcon } from '@tracknstick/contracts';
 
 /** The Worker's bindings: wrangler.toml's vars and bindings, and its secrets. */
 export interface Bindings {
@@ -43,7 +44,7 @@ export interface Achievement {
   key: string;
   name: string;
   description: string;
-  icon?: string;
+  icon?: AchievementIcon;
   type:
     | 'habit_creation'
     | 'streak'

@@ -30,8 +30,8 @@ import {
 } from 'lucide-react';
 import { getAchievementIcon } from '../achievementIcons';
 
-// Every icon name in the achievement catalogue the API seeds
-// (apps/api/src/repositories/achievement.repository.ts).
+// Every icon name in the achievement catalogue: ACHIEVEMENT_ICONS in
+// packages/contracts, which the API's seed test checks against the catalogue.
 const CATALOGUE_ICONS = {
   Activity,
   Award,
