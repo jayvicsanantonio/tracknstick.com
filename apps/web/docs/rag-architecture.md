@@ -187,14 +187,19 @@ The controller orchestrates the RAG pipeline:
 // 1. Parse incoming messages
 const { messages } = chatRequestSchema.parse(body);
 
-// 2. Retrieve relevant context from Pinecone
-const context = await chatService.retrieveContext(ai, pineconeKey, messages);
+// 2. Retrieve relevant context from Pinecone for the latest user message
+const context = await chatService.retrieveContext(
+  c.env.AI,
+  c.env.PINECONE_API_KEY,
+  lastUserMessage?.content ?? '',
+);
 
-// 3. Stream response from LLM with context
+// 3. Stream the reply from the LLM with that context
+const workersAI = createAI({ binding: c.env.AI }); // from agents/models/ai-sdk
 const result = streamText({
-  model: workersai('@cf/meta/llama-3.1-8b-instruct'),
+  model: workersAI('@cf/google/gemma-4-26b-a4b-it'),
   system: chatService.getSystemPrompt(context),
-  messages: coreMessages,
+  messages: modelMessages,
 });
 
 return result.toTextStreamResponse();
@@ -210,25 +215,23 @@ return result.toTextStreamResponse();
 export async function retrieveContext(
   ai: Ai,
   pineconeApiKey: string,
-  messages: Message[],
+  query: string,
 ): Promise<string> {
-  // 1. Get last user message
-  const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
-
-  // 2. Generate embedding for the query
+  // 1. Generate an embedding for the query
+  const workersAI = createAI({ binding: ai });
   const { embedding } = await embed({
-    model: workersai.textEmbeddingModel('@cf/baai/bge-base-en-v1.5'),
-    value: lastUserMessage.content,
+    model: workersAI.embedding('@cf/baai/bge-base-en-v1.5'),
+    value: query,
   });
 
-  // 3. Query Pinecone for similar vectors
+  // 2. Query Pinecone for similar vectors
   const results = await index.query({
     vector: embedding,
     topK: 5,
     includeMetadata: true,
   });
 
-  // 4. Extract and join the text from results
+  // 3. Extract and join the text from results
   return results.matches.map((match) => match.metadata?.text).join('\n\n');
 }
 ```
@@ -326,10 +329,13 @@ while (true) {
 
 ### AI Models
 
-| Model                            | Purpose                    | Provider              |
-| -------------------------------- | -------------------------- | --------------------- |
-| `@cf/baai/bge-base-en-v1.5`      | Text embeddings (768 dims) | Cloudflare Workers AI |
-| `@cf/meta/llama-3.1-8b-instruct` | Text generation            | Cloudflare Workers AI |
+| Model                           | Purpose                    | Provider              |
+| ------------------------------- | -------------------------- | --------------------- |
+| `@cf/baai/bge-base-en-v1.5`     | Text embeddings (768 dims) | Cloudflare Workers AI |
+| `@cf/google/gemma-4-26b-a4b-it` | Text generation            | Cloudflare Workers AI |
+
+Both are called through `createAI` from the Agents SDK (`agents/models/ai-sdk`)
+over the Worker's `AI` binding.
 
 ---
 

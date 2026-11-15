@@ -70,8 +70,11 @@ export function detectEnvironment(providedEnv?: string): Environment {
     return envVar as Environment;
   }
 
-  // Check NODE_ENV as fallback
-  const nodeEnv = process?.env?.NODE_ENV;
+  // Check NODE_ENV as fallback. Read through globalThis, as above: the
+  // Workers types do not declare Node's process global.
+  const nodeEnv = (
+    globalThis as { process?: { env?: Record<string, string | undefined> } }
+  ).process?.env?.NODE_ENV;
   if (
     nodeEnv === 'development' ||
     nodeEnv === 'production' ||
