@@ -92,7 +92,6 @@ describe('Security Configuration', () => {
       expect(config.errorHandling.showStackTrace).toBe(false);
       expect(config.errorHandling.showErrorDetails).toBe(false);
       expect(config.headers.enableHsts).toBe(true);
-      expect(config.rateLimit.globalLimit).toBe(100);
     });
 
     it('should return test config for test environment', () => {
@@ -101,8 +100,6 @@ describe('Security Configuration', () => {
       const config = getSecurityConfig();
 
       expect(config.cors.origins).toContain('http://localhost:3000');
-      expect(config.rateLimit.globalLimit).toBe(10000);
-      expect(config.rateLimit.skipSuccessfulRequests).toBe(true);
       expect(config.headers.enableHsts).toBe(false);
     });
 
@@ -111,25 +108,6 @@ describe('Security Configuration', () => {
 
       expect(config.cors.origins).toEqual(['https://tracknstick.com']);
       expect(config.headers.enableHsts).toBe(true);
-    });
-
-    it('should have different rate limits per environment', () => {
-      // Test production limits
-      (globalThis as any).ENVIRONMENT = 'production';
-      const prodConfig = getSecurityConfig();
-
-      // Test development limits
-      (globalThis as any).ENVIRONMENT = 'development';
-      const devConfig = getSecurityConfig();
-
-      expect(prodConfig.rateLimit.globalLimit).toBeLessThan(
-        devConfig.rateLimit.globalLimit
-      );
-      expect(
-        prodConfig.rateLimit.endpointLimits['/api/v1/habits'].limit
-      ).toBeLessThan(
-        devConfig.rateLimit.endpointLimits['/api/v1/habits'].limit
-      );
     });
   });
 
@@ -173,4 +151,13 @@ describe('Security Configuration', () => {
       expect(devConfig.headers.enableHsts).toBe(false);
     });
   });
+
+  // Nothing checks the configs at runtime, so an empty origin list fails here
+  // in CI instead of shipping.
+  it.each(['development', 'production', 'test'])(
+    'the shipped %s config has CORS origins',
+    (env) => {
+      expect(getSecurityConfig(env).cors.origins.length).toBeGreaterThan(0);
+    }
+  );
 });

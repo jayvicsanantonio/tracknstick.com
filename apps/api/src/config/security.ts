@@ -10,20 +10,6 @@ export interface CorsConfig {
   credentials: boolean;
 }
 
-export interface RateLimitConfig {
-  globalLimit: number;
-  windowMs: number;
-  endpointLimits: Record<string, EndpointLimit>;
-  skipSuccessfulRequests: boolean;
-  skipFailedRequests: boolean;
-}
-
-export interface EndpointLimit {
-  limit: number;
-  windowMs: number;
-  skipIf?: (path: string) => boolean;
-}
-
 export interface ErrorConfig {
   showStackTrace: boolean;
   showErrorDetails: boolean;
@@ -39,7 +25,6 @@ export interface SecurityHeadersConfig {
 
 export interface SecurityConfig {
   cors: CorsConfig;
-  rateLimit: RateLimitConfig;
   errorHandling: ErrorConfig;
   headers: SecurityHeadersConfig;
 }
@@ -98,15 +83,6 @@ const developmentConfig: SecurityConfig = {
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
-  rateLimit: {
-    globalLimit: 1000,
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    endpointLimits: {
-      '/api/v1/habits': { limit: 200, windowMs: 15 * 60 * 1000 },
-    },
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
-  },
   errorHandling: {
     showStackTrace: true,
     showErrorDetails: true,
@@ -130,21 +106,6 @@ const productionConfig: SecurityConfig = {
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
-  rateLimit: {
-    globalLimit: 100,
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    endpointLimits: {
-      '/api/v1/habits': { limit: 50, windowMs: 15 * 60 * 1000 },
-      '/api/v1/progress': { limit: 30, windowMs: 15 * 60 * 1000 },
-      '/health': {
-        limit: 1000,
-        windowMs: 15 * 60 * 1000,
-        skipIf: (path: string) => path.startsWith('/health'),
-      },
-    },
-    skipSuccessfulRequests: false,
-    skipFailedRequests: true,
-  },
   errorHandling: {
     showStackTrace: false,
     showErrorDetails: false,
@@ -167,13 +128,6 @@ const testConfig: SecurityConfig = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-  },
-  rateLimit: {
-    globalLimit: 10000,
-    windowMs: 60 * 1000, // 1 minute for faster test cycles
-    endpointLimits: {},
-    skipSuccessfulRequests: true,
-    skipFailedRequests: true,
   },
   errorHandling: {
     showStackTrace: true,

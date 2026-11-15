@@ -42,6 +42,34 @@ namespace_id = "7301"
   limit = 10
   period = 60
 
+# Per-IP limits on every request, applied before authentication by
+# src/middlewares/rateLimit.ts. Habits and progress have tighter limits of
+# their own; everything else under /api shares API_RATE_LIMITER, and /health
+# is never limited. Each needs a namespace_id of its own (see above).
+[[ratelimits]]
+name = "API_RATE_LIMITER"
+namespace_id = "7302"
+
+  [ratelimits.simple]
+  limit = 100
+  period = 60
+
+[[ratelimits]]
+name = "HABITS_RATE_LIMITER"
+namespace_id = "7303"
+
+  [ratelimits.simple]
+  limit = 50
+  period = 60
+
+[[ratelimits]]
+name = "PROGRESS_RATE_LIMITER"
+namespace_id = "7304"
+
+  [ratelimits.simple]
+  limit = 30
+  period = 60
+
 # Secrets that need to be set via wrangler:
 # CLERK_SECRET_KEY - run: wrangler secret put CLERK_SECRET_KEY
 # PINECONE_API_KEY - run: wrangler secret put PINECONE_API_KEY

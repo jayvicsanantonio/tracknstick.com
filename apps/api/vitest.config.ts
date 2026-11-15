@@ -50,6 +50,19 @@ export default defineConfig({
                   namespace_id: '7301',
                   simple: { limit: 10, period: 60 },
                 },
+                // The per-IP limits, as wrangler.toml sets them.
+                API_RATE_LIMITER: {
+                  namespace_id: '7302',
+                  simple: { limit: 100, period: 60 },
+                },
+                HABITS_RATE_LIMITER: {
+                  namespace_id: '7303',
+                  simple: { limit: 50, period: 60 },
+                },
+                PROGRESS_RATE_LIMITER: {
+                  namespace_id: '7304',
+                  simple: { limit: 30, period: 60 },
+                },
               },
               bindings: {
                 ENVIRONMENT: 'test',

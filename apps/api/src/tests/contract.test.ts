@@ -64,6 +64,9 @@ describe('API responses match the contracts package', () => {
       ENVIRONMENT: 'test',
       CLERK_SECRET_KEY: 'test-clerk-key',
       CLERK_PUBLISHABLE_KEY: 'test-clerk-publishable-key',
+      API_RATE_LIMITER: workerEnv.API_RATE_LIMITER,
+      HABITS_RATE_LIMITER: workerEnv.HABITS_RATE_LIMITER,
+      PROGRESS_RATE_LIMITER: workerEnv.PROGRESS_RATE_LIMITER,
     };
     mockAuthentication('user_contract');
   });

@@ -1,353 +1,126 @@
-// Unit tests for production-grade rate limiting middleware
-// Tests sliding window, endpoint-specific limits, and security configuration
+// Covers the per-IP rate limit on the real Rate Limiting bindings vitest.config.ts provides.
+// Habits and progress have tighter limits of their own; /health is never limited.
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { RateLimitMiddleware, rateLimitMiddleware } from '../rateLimit.js';
-import { RateLimitError } from '../../utils/errors.js';
+import { describe, expect, it } from 'vitest';
+import { Hono } from 'hono';
+import { env as workerEnv } from 'cloudflare:workers';
+import type { AppEnv } from '../../types/index.js';
+import { rateLimit } from '../rateLimit.js';
+import { errorHandler } from '../errorHandler.js';
+import { takeConsole } from '../../tests/setup.js';
 
-// Mock security configuration
-vi.mock('../../config/security.js', () => ({
-  getSecurityConfig: vi.fn((_env?: string) => ({
-    rateLimit: {
-      globalLimit: 100,
-      windowMs: 60000, // 1 minute
-      endpointLimits: {
-        '/api/auth': { limit: 10, windowMs: 60000 },
-        '/api/habits': { limit: 50, windowMs: 60000 },
-        '/api/health': {
-          limit: 1000,
-          windowMs: 60000,
-          skipIf: (path: string) => path === '/api/health',
-        },
-      },
-      skipSuccessfulRequests: false,
-      skipFailedRequests: false,
-    },
-  })),
-}));
+const env = {
+  ENVIRONMENT: 'test',
+  API_RATE_LIMITER: workerEnv.API_RATE_LIMITER,
+  HABITS_RATE_LIMITER: workerEnv.HABITS_RATE_LIMITER,
+  PROGRESS_RATE_LIMITER: workerEnv.PROGRESS_RATE_LIMITER,
+};
 
-// Mock logger
-vi.mock('../../utils/logger.js', () => ({
-  default: {
-    warn: vi.fn(),
-    debug: vi.fn(),
-    error: vi.fn(),
-  },
-}));
+const app = new Hono<AppEnv>();
+app.use('*', rateLimit());
+app.all('*', (c) => c.text('ok'));
+app.onError(errorHandler);
 
-describe('RateLimitMiddleware', () => {
-  let middleware: RateLimitMiddleware;
-  let mockContext: any;
-  let mockNext: any;
+/** Sends `count` requests from one IP and returns the statuses, in order. */
+async function send(path: string, ip: string, count: number) {
+  const statuses: number[] = [];
+  for (let i = 0; i < count; i++) {
+    const res = await app.request(
+      path,
+      { headers: { 'CF-Connecting-IP': ip } },
+      env
+    );
+    statuses.push(res.status);
+  }
+  return statuses;
+}
 
-  beforeEach(() => {
-    middleware = new RateLimitMiddleware();
-    mockNext = vi.fn();
+/** Asserts that `count` requests were rejected, and takes their log lines. */
+function expectRejectedLogs(count: number) {
+  const warnings = takeConsole('warn');
+  expect(warnings).toHaveLength(count);
+  for (const line of warnings) expect(line).toContain('Client error occurred');
+}
 
-    // Set up mock context
-    mockContext = {
-      req: {
-        path: '/api/test',
-        method: 'GET',
-        header: vi.fn(),
-      },
-      env: { ENVIRONMENT: 'test' },
-      get: vi.fn(),
-      header: vi.fn(),
-    };
+describe('rateLimit', () => {
+  it('allows 100 API requests a minute from one IP, then answers 429', async () => {
+    const statuses = await send('/api/v1/achievements', '10.0.0.1', 101);
+
+    expect(statuses.slice(0, 100).every((s) => s === 200)).toBe(true);
+    expect(statuses[100]).toBe(429);
+    expectRejectedLogs(1);
   });
 
-  afterEach(() => {
-    middleware.destroy();
-    vi.clearAllMocks();
+  it('tells a rejected client when to retry', async () => {
+    await send('/api/v1/chat', '10.0.0.2', 100);
+
+    const res = await app.request(
+      '/api/v1/chat',
+      { headers: { 'CF-Connecting-IP': '10.0.0.2' } },
+      env
+    );
+
+    expect(res.status).toBe(429);
+    expect(res.headers.get('Retry-After')).toBe('60');
+    expectRejectedLogs(1);
   });
 
-  describe('global rate limiting', () => {
-    it('should allow requests within global limit', async () => {
-      mockContext.req.header.mockReturnValue('192.168.1.1'); // CF-Connecting-IP
+  it('gives /api/v1/habits its own limit of 50 a minute', async () => {
+    const statuses = await send('/api/v1/habits/7/trackers', '10.0.0.3', 51);
 
-      const middlewareFunc = middleware.middleware();
-
-      // Make 5 requests (well within 100 limit)
-      for (let i = 0; i < 5; i++) {
-        await middlewareFunc(mockContext, mockNext);
-      }
-
-      expect(mockNext).toHaveBeenCalledTimes(5);
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Limit',
-        '100'
-      );
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Remaining',
-        '95'
-      );
-    });
-
-    it('should reject requests exceeding global limit', async () => {
-      mockContext.req.header.mockReturnValue('192.168.1.1');
-
-      const middlewareFunc = middleware.middleware();
-
-      // Simulate exceeding limit by setting count manually
-      const key = 'ip:192.168.1.1:global:/api/test';
-      (middleware as any).store.set(key, {
-        count: 101,
-        resetAt: Date.now() + 60000,
-        firstRequest: Date.now(),
-      });
-
-      await expect(middlewareFunc(mockContext, mockNext)).rejects.toThrow(
-        RateLimitError
-      );
-      await expect(middlewareFunc(mockContext, mockNext)).rejects.toThrow(
-        'Too many requests'
-      );
-
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'Retry-After',
-        expect.any(String)
-      );
-    });
+    expect(statuses.slice(0, 50).every((s) => s === 200)).toBe(true);
+    expect(statuses[50]).toBe(429);
+    expectRejectedLogs(1);
   });
 
-  describe('endpoint-specific rate limiting', () => {
-    it('should apply endpoint-specific limits for /api/auth', async () => {
-      mockContext.req.path = '/api/auth/login';
-      mockContext.req.header.mockReturnValue('192.168.1.1');
+  it('gives /api/v1/progress its own limit of 30 a minute', async () => {
+    const statuses = await send('/api/v1/progress/history', '10.0.0.4', 31);
 
-      const middlewareFunc = middleware.middleware();
-
-      // Make 5 requests (within 10 limit for /api/auth)
-      for (let i = 0; i < 5; i++) {
-        await middlewareFunc(mockContext, mockNext);
-      }
-
-      expect(mockNext).toHaveBeenCalledTimes(5);
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Limit',
-        '10'
-      );
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Remaining',
-        '5'
-      );
-    });
-
-    it('should reject requests exceeding endpoint-specific limit', async () => {
-      mockContext.req.path = '/api/auth/login';
-      mockContext.req.header.mockReturnValue('192.168.1.1');
-
-      const middlewareFunc = middleware.middleware();
-
-      // Simulate exceeding endpoint limit
-      const key = 'ip:192.168.1.1:/api/auth';
-      (middleware as any).store.set(key, {
-        count: 11,
-        resetAt: Date.now() + 60000,
-        firstRequest: Date.now(),
-      });
-
-      await expect(middlewareFunc(mockContext, mockNext)).rejects.toThrow(
-        RateLimitError
-      );
-    });
-
-    it('should skip rate limiting for configured endpoints', async () => {
-      mockContext.req.path = '/api/health';
-      mockContext.req.header.mockReturnValue('192.168.1.1');
-
-      const middlewareFunc = middleware.middleware();
-
-      // Health check should be skipped regardless of count
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-      expect(mockContext.header).not.toHaveBeenCalledWith(
-        'X-RateLimit-Limit',
-        expect.any(String)
-      );
-    });
+    expect(statuses.slice(0, 30).every((s) => s === 200)).toBe(true);
+    expect(statuses[30]).toBe(429);
+    expectRejectedLogs(1);
   });
 
-  describe('identifier handling', () => {
-    it('should prefer user ID over IP address for authenticated users', async () => {
-      mockContext.get.mockImplementation((key: string) => {
-        if (key === 'userId') return 'user_123';
-        return undefined;
-      });
+  it('counts each route group separately', async () => {
+    await send('/api/v1/progress/streaks', '10.0.0.5', 31);
+    expectRejectedLogs(1);
 
-      const middlewareFunc = middleware.middleware();
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-      // The internal key should use user: prefix
-    });
-
-    it('should use IP address for anonymous users', async () => {
-      mockContext.get.mockReturnValue(undefined);
-      mockContext.req.header.mockImplementation((headerName: string) => {
-        if (headerName === 'CF-Connecting-IP') return '192.168.1.1';
-        return undefined;
-      });
-
-      const middlewareFunc = middleware.middleware();
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-    });
-
-    it('should fall back to X-Forwarded-For when CF-Connecting-IP is missing', async () => {
-      mockContext.get.mockReturnValue(undefined);
-      mockContext.req.header.mockImplementation((headerName: string) => {
-        if (headerName === 'X-Forwarded-For') return '10.0.0.1';
-        return undefined;
-      });
-
-      const middlewareFunc = middleware.middleware();
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-    });
-
-    it('should use "unknown" when no identifier is available', async () => {
-      mockContext.get.mockReturnValue(undefined);
-      mockContext.req.header.mockReturnValue(undefined);
-
-      const middlewareFunc = middleware.middleware();
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-    });
+    expect(await send('/api/v1/habits', '10.0.0.5', 1)).toEqual([200]);
+    expect(await send('/api/v1/achievements', '10.0.0.5', 1)).toEqual([200]);
   });
 
-  describe('sliding window behavior', () => {
-    it('should reset count when window expires', async () => {
-      mockContext.req.header.mockReturnValue('192.168.1.1');
+  it('counts each IP separately', async () => {
+    await send('/api/v1/progress/overview', '10.0.0.6', 31);
+    expectRejectedLogs(1);
 
-      const middlewareFunc = middleware.middleware();
-
-      // Set up expired entry
-      const key = 'ip:192.168.1.1:global:/api/test';
-      (middleware as any).store.set(key, {
-        count: 50,
-        resetAt: Date.now() - 1000, // Expired 1 second ago
-        firstRequest: Date.now() - 61000,
-      });
-
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Remaining',
-        '99'
-      ); // Reset to 1 request
-    });
+    expect(await send('/api/v1/progress/overview', '10.0.0.7', 1)).toEqual([
+      200,
+    ]);
   });
 
-  describe('rate limit headers', () => {
-    it('should set all required rate limit headers', async () => {
-      mockContext.req.header.mockReturnValue('192.168.1.1');
+  it('never limits /health', async () => {
+    const statuses = await send('/health/db', '10.0.0.8', 150);
 
-      const middlewareFunc = middleware.middleware();
-      await middlewareFunc(mockContext, mockNext);
-
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Limit',
-        '100'
-      );
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Remaining',
-        '99'
-      );
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Reset',
-        expect.any(String)
-      );
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'X-RateLimit-Window',
-        '60'
-      );
-    });
-
-    it('should set Retry-After header when limit exceeded', async () => {
-      mockContext.req.header.mockReturnValue('192.168.1.1');
-
-      const middlewareFunc = middleware.middleware();
-
-      // Simulate exceeding limit
-      const key = 'ip:192.168.1.1:global:/api/test';
-      (middleware as any).store.set(key, {
-        count: 101,
-        resetAt: Date.now() + 30000, // 30 seconds remaining
-        firstRequest: Date.now(),
-      });
-
-      await expect(middlewareFunc(mockContext, mockNext)).rejects.toThrow(
-        RateLimitError
-      );
-      expect(mockContext.header).toHaveBeenCalledWith(
-        'Retry-After',
-        expect.any(String)
-      );
-    });
+    expect(statuses.every((s) => s === 200)).toBe(true);
   });
 
-  describe('cleanup functionality', () => {
-    it('should clean up expired entries', () => {
-      // Add some expired entries
-      const now = Date.now();
-      (middleware as any).store.set('expired1', {
-        count: 10,
-        resetAt: now - 1000,
-        firstRequest: now - 61000,
-      });
-      (middleware as any).store.set('expired2', {
-        count: 5,
-        resetAt: now - 2000,
-        firstRequest: now - 62000,
-      });
-      (middleware as any).store.set('active', {
-        count: 3,
-        resetAt: now + 60000,
-        firstRequest: now,
-      });
+  it('fails the request when its limiter binding is missing, rather than skipping the limit', async () => {
+    const res = await app.request(
+      '/api/v1/achievements',
+      { headers: { 'CF-Connecting-IP': '10.0.0.9' } },
+      { ENVIRONMENT: 'test' }
+    );
 
-      expect(Array.from((middleware as any).store.entries()).length).toBe(3);
-
-      // Trigger cleanup
-      (middleware as any).cleanup();
-
-      expect(Array.from((middleware as any).store.entries()).length).toBe(1);
-    });
-  });
-
-  describe('statistics and monitoring', () => {
-    it('should clear all data when requested', () => {
-      // Add some data
-      (middleware as any).store.set('test', {
-        count: 1,
-        resetAt: Date.now() + 60000,
-        firstRequest: Date.now(),
-      });
-
-      expect(Array.from((middleware as any).store.entries()).length).toBe(1);
-
-      middleware.clear();
-
-      expect(Array.from((middleware as any).store.entries()).length).toBe(0);
-    });
-  });
-
-  describe('singleton instance', () => {
-    it('should provide a singleton instance', () => {
-      expect(rateLimitMiddleware).toBeInstanceOf(RateLimitMiddleware);
-    });
-
-    it('should provide a convenience function', async () => {
-      const { createRateLimit } = await import('../rateLimit.js');
-      const middlewareFunc = createRateLimit();
-      expect(typeof middlewareFunc).toBe('function');
-    });
+    expect(res.status).toBe(500);
+    // The error handler logs an unexpected error twice: as a server error and
+    // as an uncategorised one. Both name the missing binding.
+    const errors = takeConsole('error');
+    expect(errors).toEqual([
+      expect.stringContaining('Server error occurred'),
+      expect.stringContaining('Unknown error occurred'),
+    ]);
+    for (const line of errors) {
+      expect(line).toContain('The API_RATE_LIMITER binding is not configured');
+    }
   });
 });

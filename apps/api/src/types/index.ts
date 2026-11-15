@@ -9,6 +9,9 @@ export interface Bindings {
   AI: Ai;
   PINECONE_API_KEY: string;
   CHAT_RATE_LIMITER: RateLimit;
+  API_RATE_LIMITER: RateLimit;
+  HABITS_RATE_LIMITER: RateLimit;
+  PROGRESS_RATE_LIMITER: RateLimit;
 }
 
 /** The Hono environment shared by the app, its routes and their handlers. */

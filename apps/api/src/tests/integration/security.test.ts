@@ -78,52 +78,38 @@ describe('Security Integration Tests', () => {
   });
 
   describe('Rate Limiting Integration', () => {
-    it('should include rate limit headers in responses', async () => {
-      const req = new Request('http://localhost/health', {
-        method: 'GET',
-        headers: {
-          'X-Forwarded-For': '192.168.1.100',
-        },
-      });
+    it('limits a client by IP before authentication', async () => {
+      // /api/v1/progress allows 30 requests a minute per IP. The limit runs
+      // before the auth middleware, so a client without a token is limited too.
+      const request = () =>
+        app.fetch(
+          new Request('http://localhost/api/v1/progress/streaks', {
+            headers: { 'CF-Connecting-IP': '203.0.113.50' },
+          }),
+          testEnv
+        );
 
-      const response = await app.fetch(req, testEnv);
-
-      expect(response.headers.get('X-RateLimit-Limit')).toMatch(/^\d+$/);
-      expect(response.headers.get('X-RateLimit-Remaining')).toMatch(/^\d+$/);
-      expect(response.headers.get('X-RateLimit-Reset')).toMatch(/^\d+$/);
-      expect(response.headers.get('X-RateLimit-Window')).toMatch(/^\d+$/);
-    });
-
-    it('should apply rate limiting across multiple requests', async () => {
-      const requests = [];
-
-      // Make multiple requests to test rate limiting
-      for (let i = 0; i < 3; i++) {
-        const req = new Request('http://localhost/health', {
-          method: 'GET',
-          headers: {
-            'X-Forwarded-For': '192.168.1.101',
-          },
-        });
-        requests.push(app.fetch(req, testEnv));
+      for (let i = 0; i < 30; i++) {
+        expect((await request()).status).toBe(401);
       }
+      takeUnauthenticatedRequestLogs(30);
 
-      const responses = await Promise.all(requests);
+      const limited = await request();
 
-      // All should have rate limit headers
-      responses.forEach((response) => {
-        expect(response.headers.has('X-RateLimit-Limit')).toBe(true);
-        expect(response.headers.has('X-RateLimit-Remaining')).toBe(true);
-      });
-
-      // Check that remaining count decreases
-      const remaining1 = parseInt(
-        responses[0].headers.get('X-RateLimit-Remaining') || '0'
+      expect(limited.status).toBe(429);
+      expect(limited.headers.get('Retry-After')).toBe('60');
+      const warnings = takeConsole('warn');
+      expect(warnings).toHaveLength(4);
+      expect(warnings).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('Security Event: rate_limit_exceeded'),
+          expect.stringContaining('Security Event: middleware_failure'),
+          expect.stringContaining(
+            'Request blocked due to middleware failure: rate_limit'
+          ),
+          expect.stringContaining('Client error occurred'),
+        ])
       );
-      const remaining2 = parseInt(
-        responses[1].headers.get('X-RateLimit-Remaining') || '0'
-      );
-      expect(remaining2).toBeLessThan(remaining1);
     });
   });
 
@@ -303,9 +289,6 @@ describe('Security Integration Tests', () => {
 
       const response = await app.fetch(req, testEnv);
 
-      // Rate limiting headers should be present (executed before auth)
-      expect(response.headers.get('X-RateLimit-Limit')).toBeDefined();
-
       // CORS headers should be present (executed after rate limiting)
       expect(response.headers.get('Access-Control-Allow-Origin')).toBeDefined();
 
@@ -332,7 +315,6 @@ describe('Security Integration Tests', () => {
 
       // Should still include middleware-set headers despite error
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
-      expect(response.headers.get('X-RateLimit-Limit')).toBeDefined();
 
       takeUnauthenticatedRequestLogs();
     });
@@ -374,7 +356,6 @@ describe('Security Integration Tests', () => {
       expect(response.status).toBe(200);
 
       // Verify all security measures are in place
-      expect(response.headers.get('X-RateLimit-Limit')).toBeDefined();
       expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
         'http://localhost:3000'
       );
@@ -413,7 +394,6 @@ describe('Security Integration Tests', () => {
 
       // Should maintain security headers even in error responses
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
-      expect(response.headers.get('X-RateLimit-Limit')).toBeDefined();
 
       takeUnauthenticatedRequestLogs();
     });
