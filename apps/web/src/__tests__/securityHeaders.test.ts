@@ -86,8 +86,12 @@ describe('the security headers in public/_headers', () => {
     );
   });
 
-  it('let the app call the API', () => {
-    expect(directive('connect-src')).toContain('https://api.tracknstick.com');
+  // The host VITE_API_HOST names in the Cloudflare Pages build settings,
+  // which live in the dashboard rather than in this repository.
+  it('let the app call the API at the host the production build uses', () => {
+    expect(directive('connect-src')).toContain(
+      'https://tracknstick-api.hi-00e.workers.dev',
+    );
   });
 
   it('keep the app out of frames, plugins and other base URLs', () => {

@@ -1,7 +1,9 @@
 # Security headers Cloudflare Pages sends with every response of the web app.
 # The Content-Security-Policy follows Clerk's list; src/__tests__/securityHeaders.test.ts pins it.
+# connect-src names the API host that VITE_API_HOST sets in the Cloudflare Pages build settings;
+# a change to one needs the other.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://clerk.tracknstick.com https://challenges.cloudflare.com https://*.protect.clerk.com; connect-src 'self' https://api.tracknstick.com https://clerk.tracknstick.com https://*.protect.clerk.com:*; img-src 'self' https://img.clerk.com data:; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; frame-src https://challenges.cloudflare.com https://*.protect.clerk.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://clerk.tracknstick.com https://challenges.cloudflare.com https://*.protect.clerk.com; connect-src 'self' https://tracknstick-api.hi-00e.workers.dev https://clerk.tracknstick.com https://*.protect.clerk.com:*; img-src 'self' https://img.clerk.com data:; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; frame-src https://challenges.cloudflare.com https://*.protect.clerk.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
