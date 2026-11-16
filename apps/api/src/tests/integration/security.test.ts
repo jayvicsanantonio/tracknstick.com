@@ -60,7 +60,7 @@ describe('Security Integration Tests', () => {
       const body: any = await response.json();
       expect(body.error.code).toBe('unauthorized');
 
-      takeUnauthenticatedRequestLogs();
+      takeUnauthenticatedRequestLogs(1, 'rejected_token');
     });
 
     it('should allow access to health endpoints without authentication', async () => {
@@ -316,7 +316,7 @@ describe('Security Integration Tests', () => {
       // Should still include middleware-set headers despite error
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
 
-      takeUnauthenticatedRequestLogs();
+      takeUnauthenticatedRequestLogs(1, 'rejected_token');
     });
 
     it('should handle middleware failures gracefully', async () => {
@@ -336,7 +336,7 @@ describe('Security Integration Tests', () => {
       expect(response.status).toBeGreaterThanOrEqual(400);
       expect(response.status).toBeLessThan(600);
 
-      takeUnauthenticatedRequestLogs();
+      takeUnauthenticatedRequestLogs(1, 'rejected_token');
     });
   });
 

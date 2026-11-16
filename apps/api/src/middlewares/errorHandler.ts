@@ -157,6 +157,11 @@ export const errorHandler = (err: Error, c: Context<AppEnv>) => {
   // Log error with appropriate level
   const logData: Record<string, unknown> = {
     ...errorContext,
+    // Why the request was refused, such as a 401's reason. Logged whatever
+    // the environment; only the response hides it in production.
+    ...(err instanceof BaseError && err.details !== undefined
+      ? { details: err.details }
+      : {}),
     ...(errorConfig.showStackTrace && err.stack ? { stack: err.stack } : {}),
   };
 

@@ -31,8 +31,8 @@ export class NotFoundError extends BaseError {
 }
 
 export class UnauthorizedError extends BaseError {
-  constructor(message = 'Unauthorized') {
-    super(message, 401, 'unauthorized');
+  constructor(message = 'Unauthorized', details?: unknown) {
+    super(message, 401, 'unauthorized', details);
   }
 }
 

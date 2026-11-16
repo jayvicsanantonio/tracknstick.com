@@ -39,23 +39,24 @@ export const clerkMiddleware = () => async (c: Context<AppEnv>, next: Next) => {
         authorizedParties: getSecurityConfig(c.env.ENVIRONMENT).cors.origins,
       });
 
+      // A rejection is not logged here: the error handler logs each 401
+      // once, with the reason carried in the error's details.
       if (!requestState.isAuthenticated) {
-        logger.warn('Authentication failed - user not signed in', {
-          path: c.req.path,
-          method: c.req.method,
-          reason: requestState.reason,
+        throw new UnauthorizedError('Authentication required', {
+          reason: c.req.header('Authorization')
+            ? 'rejected_token'
+            : 'missing_token',
+          clerkReason: requestState.reason,
         });
-        throw new UnauthorizedError('Authentication required');
       }
 
       const auth = requestState.toAuth();
 
       if (!auth.userId) {
-        logger.warn('Authentication failed - no user ID in auth context', {
-          path: c.req.path,
-          method: c.req.method,
+        throw new UnauthorizedError('Authentication required', {
+          reason: 'rejected_token',
+          clerkReason: 'no user id in the session',
         });
-        throw new UnauthorizedError('Authentication required');
       }
 
       // User enrichment decision: Keep authentication context minimal for performance
@@ -79,18 +80,16 @@ export const clerkMiddleware = () => async (c: Context<AppEnv>, next: Next) => {
 
       await next();
     } catch (authError: unknown) {
-      // Handle specific Clerk authentication errors
-      const errorMessage =
-        authError instanceof Error
-          ? authError.message
-          : 'Unknown authentication error';
-      logger.warn('Authentication failed', {
-        path: c.req.path,
-        method: c.req.method,
-        error: errorMessage,
-      });
+      if (authError instanceof UnauthorizedError) throw authError;
 
-      throw new UnauthorizedError('Authentication required');
+      // Clerk itself rejected the token, for example a bad signature
+      throw new UnauthorizedError('Authentication required', {
+        reason: 'rejected_token',
+        clerkReason:
+          authError instanceof Error
+            ? authError.message
+            : 'Unknown authentication error',
+      });
     }
   } catch (error: unknown) {
     if (error instanceof UnauthorizedError) {
