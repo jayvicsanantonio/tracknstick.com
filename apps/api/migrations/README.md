@@ -16,6 +16,9 @@ fails if a file here is not named like `0002_add_something.sql`.
 - `0002_drop_knex_tables.sql` - Drops `knex_migrations` and
   `knex_migrations_lock`, left in production by the knex setup that came
   before wrangler migrations.
+- `0003_seed_achievements.sql` - Seeds the achievement catalogue, one row per
+  achievement, upserted by `key` so ids and earned achievements survive. A
+  change to the catalogue is a new migration that upserts the changed rows.
 
 ## Changing the Schema
 

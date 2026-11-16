@@ -1,19 +1,17 @@
 // Keeps the metric registry honest against the seeded achievement catalogue
 // Previously 20 of 44 definitions matched no branch and reported a false 0%
 
-import { describe, it, expect } from 'vitest';
+import { beforeAll, describe, it, expect } from 'vitest';
+import { env } from 'cloudflare:workers';
 import {
   METRICS,
   UNMEASURABLE,
   measure,
   type UserStatsSnapshot,
 } from '../achievementMetrics.js';
-import { AchievementRepository } from '../../repositories/achievement.repository.js';
 
-// getDefaultAchievements needs no database access
-const definitions = new AchievementRepository(
-  null as never
-).getDefaultAchievements();
+// The catalogue as the seed migration writes it, read in beforeAll.
+let definitions: { key: string }[];
 
 const SNAPSHOT: UserStatsSnapshot = {
   totalHabits: 3,
@@ -28,6 +26,13 @@ const SNAPSHOT: UserStatsSnapshot = {
 };
 
 describe('achievement metric registry', () => {
+  beforeAll(async () => {
+    const { results } = await env.DB.prepare(
+      'SELECT key FROM achievements ORDER BY id'
+    ).all<{ key: string }>();
+    definitions = results;
+  });
+
   it('covers every seeded achievement exactly once', () => {
     for (const def of definitions) {
       const registered = def.key in METRICS;

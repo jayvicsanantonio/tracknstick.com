@@ -14,7 +14,6 @@ import {
   errorResponseSchema,
   habitListResponseSchema,
   habitStatsResponseSchema,
-  initializeAchievementsResponseSchema,
   progressHistoryResponseSchema,
   progressOverviewResponseSchema,
   progressStreaksResponseSchema,
@@ -259,11 +258,16 @@ describe('API responses match the contracts package', () => {
   });
 
   describe('achievements', () => {
-    it('POST /achievements/initialize', async () => {
+    it('has no initialize route: the catalogue is seeded by migration', async () => {
       const res = await call('POST', '/api/v1/achievements/initialize');
 
-      expect(res.status).toBe(200);
-      expectToMatchContract(initializeAchievementsResponseSchema, res.body);
+      expect(res.status).toBe(404);
+      expectToMatchContract(errorResponseSchema, res.body);
+      expect(takeConsole('warn')).toEqual([
+        expect.stringContaining(
+          'Route not found: POST /api/v1/achievements/initialize'
+        ),
+      ]);
     });
 
     it('GET /achievements before any is earned', async () => {

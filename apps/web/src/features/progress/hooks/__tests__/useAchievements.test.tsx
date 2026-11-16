@@ -1,5 +1,5 @@
 // Pins what useAchievements gives the progress page: the catalogue, the stats, loading and errors.
-// Also covers its refresh, check and initialize actions, which refetch through the API client.
+// Also covers its refresh and check actions, which refetch through the API client.
 
 import {
   describe,
@@ -153,34 +153,5 @@ describe('useAchievements', () => {
       'Error checking achievements:',
       expect.any(Error),
     );
-  });
-
-  it('fetches again after initializing achievements', async () => {
-    vi.spyOn(achievementApi, 'initializeAchievements').mockResolvedValue({
-      message: 'initialized',
-    });
-    const { result } = renderHook(() => useAchievements(), { wrapper });
-    await waitFor(() => expect(result.current.loading).toBe(false));
-
-    await act(async () => {
-      await result.current.initializeAchievements();
-    });
-
-    await waitFor(() => expect(getAllAchievements).toHaveBeenCalledTimes(2));
-  });
-
-  it('reports an error when initializing achievements fails', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    vi.spyOn(achievementApi, 'initializeAchievements').mockRejectedValue(
-      new Error('Network Error'),
-    );
-    const { result } = renderHook(() => useAchievements(), { wrapper });
-    await waitFor(() => expect(result.current.loading).toBe(false));
-
-    await act(async () => {
-      await result.current.initializeAchievements();
-    });
-
-    expect(result.current.error).toBe('Failed to initialize achievements.');
   });
 });
