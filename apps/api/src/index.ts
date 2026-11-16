@@ -8,7 +8,7 @@ import {
   withFailureHandling,
   withRateLimitFailureHandling,
 } from './middlewares/middlewareFailureHandler.js';
-import { createRateLimit } from './middlewares/rateLimit.js';
+import { rateLimit } from './middlewares/rateLimit.js';
 import logger from './utils/logger.js';
 import { habitRoutes } from './routes/habits.js';
 import progressRoutes from './routes/progress.js';
@@ -22,7 +22,7 @@ import type { AppEnv } from './types/index.js';
 const app = new Hono<AppEnv>();
 
 // 3. Rate limiting - Block excessive requests before processing (with failure handling)
-app.use('*', withRateLimitFailureHandling(createRateLimit()));
+app.use('*', withRateLimitFailureHandling(rateLimit()));
 
 // 4. CORS - Handle cross-origin requests with environment-aware configuration (with failure handling)
 app.use(

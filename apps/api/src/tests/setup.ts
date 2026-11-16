@@ -109,6 +109,9 @@ export function createTestEnv() {
     CLERK_SECRET_KEY: 'test-clerk-key',
     CLERK_PUBLISHABLE_KEY: 'test-clerk-publishable-key',
     DB: workerEnv.DB,
+    API_RATE_LIMITER: workerEnv.API_RATE_LIMITER,
+    HABITS_RATE_LIMITER: workerEnv.HABITS_RATE_LIMITER,
+    PROGRESS_RATE_LIMITER: workerEnv.PROGRESS_RATE_LIMITER,
   };
 
   const app = new Hono();
