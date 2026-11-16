@@ -87,10 +87,10 @@ Before starting, ensure you have:
 
 ## Step 3: Prepare Your Environment
 
-### 3.1 Navigate to Backend Repository
+### 3.1 Go to the API
 
 ```bash
-cd /Users/jayvicsanantonio/Developer/tracknstick-api
+cd apps/api   # from the repository root
 ```
 
 ### 3.2 Create the Data Directory
@@ -198,7 +198,7 @@ npx tsx scripts/generate-embeddings.ts
 ### 6.1 Set the Pinecone API Key Secret
 
 ```bash
-cd /Users/jayvicsanantonio/Developer/tracknstick-api
+cd apps/api   # from the repository root
 
 # This will prompt you to enter the key
 wrangler secret put PINECONE_API_KEY
@@ -224,28 +224,17 @@ PINECONE_API_KEY: ****
 
 ## Step 7: Deploy the Backend
 
-### 7.1 Build and Deploy
+### 7.1 Deploy
 
-```bash
-cd /Users/jayvicsanantonio/Developer/tracknstick-api
+Nothing to run by hand: merging to `main` deploys the API through
+`.github/workflows/deploy-api.yml`, which builds it, runs its tests, applies any
+pending migrations and deploys the Worker. The secret set in Step 6 stays in
+place across deploys.
 
-# Build TypeScript
-pnpm run build
+### 7.2 Check the Deployment
 
-# Deploy to Cloudflare Workers
-wrangler deploy
-```
-
-### 7.2 Expected Output
-
-```
- wrangler 4.x.x
--------------------
-Total Upload: XXX KiB / gzip: XX KiB
-Uploaded tracknstick-api (X.XX sec)
-Published tracknstick-api (X.XX sec)
-  https://tracknstick-api.YOUR_SUBDOMAIN.workers.dev
-```
+The workflow's run in the repository's Actions tab ends with the deployed
+Worker, `https://tracknstick-api.hi-00e.workers.dev`.
 
 ---
 
@@ -272,11 +261,11 @@ curl -X POST https://YOUR_API_URL/api/v1/chat \
 1. Start your frontend:
 
    ```bash
-   cd /Users/jayvicsanantonio/Developer/tracknstick.com
-   pnpm dev
+   pnpm dev:web   # from the repository root
    ```
 
-2. Open your browser to `http://localhost:5173/chat`
+2. Open `http://localhost:5173`, sign in, and open the chat from its floating
+   button
 
 3. Try these test questions:
 
@@ -327,7 +316,7 @@ curl -X POST https://YOUR_API_URL/api/v1/chat \
 **Fix**:
 
 1. Check `wrangler.toml` has the `[ai]` section
-2. Redeploy: `wrangler deploy`
+2. Merge the fix to `main`, which deploys the API
 
 ---
 
@@ -335,7 +324,7 @@ curl -X POST https://YOUR_API_URL/api/v1/chat \
 
 ```bash
 # Navigate to backend
-cd /Users/jayvicsanantonio/Developer/tracknstick-api
+cd apps/api   # from the repository root
 
 # Set environment variables
 export CLOUDFLARE_ACCOUNT_ID="..."
@@ -351,8 +340,7 @@ npx tsx scripts/generate-embeddings.ts
 # Set production secret
 wrangler secret put PINECONE_API_KEY
 
-# Deploy
-wrangler deploy
+# Deploy: merge to main; the deploy workflow does the rest
 
 # View logs
 wrangler tail
@@ -372,7 +360,7 @@ After completing all steps, verify:
 - [ ] Embeddings uploaded to Pinecone (check dashboard)
 - [ ] `PINECONE_API_KEY` secret set in Workers
 - [ ] Backend deployed successfully
-- [ ] Chat works at `/chat` route in frontend
+- [ ] Chat answers from the floating chat button in the frontend
 - [ ] Chatbot answers Atomic Habits questions correctly
 - [ ] Chatbot politely declines off-topic questions
 

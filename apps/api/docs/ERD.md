@@ -1,82 +1,122 @@
 # Entity Relationship Diagram (ERD)
 
-This document provides a visual representation of the database schema for the TrackNStick API, along with explanations of the entities and their relationships.
+The database schema for the TrackNStick API: Cloudflare D1 (SQLite), built from
+the numbered files in [`migrations/`](../migrations/README.md). Those files are
+the source of truth; this page explains them.
 
 ## Diagram
 
 ```mermaid
 erDiagram
-    USERS ||--|{ HABITS : "tracks"
-    USERS ||--|{ TRACKERS : "logs"
-    HABITS ||--|{ TRACKERS : "records"
+    USERS ||--o{ HABITS : "owns"
+    USERS ||--o{ TRACKERS : "logs"
+    HABITS ||--o{ TRACKERS : "is completed by"
+    USERS ||--o{ USER_ACHIEVEMENTS : "earns"
+    ACHIEVEMENTS ||--o{ USER_ACHIEVEMENTS : "is earned as"
 
     USERS {
         INTEGER id PK
-        TEXT clerk_user_id UK "Clerk User ID"
+        TEXT clerk_user_id UK "Clerk user ID"
+        DATETIME created_at
+        DATETIME updated_at
     }
 
     HABITS {
         INTEGER id PK
-        INTEGER user_id FK
+        TEXT user_id FK "users.clerk_user_id"
         TEXT name
         TEXT icon
-        TEXT frequency "Comma-separated days"
+        TEXT frequency "Comma-separated days, e.g. Mon,Wed,Fri"
+        TEXT start_date
+        TEXT end_date
         INTEGER streak
         INTEGER total_completions
+        INTEGER longest_streak
         DATETIME last_completed
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at "Soft delete"
     }
 
     TRACKERS {
         INTEGER id PK
         INTEGER habit_id FK
-        INTEGER user_id FK
-        DATETIME timestamp "Completion Timestamp (UTC)"
+        TEXT user_id FK "users.clerk_user_id"
+        TEXT timestamp "Completion time, ISO 8601"
         TEXT notes
+        DATETIME created_at
+        DATETIME updated_at
+        DATETIME deleted_at "Soft delete"
+    }
+
+    ACHIEVEMENTS {
+        INTEGER id PK
+        TEXT key UK
+        TEXT name
+        TEXT description
+        TEXT icon "A name from ACHIEVEMENT_ICONS"
+        TEXT type
+        TEXT category
+        TEXT requirement_type
+        INTEGER requirement_value
+        TEXT requirement_data "JSON"
+        BOOLEAN is_active
+        DATETIME created_at
+    }
+
+    USER_ACHIEVEMENTS {
+        INTEGER id PK
+        TEXT user_id FK "users.clerk_user_id"
+        INTEGER achievement_id FK
+        DATETIME earned_at
+        TEXT progress_data "JSON"
     }
 ```
 
-## Entity Explanations
+## Tables
 
-### 1. USERS
-*   **Represents:** An individual user of the TrackNStick application.
-*   **Key Attributes:**
-    *   `id` (Primary Key): A unique internal identifier for each user.
-    *   `clerk_user_id` (Unique Key): The external user ID from the Clerk authentication service. This links the local database user to the Clerk user account.
-*   **Relationships:**
-    *   A `USER` can have many `HABITS` (one-to-many).
-    *   A `USER` can have many `TRACKERS` (one-to-many).
+### users
 
-### 2. HABITS
-*   **Represents:** A specific habit that a user wants to track.
-*   **Key Attributes:**
-    *   `id` (Primary Key): A unique identifier for each habit.
-    *   `user_id` (Foreign Key): Links the habit to the `USERS` table, indicating which user owns this habit.
-    *   `name`: The name of the habit (e.g., "Exercise", "Read a book").
-    *   `icon`: An optional icon associated with the habit.
-    *   `frequency`: Stores how often the habit is intended to be performed (e.g., specific days of the week, daily). The format is a comma-separated string of day numbers (0=Sunday, 1=Monday, etc.).
-    *   `streak`: The current number of consecutive completion periods for the habit.
-    *   `total_completions`: The total number of times this habit has been marked as completed.
-    *   `last_completed`: The timestamp of the most recent completion for this habit.
-*   **Relationships:**
-    *   Belongs to one `USER` (many-to-one, via `user_id`).
-    *   Can have many `TRACKERS` (one-to-many), representing each time the habit was completed.
+One row per Clerk user, created the first time that user calls the API.
+`clerk_user_id` is unique, and every other table refers to a user by it rather
+than by the integer `id`.
 
-### 3. TRACKERS
-*   **Represents:** A single completion record for a specific habit by a user on a particular date/time.
-*   **Key Attributes:**
-    *   `id` (Primary Key): A unique identifier for each tracking entry.
-    *   `habit_id` (Foreign Key): Links the tracking entry to the specific `HABITS` table entry that was completed.
-    *   `user_id` (Foreign Key): Links the tracking entry to the `USERS` table, indicating which user completed it (this is often redundant if accessing through `HABITS` but can be useful for direct queries on trackers).
-    *   `timestamp`: The exact date and time (in UTC) when the habit was marked as completed.
-    *   `notes`: Optional notes or details about that specific completion.
-*   **Relationships:**
-    *   Belongs to one `HABIT` (many-to-one, via `habit_id`).
-    *   Belongs to one `USER` (many-to-one, via `user_id`).
+### habits
 
-## Relationship Summary
+A habit a user tracks. `frequency` is a comma-separated list of day
+abbreviations (`Mon`, `Tue`, ... `Sun`); the repositories and services depend
+on exactly these names. `start_date` and `end_date` bound the days the habit is
+due. `streak`, `longest_streak`, `total_completions` and `last_completed` are
+kept up to date as trackers are added and removed. Deleting a habit sets
+`deleted_at`; restoring it clears it.
 
-*   **USERS to HABITS:** A user can create and track multiple habits. Each habit is owned by a single user.
-*   **USERS to TRACKERS:** A user logs multiple tracker entries across all their habits. Each tracker entry is associated with a specific user.
-*   **HABITS to TRACKERS:** A habit can be completed multiple times, with each completion being a tracker entry. Each tracker entry corresponds to one specific habit.
+### trackers
 
-This schema structure allows for flexible habit definition, detailed tracking of completions, and association of all data back to individual users. Foreign key constraints with CASCADE delete are used to maintain data integrity (e.g., if a user is deleted, their habits and trackers are also deleted).
+One completion of a habit. A habit has at most one tracker per `timestamp`
+(`UNIQUE(habit_id, timestamp)`). Completing a habit that already has a tracker
+on that day, in the user's time zone, removes the tracker instead, so the same
+endpoint marks a habit done and undone. Rows are soft deleted through
+`deleted_at`.
+
+### achievements
+
+The achievement catalogue: one row per achievement, identified by its unique
+`key`. Migration `0003_seed_achievements.sql` seeds and updates it, keyed by
+`key`, so an achievement keeps its `id` when the seed runs again. `icon` is one
+of the lucide icon names in `ACHIEVEMENT_ICONS` (`packages/contracts`). The
+requirement columns say what earning it takes, for example a streak of 7 days.
+
+### user_achievements
+
+The achievements each user has earned, at most once each
+(`UNIQUE(user_id, achievement_id)`), with when and any progress data.
+
+## Integrity
+
+- Every foreign key cascades on delete: deleting a user removes their habits,
+  trackers and earned achievements, and deleting a habit row removes its
+  trackers. The app itself soft deletes habits and trackers, so these cascades
+  only apply to hard deletes.
+- Indexes cover the lookups the repositories make: by user on habits, trackers
+  and user_achievements; by habit and timestamp on trackers; `deleted_at` on
+  habits and trackers; and key, type and category on achievements.

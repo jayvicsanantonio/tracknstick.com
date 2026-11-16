@@ -27,7 +27,9 @@ pnpm vitest run src/path/to/file.test.tsx
 ### Required Environment Variables
 
 - `VITE_CLERK_PUBLISHABLE_KEY` — Clerk auth key
-- `VITE_API_HOST` — Backend API base URL (e.g. `https://api.tracknstick.com`)
+- `VITE_API_HOST` — Backend API base URL:
+  `https://tracknstick-api.hi-00e.workers.dev` in production,
+  `http://localhost:3000` for `pnpm dev:api`
 
 Missing `VITE_API_HOST` throws at startup via `src/shared/utils/getConfig.ts`.
 
@@ -144,12 +146,16 @@ without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
   components with `ClerkProvider`, `HabitsStateProvider`, and a `MemoryRouter`
 - **Test file location**: `__tests__/` directories beside the code being tested,
   named `*.test.tsx` or `*.spec.ts`
+- **Queries**: find elements the way a user would, by role and accessible name
+  (`getByRole('button', { name: … })`), rather than by id, class or position
 - **End-to-end**: Playwright tests in `e2e/`, named `*.e2e.ts`, run the app
   against the local API signed in as a Clerk test user. See `e2e/README.md`
 
 ## Code Conventions
 
 - Feature modules export public API through `index.ts` barrel files
+- Import across folders through the path aliases (`@/`, `@features/`,
+  `@shared/`, …) rather than deep relative paths
 - Components use default exports; utilities and hooks use named exports
 - Tailwind classes composed with `clsx` + `tailwind-merge` (`cn()` helper)
 - Formatting: 2-space indent, single quotes (Prettier-enforced)

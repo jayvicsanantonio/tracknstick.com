@@ -26,7 +26,7 @@ The TrackNStick API provides the following core capabilities:
     *   **Create Habits:** Users can define new habits with attributes such as name, icon, frequency (e.g., daily, specific days of the week), start date, and optional end date.
     *   **Read Habits:** Users can retrieve a list of their habits, optionally filtered by date.
     *   **Update Habits:** Existing habits can be modified (name, icon, frequency, etc.).
-    *   **Delete Habits:** Habits and their associated tracking data can be removed.
+    *   **Delete and Restore Habits:** Deleting a habit hides it and its tracking data without erasing them, so a deleted habit can be restored.
 
 *   **Habit Tracking:**
     *   **Record Completions:** Users can mark a habit as complete for a specific date and time.
@@ -48,8 +48,15 @@ The TrackNStick API provides the following core capabilities:
         *   Longest streak of 100% completion days across all habits.
     *   **Progress Overview:** A consolidated view combining history and overall streak information.
 
+*   **Achievements:**
+    *   A catalogue of achievements, such as a first habit, a 7-day streak or 100 completions, each with its progress toward being earned.
+    *   Checking which achievements a user has newly earned, and statistics on those earned so far.
+
+*   **Habit Coach Chat:**
+    *   A streamed chat answer grounded in "Atomic Habits", using passages retrieved for each question.
+
 *   **Authentication & Authorization:**
-    *   All API endpoints (except potentially a public health check) are secured and require valid JWT authentication (via Clerk).
+    *   All API endpoints except the health checks are secured and require valid JWT authentication (via Clerk).
     *   The API enforces that users can only access and manipulate their own data.
 
 ## 4. User Stories
@@ -82,27 +89,25 @@ The TrackNStick API provides the following core capabilities:
 
 ## 5. Future Considerations / Potential Enhancements
 
-Based on the `docs/development/enhancements.md` document and logical next steps, the following are potential areas for future enhancements:
+The following are potential areas for future enhancements:
 
 *   **Advanced Analytics & Reporting:**
     *   Provide more detailed insights, such as completion patterns by day of the week, month, etc.
     *   Offer visual data representations (though the API would provide raw data for this).
 *   **Reminders & Notifications:**
     *   Integrate functionality for users to set reminders for their habits (would likely involve a notification service).
-*   **Habit Archiving:**
-    *   Allow users to archive old or paused habits instead of deleting them, preserving their history.
 *   **Habit Templates or Suggestions:**
     *   Offer predefined habit templates or suggestions to help users get started.
 *   **Social Features (Optional & Complex):**
     *   Allow users to (optionally) share progress with friends or participate in group challenges. This would require significant new features around privacy, groups, and shared data.
 *   **More Flexible Frequency Options:**
-    *   Beyond daily, weekly, monthly, allow for "every X days," "X times per week/month," etc. (The current JSON `frequency` field in the database schema changes section of the Developer Guide suggests this is already being supported or planned).
+    *   Beyond days of the week, allow for "every X days," "X times per week/month," etc.
 *   **Gamification:**
-    *   Introduce points, badges, or levels based on habit completion and streaks.
+    *   Build on achievements with points or levels based on habit completion and streaks.
 *   **Data Export/Import:**
     *   Allow users to export their habit data or import it from other services.
 *   **API Documentation Generation:**
-    *   Explore tools like Swagger/OpenAPI to automatically generate interactive API documentation from code comments or route definitions. This would improve upon the current manual `endpoints.md`.
+    *   Generate interactive API documentation, such as OpenAPI, from the zod schemas in `packages/contracts`.
 *   **Dependency Injection:**
     *   For larger applications, consider implementing a dependency injection container to manage the instantiation and wiring of services and repositories, potentially simplifying testing and maintenance.
 *   **Enhanced Testing:**
