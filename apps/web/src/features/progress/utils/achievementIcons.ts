@@ -28,12 +28,14 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
+import type { AchievementIcon } from '@tracknstick/contracts';
 
-// The icons the API's achievement catalogue names
-// (apps/api/src/repositories/achievement.repository.ts). Listing them, rather
-// than looking a name up in all of lucide-react, keeps every other lucide
-// icon out of the bundle. A catalogue icon added there needs adding here.
-const ACHIEVEMENT_ICONS: Record<string, LucideIcon> = {
+// The icons the API's achievement catalogue names, ACHIEVEMENT_ICONS in
+// packages/contracts. Listing them, rather than looking a name up in all of
+// lucide-react, keeps every other lucide icon out of the bundle. The type
+// makes a name added to the contracts list fail to compile until it is
+// mapped here.
+const ACHIEVEMENT_ICONS: Record<AchievementIcon, LucideIcon> = {
   Activity,
   Award,
   BookOpen,
@@ -67,7 +69,7 @@ export const getAchievementIcon = (iconName?: string): LucideIcon => {
   // Return the icon or fallback to Trophy. An own-property check, so a name
   // such as "toString" does not find a property every object inherits.
   return Object.prototype.hasOwnProperty.call(ACHIEVEMENT_ICONS, iconName)
-    ? ACHIEVEMENT_ICONS[iconName]
+    ? ACHIEVEMENT_ICONS[iconName as AchievementIcon]
     : Trophy;
 };
 

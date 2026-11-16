@@ -4,6 +4,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
 import { env } from 'cloudflare:workers';
+import { ACHIEVEMENT_ICONS } from '@tracknstick/contracts';
 import { AchievementRepository } from '../repositories/achievement.repository.js';
 
 const SEED_MIGRATION = '0003_seed_achievements.sql';
@@ -54,6 +55,18 @@ describe('the achievement seed migration', () => {
       requirementValue: 1,
       requirementData: null,
     });
+  });
+
+  // The web app draws each of these, so the list and the catalogue have to
+  // name the same icons.
+  it('names exactly the icons in the contracts package', async () => {
+    const { results } = await db
+      .prepare('SELECT DISTINCT icon FROM achievements ORDER BY icon')
+      .all<{ icon: string }>();
+
+    expect(results.map((row) => row.icon)).toEqual(
+      [...ACHIEVEMENT_ICONS].sort()
+    );
   });
 
   it('keeps achievements users have already earned when the seed runs again', async () => {
