@@ -80,8 +80,8 @@ Each feature module follows this pattern:
    `axiosInstance`
 2. **SWR hooks** (`features/*/hooks/`) — wrap API calls with `useSWR` for
    caching and revalidation
-3. **React Context** — `HabitsStateProvider` holds UI-only state (dialog
-   open/close, edit mode); it does **not** hold server data
+3. **React Context** — `HabitsStateProvider` holds UI-only state (which dialog
+   is open, the habit being edited); it does **not** hold server data
 4. **Components** — consume SWR hooks for data and context for UI state
 
 The `useHabits` hook in `features/habits/hooks/` is the canonical example: it

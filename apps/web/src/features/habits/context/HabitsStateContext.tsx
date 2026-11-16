@@ -4,7 +4,6 @@ import { Habit } from '@/features/habits/types/Habit';
 import { HabitsStateContext } from './HabitsStateContextDefinition';
 
 export function HabitsStateProvider({ children }: { children: ReactNode }) {
-  const [isEditMode, toggleIsEditMode] = useToggle(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
@@ -21,8 +20,6 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isEditMode,
-      toggleIsEditMode,
       editingHabit,
       setEditingHabit,
       showAddHabitDialog,
@@ -32,8 +29,6 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       openEditDialog,
     }),
     [
-      isEditMode,
-      toggleIsEditMode,
       editingHabit,
       setEditingHabit,
       showAddHabitDialog,

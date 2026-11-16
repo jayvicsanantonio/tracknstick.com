@@ -1,14 +1,9 @@
 import { memo, useCallback } from 'react';
 import HabitsIcons from '@/icons/habits';
-import { Button } from '@shared/components/ui/button';
 import StarAnimation from '@shared/components/ui/animations/StarAnimation';
 import { Habit } from '@/features/habits/types/Habit';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
-import MiscellaneousIcons from '@/icons/miscellaneous';
-import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { useHabits } from '@/features/habits/hooks/useHabits';
-
-const { Edit } = MiscellaneousIcons;
 
 interface DailyHabitItemProps {
   habit: Habit;
@@ -17,7 +12,6 @@ interface DailyHabitItemProps {
 const DailyHabitItem = memo(function DailyHabitItem({
   habit,
 }: DailyHabitItemProps) {
-  const { isEditMode, openEditDialog } = useHabitsContext();
   const { toggleHabit, animatingHabitId } = useHabits();
   const Icon = HabitsIcons[habit.icon];
 
@@ -26,10 +20,6 @@ const DailyHabitItem = memo(function DailyHabitItem({
       console.error('Failed to toggle habit:', error);
     });
   }, [habit.id, toggleHabit]);
-
-  const handleEdit = useCallback(() => {
-    openEditDialog(habit);
-  }, [habit, openEditDialog]);
 
   return (
     <div key={habit.id} className="group flex flex-col items-center">
@@ -60,18 +50,6 @@ const DailyHabitItem = memo(function DailyHabitItem({
           />
           <StarAnimation isVisible={animatingHabitId === habit.id} />
         </button>
-        {isEditMode && (
-          <Button
-            className="absolute -top-1 -right-1 z-10 h-6 w-6 rounded-full bg-(--color-brand-primary) p-0 text-(--color-text-inverse) shadow-(--color-brand-primary)/30 shadow-md hover:bg-(--color-brand-primary) sm:h-8 sm:w-8"
-            onClick={handleEdit}
-            aria-label={`Edit ${habit.name}`}
-          >
-            <Edit
-              aria-hidden="true"
-              className="h-3 w-3 text-(--color-text-inverse) sm:h-4 sm:w-4"
-            />
-          </Button>
-        )}
       </div>
       <span className="line-clamp-1 max-w-full px-1 text-center text-xs font-semibold text-(--color-brand-tertiary) sm:text-sm dark:text-(--color-brand-text-light)">
         {habit.name}

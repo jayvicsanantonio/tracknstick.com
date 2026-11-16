@@ -32,8 +32,6 @@ vi.mock('@shared/hooks/use-toggle', () => ({
 // Mock HabitsStateProvider
 vi.mock('@/features/habits/context/HabitsStateContext', () => {
   const mockContextValue = {
-    isEditMode: false,
-    toggleIsEditMode: vi.fn(),
     editingHabit: null,
     setEditingHabit: vi.fn(),
     showAddHabitDialog: false,
@@ -54,8 +52,6 @@ vi.mock('@/features/habits/context/HabitsStateContext', () => {
 // Mock habits context
 vi.mock('@/features/habits/hooks/useHabitsContext', () => ({
   useHabitsContext: () => ({
-    isEditMode: false,
-    toggleIsEditMode: vi.fn(),
     editingHabit: null,
     setEditingHabit: vi.fn(),
     showAddHabitDialog: false,
