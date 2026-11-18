@@ -2,10 +2,12 @@
 // Written before the deduplication below so the refactor is provably
 // behaviour-preserving
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   getLocalStartofDayUTC,
   getLocalEndOfDayUTC,
+  parseDateKey,
+  parseUTCTimestamp,
 } from '@shared/utils/date/formatDate';
 
 const ZONES = [
@@ -87,6 +89,42 @@ describe('local day boundaries', () => {
     const zone = 'Pacific/Kiritimati';
     expect(localDateKey(getLocalStartofDayUTC(date, zone), zone)).toBe(
       localDateKey(date, zone),
+    );
+  });
+});
+
+describe('parsing API dates in a US timezone', () => {
+  beforeEach(() => {
+    vi.stubEnv('TZ', 'America/Los_Angeles');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('reads a YYYY-MM-DD key as that local calendar day', () => {
+    const date = parseDateKey('2026-11-17');
+
+    expect(date.getFullYear()).toBe(2026);
+    expect(date.getMonth()).toBe(10);
+    expect(date.getDate()).toBe(17);
+    expect(date.getHours()).toBe(0);
+  });
+
+  it('reads a zoneless SQLite timestamp as UTC', () => {
+    // 02:30 UTC on the 18th is 18:30 on the 17th in Los Angeles.
+    const date = parseUTCTimestamp('2026-11-18 02:30:00');
+
+    expect(date.toISOString()).toBe('2026-11-18T02:30:00.000Z');
+    expect(date.getDate()).toBe(17);
+  });
+
+  it('keeps the zone of a timestamp that already has one', () => {
+    expect(parseUTCTimestamp('2026-11-18T02:30:00.000Z').toISOString()).toBe(
+      '2026-11-18T02:30:00.000Z',
+    );
+    expect(parseUTCTimestamp('2026-11-18T02:30:00+01:00').toISOString()).toBe(
+      '2026-11-18T01:30:00.000Z',
     );
   });
 });
