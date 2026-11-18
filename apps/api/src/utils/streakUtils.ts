@@ -18,7 +18,8 @@ interface StreakStats {
 
 /**
  * Calculates the current streak for a habit based on tracker entries and frequency.
- * Assumes trackerRows are sorted descending by timestamp.
+ * Walks back from today counting completed due days; days the habit is not due
+ * are skipped, and today does not break the streak while it is still to do.
  */
 export function calculateCurrentStreak(
   trackerRows: TrackerRow[],
@@ -38,47 +39,39 @@ export function calculateCurrentStreak(
     return 0;
   }
 
-  const uniqueCompletionDates = [
-    ...new Set(
-      trackerRows.map((row) => {
-        const utcDate = new Date(row.timestamp);
-        return utcDate.toLocaleDateString('en-CA', { timeZone });
-      })
-    ),
-  ];
+  const completionDates = new Set(
+    trackerRows.map((row) => {
+      const utcDate = new Date(row.timestamp);
+      return utcDate.toLocaleDateString('en-CA', { timeZone });
+    })
+  );
+  const earliestCompletionDate = [...completionDates].sort()[0];
 
   let currentStreak = 0;
-  const today = new Date();
-  let currentDate = new Date(today.toLocaleDateString('en-CA', { timeZone }));
+  const todayKey = new Date().toLocaleDateString('en-CA', { timeZone });
+  // Each calendar day is held as midnight UTC, so its weekday is read in UTC.
+  const currentDate = new Date(todayKey);
 
   const dayFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone,
+    timeZone: 'UTC',
     weekday: 'short',
   });
 
-  for (let i = 0; i < uniqueCompletionDates.length; i += 1) {
-    const completionDate = new Date(uniqueCompletionDates[i]);
-
-    if (completionDate.getTime() !== currentDate.getTime()) {
-      if (i === 0) {
-        const yesterday = new Date(currentDate);
-        yesterday.setDate(currentDate.getDate() - 1);
-        if (completionDate.getTime() === yesterday.getTime()) {
-          currentDate = yesterday;
-        } else {
-          break;
-        }
-      } else {
+  for (
+    let dateKey = todayKey;
+    dateKey >= earliestCompletionDate;
+    dateKey = currentDate.toISOString().slice(0, 10)
+  ) {
+    const dayOfWeek = dayFormatter.format(currentDate);
+    if (frequency.includes(dayOfWeek)) {
+      if (completionDates.has(dateKey)) {
+        currentStreak += 1;
+      } else if (dateKey !== todayKey) {
         break;
       }
     }
 
-    const dayOfWeek = dayFormatter.format(currentDate);
-    if (frequency.includes(dayOfWeek)) {
-      currentStreak += 1;
-    }
-
-    currentDate.setDate(currentDate.getDate() - 1);
+    currentDate.setUTCDate(currentDate.getUTCDate() - 1);
   }
   return currentStreak;
 }
@@ -280,13 +273,14 @@ export function calculateLongestStreakFromTrackers(
   const completionSet = new Set(completionDates);
 
   const currentDate = new Date(startDate);
+  // Each calendar day is held as midnight UTC, so it is read back in UTC.
   const dayFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone,
+    timeZone: 'UTC',
     weekday: 'short',
   });
 
   while (currentDate <= endDate) {
-    const dateStr = currentDate.toLocaleDateString('en-CA', { timeZone });
+    const dateStr = currentDate.toISOString().slice(0, 10);
     const dayOfWeek = dayFormatter.format(currentDate);
 
     if (scheduledDays.has(dayOfWeek)) {
@@ -298,7 +292,7 @@ export function calculateLongestStreakFromTrackers(
       }
     }
 
-    currentDate.setDate(currentDate.getDate() + 1);
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1);
   }
 
   return maxStreak;
