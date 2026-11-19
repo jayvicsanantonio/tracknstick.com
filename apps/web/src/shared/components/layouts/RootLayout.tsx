@@ -1,8 +1,9 @@
-import { lazy, memo, Suspense } from 'react';
+import { lazy, memo, Suspense, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
+import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { ChatWidget } from '@/features/chat/components/ChatWidget';
 
 // Only signed-out visitors see the welcome page, so it loads on demand and
@@ -18,6 +19,9 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
  * - When signed out: Renders the Welcome component
  */
 const RootLayout = memo(function RootLayout() {
+  // Shared by the chat widget and the phone tab bar, which both open the chat.
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   return (
     <>
       <Header />
@@ -30,10 +34,15 @@ const RootLayout = memo(function RootLayout() {
         </SignedOut>
         <SignedIn>
           <Outlet />
-          <ChatWidget />
+          <ChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
         </SignedIn>
       </main>
       <Footer />
+      <SignedIn>
+        {/* Keeps the footer clear of the fixed tab bar on phones. */}
+        <div aria-hidden="true" className="h-24 sm:hidden" />
+        <MobileTabBar onOpenChat={() => setIsChatOpen(true)} />
+      </SignedIn>
     </>
   );
 });

@@ -20,9 +20,9 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
   } = stats;
 
   return (
-    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {/* Total Progress */}
-      <div className="rounded-lg bg-(--color-surface) p-4 shadow-md dark:bg-(--color-brand-light)">
+      <div className="col-span-2 rounded-lg bg-(--color-surface) p-3 shadow-md sm:p-4 lg:col-span-4 dark:bg-(--color-brand-light)">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-(--color-text-secondary) dark:text-(--color-brand-text-light)">
@@ -55,14 +55,14 @@ const AchievementStatsComponent = memo(function AchievementStatsComponent({
         return (
           <div
             key={category}
-            className="rounded-lg bg-(--color-surface) p-4 shadow-md dark:bg-(--color-brand-light)"
+            className="rounded-lg bg-(--color-surface) p-3 shadow-md sm:p-4 dark:bg-(--color-brand-light)"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-(--color-text-secondary) dark:text-gray-300">
+                <p className="text-xs text-(--color-text-secondary) sm:text-sm dark:text-gray-300">
                   {getCategoryLabel(category)}
                 </p>
-                <p className="text-xl font-bold text-(--color-brand-tertiary) dark:text-gray-100">
+                <p className="text-lg font-bold text-(--color-brand-tertiary) sm:text-xl dark:text-gray-100">
                   {data.earned}/{data.total}
                 </p>
               </div>

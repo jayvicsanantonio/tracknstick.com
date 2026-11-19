@@ -8,7 +8,7 @@ import IconNavLink from './IconNavLink';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 
-const { CheckCircle2, Edit, Moon, Plus, Sun, BarChart2, Calendar } =
+const { CheckCircle2, ListChecks, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
 
 const Header = memo(function Header() {
@@ -17,13 +17,13 @@ const Header = memo(function Header() {
 
   return (
     <header className="sticky top-0 z-40">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-4 sm:px-4 sm:py-8 md:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-2 pt-[max(env(safe-area-inset-top),0.75rem)] pb-3 sm:px-4 sm:py-8 md:px-8 2xl:max-w-[90rem]">
         <div className="flex items-center gap-2 rounded-full bg-(--color-surface)/80 px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:px-3 sm:py-2 dark:bg-(--color-surface-secondary)/80">
           <CheckCircle2
             aria-hidden="true"
             className="h-6 w-6 shrink-0 text-(--color-brand-primary) sm:h-8 sm:w-8"
           />
-          <span className="hidden pr-2 pl-1 text-lg font-bold text-(--color-brand-primary) sm:inline-block sm:text-xl md:text-2xl">
+          <span className="inline-block pr-2 pl-1 text-lg font-extrabold tracking-tight whitespace-nowrap text-(--color-brand-primary) sm:text-xl md:text-2xl">
             Track N&apos; Stick
           </span>
         </div>
@@ -34,37 +34,51 @@ const Header = memo(function Header() {
               aria-label="User actions"
               className="flex gap-2 rounded-full bg-(--color-surface)/80 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:p-2 dark:bg-(--color-surface-secondary)/80"
             >
-              <IconNavLink to="/" aria-label="Daily Tracker">
-                <Calendar
-                  aria-hidden="true"
-                  className="h-4 w-4 sm:h-6 sm:w-6"
-                />
-              </IconNavLink>
-              <IconNavLink to="/habits" aria-label="Habits Overview">
-                <Edit aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-              </IconNavLink>
-              <IconNavLink to="/progress" aria-label="Progress Overview">
-                <BarChart2
-                  aria-hidden="true"
-                  className="h-4 w-4 sm:h-6 sm:w-6"
-                />
-              </IconNavLink>
+              {/* On phones the bottom tab bar carries navigation and Add. */}
+              <div className="hidden gap-2 sm:flex sm:gap-3">
+                <IconNavLink to="/" label="Tracker" aria-label="Daily Tracker">
+                  <Calendar
+                    aria-hidden="true"
+                    className="h-4 w-4 sm:h-5 sm:w-5"
+                  />
+                </IconNavLink>
+                <IconNavLink
+                  to="/habits"
+                  label="Habits"
+                  aria-label="Habits Overview"
+                >
+                  <ListChecks
+                    aria-hidden="true"
+                    className="h-4 w-4 sm:h-5 sm:w-5"
+                  />
+                </IconNavLink>
+                <IconNavLink
+                  to="/progress"
+                  label="Progress"
+                  aria-label="Progress Overview"
+                >
+                  <BarChart2
+                    aria-hidden="true"
+                    className="h-4 w-4 sm:h-5 sm:w-5"
+                  />
+                </IconNavLink>
 
-              <span
-                role="separator"
-                aria-orientation="vertical"
-                aria-hidden="true"
-                className="mx-1 w-px self-stretch rounded-full bg-(--color-border-primary)/60 sm:mx-2"
-              />
+                <span
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-hidden="true"
+                  className="mx-1 w-px self-stretch rounded-full bg-(--color-border-primary)/60 sm:mx-2"
+                />
 
-              <Button
-                variant="brandTonal"
-                size="icon"
-                onClick={toggleShowAddHabitDialog}
-                aria-label="Add Habit"
-              >
-                <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
-              </Button>
+                <Button
+                  variant="brandTonal"
+                  size="icon"
+                  onClick={toggleShowAddHabitDialog}
+                  aria-label="Add Habit"
+                >
+                  <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
+                </Button>
+              </div>
 
               <Button
                 variant="brandTonal"
@@ -74,11 +88,11 @@ const Header = memo(function Header() {
               >
                 <Sun
                   aria-hidden="true"
-                  className="h-4 w-4 sm:h-6 sm:w-6 dark:hidden"
+                  className="h-5 w-5 sm:h-6 sm:w-6 dark:hidden"
                 />
                 <Moon
                   aria-hidden="true"
-                  className="hidden h-4 w-4 sm:h-6 sm:w-6 dark:block"
+                  className="hidden h-5 w-5 sm:h-6 sm:w-6 dark:block"
                 />
               </Button>
               <UserButton
@@ -91,7 +105,7 @@ const Header = memo(function Header() {
                   },
                   elements: {
                     userButtonAvatarBox:
-                      'min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-(--color-brand-primary)/20',
+                      'min-w-11 min-h-11 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-(--color-brand-primary)/20',
                     // Popover container
                     userButtonPopoverCard:
                       'bg-(--color-card) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-2xl border border-(--color-border-primary) shadow-2xl',
@@ -135,11 +149,11 @@ const Header = memo(function Header() {
               >
                 <Sun
                   aria-hidden="true"
-                  className="h-4 w-4 sm:h-6 sm:w-6 dark:hidden"
+                  className="h-5 w-5 sm:h-6 sm:w-6 dark:hidden"
                 />
                 <Moon
                   aria-hidden="true"
-                  className="hidden h-4 w-4 sm:h-6 sm:w-6 dark:block"
+                  className="hidden h-5 w-5 sm:h-6 sm:w-6 dark:block"
                 />
               </Button>
             </div>

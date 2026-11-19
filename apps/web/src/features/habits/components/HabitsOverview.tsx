@@ -1,12 +1,10 @@
-import { useState, useMemo, useCallback, memo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useCallback, memo, type ReactNode } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@shared/components/ui/card';
-import { Button } from '@shared/components/ui/button';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,18 +20,74 @@ import {
 } from '@shared/components/ui/alert-dialog';
 import { Tabs, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
 import { Input } from '@shared/components/ui/input';
+import { Button } from '@shared/components/ui/button';
+import { Archive, ListChecks, SearchX, type LucideIcon } from 'lucide-react';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
+import HabitActions from '@/features/habits/components/HabitActions';
+import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import {
   isArchived,
   TAB_FILTER,
   type OverviewTab,
 } from '@/features/habits/components/habitFilters';
 
+/** The habit's start date in the viewer's locale. */
+function formatStartDate(habit: Habit) {
+  return new Date(habit.startDate).toLocaleDateString();
+}
+
+/** "Daily" for a habit due every day, otherwise its days, e.g. "Mon · Wed · Fri". */
+function frequencyText(habit: Habit) {
+  return habit.frequency.length === 7
+    ? frequencyLabel(habit.frequency)
+    : habit.frequency.map((day) => day.substring(0, 3)).join(' · ');
+}
+
+/** An empty list's explanation: an icon, what happened, and what to do next. */
+function EmptyResult({
+  Icon,
+  title,
+  detail,
+  children,
+}: {
+  Icon: LucideIcon;
+  title: string;
+  detail: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="mx-auto flex max-w-sm flex-col items-center text-center">
+      <span className="mb-4 flex size-12 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
+        <Icon
+          aria-hidden="true"
+          className="h-6 w-6 text-(--color-brand-primary)"
+        />
+      </span>
+      <p className="text-lg font-semibold text-(--color-foreground)">{title}</p>
+      <p className="mt-1 text-sm text-(--color-text-secondary)">{detail}</p>
+      {children ? <div className="mt-5">{children}</div> : null}
+    </div>
+  );
+}
+
+function StatusBadge({ habit }: { habit: Habit }) {
+  return (
+    <span
+      className={`shrink-0 rounded-full px-2 py-1 text-xs ${
+        isArchived(habit)
+          ? 'bg-(--color-muted) text-(--color-text-secondary)'
+          : 'bg-(--color-brand-primary)/10 text-(--color-brand-text)'
+      }`}
+    >
+      {isArchived(habit) ? 'Archived' : 'Active'}
+    </span>
+  );
+}
+
 const HabitsOverview = memo(function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useAllHabits();
-  const { openEditDialog } = useHabitsContext();
-  const navigate = useNavigate();
+  const { openEditDialog, toggleShowAddHabitDialog } = useHabitsContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState<OverviewTab>('all');
   // Only the id is local state. The habit itself is derived from the list, so
@@ -53,10 +107,6 @@ const HabitsOverview = memo(function HabitsOverview() {
     setDeletingId(null);
   }, [habitToDelete, deleteHabit]);
 
-  const navigateBack = useCallback(() => {
-    void navigate('/');
-  }, [navigate]);
-
   // Filter habits based on search term and selected tab
   const filteredHabits = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -69,7 +119,7 @@ const HabitsOverview = memo(function HabitsOverview() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-2 sm:px-4 md:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
           className="flex w-full items-center justify-center rounded-xl p-8"
@@ -100,7 +150,7 @@ const HabitsOverview = memo(function HabitsOverview() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
           className="flex w-full flex-1 flex-col overflow-hidden"
@@ -108,34 +158,6 @@ const HabitsOverview = memo(function HabitsOverview() {
           <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
             <div>
               <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={navigateBack}
-                  className="mr-2 hover:bg-(--color-hover-surface)"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M19 12H5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M12 19L5 12L12 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </Button>
                 Habits Overview
               </CardTitle>
               <p className="text-sm text-(--color-text-secondary)">
@@ -146,6 +168,8 @@ const HabitsOverview = memo(function HabitsOverview() {
           <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
             <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
               <Input
+                type="search"
+                aria-label="Search habits"
                 className="w-full sm:max-w-[300px]"
                 placeholder="Search habits..."
                 value={searchTerm}
@@ -185,167 +209,169 @@ const HabitsOverview = memo(function HabitsOverview() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="py-8 text-center sm:py-12"
+                  className="py-8 sm:py-12"
                 >
-                  <p className="mb-2 text-gray-600 dark:text-white">
-                    {searchTerm
-                      ? 'No habits match your search'
-                      : 'No habits found'}
-                  </p>
+                  {searchTerm ? (
+                    <EmptyResult
+                      Icon={SearchX}
+                      title={`No habits match “${searchTerm}”`}
+                      detail="Check the spelling, or try fewer letters."
+                    >
+                      <Button
+                        variant="outline"
+                        className="h-11 rounded-full px-6 sm:h-9"
+                        onClick={() => setSearchTerm('')}
+                      >
+                        Clear search
+                      </Button>
+                    </EmptyResult>
+                  ) : selectedTab === 'archived' ? (
+                    <EmptyResult
+                      Icon={Archive}
+                      title="No archived habits"
+                      detail="Habits you give an end date appear here, with their history intact."
+                    />
+                  ) : (
+                    <EmptyResult
+                      Icon={ListChecks}
+                      title="No habits yet"
+                      detail="Add your first habit to start tracking it every day."
+                    >
+                      <Button
+                        className="h-11 rounded-full px-6 sm:h-9"
+                        onClick={toggleShowAddHabitDialog}
+                      >
+                        Add habit
+                      </Button>
+                    </EmptyResult>
+                  )}
                 </motion.div>
               ) : (
-                <div className="overflow-hidden rounded-lg border border-(--color-border-primary)">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-(--color-surface-secondary) text-left">
-                        <tr>
-                          <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
-                            Habit
-                          </th>
-                          <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:table-cell sm:px-4 sm:text-sm">
-                            Frequency
-                          </th>
-                          <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm md:table-cell">
-                            Start Date
-                          </th>
-                          <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
-                            Status
-                          </th>
-                          <th className="px-3 py-3 text-right text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-(--color-border-primary) text-(--color-foreground)">
-                        {filteredHabits.map((habit) => {
-                          const Icon = HabitsIcons[habit.icon];
-                          return (
-                            <motion.tr
-                              key={habit.id}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="hover:bg-(--color-hover-surface)"
-                            >
-                              <td className="px-3 py-3 sm:px-4 sm:py-4">
-                                <div className="flex items-center gap-2 sm:gap-3">
-                                  <div className="flex items-center justify-center rounded-full bg-(--color-brand-light) p-1.5 sm:p-2">
-                                    <Icon className="h-4 w-4 text-(--color-brand-primary) sm:h-5 sm:w-5" />
-                                  </div>
-                                  <span className="line-clamp-1 text-sm font-medium text-(--color-foreground) sm:text-base">
-                                    {habit.name}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="hidden px-3 py-3 sm:table-cell sm:px-4 sm:py-4">
-                                <div className="flex flex-wrap gap-1">
-                                  {habit.frequency.map((day) => (
-                                    <span
-                                      key={day}
-                                      className="rounded-full bg-(--color-brand-light) px-2 py-0.5 text-xs text-(--color-brand-text)"
-                                    >
-                                      {day.substring(0, 3)}
+                <div key="habits">
+                  {/* Phones: one card per habit, with 44px actions. */}
+                  <ul aria-label="Habits" className="space-y-3 sm:hidden">
+                    {filteredHabits.map((habit) => {
+                      const Icon = HabitsIcons[habit.icon];
+                      return (
+                        <li
+                          key={habit.id}
+                          className="rounded-2xl bg-(--color-surface)/70 p-4 ring-1 ring-(--color-border-primary)/60 ring-inset dark:bg-(--color-surface-secondary)/60"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
+                              <Icon
+                                aria-hidden="true"
+                                className="size-5 text-(--color-brand-primary)"
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="truncate font-semibold text-(--color-foreground)">
+                                  {habit.name}
+                                </p>
+                                <StatusBadge habit={habit} />
+                              </div>
+                              <p className="mt-0.5 text-sm text-(--color-text-secondary)">
+                                {frequencyText(habit)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between gap-2 border-t border-(--color-border-primary)/60 pt-2">
+                            <span className="text-xs text-(--color-text-secondary)">
+                              Since {formatStartDate(habit)}
+                            </span>
+                            <HabitActions
+                              habit={habit}
+                              onEdit={openEditDialog}
+                              onDelete={handleDeleteHabit}
+                              size="touch"
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  <div className="hidden overflow-hidden rounded-lg border border-(--color-border-primary) sm:block">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-(--color-surface-secondary) text-left">
+                          <tr>
+                            <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
+                              Habit
+                            </th>
+                            <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:table-cell sm:px-4 sm:text-sm">
+                              Frequency
+                            </th>
+                            <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm lg:table-cell">
+                              Start Date
+                            </th>
+                            <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
+                              Status
+                            </th>
+                            <th className="px-3 py-3 text-right text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-(--color-border-primary) text-(--color-foreground)">
+                          {filteredHabits.map((habit) => {
+                            const Icon = HabitsIcons[habit.icon];
+                            return (
+                              <motion.tr
+                                key={habit.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="hover:bg-(--color-hover-surface)"
+                              >
+                                <td className="px-3 py-3 sm:px-4 sm:py-4">
+                                  <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="flex items-center justify-center rounded-full bg-(--color-brand-light) p-1.5 sm:p-2">
+                                      <Icon className="h-4 w-4 text-(--color-brand-primary) sm:h-5 sm:w-5" />
+                                    </div>
+                                    <span className="line-clamp-2 text-sm font-medium text-(--color-foreground) sm:text-base">
+                                      {habit.name}
                                     </span>
-                                  ))}
-                                </div>
-                              </td>
-                              <td className="hidden px-3 py-3 text-xs text-(--color-foreground) sm:px-4 sm:py-4 sm:text-sm md:table-cell">
-                                {new Date(habit.startDate).toLocaleDateString()}
-                              </td>
-                              <td className="px-3 py-3 sm:px-4 sm:py-4">
-                                <span
-                                  className={`rounded-full px-2 py-1 text-xs ${
-                                    isArchived(habit)
-                                      ? 'bg-(--color-muted) text-(--color-text-secondary)'
-                                      : 'bg-(--color-brand-light) text-(--color-brand-text)'
-                                  }`}
-                                >
-                                  {isArchived(habit) ? 'Archived' : 'Active'}
-                                </span>
-                              </td>
-                              <td className="px-3 py-3 text-right sm:px-4 sm:py-4">
-                                <div className="flex items-center justify-end gap-1 sm:gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => openEditDialog(habit)}
-                                    aria-label={`Edit ${habit.name}`}
-                                    className="h-7 w-7 text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:h-8 sm:w-8"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                      <path
-                                        d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87869 20 1.87869C20.5626 1.87869 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleDeleteHabit(habit)}
-                                    aria-label={`Delete ${habit.name}`}
-                                    className="h-7 w-7 text-(--color-destructive) hover:bg-(--color-error-light) sm:h-8 sm:w-8"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M3 6H5H21"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                      <path
-                                        d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                      <path
-                                        d="M10 11V17"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                      <path
-                                        d="M14 11V17"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </Button>
-                                </div>
-                              </td>
-                            </motion.tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                                  </div>
+                                </td>
+                                <td className="hidden px-3 py-3 sm:table-cell sm:px-4 sm:py-4">
+                                  <div className="flex flex-wrap gap-1">
+                                    {habit.frequency.length === 7 ? (
+                                      <span className="rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs font-medium text-(--color-brand-text)">
+                                        {frequencyLabel(habit.frequency)}
+                                      </span>
+                                    ) : (
+                                      habit.frequency.map((day) => (
+                                        <span
+                                          key={day}
+                                          className="rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs text-(--color-brand-text)"
+                                        >
+                                          {day.substring(0, 3)}
+                                        </span>
+                                      ))
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="hidden px-3 py-3 text-xs text-(--color-foreground) sm:px-4 sm:py-4 sm:text-sm lg:table-cell">
+                                  {formatStartDate(habit)}
+                                </td>
+                                <td className="px-3 py-3 sm:px-4 sm:py-4">
+                                  <StatusBadge habit={habit} />
+                                </td>
+                                <td className="px-3 py-3 text-right sm:px-4 sm:py-4">
+                                  <HabitActions
+                                    habit={habit}
+                                    onEdit={openEditDialog}
+                                    onDelete={handleDeleteHabit}
+                                  />
+                                </td>
+                              </motion.tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}

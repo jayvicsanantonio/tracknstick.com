@@ -38,10 +38,10 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
   return (
     <div
-      className="mt-4 mb-12 flex flex-col items-center justify-center"
+      className="mt-1 mb-4 flex flex-col items-center justify-center sm:mt-4 sm:mb-8 lg:mt-6 lg:mb-6"
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
-      <div className="relative h-52 w-52 sm:h-60 sm:w-60 md:h-64 md:w-64">
+      <div className="relative h-40 w-40 sm:h-60 sm:w-60 md:h-64 md:w-64">
         {/* Glass badge backdrop */}
         <div
           aria-hidden="true"
@@ -137,7 +137,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 transition={{ duration: 0.7, ease: 'easeOut' }}
               >
                 <div className={`rounded-full p-5`} aria-hidden="true">
-                  <Check className="h-28 w-28 text-(--color-brand-primary)" />
+                  <Check className="h-20 w-20 text-(--color-brand-primary) sm:h-28 sm:w-28" />
                 </div>
               </motion.div>
             ) : (
@@ -147,7 +147,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-5xl font-extrabold tracking-tight text-(--color-foreground)">
+                <span className="text-4xl font-extrabold tracking-tight text-(--color-foreground) sm:text-5xl">
                   {displayRate}%
                 </span>
                 <span className="mt-1 text-sm text-(--color-text-secondary)">

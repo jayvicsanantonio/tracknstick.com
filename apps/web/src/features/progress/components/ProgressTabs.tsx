@@ -43,34 +43,46 @@ const ProgressTabs = memo(function ProgressTabs({
       <TabsList className="grid w-full grid-cols-3 bg-(--color-muted)">
         <TabsTrigger
           value="calendar"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
+          className="text-xs data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse) sm:text-sm"
         >
-          <Calendar aria-hidden="true" className="mr-2 h-4 w-4" />
+          <Calendar
+            aria-hidden="true"
+            className="mr-2 hidden h-4 w-4 sm:block"
+          />
           History
         </TabsTrigger>
         <TabsTrigger
           value="graph"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
+          aria-label="Completion Rate"
+          className="text-xs data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse) sm:text-sm"
         >
-          <BarChart2 aria-hidden="true" className="mr-2 h-4 w-4" />
-          Completion Rate
+          <BarChart2
+            aria-hidden="true"
+            className="mr-2 hidden h-4 w-4 sm:block"
+          />
+          <span aria-hidden="true" className="sm:hidden">
+            Rates
+          </span>
+          <span aria-hidden="true" className="hidden sm:inline">
+            Completion Rate
+          </span>
         </TabsTrigger>
         <TabsTrigger
           value="achievements"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
+          className="text-xs data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse) sm:text-sm"
         >
-          <Trophy aria-hidden="true" className="mr-2 h-4 w-4" />
+          <Trophy aria-hidden="true" className="mr-2 hidden h-4 w-4 sm:block" />
           Achievements
         </TabsTrigger>
       </TabsList>
       <TabsContent value="calendar">
-        <Card className="border-(--color-border-primary)">
-          <CardHeader>
+        <Card className="gap-4 border-(--color-border-primary) py-4 sm:gap-6 sm:py-6">
+          <CardHeader className="px-3 sm:px-6">
             <h3 className="text-lg font-semibold text-(--color-foreground)">
               Calendar
             </h3>
           </CardHeader>
-          <CardContent className="h-fit overflow-y-auto">
+          <CardContent className="h-fit overflow-y-auto px-2 sm:px-6">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
                 <p className="text-(--color-text-secondary)">
@@ -88,13 +100,13 @@ const ProgressTabs = memo(function ProgressTabs({
         </Card>
       </TabsContent>
       <TabsContent value="graph">
-        <Card className="border-(--color-border-primary)">
-          <CardHeader>
+        <Card className="gap-4 border-(--color-border-primary) py-4 sm:gap-6 sm:py-6">
+          <CardHeader className="px-3 sm:px-6">
             <h3 className="text-lg font-semibold text-(--color-foreground)">
               Daily Completion Rates
             </h3>
           </CardHeader>
-          <CardContent className="min-h-80">
+          <CardContent className="min-h-80 px-1 sm:px-6">
             {isLoading ? (
               <div className="flex h-full items-center justify-center">
                 <p className="text-(--color-text-secondary)">
@@ -108,13 +120,13 @@ const ProgressTabs = memo(function ProgressTabs({
         </Card>
       </TabsContent>
       <TabsContent value="achievements">
-        <Card className="border-(--color-border-primary)">
-          <CardHeader>
+        <Card className="gap-4 border-(--color-border-primary) py-4 sm:gap-6 sm:py-6">
+          <CardHeader className="px-3 sm:px-6">
             <h3 className="text-lg font-semibold text-(--color-foreground)">
               Achievements
             </h3>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 sm:px-6">
             {achievementsLoading ? (
               <div className="flex h-full items-center justify-center py-8">
                 <p className="text-(--color-text-secondary)">

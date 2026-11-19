@@ -43,7 +43,7 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700">
-      <nav className="-mb-px flex space-x-8 overflow-x-auto">
+      <nav className="-mx-1 -mb-px flex gap-1 overflow-x-auto px-1 [scrollbar-width:none] sm:gap-8">
         {categories.map((category) => {
           const count = getCategoryCount(category.key);
           const earnedCount = getEarnedCount(category.key);
@@ -55,8 +55,10 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
           return (
             <button
               key={category.key}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => onCategoryChange?.(category.key)}
-              className={`flex items-center space-x-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex min-h-11 shrink-0 items-center space-x-2 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors sm:px-4 ${
                 isSelected
                   ? 'border-(--color-brand-primary) text-(--color-brand-primary) dark:border-(--color-brand-secondary) dark:text-(--color-brand-secondary)'
                   : 'border-transparent text-(--color-text-secondary) hover:border-gray-300 hover:text-(--color-brand-tertiary) dark:text-gray-300 dark:hover:border-gray-500 dark:hover:text-(--color-brand-secondary)'

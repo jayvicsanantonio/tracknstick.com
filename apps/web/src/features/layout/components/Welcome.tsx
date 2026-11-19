@@ -1,8 +1,102 @@
+// The signed-out landing page: what Track N' Stick offers, a preview of the tracker, and sign-in.
+// Stacks on small screens and splits hero and sign-in side by side from lg up.
+
 import { SignIn } from '@clerk/clerk-react';
 import { Card } from '@shared/components/ui/card';
 import { useTheme } from '@shared/hooks/useTheme';
 import { motion } from 'framer-motion';
 import { memo, useMemo } from 'react';
+import {
+  BarChart3,
+  CalendarCheck2,
+  Check,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react';
+
+const FEATURES: { Icon: LucideIcon; title: string; detail: string }[] = [
+  {
+    Icon: CalendarCheck2,
+    title: 'Check in daily',
+    detail: 'Tap a habit to mark it done. Your streaks build themselves.',
+  },
+  {
+    Icon: BarChart3,
+    title: 'See your progress',
+    detail: 'A calendar, completion trends and achievements to earn.',
+  },
+  {
+    Icon: Sparkles,
+    title: 'Ask the coach',
+    detail: 'Advice grounded in Atomic Habits whenever you feel stuck.',
+  },
+];
+
+/**
+ * A small, static picture of the tracker for wide screens: a progress ring
+ * and three habits, two of them done. Decorative, so hidden from assistive
+ * technology; the feature list says the same in words.
+ */
+function TrackerPreview() {
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  return (
+    <div
+      aria-hidden="true"
+      data-tracker-preview
+      className="mt-10 hidden items-center gap-6 rounded-3xl bg-(--color-surface)/70 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.08)] ring-1 ring-(--color-border-primary)/50 ring-inset lg:flex dark:bg-(--color-surface-secondary)/70"
+    >
+      <div className="relative size-24 shrink-0">
+        <svg viewBox="0 0 100 100" className="size-full -rotate-90">
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            strokeWidth="9"
+            className="stroke-(--color-border-primary)"
+          />
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            strokeWidth="9"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference / 3}
+            className="stroke-(--color-brand-primary)"
+          />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-lg font-extrabold text-(--color-foreground)">
+          67%
+        </span>
+      </div>
+      <div className="flex gap-3">
+        {['Run', 'Read', 'Water'].map((label, index) => (
+          <div key={label} className="flex flex-col items-center gap-1.5">
+            <span
+              className={`flex size-12 items-center justify-center rounded-full ring-1 ring-inset ${
+                index < 2
+                  ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) ring-(--color-brand-primary)'
+                  : 'bg-(--color-surface) text-(--color-brand-primary) ring-(--color-border-primary) dark:bg-(--color-surface-secondary)'
+              }`}
+            >
+              {index < 2 ? (
+                <Check className="h-5 w-5" strokeWidth={3} />
+              ) : (
+                <span className="h-2 w-2 rounded-full bg-current" />
+              )}
+            </span>
+            <span className="text-xs font-medium text-(--color-text-secondary)">
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const Welcome = memo(function Welcome() {
   const { mode } = useTheme();
@@ -33,35 +127,64 @@ const Welcome = memo(function Welcome() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-7xl flex-col items-center justify-center px-3 py-4 sm:px-4 sm:py-6 md:flex-row md:px-6 md:py-8 lg:px-8 lg:py-16"
+          className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-7xl flex-col items-center justify-center px-1 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-12 2xl:max-w-[90rem]"
         >
           <Card
             variant="glass"
-            className="relative w-full max-w-7xl overflow-hidden rounded-2xl sm:rounded-3xl md:max-h-[calc(100vh-8rem)]"
+            className="relative w-full max-w-7xl overflow-hidden rounded-2xl sm:rounded-3xl 2xl:max-w-[90rem]"
           >
-            <div className="flex min-h-full w-full flex-col items-center md:flex-row lg:flex-row">
+            <div className="flex min-h-full w-full flex-col items-stretch lg:flex-row lg:items-center">
               {/* Left Side - Hero Content */}
-              <div className="relative flex flex-1 flex-col items-center justify-center p-4 text-center sm:p-6 md:items-start md:p-8 md:text-left lg:p-12">
-                <div className="z-10 w-full max-w-lg md:max-w-none">
-                  <h1 className="mb-3 text-2xl font-extrabold tracking-tight text-(--color-brand-primary) sm:mb-4 sm:text-3xl md:text-4xl lg:text-6xl dark:text-(--color-brand-text-light)">
+              <div className="relative flex flex-1 flex-col items-center justify-center px-4 pt-6 pb-2 text-center sm:p-8 lg:items-start lg:p-12 lg:text-left xl:p-16">
+                <div className="z-10 w-full max-w-xl">
+                  <p className="inline-flex items-center gap-2 rounded-full bg-(--color-brand-primary)/10 px-3 py-1 text-xs font-semibold tracking-wide text-(--color-brand-text) uppercase dark:text-(--color-brand-text-light)">
+                    <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
+                    Habit tracker + AI coach
+                  </p>
+                  <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-balance text-(--color-brand-primary) sm:text-5xl xl:text-6xl dark:text-(--color-brand-text-light)">
                     {title}
                   </h1>
-                  <p className="mb-4 text-sm leading-relaxed text-balance text-(--color-brand-tertiary) sm:mb-6 sm:text-base md:text-lg lg:max-w-2xl lg:text-2xl dark:text-(--color-text-primary)">
+                  <p className="mt-3 text-base leading-relaxed text-balance text-(--color-brand-tertiary) sm:mt-4 sm:text-lg xl:text-xl dark:text-(--color-text-primary)">
                     {subtitle}
                   </p>
-                  <div className="space-y-1 sm:space-y-2">
-                    <p className="text-xs text-(--color-text-secondary) sm:text-sm">
-                      Free to try. Your data stays private.
-                    </p>
-                  </div>
+
+                  <ul
+                    aria-label="What you get"
+                    className="mt-6 grid grid-cols-3 gap-2 text-center sm:gap-3 lg:mt-8 lg:grid-cols-1 lg:gap-4 lg:text-left"
+                  >
+                    {FEATURES.map(({ Icon, title: featureTitle, detail }) => (
+                      <li
+                        key={featureTitle}
+                        className="flex flex-col items-center gap-2 rounded-2xl bg-(--color-surface)/60 p-3 ring-1 ring-(--color-border-primary)/50 ring-inset lg:flex-row lg:items-start lg:gap-4 lg:bg-transparent lg:p-0 lg:ring-0 dark:bg-(--color-surface-secondary)/60 lg:dark:bg-transparent"
+                      >
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-(--color-brand-primary)/12 text-(--color-brand-primary)">
+                          <Icon aria-hidden="true" className="h-5 w-5" />
+                        </span>
+                        <span>
+                          <span className="block text-xs font-semibold text-(--color-foreground) sm:text-sm lg:text-base">
+                            {featureTitle}
+                          </span>
+                          <span className="hidden text-sm text-(--color-text-secondary) lg:block">
+                            {detail}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <TrackerPreview />
+
+                  <p className="mt-6 text-xs text-(--color-text-secondary) sm:text-sm">
+                    Free to try. Your data stays private.
+                  </p>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="mx-8 my-3 h-px w-auto bg-(--color-border-primary) sm:mx-12 sm:my-4 md:mx-0 md:my-6 md:h-auto md:w-px lg:my-12" />
+              <div className="mx-8 my-3 h-px w-auto bg-(--color-border-primary) sm:mx-12 sm:my-4 lg:mx-0 lg:my-12 lg:h-auto lg:w-px lg:self-stretch" />
 
               {/* Right Side - Sign In Form */}
-              <div className="flex flex-1 justify-center pt-4 pb-12 sm:p-6 sm:pb-16 md:p-8 md:pb-8 lg:p-12">
+              <div className="flex flex-1 justify-center pt-2 pb-4 sm:p-6 sm:pb-12 lg:p-12">
                 <div>
                   <div className="mb-3 text-center sm:mb-4">
                     <h2 className="text-base font-semibold text-(--color-brand-tertiary) sm:text-lg dark:text-(--color-brand-text-light)">

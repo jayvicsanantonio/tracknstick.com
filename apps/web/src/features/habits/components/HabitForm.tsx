@@ -173,7 +173,7 @@ const HabitForm = memo(function HabitForm({
           />
         </div>
 
-        <Separator className="my-2 bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
+        <Separator className="my-2 bg-(--color-border-brand) max-sm:hidden dark:bg-(--color-brand-light)" />
 
         <FormActions
           isSubmitting={isSubmitting}

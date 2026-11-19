@@ -27,7 +27,7 @@ async function addHabit(page: Page, name: string) {
   for (const day of EVERY_DAY) {
     await dialog.getByRole('button', { name: day, exact: true }).click();
   }
-  await dialog.getByRole('button', { name: 'Save Changes' }).click();
+  await dialog.getByRole('button', { name: 'Add habit' }).click();
 
   await expect(dialog).toBeHidden();
 }

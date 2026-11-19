@@ -1,3 +1,6 @@
+// Footer buttons of the habit form: Delete when editing, Cancel, and submit.
+// The submit label says what happens: "Add habit" for a new habit, "Save Changes" for an edit.
+
 import { memo, useCallback } from 'react';
 import { DialogClose } from '@shared/components/ui/dialog';
 import { Button } from '@shared/components/ui/button';
@@ -14,18 +17,22 @@ const FormActions = memo(function FormActions({
   onDelete,
   habit,
 }: FormActionsProps) {
+  const isEditing = Boolean(habit?.id);
+  const submittingLabel = isEditing ? 'Saving...' : 'Adding…';
+  const submitLabel = isEditing ? 'Save Changes' : 'Add habit';
+
   const handleDelete = useCallback(() => {
     if (!habit?.id || !onDelete) return;
     void onDelete(habit.id);
   }, [habit?.id, onDelete]);
   return (
-    <div className="mt-2 flex flex-col-reverse items-center gap-2 sm:mt-0 sm:flex-row">
-      <div className="mt-2 w-full sm:mt-0 sm:w-auto sm:flex-1">
+    <div className="mt-2 flex flex-row items-center gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:-mx-4 max-sm:border-t max-sm:border-(--color-border-brand) max-sm:bg-(--color-brand-lighter) max-sm:px-4 max-sm:pt-3 max-sm:pb-[max(env(safe-area-inset-bottom),1rem)] sm:mt-0 dark:max-sm:border-(--color-border-secondary) dark:max-sm:bg-(--color-surface-secondary)">
+      <div className="max-sm:empty:hidden sm:flex-1">
         {habit?.id && onDelete && (
           <Button
             type="button"
             variant="outline"
-            className="w-full border-(--color-error) bg-(--color-surface) text-sm text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) sm:w-auto sm:text-base dark:bg-transparent dark:hover:border-(--color-error) dark:hover:bg-(--color-error)"
+            className="border-(--color-error) bg-(--color-surface) px-3 text-sm text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) sm:text-base dark:bg-transparent dark:hover:border-(--color-error) dark:hover:bg-(--color-error)"
             onClick={handleDelete}
             disabled={isSubmitting}
           >
@@ -33,7 +40,7 @@ const FormActions = memo(function FormActions({
           </Button>
         )}
       </div>
-      <div className="flex w-full flex-row gap-2 sm:w-auto">
+      <div className="flex flex-1 flex-row gap-2 sm:w-auto sm:flex-none">
         <DialogClose asChild className={`flex-1 sm:flex-none`}>
           <Button
             type="button"
@@ -49,7 +56,7 @@ const FormActions = memo(function FormActions({
           className="flex-1 bg-(--color-brand-primary) text-sm text-(--color-text-inverse) hover:bg-(--color-brand-secondary) sm:w-32 sm:flex-none sm:text-base dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </div>
     </div>

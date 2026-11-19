@@ -19,7 +19,14 @@ interface UseAllHabitsReturn {
   deleteHabit: (habitId: string, habitName: string) => Promise<void>;
 }
 
-export function useAllHabits(): UseAllHabitsReturn {
+interface UseAllHabitsOptions {
+  /** False sends no request and reports no habits. Defaults to true. */
+  enabled?: boolean;
+}
+
+export function useAllHabits({
+  enabled = true,
+}: UseAllHabitsOptions = {}): UseAllHabitsReturn {
   const { toast } = useToast();
   const { isSignedIn } = useAuth();
 
@@ -29,7 +36,7 @@ export function useAllHabits(): UseAllHabitsReturn {
     isLoading,
     mutate: mutateHabits,
   } = useSWR<Habit[], unknown>(
-    isSignedIn ? allHabitsKey : null,
+    isSignedIn && enabled ? allHabitsKey : null,
     () => fetchHabits(), // Call without date parameter to get all habits
     {
       revalidateOnFocus: true,

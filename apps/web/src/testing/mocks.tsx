@@ -261,9 +261,9 @@ vi.mock('@/icons/miscellaneous', () => ({
         CheckCircle2
       </div>
     ),
-    Edit: ({ className }: IconProps) => (
-      <div className={className} data-testid="icon-edit">
-        Edit
+    ListChecks: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-listchecks">
+        ListChecks
       </div>
     ),
     Moon: ({ className }: IconProps) => (

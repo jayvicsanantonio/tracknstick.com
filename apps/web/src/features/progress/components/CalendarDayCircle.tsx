@@ -23,6 +23,20 @@ const CalendarDayCircle = memo(function CalendarDayCircle({
     return dayData ? `${percent}% completion` : '0% completion';
   }, [showCircle, dayData, percent]);
 
+  // A future day has nothing to measure yet: a faint dot keeps the grid's
+  // rhythm without reading as a missed 0%.
+  if (!showCircle) {
+    return (
+      <div
+        className="flex h-1/2 w-1/2 items-center justify-center"
+        role="img"
+        aria-label={ariaLabel}
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative h-1/2 w-1/2" role="img" aria-label={ariaLabel}>
       <svg className="h-full w-full" viewBox="0 0 36 36" aria-hidden="true">

@@ -72,4 +72,12 @@ describe('ProgressOverview', () => {
     );
     expect(screen.queryByTestId('progress-tabs')).not.toBeInTheDocument();
   });
+
+  it('has no back button, since the header navigation covers it', () => {
+    renderOverview();
+
+    expect(
+      screen.queryByRole('button', { name: /back/i }),
+    ).not.toBeInTheDocument();
+  });
 });

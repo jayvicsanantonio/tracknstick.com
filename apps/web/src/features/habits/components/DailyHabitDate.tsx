@@ -12,7 +12,9 @@ const DailyHabitDate = memo(function DailyHabitDate() {
     return date.toLocaleDateString('en-US', {
       timeZone,
       year: 'numeric',
-      month: 'long',
+      // Short, so "Today" and the date fit one line on a 360px phone and in
+      // the tracker's narrow dashboard column.
+      month: 'short',
       day: 'numeric',
     });
   }, [date, timeZone]);
@@ -46,11 +48,11 @@ const DailyHabitDate = memo(function DailyHabitDate() {
       </Button>
 
       <div className="relative text-center">
-        <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-(--color-border-primary) bg-(--color-card) px-4 py-2 shadow-sm">
+        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-border-primary) bg-(--color-card) px-4 py-2 shadow-sm sm:gap-3">
           <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
             {dayLabel}
           </h2>
-          <span className="text-sm text-(--color-brand-primary) sm:text-base">
+          <span className="text-sm whitespace-nowrap text-(--color-brand-primary) sm:text-base">
             {formattedDate}
           </span>
         </div>

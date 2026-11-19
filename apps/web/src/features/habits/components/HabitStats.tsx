@@ -1,3 +1,4 @@
+import { plural } from '@shared/utils/plural';
 import { memo, useMemo } from 'react';
 import { Habit } from '@/features/habits/types/Habit';
 import formatDate from '@shared/utils/date/formatDate';
@@ -17,7 +18,7 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
   const motivationalMessage = useMemo(() => {
     if (!habit) return '';
     return habitStats.streak > 0
-      ? `Great job! You've been consistent with "${habit.name}" for ${habitStats.streak} days.`
+      ? `Great job! You've been consistent with "${habit.name}" for ${habitStats.streak} ${plural(habitStats.streak, 'day')}.`
       : `Start your streak by completing "${habit.name}" today!`;
   }, [habit, habitStats.streak]);
 
@@ -51,7 +52,7 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
               {habitStats.streak}
             </span>
             <span className="ml-1 text-xs text-(--color-text-secondary) sm:text-sm">
-              days
+              {plural(habitStats.streak, 'day')}
             </span>
           </div>
         </motion.div>
@@ -77,7 +78,7 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
               {habitStats.longestStreak}
             </span>
             <span className="ml-1 text-xs text-(--color-text-secondary) sm:text-sm">
-              days
+              {plural(habitStats.longestStreak, 'day')}
             </span>
           </div>
         </motion.div>

@@ -32,7 +32,7 @@ const FrequencySelector = memo(function FrequencySelector({
       </Label>
       <ToggleGroup
         type="multiple"
-        className="flex justify-between sm:flex-wrap sm:justify-start sm:gap-2"
+        className="flex w-full justify-between sm:w-auto sm:flex-wrap sm:justify-start sm:gap-2"
         aria-label="Select days of the week"
         value={selectedDays}
         onValueChange={handleValueChange}
@@ -43,7 +43,7 @@ const FrequencySelector = memo(function FrequencySelector({
             value={day}
             aria-label={day}
             title={day}
-            className="h-8 w-8 rounded-full text-xs transition-all duration-200 data-[state=off]:border-2 data-[state=off]:border-(--color-border-primary) data-[state=off]:bg-(--color-surface-tertiary) data-[state=off]:text-(--color-text-secondary) data-[state=off]:hover:border-(--color-brand-primary) data-[state=off]:hover:bg-(--color-hover-brand) data-[state=off]:hover:text-(--color-text-inverse) data-[state=on]:border-2 data-[state=on]:border-(--color-brand-primary) data-[state=on]:bg-(--color-brand-primary) data-[state=on]:font-bold data-[state=on]:text-(--color-text-inverse) data-[state=on]:shadow-lg sm:h-10 sm:w-10 sm:text-sm dark:data-[state=off]:border-2 dark:data-[state=off]:border-(--color-border-primary) dark:data-[state=off]:bg-(--color-brand-light) dark:data-[state=off]:text-(--color-brand-text-light) dark:data-[state=off]:hover:border-(--color-brand-primary) dark:data-[state=on]:border-2 dark:data-[state=on]:border-(--color-brand-primary) dark:data-[state=on]:bg-(--color-brand-primary) dark:data-[state=on]:text-(--color-text-inverse) dark:data-[state=on]:shadow-(--color-brand-primary)/30 dark:data-[state=on]:shadow-lg"
+            className="h-10 w-10 rounded-full text-sm transition-all duration-200 data-[state=off]:border-2 data-[state=off]:border-(--color-border-primary) data-[state=off]:bg-(--color-surface-tertiary) data-[state=off]:text-(--color-text-secondary) data-[state=off]:hover:border-(--color-brand-primary) data-[state=off]:hover:bg-(--color-hover-brand) data-[state=off]:hover:text-(--color-text-inverse) data-[state=on]:border-2 data-[state=on]:border-(--color-brand-primary) data-[state=on]:bg-(--color-brand-primary) data-[state=on]:font-bold data-[state=on]:text-(--color-text-inverse) data-[state=on]:shadow-lg sm:h-10 sm:w-10 sm:text-sm dark:data-[state=off]:border-2 dark:data-[state=off]:border-(--color-border-primary) dark:data-[state=off]:bg-(--color-brand-light) dark:data-[state=off]:text-(--color-brand-text-light) dark:data-[state=off]:hover:border-(--color-brand-primary) dark:data-[state=on]:border-2 dark:data-[state=on]:border-(--color-brand-primary) dark:data-[state=on]:bg-(--color-brand-primary) dark:data-[state=on]:text-(--color-text-inverse) dark:data-[state=on]:shadow-(--color-brand-primary)/30 dark:data-[state=on]:shadow-lg"
           >
             {day[0]}
           </ToggleGroupItem>

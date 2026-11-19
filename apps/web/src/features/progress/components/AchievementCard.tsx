@@ -32,7 +32,7 @@ const AchievementCard = memo(function AchievementCard({
     <div
       className={`rounded-lg border-2 bg-(--color-surface) p-4 shadow-md transition-all duration-200 dark:bg-(--color-brand-light) ${
         isEarned
-          ? 'border-(--color-brand-primary) bg-gradient-to-br from-yellow-50 to-orange-50 dark:border-yellow-400 dark:from-yellow-900/30 dark:to-orange-900/30'
+          ? 'border-(--color-brand-primary) bg-(--color-brand-primary)/8 dark:bg-(--color-brand-primary)/10'
           : 'border-transparent hover:border-(--color-brand-primary)/30 dark:hover:border-(--color-brand-primary)/50'
       } `}
     >
@@ -46,7 +46,7 @@ const AchievementCard = memo(function AchievementCard({
             const IconComponent = getAchievementIcon(icon);
             return (
               <IconComponent
-                className={`h-6 w-6 ${isEarned ? 'text-white' : getIconColorClass(category, isEarned)}`}
+                className={`h-6 w-6 ${isEarned ? 'text-(--color-primary-foreground)' : getIconColorClass(category, isEarned)}`}
                 aria-label={name}
               />
             );
@@ -59,7 +59,7 @@ const AchievementCard = memo(function AchievementCard({
             <h4
               className={`text-sm font-semibold ${
                 isEarned
-                  ? 'text-(--color-brand-primary) dark:text-yellow-300'
+                  ? 'text-(--color-brand-tertiary) dark:text-(--color-brand-primary)'
                   : 'text-(--color-brand-tertiary) dark:text-gray-200'
               } `}
             >
@@ -67,7 +67,7 @@ const AchievementCard = memo(function AchievementCard({
             </h4>
 
             {isEarned && (
-              <div className="rounded-full bg-(--color-brand-primary) px-2 py-1 text-xs text-white">
+              <div className="shrink-0 rounded-full bg-(--color-brand-primary) px-2 py-1 text-xs font-medium text-(--color-primary-foreground)">
                 ✓ Earned
               </div>
             )}

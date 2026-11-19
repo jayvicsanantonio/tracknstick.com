@@ -30,7 +30,7 @@ const DailyHabitList = memo(function DailyHabitList() {
 
   return (
     <motion.div
-      className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-5"
+      className="grid grid-cols-3 gap-x-2 gap-y-4 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
       aria-label="List of daily habits"
       variants={container}
       initial="hidden"

@@ -21,7 +21,7 @@ export function ChatInput({
   return (
     <form
       onSubmit={onSubmit}
-      className="border-border/40 bg-background/50 shrink-0 border-t p-4"
+      className="shrink-0 border-t border-(--color-border-primary)/40 bg-(--color-background)/50 p-4 pb-[max(env(safe-area-inset-bottom),1rem)] sm:pb-4"
     >
       <div className="flex items-end gap-2">
         <textarea
@@ -33,9 +33,10 @@ export function ChatInput({
               onSubmit(e);
             }
           }}
-          placeholder="Ask about habits and productivity..."
+          aria-label="Ask the habit coach"
+          placeholder="Ask the coach anything…"
           rows={1}
-          className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring max-h-32 min-h-[44px] flex-1 resize-none rounded-lg border px-4 py-3 text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="max-h-32 min-h-[44px] flex-1 resize-none rounded-lg border border-(--color-input) bg-(--color-background) px-4 py-3 text-base placeholder:text-(--color-text-secondary) focus:ring-2 focus:ring-(--color-ring) focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
           disabled={isLoading}
         />
         <Button

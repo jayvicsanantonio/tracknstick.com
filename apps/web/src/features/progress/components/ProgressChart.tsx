@@ -43,6 +43,9 @@ const ProgressChart = memo(function ProgressChart({
             tick={{ fill: 'var(--color-brand-text)' }}
           />
           <YAxis
+            domain={[0, 100]}
+            ticks={[0, 25, 50, 75, 100]}
+            allowDataOverflow
             label={{
               value: 'Completion Rate (%)',
               angle: -90,

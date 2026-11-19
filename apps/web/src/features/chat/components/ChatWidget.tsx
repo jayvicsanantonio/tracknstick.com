@@ -1,6 +1,6 @@
 // The floating chat button, and the chat panel it opens.
 // The panel and its markdown renderer download the first time it opens, not with the page.
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChatToggle } from './ChatToggle';
 
@@ -8,13 +8,21 @@ const ChatBox = lazy(() =>
   import('./ChatBox').then((module) => ({ default: module.ChatBox })),
 );
 
+interface ChatWidgetProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+}
+
 /**
  * Floating chat widget that appears on all pages.
  * Fixed position at bottom-right corner on desktop.
  * Full screen on mobile devices.
+ *
+ * The parent owns the open state: on phones the floating button is hidden
+ * and the tab bar's Coach tab opens the panel instead.
  */
-export function ChatWidget() {
-  const [isOpen, setIsOpen] = useState(false);
+export function ChatWidget({ isOpen, onOpenChange }: ChatWidgetProps) {
+  const setIsOpen = onOpenChange;
 
   return (
     <>
@@ -24,7 +32,7 @@ export function ChatWidget() {
         className={
           isOpen
             ? 'fixed inset-0 z-50 sm:inset-auto sm:right-6 sm:bottom-6'
-            : 'fixed right-6 bottom-6 z-50'
+            : 'fixed right-6 bottom-6 z-50 hidden sm:block'
         }
       >
         <AnimatePresence>

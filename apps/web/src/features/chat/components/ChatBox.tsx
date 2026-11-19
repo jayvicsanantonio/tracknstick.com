@@ -134,18 +134,18 @@ export function ChatBox({ onClose }: ChatBoxProps) {
   };
 
   return (
-    <div className="border-border/50 bg-card flex h-full w-full flex-col overflow-hidden shadow-2xl backdrop-blur-2xl sm:h-[550px] sm:w-[400px] sm:rounded-2xl sm:border">
+    <div className="flex h-full w-full flex-col overflow-hidden border-(--color-border-primary)/50 bg-(--color-card) text-(--color-card-foreground) shadow-2xl sm:h-[550px] sm:w-[400px] sm:rounded-2xl sm:border">
       <ChatHeader onClose={onClose} />
 
       {/* Messages area */}
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="bg-primary/10 mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-              <BookOpen className="text-primary h-7 w-7" />
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
+              <BookOpen className="h-7 w-7 text-(--color-brand-primary)" />
             </div>
             <h2 className="text-base font-semibold">Habits Coach</h2>
-            <p className="text-muted-foreground mt-2 max-w-[280px] text-xs">
+            <p className="mt-2 max-w-[280px] text-xs text-(--color-text-secondary)">
               Get tips on building better habits, staying productive, and
               achieving your goals.
             </p>
@@ -171,7 +171,7 @@ export function ChatBox({ onClose }: ChatBoxProps) {
           <ChatMessage key={message.id} message={message} />
         ))}
         {error && (
-          <div className="bg-destructive/10 text-destructive rounded-lg p-3 text-xs">
+          <div className="rounded-lg bg-(--color-destructive)/10 p-3 text-xs text-(--color-destructive)">
             Error: {error}
           </div>
         )}
@@ -203,7 +203,7 @@ function SuggestionChip({
     <button
       type="button"
       onClick={onClick}
-      className="border-border/60 bg-background hover:border-primary hover:bg-primary/5 rounded-full border px-2.5 py-1 text-[10px] transition-colors"
+      className="min-h-9 rounded-full border border-(--color-border-primary)/60 bg-(--color-background) px-3 py-1.5 text-xs transition-colors hover:border-(--color-brand-primary) hover:bg-(--color-brand-primary)/5 sm:min-h-0 sm:px-2.5 sm:py-1 sm:text-[10px]"
     >
       {text}
     </button>
