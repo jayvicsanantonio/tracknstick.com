@@ -4,6 +4,7 @@
 import { memo } from 'react';
 import { Achievement } from '../types/Achievement';
 import ProgressBar from './AchievementProgressBar';
+import { parseUTCTimestamp } from '@shared/utils/date/formatDate';
 import {
   getAchievementIcon,
   getIconColorClass,
@@ -103,7 +104,7 @@ const AchievementCard = memo(function AchievementCard({
 
             {isEarned && earnedAt && (
               <span className="text-xs text-(--color-text-secondary) dark:text-gray-400">
-                {new Date(earnedAt).toLocaleDateString()}
+                {parseUTCTimestamp(earnedAt).toLocaleDateString()}
               </span>
             )}
           </div>
