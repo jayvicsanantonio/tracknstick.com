@@ -46,12 +46,15 @@ function mockHabits(values: Partial<ReturnType<typeof useHabits>>) {
 }
 
 /** Every habit the user has, due or not on the day shown. */
-function mockAllHabits(habits: Habit[]) {
+const retryAllHabits = vi.fn();
+
+function mockAllHabits(habits: Habit[], error?: unknown) {
   vi.mocked(useAllHabits).mockReturnValue({
     habits,
     isLoading: false,
-    error: undefined,
+    error,
     deleteHabit: vi.fn(),
+    retry: retryAllHabits,
   } as unknown as ReturnType<typeof useAllHabits>);
 }
 
@@ -176,5 +179,19 @@ describe('DailyHabitTracker', () => {
     mockHabits({ habits: [] });
     renderTracker();
     expect(useAllHabits).toHaveBeenLastCalledWith({ enabled: true });
+  });
+
+  it('offers to try again, not to add a first habit, when the habit list cannot be checked', async () => {
+    mockHabits({ habits: [] });
+    mockAllHabits([], new Error('Too many requests'));
+
+    renderTracker();
+
+    expect(screen.queryByText('No habits yet')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Your habits could not be checked',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(retryAllHabits).toHaveBeenCalledTimes(1);
   });
 });

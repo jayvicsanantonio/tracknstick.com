@@ -125,7 +125,9 @@ const IconPicker = memo(function IconPicker({
           </p>
         ) : (
           <RadioGroup
-            className="grid grid-cols-7 gap-2 sm:grid-cols-10 md:grid-cols-12"
+            // Six columns below sm keep each tile at 44px or more on a
+            // 360px phone; seven made them about 38px.
+            className="grid grid-cols-6 gap-2 sm:grid-cols-10 md:grid-cols-12"
             value={selectedIcon}
             onValueChange={handleValueChange}
             aria-label={label}

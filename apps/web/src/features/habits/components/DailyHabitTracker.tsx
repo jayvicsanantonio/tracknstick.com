@@ -18,7 +18,12 @@ export default function DailyHabitTracker() {
     useHabits();
   // Every habit, due or not: tells "no habits at all" from "none due today".
   // Fetched only when the day shown has no habits, the one case that needs it.
-  const { habits: allHabits, isLoading: allHabitsLoading } = useAllHabits({
+  const {
+    habits: allHabits,
+    isLoading: allHabitsLoading,
+    error: allHabitsError,
+    retry: retryAllHabits,
+  } = useAllHabits({
     enabled: !isLoading && !error && habits.length === 0,
   });
   const doneCount = habits.filter((habit) => habit.completed).length;
@@ -116,7 +121,23 @@ export default function DailyHabitTracker() {
             </div>
             <CardContent className="flex-1 px-3 pb-8 sm:px-6 lg:pt-8">
               {habits.length === 0 ? (
-                allHabitsLoading ? null : allHabits.length === 0 ? (
+                allHabitsLoading ? null : allHabitsError ? (
+                  // Unknown is not empty: only a successful lookup may say
+                  // the user has no habits.
+                  <div className="flex flex-col items-center gap-4 py-16 text-center">
+                    <p role="alert" className="text-(--color-foreground)">
+                      Your habits could not be checked. Check your connection
+                      and try again.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-full px-6 sm:h-9"
+                      onClick={() => void retryAllHabits()}
+                    >
+                      Try again
+                    </Button>
+                  </div>
+                ) : allHabits.length === 0 ? (
                   <NoHabits />
                 ) : (
                   <NothingScheduled />

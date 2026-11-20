@@ -161,4 +161,15 @@ describe('HabitsOverview', () => {
       ).toHaveLength(1);
     });
   });
+
+  it('says there are no active habits, not no habits, when every habit is archived', async () => {
+    renderOverview([
+      habit({ id: '1', name: 'Read', endDate: '2026-11-10T00:00:00Z' }),
+    ]);
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Active' }));
+
+    expect(screen.getByText('No active habits')).toBeInTheDocument();
+    expect(screen.queryByText('No habits yet')).not.toBeInTheDocument();
+  });
 });

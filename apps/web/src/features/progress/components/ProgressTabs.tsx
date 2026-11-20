@@ -53,7 +53,9 @@ const ProgressTabs = memo(function ProgressTabs({
         </TabsTrigger>
         <TabsTrigger
           value="graph"
-          aria-label="Completion Rate"
+          // Contains both visible labels, "Rates" on phones and "Completion
+          // Rate" wider, so speech input users can say either.
+          aria-label="Completion Rates"
           className="text-xs data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse) sm:text-sm"
         >
           <BarChart2

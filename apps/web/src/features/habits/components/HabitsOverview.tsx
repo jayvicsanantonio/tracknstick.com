@@ -231,6 +231,21 @@ const HabitsOverview = memo(function HabitsOverview() {
                       title="No archived habits"
                       detail="Habits you give an end date appear here, with their history intact."
                     />
+                  ) : habits.length > 0 ? (
+                    // Every habit is archived: the Active tab is empty, the
+                    // account is not.
+                    <EmptyResult
+                      Icon={ListChecks}
+                      title="No active habits"
+                      detail="All your habits are archived. Add a new one, or find the others under Archived."
+                    >
+                      <Button
+                        className="h-11 rounded-full px-6 sm:h-9"
+                        onClick={toggleShowAddHabitDialog}
+                      >
+                        Add habit
+                      </Button>
+                    </EmptyResult>
                   ) : (
                     <EmptyResult
                       Icon={ListChecks}

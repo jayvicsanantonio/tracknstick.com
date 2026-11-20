@@ -2,7 +2,7 @@
 // Disabled, it sends nothing: the tracker only needs the list on a day with no habits due.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import { useAllHabits } from '../useAllHabits';
@@ -44,5 +44,19 @@ describe('useAllHabits', () => {
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(habitsApi.fetchHabits).not.toHaveBeenCalled();
     expect(result.current.habits).toEqual([]);
+  });
+
+  it('asks again when retried', async () => {
+    const { result } = renderHook(() => useAllHabits(), { wrapper });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const callsBefore = vi.mocked(habitsApi.fetchHabits).mock.calls.length;
+
+    await act(async () => {
+      await result.current.retry();
+    });
+
+    expect(vi.mocked(habitsApi.fetchHabits).mock.calls.length).toBe(
+      callsBefore + 1,
+    );
   });
 });

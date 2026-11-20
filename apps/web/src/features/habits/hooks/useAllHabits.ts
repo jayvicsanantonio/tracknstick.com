@@ -17,6 +17,8 @@ interface UseAllHabitsReturn {
   isLoading: boolean;
   error: unknown;
   deleteHabit: (habitId: string, habitName: string) => Promise<void>;
+  /** Asks the API for the list again, as after a failed request. */
+  retry: () => Promise<unknown>;
 }
 
 interface UseAllHabitsOptions {
@@ -71,10 +73,13 @@ export function useAllHabits({
     [mutateHabits, toast],
   );
 
+  const retry = useCallback(() => mutateHabits(), [mutateHabits]);
+
   return {
     habits,
     isLoading,
     error,
     deleteHabit,
+    retry,
   };
 }

@@ -14,7 +14,10 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      'fixed top-0 z-100 flex max-h-screen w-full flex-col-reverse p-4 pt-[max(env(safe-area-inset-top),1rem)] sm:top-auto sm:right-0 sm:bottom-0 sm:flex-col sm:pt-4 sm:pb-24 md:max-w-[420px]',
+      // pointer-events-none: the viewport's padding would otherwise swallow
+      // clicks on whatever sits under it, such as the chat button; each toast
+      // turns pointer events back on for itself.
+      'pointer-events-none fixed top-0 z-100 flex max-h-screen w-full flex-col-reverse p-4 pt-[max(env(safe-area-inset-top),1rem)] sm:top-auto sm:right-0 sm:bottom-0 sm:flex-col sm:pt-4 sm:pb-24 md:max-w-[420px]',
       className,
     )}
     {...props}

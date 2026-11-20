@@ -117,6 +117,36 @@ async function eachCombo(
   }
 }
 
+/**
+ * Marks each habit complete and waits until the API has saved it, then checks
+ * after a reload that `total` habits are done. A failed save is undone in the
+ * page, so without this the screenshots could quietly show fewer completed
+ * habits than they should.
+ */
+async function completeHabits(page: Page, names: string[], total: number) {
+  for (const name of names) {
+    const saved = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        /\/api\/v1\/habits\/[^/]+\/trackers$/.test(
+          new URL(response.url()).pathname,
+        ),
+    );
+    await page
+      .getByRole('button', { name: `Mark ${name} as complete` })
+      .click();
+    const response = await saved;
+    expect(
+      response.ok(),
+      `Saving "${name}" as complete failed: ${response.status()}`,
+    ).toBe(true);
+  }
+  await page.reload();
+  await expect(
+    page.getByRole('button', { name: /^Mark .+ as incomplete$/ }),
+  ).toHaveCount(total);
+}
+
 // The Add dialog's submit button reads "Add habit" now and "Save Changes"
 // before, so the same script captures either version of the app.
 const submitButton = (dialog: Locator) =>
@@ -183,12 +213,7 @@ test('capture every screen', async ({ browser }) => {
       await expect(dialog).toBeHidden();
       await page.waitForTimeout(3000);
     }
-    for (const name of ['Morning run', 'Read 20 pages']) {
-      await page
-        .getByRole('button', { name: `Mark ${name} as complete` })
-        .click();
-    }
-    await page.waitForTimeout(1500);
+    await completeHabits(page, ['Morning run', 'Read 20 pages'], 2);
     await context.close();
   }
   // Seeding used up much of the minute's habit requests; let the limit reset
@@ -248,12 +273,11 @@ test('capture every screen', async ({ browser }) => {
   {
     const { context, page } = await open(browser, COMBOS[0], true);
     await page.goto('/');
-    for (const [name] of HABITS.slice(2)) {
-      await page
-        .getByRole('button', { name: `Mark ${name} as complete` })
-        .click();
-    }
-    await page.waitForTimeout(1500);
+    await completeHabits(
+      page,
+      HABITS.slice(2).map(([name]) => name),
+      HABITS.length,
+    );
     await context.close();
   }
   await eachCombo(browser, true, async (page, combo) => {
