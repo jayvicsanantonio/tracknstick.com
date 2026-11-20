@@ -77,9 +77,9 @@ pauses between sizes to stay under the local API's per-minute rate limit.
 - `--color-brand-primary` as small text, such as the date beside "Today", is
   3.6:1 in light mode. It is also the brand's main fill, so darkening it changes
   the look everywhere; left as a design decision.
-- The completion chart and earned-achievement dates show the day before in
-  timezones west of UTC. That is fixed on its own branch,
-  `claude/fix-progress-dates-35d159`, not in these shots.
+- These shots were taken before the Progress date fix (#161) was merged, so the
+  completion chart in them labels each bar one day early, as it did in timezones
+  west of UTC. The app now shows the right day.
 
 ## Screens
 
