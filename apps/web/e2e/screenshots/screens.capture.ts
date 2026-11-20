@@ -61,8 +61,18 @@ const HABITS: [name: string, icon: string, days: string[]][] = [
   ['Drink water', 'GlassWater', EVERY_DAY],
   ['Meditate', 'Brain', EVERY_DAY],
   ['Practice guitar', 'Guitar', EVERY_DAY],
-  ['Swim', 'Droplet', ['Mon', 'Wed', 'Fri']],
+  ['Swim', 'Droplet', threeDaysFromToday()],
 ];
+
+/**
+ * Three days a week, today among them, so the habit is due on the day the
+ * screens are captured: a fixed Mon/Wed/Fri left it off the Tracker on
+ * other days.
+ */
+function threeDaysFromToday(): string[] {
+  const today = new Date().getDay();
+  return [0, 2, 4].map((offset) => EVERY_DAY[(today + offset) % 7]);
+}
 
 async function open(browser: Browser, combo: Combo, signedIn: boolean) {
   const context = await browser.newContext({
@@ -159,7 +169,12 @@ test('capture every screen', async ({ browser }) => {
         .click();
       const dialog = page.getByRole('dialog', { name: 'Add New Habit' });
       await dialog.getByLabel('Name').fill(name);
-      const radio = page.getByRole('radio', { name: icon, exact: true });
+      // Icons are named in plain words ("Glass water") now, by their key
+      // ("GlassWater") before; match either so both versions capture.
+      const plain = icon.replace(/([a-z])([A-Z])/g, '$1 $2');
+      const radio = page.getByRole('radio', {
+        name: new RegExp(`^(${icon}|${plain})$`, 'i'),
+      });
       await dialog.locator('label', { has: radio }).click();
       for (const day of days) {
         await dialog.getByRole('button', { name: day, exact: true }).click();

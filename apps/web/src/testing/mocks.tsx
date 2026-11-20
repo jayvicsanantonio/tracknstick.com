@@ -256,6 +256,11 @@ type IconProps = React.SVGProps<SVGSVGElement>;
 
 vi.mock('@/icons/miscellaneous', () => ({
   default: {
+    Check: ({ className }: IconProps) => (
+      <div className={className} data-testid="icon-check">
+        Check
+      </div>
+    ),
     CheckCircle2: ({ className }: IconProps) => (
       <div className={className} data-testid="icon-checkcircle2">
         CheckCircle2

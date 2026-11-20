@@ -29,7 +29,12 @@ export default defineConfig({
   // local API under its rate limit take several minutes.
   timeout: 30 * 60_000,
   reporter: 'list',
-  use: { baseURL: `http://localhost:${WEB_PORT}`, trace: 'off' },
+  // A click that cannot land fails after 15s rather than hanging the run.
+  use: {
+    baseURL: `http://localhost:${WEB_PORT}`,
+    trace: 'off',
+    actionTimeout: 15_000,
+  },
   webServer: [
     {
       command: `node e2e/serveApi.mjs ${API_PORT}`,

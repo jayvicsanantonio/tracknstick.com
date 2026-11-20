@@ -1,5 +1,9 @@
+// The app header: the Track N' Stick logo, linking to the Tracker, and a toolbar of navigation and actions.
+// Both sit in matching glass pills of one height; on phones the toolbar keeps only theme and account.
+
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { memo } from 'react';
+import { Link } from 'react-router-dom';
 // import { NavLink } from 'react-router-dom';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Button } from '@shared/components/ui/button';
@@ -7,9 +11,18 @@ import { Button } from '@shared/components/ui/button';
 import IconNavLink from './IconNavLink';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import { cn } from '@shared/utils/utils';
 
-const { CheckCircle2, ListChecks, Moon, Plus, Sun, BarChart2, Calendar } =
+const { Check, ListChecks, Moon, Plus, Sun, BarChart2, Calendar } =
   MiscellaneousIcons;
+
+// The glass pill both halves of the header sit in. One height, h-14, holds a
+// row of 44px controls with 6px padding, so the logo and the toolbar line up.
+const PILL =
+  'flex h-14 items-center rounded-full bg-(--color-surface)/80 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset dark:bg-(--color-surface-secondary)/80';
+
+// Header icon buttons: 44px at every width, flat inside the pill's shadow.
+const HEADER_BUTTON = 'sm:size-11 shadow-none hover:shadow-none';
 
 const Header = memo(function Header() {
   const { toggleMode } = useTheme();
@@ -18,56 +31,61 @@ const Header = memo(function Header() {
   return (
     <header className="sticky top-0 z-40">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 pt-[max(env(safe-area-inset-top),0.75rem)] pb-3 sm:px-4 sm:py-8 md:px-8 2xl:max-w-[90rem]">
-        <div className="flex items-center gap-2 rounded-full bg-(--color-surface)/80 px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:px-3 sm:py-2 dark:bg-(--color-surface-secondary)/80">
-          <CheckCircle2
+        <Link
+          to="/"
+          aria-label="Track N' Stick"
+          className={cn(
+            PILL,
+            'gap-2.5 pr-4 outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) sm:pr-5',
+          )}
+        >
+          {/* The mark is a filled circle the size of the toolbar's buttons,
+              so the two pills read as one row. */}
+          <span
             aria-hidden="true"
-            className="h-6 w-6 shrink-0 text-(--color-brand-primary) sm:h-8 sm:w-8"
-          />
-          <span className="inline-block pr-2 pl-1 text-lg font-extrabold tracking-tight whitespace-nowrap text-(--color-brand-primary) sm:text-xl md:text-2xl">
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-sm"
+          >
+            <Check className="size-5" strokeWidth={3} />
+          </span>
+          <span
+            aria-hidden="true"
+            className="text-lg leading-none font-extrabold tracking-tight whitespace-nowrap text-(--color-brand-primary) sm:text-xl"
+          >
             Track N&apos; Stick
           </span>
-        </div>
+        </Link>
         <div className="flex items-center">
           <SignedIn>
             <div
               role="toolbar"
               aria-label="User actions"
-              className="flex gap-2 rounded-full bg-(--color-surface)/80 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:p-2 dark:bg-(--color-surface-secondary)/80"
+              className={cn(PILL, 'gap-1.5 sm:gap-2')}
             >
               {/* On phones the bottom tab bar carries navigation and Add. */}
-              <div className="hidden gap-2 sm:flex sm:gap-3">
+              <div className="hidden items-center gap-2 sm:flex">
                 <IconNavLink to="/" label="Tracker" aria-label="Daily Tracker">
-                  <Calendar
-                    aria-hidden="true"
-                    className="h-4 w-4 sm:h-5 sm:w-5"
-                  />
+                  <Calendar aria-hidden="true" className="size-5" />
                 </IconNavLink>
                 <IconNavLink
                   to="/habits"
                   label="Habits"
                   aria-label="Habits Overview"
                 >
-                  <ListChecks
-                    aria-hidden="true"
-                    className="h-4 w-4 sm:h-5 sm:w-5"
-                  />
+                  <ListChecks aria-hidden="true" className="size-5" />
                 </IconNavLink>
                 <IconNavLink
                   to="/progress"
                   label="Progress"
                   aria-label="Progress Overview"
                 >
-                  <BarChart2
-                    aria-hidden="true"
-                    className="h-4 w-4 sm:h-5 sm:w-5"
-                  />
+                  <BarChart2 aria-hidden="true" className="size-5" />
                 </IconNavLink>
 
                 <span
                   role="separator"
                   aria-orientation="vertical"
                   aria-hidden="true"
-                  className="mx-1 w-px self-stretch rounded-full bg-(--color-border-primary)/60 sm:mx-2"
+                  className="mx-1 h-6 w-px self-center rounded-full bg-(--color-border-primary)/70"
                 />
 
                 <Button
@@ -75,8 +93,9 @@ const Header = memo(function Header() {
                   size="icon"
                   onClick={toggleShowAddHabitDialog}
                   aria-label="Add Habit"
+                  className={HEADER_BUTTON}
                 >
-                  <Plus aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
+                  <Plus aria-hidden="true" className="size-5" />
                 </Button>
               </div>
 
@@ -85,15 +104,10 @@ const Header = memo(function Header() {
                 size="icon"
                 onClick={toggleMode}
                 aria-label="Toggle Theme"
+                className={HEADER_BUTTON}
               >
-                <Sun
-                  aria-hidden="true"
-                  className="h-5 w-5 sm:h-6 sm:w-6 dark:hidden"
-                />
-                <Moon
-                  aria-hidden="true"
-                  className="hidden h-5 w-5 sm:h-6 sm:w-6 dark:block"
-                />
+                <Sun aria-hidden="true" className="size-5 dark:hidden" />
+                <Moon aria-hidden="true" className="hidden size-5 dark:block" />
               </Button>
               <UserButton
                 appearance={{
@@ -105,7 +119,8 @@ const Header = memo(function Header() {
                   },
                   elements: {
                     userButtonAvatarBox:
-                      'min-w-11 min-h-11 sm:min-w-10 sm:min-h-10 shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-(--color-brand-primary)/20',
+                      // !important: Clerk's own avatar size would otherwise win.
+                      '!size-11 ring-2 ring-(--color-surface) dark:ring-(--color-surface-secondary)',
                     // Popover container
                     userButtonPopoverCard:
                       'bg-(--color-card) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-2xl border border-(--color-border-primary) shadow-2xl',
@@ -139,22 +154,17 @@ const Header = memo(function Header() {
             <div
               role="toolbar"
               aria-label="User actions"
-              className="flex gap-2 rounded-full bg-(--color-surface)/80 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl backdrop-saturate-150 ring-inset sm:gap-3 sm:p-2 dark:bg-(--color-surface-secondary)/80"
+              className={cn(PILL, 'gap-1.5 sm:gap-2')}
             >
               <Button
                 variant="brandTonal"
                 size="icon"
                 onClick={toggleMode}
                 aria-label="Toggle Theme"
+                className={HEADER_BUTTON}
               >
-                <Sun
-                  aria-hidden="true"
-                  className="h-5 w-5 sm:h-6 sm:w-6 dark:hidden"
-                />
-                <Moon
-                  aria-hidden="true"
-                  className="hidden h-5 w-5 sm:h-6 sm:w-6 dark:block"
-                />
+                <Sun aria-hidden="true" className="size-5 dark:hidden" />
+                <Moon aria-hidden="true" className="hidden size-5 dark:block" />
               </Button>
             </div>
           </SignedOut>

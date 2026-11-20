@@ -32,7 +32,7 @@ function IconNavLink({
             size: 'icon',
             variant: isActive ? 'brandTonalActive' : 'brandTonal',
           }),
-          'rounded-full lg:w-auto lg:px-4',
+          'rounded-full shadow-none hover:shadow-none sm:size-11 lg:w-auto lg:px-4',
         )
       }
       {...a11y}

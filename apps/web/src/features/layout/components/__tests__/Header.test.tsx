@@ -76,4 +76,12 @@ describe('Header Component', () => {
       screen.getByRole('link', { name: /progress overview/i }),
     ).toHaveTextContent('Progress');
   });
+
+  it('links the logo to the tracker', () => {
+    renderHeader();
+
+    expect(
+      screen.getByRole('link', { name: "Track N' Stick" }),
+    ).toHaveAttribute('href', '/');
+  });
 });

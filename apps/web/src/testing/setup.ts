@@ -57,12 +57,14 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Mock ResizeObserver. A class, because libraries construct it with `new`
+// (Radix radio groups inside a form, Recharts' ResponsiveContainer), which
+// an arrow-function mock does not support.
+global.ResizeObserver = class {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+};
 
 // Mock IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({

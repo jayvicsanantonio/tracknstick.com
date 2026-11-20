@@ -26,7 +26,7 @@ const FrequencySelector = memo(function FrequencySelector({
   );
   return (
     <div className="space-y-1 sm:space-y-2">
-      <Label className="text-sm text-(--color-brand-text) sm:text-base dark:text-(--color-brand-text-light)">
+      <Label className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)">
         {label}
         <span className="text-(--color-error)">*</span>
       </Label>

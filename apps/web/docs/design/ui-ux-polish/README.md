@@ -14,6 +14,13 @@ in the middle of the image.
 
 **Look and feel**
 
+- The **header** is one aligned row: the logo and the toolbar sit in glass pills
+  of the same height, with 44px controls throughout. The logo is a filled check
+  mark the size of the toolbar's buttons, and it links to the Tracker; the
+  profile photo matches the buttons' size.
+- The **icon picker** shows all 81 icons in a searchable grid (it showed 27,
+  with no sign of the rest), says which icon is chosen, scrolls an edited
+  habit's icon into view, and names icons in plain words for screen readers.
 - **Plus Jakarta Sans** replaces the system font. It is self-hosted from
   `@fontsource-variable/plus-jakarta-sans`, so the Content-Security-Policy needs
   no third-party host, and the service worker precaches it for offline use.
@@ -77,9 +84,9 @@ pauses between sizes to stay under the local API's per-minute rate limit.
 - `--color-brand-primary` as small text, such as the date beside "Today", is
   3.6:1 in light mode. It is also the brand's main fill, so darkening it changes
   the look everywhere; left as a design decision.
-- These shots were taken before the Progress date fix (#161) was merged, so the
-  completion chart in them labels each bar one day early, as it did in timezones
-  west of UTC. The app now shows the right day.
+- The before shots predate the Progress date fix (#161), so their completion
+  chart labels each bar one day early west of UTC; the after shots include the
+  fix.
 
 ## Screens
 
@@ -109,6 +116,8 @@ pauses between sizes to stay under the local API's per-minute rate limit.
 
 `/`
 
+- The header's logo and toolbar pills share one height and centre line at every
+  width; the logo links to the Tracker.
 - Phones get the **bottom tab bar**: Tracker, Habits, a raised **Add** button,
   Progress and Coach, each at least 44px and within thumb reach.
 - The phone header keeps only the brand name, the theme toggle and the account
@@ -135,6 +144,11 @@ pauses between sizes to stay under the local API's per-minute rate limit.
   the iPhone home indicator.
 - The submit button says **Add habit** ("Adding…" while saving) instead of "Save
   Changes".
+- The **icon picker**: a search field ("Search 81 icons"), a grid of light tiles
+  that shows whole rows and fades at its foot to show there is more, a chip
+  saying which icon is chosen, and plain-words names ("Glass water") for screen
+  readers. It used to show 27 of 81 icons in a box with no sign it scrolled.
+- Field labels share one size and weight.
 - Larger touch targets on phones: a 44px close button, 40px day buttons spread
   across the row, and a 6-column icon grid with bigger cells.
 - The close button no longer shows a focus ring as soon as the dialog opens.
@@ -236,6 +250,8 @@ Chat button (wider screens) or Coach tab (phones)
 
 `/habits`, Edit
 
+- The edited habit's icon is scrolled into view and named in the chip beside the
+  Icon label.
 - The same bottom sheet as Add on phones, with **Delete, Cancel and Save Changes
   on one pinned row**.
 - The Edit and Stats tabs match every other tab set in the app.
