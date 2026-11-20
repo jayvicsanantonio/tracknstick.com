@@ -101,6 +101,27 @@ export function getLocalEndOfDayUTC(date: Date, timezone: string): Date {
   return localDayBoundaryUTC(date, timezone, 'end');
 }
 
+/**
+ * The local midnight of a YYYY-MM-DD calendar date key.
+ *
+ * `new Date('2026-11-17')` reads a date-only string as UTC midnight, which is
+ * the previous day anywhere west of UTC.
+ */
+export function parseDateKey(key: string): Date {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/**
+ * The instant a UTC timestamp names, including SQLite's zoneless
+ * `YYYY-MM-DD HH:MM:SS` form, which `new Date()` would read as local time.
+ */
+export function parseUTCTimestamp(value: string): Date {
+  const iso = value.replace(' ', 'T');
+  const hasZone = /(Z|[+-]\d{2}:?\d{2})$/.test(iso);
+  return new Date(hasZone ? iso : `${iso}Z`);
+}
+
 export default function formatDate(date?: string | null): string {
   if (!date) {
     return 'Never';

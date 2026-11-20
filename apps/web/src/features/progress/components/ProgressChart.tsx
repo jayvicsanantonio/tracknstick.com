@@ -8,6 +8,7 @@ import {
   Tooltip,
   Bar,
 } from 'recharts';
+import { parseDateKey } from '@shared/utils/date/formatDate';
 
 interface ProgressChartProps {
   data: { date: string; completionRate: number }[];
@@ -31,7 +32,7 @@ const ProgressChart = memo(function ProgressChart({
           <XAxis
             dataKey="date"
             tickFormatter={(value: string | number) =>
-              new Date(String(value)).getDate().toString()
+              parseDateKey(String(value)).getDate().toString()
             }
             label={{
               value: 'Day of Month',
@@ -55,7 +56,7 @@ const ProgressChart = memo(function ProgressChart({
           <Tooltip
             formatter={(value: number) => [`${value}%`, 'Completion Rate']}
             labelFormatter={(label: string | number) =>
-              `Date: ${new Date(String(label)).toLocaleDateString()}`
+              `Date: ${parseDateKey(String(label)).toLocaleDateString()}`
             }
             contentStyle={{
               backgroundColor: 'var(--color-card)',
