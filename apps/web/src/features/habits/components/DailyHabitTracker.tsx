@@ -1,14 +1,32 @@
+// The Tracker page body: the chosen day, its progress, and the habits due that day.
+// Stacks on small screens and splits into a two-column dashboard from lg up.
+
 import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import NoHabits from '@/features/habits/components/NoHabits';
 import DailyHabitDate from '@/features/habits/components/DailyHabitDate';
 import DailyHabitProgressIndicator from '@/features/habits/components/DailyHabitProgressIndicator';
 import DailyHabitList from '@/features/habits/components/DailyHabitList';
 import { useHabits } from '@/features/habits/hooks/useHabits';
+import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
+import NothingScheduled from '@/features/habits/components/NothingScheduled';
+import { Button } from '@shared/components/ui/button';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
 import { motion } from 'framer-motion';
 
 export default function DailyHabitTracker() {
-  const { habits, isLoading, error, completionRate } = useHabits();
+  const { habits, isLoading, error, completionRate, mutateHabits } =
+    useHabits();
+  // Every habit, due or not: tells "no habits at all" from "none due today".
+  // Fetched only when the day shown has no habits, the one case that needs it.
+  const {
+    habits: allHabits,
+    isLoading: allHabitsLoading,
+    error: allHabitsError,
+    retry: retryAllHabits,
+  } = useAllHabits({
+    enabled: !isLoading && !error && habits.length === 0,
+  });
+  const doneCount = habits.filter((habit) => habit.completed).length;
 
   if (isLoading) {
     return (
@@ -18,7 +36,7 @@ export default function DailyHabitTracker() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
           <Card
             variant="glass"
             className="relative flex w-full flex-1 items-center justify-center overflow-hidden"
@@ -34,8 +52,25 @@ export default function DailyHabitTracker() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-(--color-error-light) bg-(--color-error-light) p-8 text-center text-(--color-error-text) dark:border-(--color-error) dark:bg-(--color-error-light) dark:text-(--color-error-text)">
-        Error loading habits. Please try again.
+      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
+        <Card
+          variant="glass"
+          className="flex w-full flex-1 items-center justify-center"
+        >
+          <CardContent className="flex flex-col items-center gap-4 px-3 py-16 text-center sm:px-6">
+            <p role="alert" className="text-(--color-foreground)">
+              Your habits could not be loaded. Check your connection and try
+              again.
+            </p>
+            <Button
+              variant="outline"
+              className="rounded-full px-6"
+              onClick={() => void mutateHabits()}
+            >
+              Try again
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -47,33 +82,73 @@ export default function DailyHabitTracker() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
           className="relative flex w-full flex-1 flex-col overflow-hidden"
         >
-          <CardHeader className="px-3 pt-6 sm:px-6">
-            <DailyHabitDate />
-          </CardHeader>
-          <CardContent className="flex-1 px-3 pb-8 sm:px-6">
-            {habits.length === 0 ? (
-              <NoHabits />
-            ) : (
-              <>
+          {/* From lg up: the day and its progress in a column, the habits
+              beside it. Below lg they stack. */}
+          <div className="grid flex-1 lg:grid-cols-[minmax(19rem,23rem)_1fr]">
+            <div className="lg:self-start lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
+              <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
+                <DailyHabitDate />
+              </CardHeader>
+              {habits.length > 0 ? (
                 <section
                   aria-label="Progress"
-                  className="relative mx-auto mb-8 w-full max-w-md"
+                  className="relative mx-auto mb-4 flex w-full max-w-md flex-col items-center px-3 sm:mb-8 sm:px-6 lg:mb-0"
                 >
                   <DailyHabitProgressIndicator
                     completionRate={completionRate}
                   />
+                  <p
+                    role="status"
+                    aria-label="Day summary"
+                    className="rounded-full bg-(--color-brand-primary)/10 px-4 py-1.5 text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
+                  >
+                    {doneCount === habits.length
+                      ? `All ${habits.length} done`
+                      : `${doneCount} of ${habits.length} done`}
+                    <span className="font-normal text-(--color-text-secondary)">
+                      {doneCount === habits.length
+                        ? ' · nice work'
+                        : ` · ${habits.length - doneCount} to go`}
+                    </span>
+                  </p>
                 </section>
-                <section aria-label="Today\'s Habits">
+              ) : null}
+            </div>
+            <CardContent className="flex-1 px-3 pb-8 sm:px-6 lg:pt-8">
+              {habits.length === 0 ? (
+                allHabitsLoading ? null : allHabitsError ? (
+                  // Unknown is not empty: only a successful lookup may say
+                  // the user has no habits.
+                  <div className="flex flex-col items-center gap-4 py-16 text-center">
+                    <p role="alert" className="text-(--color-foreground)">
+                      Your habits could not be checked. Check your connection
+                      and try again.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-full px-6 sm:h-9"
+                      onClick={() => void retryAllHabits()}
+                    >
+                      Try again
+                    </Button>
+                  </div>
+                ) : allHabits.length === 0 ? (
+                  <NoHabits />
+                ) : (
+                  <NothingScheduled />
+                )
+              ) : (
+                <section aria-label="Today's Habits">
                   <DailyHabitList />
                 </section>
-              </>
-            )}
-          </CardContent>
+              )}
+            </CardContent>
+          </div>
         </Card>
       </div>
     </motion.div>

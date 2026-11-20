@@ -125,7 +125,7 @@ const HabitForm = memo(function HabitForm({
           <div className="space-y-1 sm:space-y-2">
             <Label
               htmlFor="habit-name"
-              className="text-sm text-(--color-brand-text) sm:text-base dark:text-(--color-brand-text-light)"
+              className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
             >
               Name
               <span className="text-(--color-error)">*</span>
@@ -173,7 +173,7 @@ const HabitForm = memo(function HabitForm({
           />
         </div>
 
-        <Separator className="my-2 bg-(--color-border-brand) dark:bg-(--color-brand-light)" />
+        <Separator className="my-2 bg-(--color-border-brand) max-sm:hidden dark:bg-(--color-brand-light)" />
 
         <FormActions
           isSubmitting={isSubmitting}

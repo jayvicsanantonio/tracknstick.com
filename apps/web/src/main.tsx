@@ -5,6 +5,8 @@ import DateProvider from '@app/providers/DateProvider.tsx';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { Toaster } from '@shared/components/ui/toaster.tsx';
 import App from '@app/App.tsx';
+// Self-hosted, so the Content-Security-Policy needs no third-party font host.
+import '@fontsource-variable/plus-jakarta-sans';
 import '@/styles/index.css';
 import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';

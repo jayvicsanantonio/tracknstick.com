@@ -34,6 +34,9 @@ vi.mock('@/features/layout/components/Header', () => ({
 vi.mock('@/features/layout/components/Footer', () => ({
   default: () => <footer />,
 }));
+vi.mock('@/features/layout/components/MobileTabBar', () => ({
+  default: () => <nav data-testid="mobile-tab-bar" />,
+}));
 vi.mock('@/features/chat/components/ChatWidget', () => ({
   ChatWidget: () => <div data-testid="chat-widget" />,
 }));
@@ -78,5 +81,17 @@ describe('RootLayout auth gate', () => {
     expect(screen.getByTestId('outlet')).toBeInTheDocument();
     expect(screen.getByTestId('chat-widget')).toBeInTheDocument();
     expect(screen.queryByTestId('welcome')).not.toBeInTheDocument();
+  });
+
+  it('shows the mobile tab bar only when signed in', async () => {
+    mockAuth.isSignedIn = true;
+    const { unmount } = renderLayout();
+    expect(screen.getByTestId('mobile-tab-bar')).toBeInTheDocument();
+    unmount();
+
+    mockAuth.isSignedIn = false;
+    renderLayout();
+    expect(await screen.findByTestId('welcome')).toBeInTheDocument();
+    expect(screen.queryByTestId('mobile-tab-bar')).not.toBeInTheDocument();
   });
 });

@@ -1,44 +1,56 @@
-// Covers the day labels on the completion rate chart.
-// Each bar's date is a YYYY-MM-DD key, labelled with that calendar day in any timezone.
+// Covers the completion-rate chart: a 0-100% Y axis, and bars labelled with their own calendar day.
+// A data-driven axis made a 33% day look like a full bar; each YYYY-MM-DD key is its local day in any timezone.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { cloneElement, type ReactElement } from 'react';
 import { render, screen } from '@testing-library/react';
 import ProgressChart from '../ProgressChart';
 
+// jsdom has no layout, so the responsive wrapper would measure 0x0 and draw
+// nothing. Give the chart a fixed size instead.
+vi.mock('recharts', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('recharts')>();
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: ReactElement }) =>
+      cloneElement(
+        children as ReactElement<{ width: number; height: number }>,
+        {
+          width: 800,
+          height: 400,
+        },
+      ),
+  };
+});
+
 describe('ProgressChart', () => {
-  beforeEach(() => {
-    vi.stubEnv('TZ', 'America/Los_Angeles');
-    // ResponsiveContainer constructs a ResizeObserver with `new`, which the
-    // arrow-function stub in the shared setup does not support.
-    vi.stubGlobal(
-      'ResizeObserver',
-      class {
-        observe = vi.fn();
-        unobserve = vi.fn();
-        disconnect = vi.fn();
-      },
-    );
-    // jsdom does no layout, so ResponsiveContainer would measure 0 x 0 and
-    // draw nothing.
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(
-      new DOMRect(0, 0, 600, 400),
-    );
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
-    vi.unstubAllGlobals();
-    vi.restoreAllMocks();
-  });
-
-  it("labels a bar with its key's day of the month", () => {
-    // One bar: the stubbed measurement also makes every tick label look
-    // 600px wide, so recharts would hide all but one as overlapping.
+  it('scales the Y axis from 0 to 100 percent', () => {
     render(
-      <ProgressChart data={[{ date: '2026-11-17', completionRate: 100 }]} />,
+      <ProgressChart data={[{ date: '2026-11-17', completionRate: 33 }]} />,
     );
 
-    expect(screen.getByText('17')).toBeInTheDocument();
-    expect(screen.queryByText('16')).not.toBeInTheDocument();
+    // Recharts nests each tick label, so a label can match more than once.
+    expect(screen.getAllByText('100').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('50').length).toBeGreaterThan(0);
+  });
+
+  describe('west of UTC', () => {
+    beforeEach(() => {
+      vi.stubEnv('TZ', 'America/Los_Angeles');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it("labels a bar with its key's day of the month", () => {
+      render(
+        <ProgressChart data={[{ date: '2026-11-17', completionRate: 100 }]} />,
+      );
+
+      // Recharts nests each tick label, so a label can match more than once.
+      expect(screen.getAllByText('17').length).toBeGreaterThan(0);
+      expect(screen.queryByText('16')).not.toBeInTheDocument();
+    });
   });
 });

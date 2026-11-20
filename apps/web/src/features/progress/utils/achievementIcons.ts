@@ -96,7 +96,7 @@ export const getIconColorClass = (category: string, isEarned: boolean) => {
 // Get background color class based on achievement category
 export const getIconBackgroundClass = (category: string, isEarned: boolean) => {
   if (isEarned) {
-    return 'bg-gradient-to-br from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600';
+    return 'bg-(--color-brand-primary)';
   }
 
   switch (category) {

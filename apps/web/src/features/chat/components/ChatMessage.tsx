@@ -32,8 +32,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
         className={cn(
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
           isUser
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-primary/20 text-primary',
+            ? 'bg-(--color-brand-primary) text-(--color-primary-foreground)'
+            : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary)',
         )}
       >
         {isUser ? (
@@ -48,8 +48,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
         className={cn(
           'rounded-2xl px-4 py-3',
           isUser
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-muted/80 text-foreground',
+            ? 'bg-(--color-brand-primary) text-(--color-primary-foreground)'
+            : 'bg-(--color-muted)/80 text-(--color-foreground)',
         )}
       >
         {isUser ? (

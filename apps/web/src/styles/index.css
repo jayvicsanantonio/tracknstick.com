@@ -14,6 +14,12 @@
 
   /* Custom breakpoints */
   --breakpoint-xs: 480px;
+
+  /* Typeface: Plus Jakarta Sans, self-hosted from @fontsource-variable (see
+     main.tsx), with the system UI font while it loads or if it cannot. */
+  --font-sans:
+    'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
 /*
@@ -40,7 +46,7 @@
     --color-secondary: hsl(327, 73%, 97%);
     --color-secondary-foreground: hsl(326, 84%, 14%);
     --color-muted: hsl(327, 73%, 97%);
-    --color-muted-foreground: hsl(327, 73%, 56%);
+    --color-muted-foreground: hsl(327, 73%, 42%);
     --color-accent: hsl(327, 73%, 77%);
     --color-accent-foreground: hsl(329, 36%, 6%);
     --color-destructive: hsl(327, 84%, 25%);
@@ -59,8 +65,8 @@
     --color-surface-secondary: hsl(327, 73%, 97%);
     --color-surface-tertiary: hsl(327, 73%, 87%);
     --color-text-primary: hsl(329, 36%, 6%);
-    --color-text-secondary: hsl(327, 84%, 46%);
-    --color-text-tertiary: hsl(327, 73%, 56%);
+    --color-text-secondary: hsl(327, 84%, 40%);
+    --color-text-tertiary: hsl(327, 73%, 42%);
     --color-text-inverse: hsl(327, 100%, 98%);
     --color-border-primary: hsl(327, 73%, 87%);
     --color-border-secondary: hsl(327, 73%, 77%);
@@ -90,8 +96,8 @@
     --color-muted-foreground: hsl(152, 72%, 77%);
     --color-accent: hsl(155, 58%, 14%);
     --color-accent-foreground: hsl(152, 81%, 96%);
-    --color-destructive: hsl(155, 58%, 46%);
-    --color-destructive-foreground: hsl(152, 81%, 96%);
+    --color-destructive: hsl(0, 72%, 48%);
+    --color-destructive-foreground: hsl(0, 0%, 100%);
     --color-border: hsl(215, 15%, 21%);
     --color-input: hsl(215, 15%, 21%);
     --color-ring: hsl(152, 72%, 67%);

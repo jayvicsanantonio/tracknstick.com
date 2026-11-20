@@ -39,4 +39,71 @@ describe('IconPicker', () => {
 
     expect(onIconChange).toHaveBeenCalledWith('Activity');
   });
+
+  it('names each icon in plain words', () => {
+    render(<IconPicker selectedIcon={undefined} onIconChange={vi.fn()} />);
+
+    expect(
+      screen.getByRole('radio', { name: 'Glass water' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('radio', { name: 'Book open' }),
+    ).toBeInTheDocument();
+  });
+
+  it('says which icon is chosen', () => {
+    render(<IconPicker selectedIcon="Dumbbell" onIconChange={vi.fn()} />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('Dumbbell');
+  });
+
+  it('says when no icon is chosen yet', () => {
+    render(<IconPicker selectedIcon={undefined} onIconChange={vi.fn()} />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('None chosen');
+  });
+
+  it('narrows the icons to a search', async () => {
+    render(<IconPicker selectedIcon={undefined} onIconChange={vi.fn()} />);
+
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: 'Search icons' }),
+      'water',
+    );
+
+    expect(
+      screen.getByRole('radio', { name: 'Glass water' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('radio', { name: 'Activity' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('says when no icon matches the search', async () => {
+    render(<IconPicker selectedIcon={undefined} onIconChange={vi.fn()} />);
+
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: 'Search icons' }),
+      'zzz',
+    );
+
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
+    expect(screen.getByText('No icons match “zzz”')).toBeInTheDocument();
+  });
+
+  it('does not submit the habit form when Enter is pressed in the search', async () => {
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <IconPicker selectedIcon={undefined} onIconChange={vi.fn()} />
+      </form>,
+    );
+
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: 'Search icons' }),
+      'run{Enter}',
+    );
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
 });

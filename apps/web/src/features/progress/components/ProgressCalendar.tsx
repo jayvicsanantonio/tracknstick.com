@@ -78,13 +78,16 @@ const ProgressCalendar = memo(function ProgressCalendar({
             className="flex aspect-square flex-col items-center justify-center p-1"
             role="gridcell"
             aria-label={`Day ${dayOfMonth}`}
+            aria-current={isToday ? 'date' : undefined}
           >
             <span
               aria-hidden="true"
-              className={`mb-1 text-xs font-medium ${
-                isPast || isToday
-                  ? 'text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)'
-                  : 'text-(--color-text-tertiary) dark:text-(--color-brand-secondary)'
+              className={`mb-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-medium ${
+                isToday
+                  ? 'bg-(--color-brand-primary) font-bold text-(--color-primary-foreground)'
+                  : isPast
+                    ? 'text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)'
+                    : 'text-(--color-text-tertiary) opacity-70 dark:text-(--color-brand-secondary)'
               }`}
             >
               {dayOfMonth}

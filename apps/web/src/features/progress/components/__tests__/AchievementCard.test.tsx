@@ -1,5 +1,5 @@
-// Covers the date an earned achievement card shows.
-// The API sends earnedAt as a UTC SQLite timestamp; the card shows its local calendar date.
+// Covers how an earned achievement card reads: its badge, its palette, and the date it was earned.
+// Earned cards use the brand tokens; earnedAt is a UTC SQLite timestamp shown as its local calendar date.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -21,19 +21,33 @@ const earned: Achievement = {
 };
 
 describe('AchievementCard', () => {
-  beforeEach(() => {
-    vi.stubEnv('TZ', 'America/Los_Angeles');
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it('shows the local date an achievement was earned on', () => {
+  it('marks an earned achievement as earned', () => {
     render(<AchievementCard achievement={earned} />);
 
-    expect(
-      screen.getByText(new Date(2026, 10, 17).toLocaleDateString()),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Earned/)).toBeInTheDocument();
+  });
+
+  it('styles an earned card with the brand palette only', () => {
+    const { container } = render(<AchievementCard achievement={earned} />);
+
+    expect(container.innerHTML).not.toMatch(/yellow|orange-50/);
+  });
+
+  describe('west of UTC', () => {
+    beforeEach(() => {
+      vi.stubEnv('TZ', 'America/Los_Angeles');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('shows the local date an achievement was earned on', () => {
+      render(<AchievementCard achievement={earned} />);
+
+      expect(
+        screen.getByText(new Date(2026, 10, 17).toLocaleDateString()),
+      ).toBeInTheDocument();
+    });
   });
 });

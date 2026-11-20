@@ -62,4 +62,26 @@ describe('Header Component', () => {
     expect(habitsLink).toHaveClass('bg-(--color-brand-secondary)');
     expect(dailyLink).not.toHaveClass('bg-(--color-brand-secondary)');
   });
+
+  it('shows a text label on each navigation link', () => {
+    renderHeader();
+
+    expect(
+      screen.getByRole('link', { name: /daily tracker/i }),
+    ).toHaveTextContent('Tracker');
+    expect(
+      screen.getByRole('link', { name: /habits overview/i }),
+    ).toHaveTextContent('Habits');
+    expect(
+      screen.getByRole('link', { name: /progress overview/i }),
+    ).toHaveTextContent('Progress');
+  });
+
+  it('links the logo to the tracker', () => {
+    renderHeader();
+
+    expect(
+      screen.getByRole('link', { name: "Track N' Stick" }),
+    ).toHaveAttribute('href', '/');
+  });
 });

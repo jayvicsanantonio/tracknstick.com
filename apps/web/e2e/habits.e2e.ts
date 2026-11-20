@@ -27,7 +27,7 @@ async function addHabit(page: Page, name: string) {
   for (const day of EVERY_DAY) {
     await dialog.getByRole('button', { name: day, exact: true }).click();
   }
-  await dialog.getByRole('button', { name: 'Save Changes' }).click();
+  await dialog.getByRole('button', { name: 'Add habit' }).click();
 
   await expect(dialog).toBeHidden();
 }
@@ -52,12 +52,23 @@ test('marks a habit complete and keeps it complete after a reload', async ({
   const name = uniqueName('Walk');
   await addHabit(page, name);
 
+  // The button turns at once, before the API has saved anything; a reload
+  // while the request is still in flight would cancel it.
+  const saved = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'POST' &&
+      /\/api\/v1\/habits\/[^/]+\/trackers$/.test(
+        new URL(response.url()).pathname,
+      ) &&
+      response.ok(),
+  );
   await page.getByRole('button', { name: `Mark ${name} as complete` }).click();
 
   const completed = page.getByRole('button', {
     name: `Mark ${name} as incomplete`,
   });
   await expect(completed).toHaveAttribute('aria-pressed', 'true');
+  await saved;
 
   await page.reload();
   await expect(completed).toHaveAttribute('aria-pressed', 'true');
@@ -81,4 +92,24 @@ test('deletes a habit from the habits overview', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: `Mark ${name} as complete` }),
   ).toHaveCount(0);
+});
+
+test('opens the habit coach while a toast is showing', async ({ page }) => {
+  const name = uniqueName('Journal');
+  await addHabit(page, name);
+  // Adding a habit announces it in a toast at the bottom right, beside the
+  // chat button.
+  await expect(
+    page.getByText(`Habit "${name}" added successfully.`, { exact: true }),
+  ).toBeVisible();
+
+  // The toast stays about 5s; a click that waited for it to leave would
+  // still pass, so it gets 2s, while the toast is up.
+  await page
+    .getByRole('button', { name: 'Open chat' })
+    .click({ timeout: 2_000 });
+
+  await expect(
+    page.getByRole('heading', { name: 'Habit Coach' }),
+  ).toBeVisible();
 });

@@ -32,7 +32,7 @@ function App({ children }: AppProps) {
           <div className="absolute top-[20%] right-[-15%] h-[36vmax] w-[36vmax] rounded-full bg-(--color-brand-primary)/30 opacity-25 blur-3xl" />
           <div className="absolute bottom-[-15%] left-[20%] h-[32vmax] w-[32vmax] rounded-full bg-(--color-accent) opacity-20 blur-3xl" />
         </div>
-        <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col">
+        <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col 2xl:max-w-[90rem]">
           <HabitsStateProvider>
             <AppContent>{children}</AppContent>
           </HabitsStateProvider>
