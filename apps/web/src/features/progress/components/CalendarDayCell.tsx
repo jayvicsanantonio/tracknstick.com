@@ -11,6 +11,8 @@ interface CalendarDayCellProps {
   isPast: boolean;
   isToday: boolean;
   dayData?: InsightData;
+  /** The month's history is still on its way: a past day shows a plain ring. */
+  loading?: boolean;
 }
 
 const RADIUS = 15;
@@ -18,6 +20,23 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 // The ring and its centre share one size, so the percentage sits inside it.
 const RING_BOX = 'relative size-9 sm:size-11';
+
+/** A past day's ring while its completion is unknown: a plain, faint track. */
+function PendingRing() {
+  return (
+    <div aria-hidden="true" className={RING_BOX}>
+      <svg viewBox="0 0 36 36" className="size-full">
+        <circle
+          cx="18"
+          cy="18"
+          r={RADIUS}
+          strokeWidth="3"
+          className="fill-none stroke-(--color-border-primary)/50"
+        />
+      </svg>
+    </div>
+  );
+}
 
 function DayRing({ rate }: { rate: number | null }) {
   const isPerfect = rate !== null && rate >= 100;
@@ -78,15 +97,20 @@ const CalendarDayCell = memo(function CalendarDayCell({
   isPast,
   isToday,
   dayData,
+  loading = false,
 }: CalendarDayCellProps) {
   const hasHappened = isPast || isToday;
   const rate = dayData ? Math.round(dayData.completionRate) : null;
 
+  // Unknown is not empty: until the history arrives, no day reads as having
+  // nothing scheduled.
   const label = !hasHappened
     ? `Day ${dayOfMonth}`
-    : rate === null
-      ? `Day ${dayOfMonth}: nothing scheduled`
-      : `Day ${dayOfMonth}: ${rate}% completed`;
+    : loading
+      ? `Day ${dayOfMonth}: loading`
+      : rate === null
+        ? `Day ${dayOfMonth}: nothing scheduled`
+        : `Day ${dayOfMonth}: ${rate}% completed`;
 
   return (
     <div
@@ -109,7 +133,9 @@ const CalendarDayCell = memo(function CalendarDayCell({
       >
         {dayOfMonth}
       </span>
-      {hasHappened ? (
+      {hasHappened && loading ? (
+        <PendingRing />
+      ) : hasHappened ? (
         <DayRing rate={rate} />
       ) : (
         // Nothing to measure yet: a faint dot keeps the grid's rhythm.

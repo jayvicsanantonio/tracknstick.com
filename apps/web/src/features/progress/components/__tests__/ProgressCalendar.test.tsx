@@ -99,6 +99,28 @@ describe('ProgressCalendar', () => {
     expect(within(unscheduled).queryByText(/%/)).not.toBeInTheDocument();
   });
 
+  it('reads past days as loading, not as nothing scheduled, while the history loads', () => {
+    render(
+      <ProgressCalendar
+        insightData={[]}
+        loading
+        selectedMonth={new Date(2026, 10, 17)}
+        setSelectedMonth={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 6: loading' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('gridcell', { name: /nothing scheduled/ }),
+    ).not.toBeInTheDocument();
+    // Days still to come have nothing to load.
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 20' }),
+    ).toBeInTheDocument();
+  });
+
   it('lays every month out in six weeks, so moving between months keeps its height', () => {
     // February 2026 fills four weeks exactly; August 2026 spans six.
     for (const month of [new Date(2026, 1, 1), new Date(2026, 7, 1)]) {

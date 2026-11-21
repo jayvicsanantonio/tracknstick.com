@@ -6,7 +6,8 @@ import MiscellaneousIcons from '@/icons/miscellaneous';
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 const DailyHabitDate = memo(function DailyHabitDate() {
-  const { date, handlePreviousDate, handleNextDate, timeZone } = useDate();
+  const { date, currentDate, handlePreviousDate, handleNextDate, timeZone } =
+    useDate();
 
   // The month and day, and the year apart from them: a phone leaves out
   // this year's year, so "Wednesday" and its date fit between the arrows.
@@ -22,9 +23,11 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         day: 'numeric',
       }),
       year: yearOf(date),
-      isThisYear: yearOf(date) === yearOf(new Date()),
+      // currentDate rolls over at midnight, so a day left on screen into a
+      // new year shows its year again.
+      isThisYear: yearOf(date) === yearOf(currentDate),
     };
-  }, [date, timeZone]);
+  }, [date, currentDate, timeZone]);
 
   const dayLabel = useMemo(() => {
     const today = new Date();

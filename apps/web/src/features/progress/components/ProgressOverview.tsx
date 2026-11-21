@@ -130,10 +130,12 @@ const ProgressOverview = memo(function ProgressOverview() {
 
                 <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                   <section aria-label="Calendar" className={PANEL}>
-                    {/* The month's grid stays while its history loads, with
-                        no rings yet, so the calendar keeps its size. */}
+                    {/* The month's grid stays while its history loads, its
+                        past days marked as loading, so the calendar keeps its
+                        size. */}
                     <ProgressCalendar
-                      insightData={isHistoryLoading ? [] : historyData}
+                      insightData={historyData}
+                      loading={isHistoryLoading}
                       selectedMonth={selectedMonth}
                       setSelectedMonth={setSelectedMonth}
                     />

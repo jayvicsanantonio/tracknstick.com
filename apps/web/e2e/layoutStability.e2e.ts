@@ -126,17 +126,31 @@ async function addHabit(page: Page, name: string) {
 
 /**
  * Adds an everyday habit, in a session of its own, for the tracker, the
- * overview and the progress page to show.
+ * overview and the progress page to show. Returns its name, which no other
+ * test or run uses.
  */
-async function seedHabit(browser: Browser, testInfo: TestInfo, label: string) {
+async function seedHabit(
+  browser: Browser,
+  testInfo: TestInfo,
+  label: string,
+): Promise<string> {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
     storageState: AUTH_FILE,
   });
   const page = await context.newPage();
   await page.goto('/');
-  await addHabit(page, `${label} ${Date.now()}`);
+  const name = `${label} ${Date.now()}`;
+  await addHabit(page, name);
   await context.close();
+  return name;
+}
+
+/** The tracker's button that marks this habit done or not done. */
+function markButton(page: Page, habit: string) {
+  return page.getByRole('button', {
+    name: new RegExp(`^Mark ${habit} as (in)?complete$`),
+  });
 }
 
 /** The header's or the tab bar's link to a page, whichever this width shows. */
@@ -155,8 +169,10 @@ for (const [device, viewport] of [
   test.describe(`on a ${device}`, () => {
     test.use({ viewport });
 
+    let habit = '';
+
     test.beforeAll(async ({ browser }, testInfo) => {
-      await seedHabit(browser, testInfo, `Steady ${device}`);
+      habit = await seedHabit(browser, testInfo, `Steady ${device}`);
     });
 
     test.beforeEach(async ({ page }) => {
@@ -169,9 +185,7 @@ for (const [device, viewport] of [
     }) => {
       await expectNoShift(page, 'loading the tracker', async () => {
         await page.goto('/');
-        await expect(
-          page.getByRole('button', { name: /^Mark / }).first(),
-        ).toBeVisible();
+        await expect(markButton(page, habit)).toBeVisible();
         await expect(
           page.getByRole('button', { name: /open user menu/i }),
         ).toBeVisible();
@@ -182,9 +196,7 @@ for (const [device, viewport] of [
       page,
     }) => {
       await page.goto('/');
-      await expect(
-        page.getByRole('button', { name: /^Mark / }).first(),
-      ).toBeVisible();
+      await expect(markButton(page, habit)).toBeVisible();
       await settle(page);
 
       // Forward from today, where the everyday habit is due on each day,
@@ -203,9 +215,7 @@ for (const [device, viewport] of [
       page,
     }) => {
       await page.goto('/');
-      await expect(
-        page.getByRole('button', { name: /^Mark / }).first(),
-      ).toBeVisible();
+      await expect(markButton(page, habit)).toBeVisible();
       await settle(page);
 
       for (const [link, url] of [
@@ -245,9 +255,8 @@ for (const [device, viewport] of [
     }) => {
       await page.goto('/habits');
       const edit = page
-        .getByRole('button', { name: /^Edit / })
-        .locator('visible=true')
-        .first();
+        .getByRole('button', { name: `Edit ${habit}`, exact: true })
+        .locator('visible=true');
       await expect(edit).toBeVisible();
       await settle(page);
 
@@ -276,8 +285,12 @@ for (const [device, viewport] of [
       ).toBeVisible();
       await settle(page);
 
-      // Months of five and six weeks, then back to this one.
-      for (const month of ['Previous month', 'Previous month', 'This month']) {
+      // A year back, which crosses months of five and six weeks whatever
+      // today's date, then back to this one.
+      for (const month of [
+        ...Array<string>(12).fill('Previous month'),
+        'This month',
+      ]) {
         await expectNoShift(page, month, () =>
           page.getByRole('button', { name: month }).click(),
         );
@@ -289,16 +302,16 @@ for (const [device, viewport] of [
 test.describe('on a small phone', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
+  let habit = '';
+
   test.beforeAll(async ({ browser }, testInfo) => {
-    await seedHabit(browser, testInfo, 'Steady small phone');
+    habit = await seedHabit(browser, testInfo, 'Steady small phone');
   });
 
   test("centers the last row of the day's habits", async ({ page }) => {
     await page.goto('/');
     const list = page.getByLabel('List of daily habits');
-    await expect(
-      page.getByRole('button', { name: /^Mark / }).first(),
-    ).toBeVisible();
+    await expect(markButton(page, habit)).toBeVisible();
     await page.waitForTimeout(SETTLE_MS);
 
     const { left, right } = await list.evaluate((element) => {
@@ -332,6 +345,24 @@ test.describe('on a small phone', () => {
         (element) => element.scrollWidth - element.clientWidth,
       );
       expect(overflow, (await pill.textContent()) ?? '').toBeLessThanOrEqual(0);
+
+      // And the text itself sits clear of both arrows.
+      const text = await pill.evaluate((element) => {
+        const boxes = Array.from(element.children).map((child) =>
+          child.getBoundingClientRect(),
+        );
+        return {
+          left: Math.min(...boxes.map((box) => box.left)),
+          right: Math.max(...boxes.map((box) => box.right)),
+        };
+      });
+      const [left, right] = await Promise.all([
+        previous.boundingBox(),
+        next.boundingBox(),
+      ]);
+      if (!left || !right) throw new Error('The arrows did not render');
+      expect(text.left).toBeGreaterThanOrEqual(left.x + left.width);
+      expect(text.right).toBeLessThanOrEqual(right.x);
     }
   });
 });

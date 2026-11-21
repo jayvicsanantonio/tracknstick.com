@@ -19,12 +19,15 @@ interface ProgressCalendarProps {
   insightData: InsightData[];
   selectedMonth: Date;
   setSelectedMonth: Dispatch<SetStateAction<Date>>;
+  /** The month's history is still loading: past days show no result yet. */
+  loading?: boolean;
 }
 
 const ProgressCalendar = memo(function ProgressCalendar({
   insightData,
   selectedMonth,
   setSelectedMonth,
+  loading = false,
 }: ProgressCalendarProps) {
   const { changeMonth, firstDayOfMonth, calendarDays } = useProgressCalendar(
     insightData,
@@ -124,6 +127,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
             isPast={isPast}
             isToday={isToday}
             dayData={dayData}
+            loading={loading}
           />
         ))}
         {Array.from({

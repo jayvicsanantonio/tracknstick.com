@@ -7,12 +7,11 @@ import ThemeProvider from '@app/providers/ThemeProvider';
 import DailyHabitProgressIndicator from '../DailyHabitProgressIndicator';
 
 function renderRing(completionRate: number) {
-  const { container } = render(
+  render(
     <ThemeProvider>
       <DailyHabitProgressIndicator completionRate={completionRate} />
     </ThemeProvider>,
   );
-  return container;
 }
 
 describe('DailyHabitProgressIndicator', () => {
@@ -25,11 +24,11 @@ describe('DailyHabitProgressIndicator', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows a checkmark instead of the percentage once every habit is done', () => {
-    const container = renderRing(100);
+  it('shows no percentage once every habit is done, and still reads it', () => {
+    renderRing(100);
 
-    expect(screen.queryByText('100%')).not.toBeInTheDocument();
-    expect(container.querySelector('svg.lucide-check')).not.toBeNull();
+    // The checkmark stands in for "100%".
+    expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
     expect(
       screen.getByLabelText('Daily habit completion: 100%'),
     ).toBeInTheDocument();

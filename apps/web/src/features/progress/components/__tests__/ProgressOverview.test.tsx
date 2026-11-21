@@ -163,6 +163,9 @@ describe('ProgressOverview', () => {
     ).toBeInTheDocument();
     expect(screen.getAllByRole('gridcell')).toHaveLength(42);
     expect(
+      screen.getByRole('gridcell', { name: 'Day 6: loading' }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole('status', { name: 'Loading chart' }),
     ).toBeInTheDocument();
   });
