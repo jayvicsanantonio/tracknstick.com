@@ -51,11 +51,12 @@ const ProgressOverview = memo(function ProgressOverview() {
   } = useAchievements();
   const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
-  // Combine loading states
-  const isLoading = isHistoryLoading || isStreaksLoading;
   // Either failure hides the figures: zeros and an empty calendar would read
   // as "no progress" rather than "could not load".
   const loadFailed = Boolean(historyError ?? streaksError);
+
+  // A streak equal to the longest one is the best yet; a streak of 0 is not.
+  const isBestStreak = currentStreak > 0 && currentStreak >= longestStreak;
 
   const monthName = selectedMonth.toLocaleString('default', { month: 'long' });
   const { averageRate, perfectDays } = summarizeMonth(
@@ -96,34 +97,34 @@ const ProgressOverview = memo(function ProgressOverview() {
               </p>
             ) : (
               <div className="space-y-4 sm:space-y-6">
-                <div
-                  aria-busy={isLoading}
-                  className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
-                >
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                   <ProgressStat
                     Icon={Flame}
                     label="Current streak"
                     value={currentStreak}
                     unit="day"
+                    loading={isStreaksLoading}
+                    badge={isBestStreak ? 'Best yet' : undefined}
                   />
                   <ProgressStat
                     Icon={Trophy}
                     label="Longest streak"
                     value={longestStreak}
                     unit="day"
+                    loading={isStreaksLoading}
                   />
                   <ProgressStat
                     Icon={Percent}
                     label={`${monthName} average`}
-                    value={
-                      averageRate === null ? 'none yet' : `${averageRate}%`
-                    }
+                    value={averageRate === null ? null : `${averageRate}%`}
+                    loading={isHistoryLoading}
                   />
                   <ProgressStat
                     Icon={CalendarCheck}
                     label={`Perfect days in ${monthName}`}
                     value={perfectDays}
                     unit="day"
+                    loading={isHistoryLoading}
                   />
                 </div>
 

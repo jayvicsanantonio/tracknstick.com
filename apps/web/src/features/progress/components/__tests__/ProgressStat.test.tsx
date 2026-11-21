@@ -1,5 +1,5 @@
 // Covers one figure in the progress page's summary row, such as the current streak.
-// Each is a single status that reads its label, value and unit, with "1 day" in the singular.
+// Each is a single status reading its label, value and unit; it can be loading, missing or badged.
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -35,5 +35,48 @@ describe('ProgressStat', () => {
     expect(
       screen.getByRole('status', { name: 'November average: 72%' }),
     ).toHaveTextContent('72%');
+  });
+
+  it('reads and shows a missing value as no data yet, not as a figure', () => {
+    render(<ProgressStat Icon={Flame} label="November average" value={null} />);
+
+    const figure = screen.getByRole('status', {
+      name: 'November average: no data yet',
+    });
+    expect(figure).toHaveTextContent('No data yet');
+  });
+
+  it('shows no figure while loading, so a streak never flashes as 0', () => {
+    render(
+      <ProgressStat
+        Icon={Flame}
+        label="Current streak"
+        value={0}
+        unit="day"
+        loading
+      />,
+    );
+
+    const figure = screen.getByRole('status', {
+      name: 'Current streak: loading',
+    });
+    expect(figure).toHaveAttribute('aria-busy', 'true');
+    expect(figure).not.toHaveTextContent('0');
+  });
+
+  it('shows a badge beside the label when given one', () => {
+    render(
+      <ProgressStat
+        Icon={Flame}
+        label="Current streak"
+        value={3}
+        unit="day"
+        badge="Best yet"
+      />,
+    );
+
+    expect(
+      screen.getByRole('status', { name: 'Current streak: 3 days, best yet' }),
+    ).toHaveTextContent('Best yet');
   });
 });

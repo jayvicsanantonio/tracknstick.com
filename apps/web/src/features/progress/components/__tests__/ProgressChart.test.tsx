@@ -34,6 +34,19 @@ describe('ProgressChart', () => {
     expect(screen.getAllByText('50%').length).toBeGreaterThan(0);
   });
 
+  it("marks the month's average with a labelled line", () => {
+    render(
+      <ProgressChart
+        data={[
+          { date: '2026-11-02', completionRate: 50 },
+          { date: '2026-11-01', completionRate: 100 },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('Avg 75%')).toBeInTheDocument();
+  });
+
   it('says there is nothing to chart instead of drawing empty axes', () => {
     render(<ProgressChart data={[]} />);
 

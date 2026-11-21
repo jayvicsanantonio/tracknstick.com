@@ -100,7 +100,53 @@ describe('ProgressOverview', () => {
     renderOverview();
 
     expect(
-      screen.getByRole('status', { name: 'November average: none yet' }),
+      screen.getByRole('status', { name: 'November average: no data yet' }),
+    ).toBeInTheDocument();
+  });
+
+  it('marks the current streak when it is the best yet', () => {
+    vi.mocked(useProgressStreaks).mockReturnValue({
+      ...loaded.streaks,
+      currentStreak: 5,
+      longestStreak: 5,
+    });
+
+    renderOverview();
+
+    expect(
+      screen.getByRole('status', { name: 'Current streak: 5 days, best yet' }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not mark a streak of nothing as the best yet', () => {
+    vi.mocked(useProgressStreaks).mockReturnValue({
+      ...loaded.streaks,
+      currentStreak: 0,
+      longestStreak: 0,
+    });
+
+    renderOverview();
+
+    expect(
+      screen.getByRole('status', { name: 'Current streak: 0 days' }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows no streak figures while the streaks load', () => {
+    vi.mocked(useProgressStreaks).mockReturnValue({
+      ...loaded.streaks,
+      currentStreak: 0,
+      longestStreak: 0,
+      isLoading: true,
+    });
+
+    renderOverview();
+
+    expect(
+      screen.getByRole('status', { name: 'Current streak: loading' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('status', { name: 'Longest streak: loading' }),
     ).toBeInTheDocument();
   });
 

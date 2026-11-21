@@ -1,5 +1,5 @@
 // The progress calendar: a month of days, each past one with a ring showing how much was done.
-// Moves between months, and explains its rings with a small key.
+// Moves between past months and back to this one, and explains its rings with a small key.
 
 import { memo, useCallback, Dispatch, SetStateAction } from 'react';
 import { useProgressCalendar } from '@/features/progress/hooks/useProgressCalendar';
@@ -31,6 +31,16 @@ const ProgressCalendar = memo(function ProgressCalendar({
 
   const handlePreviousMonth = useCallback(() => changeMonth(-1), [changeMonth]);
   const handleNextMonth = useCallback(() => changeMonth(1), [changeMonth]);
+  const handleThisMonth = useCallback(
+    () => setSelectedMonth(new Date()),
+    [setSelectedMonth],
+  );
+
+  // Months after this one hold nothing yet, so the calendar stops here.
+  const today = new Date();
+  const isThisMonth =
+    selectedMonth.getFullYear() === today.getFullYear() &&
+    selectedMonth.getMonth() === today.getMonth();
 
   return (
     <div className="mx-auto w-full max-w-lg">
@@ -41,14 +51,27 @@ const ProgressCalendar = memo(function ProgressCalendar({
             year: 'numeric',
           })}
         </h2>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
+          {!isThisMonth && (
+            <button
+              type="button"
+              onClick={handleThisMonth}
+              className="mr-1 min-h-11 rounded-full px-3 text-xs font-semibold text-(--color-brand-text) ring-1 ring-(--color-border-primary)/60 transition-colors ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none sm:min-h-9 dark:text-(--color-brand-text-light)"
+            >
+              This month
+            </button>
+          )}
           <MonthNavButton
             onClick={handlePreviousMonth}
             ariaLabel="Previous month"
           >
             <ChevronLeft aria-hidden="true" className="h-4 w-4" />
           </MonthNavButton>
-          <MonthNavButton onClick={handleNextMonth} ariaLabel="Next month">
+          <MonthNavButton
+            onClick={handleNextMonth}
+            ariaLabel="Next month"
+            disabled={isThisMonth}
+          >
             <ChevronRight aria-hidden="true" className="h-4 w-4" />
           </MonthNavButton>
         </div>

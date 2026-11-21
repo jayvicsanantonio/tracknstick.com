@@ -8,12 +8,14 @@ interface MonthNavButtonProps {
   onClick: () => void;
   children: ReactNode;
   ariaLabel: string;
+  disabled?: boolean;
 }
 
 const MonthNavButton = memo(function MonthNavButton({
   onClick,
   children,
   ariaLabel,
+  disabled = false,
 }: MonthNavButtonProps) {
   return (
     <Button
@@ -21,6 +23,7 @@ const MonthNavButton = memo(function MonthNavButton({
       variant="ghost"
       size="icon"
       aria-label={ariaLabel}
+      disabled={disabled}
       className="size-11 rounded-full text-(--color-text-secondary) hover:bg-(--color-brand-primary)/10 hover:text-(--color-foreground) sm:size-9"
     >
       {children}

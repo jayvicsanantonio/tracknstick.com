@@ -100,9 +100,15 @@ describe('ProgressCalendar', () => {
   });
 
   it('moves to the previous and next month', async () => {
-    vi.useRealTimers();
     const setSelectedMonth = vi.fn();
-    renderCalendar(setSelectedMonth);
+    render(
+      <ProgressCalendar
+        insightData={[]}
+        selectedMonth={new Date(2026, 7, 1)}
+        setSelectedMonth={setSelectedMonth}
+      />,
+    );
+    vi.useRealTimers();
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Previous month' }),
@@ -110,5 +116,34 @@ describe('ProgressCalendar', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Next month' }));
 
     expect(setSelectedMonth).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not move past the current month, which has nothing after it', () => {
+    renderCalendar();
+
+    expect(screen.getByRole('button', { name: 'Next month' })).toBeDisabled();
+    expect(
+      screen.queryByRole('button', { name: 'This month' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('offers a way back to this month from another month', async () => {
+    const setSelectedMonth = vi.fn();
+    render(
+      <ProgressCalendar
+        insightData={[]}
+        selectedMonth={new Date(2026, 7, 1)}
+        setSelectedMonth={setSelectedMonth}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Next month' })).toBeEnabled();
+    vi.useRealTimers();
+    await userEvent.click(screen.getByRole('button', { name: 'This month' }));
+
+    expect(setSelectedMonth).toHaveBeenCalledTimes(1);
+    const month = setSelectedMonth.mock.calls[0][0] as Date;
+    expect(month.getFullYear()).toBe(new Date().getFullYear());
+    expect(month.getMonth()).toBe(new Date().getMonth());
   });
 });
