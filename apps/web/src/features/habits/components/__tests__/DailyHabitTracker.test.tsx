@@ -16,7 +16,9 @@ vi.mock('@/features/habits/hooks/useAllHabits', () => ({
 }));
 // The date header and the ring need the date provider and animation; they
 // are not what these tests are about.
-vi.mock('../DailyHabitDate', () => ({ default: () => null }));
+vi.mock('../DailyHabitDate', () => ({
+  default: () => <nav aria-label="Day navigation" />,
+}));
 vi.mock('../DailyHabitProgressIndicator', () => ({ default: () => null }));
 
 const habit = (overrides: Partial<Habit>): Habit =>
@@ -159,6 +161,23 @@ describe('DailyHabitTracker', () => {
     expect(screen.getByText('No habits yet')).toBeInTheDocument();
   });
 
+  it('centres the first-habit prompt on its own, without the day navigation', () => {
+    mockHabits({ habits: [] });
+    mockAllHabits([]);
+
+    renderTracker();
+
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'No habits yet' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Add habit' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('navigation', { name: 'Day navigation' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('says nothing is scheduled on a day with no habits due', () => {
     mockHabits({ habits: [] });
     mockAllHabits([habit({ id: '9', name: 'Swim', frequency: ['Mon'] })]);
@@ -167,6 +186,9 @@ describe('DailyHabitTracker', () => {
 
     expect(screen.getByText('Nothing scheduled')).toBeInTheDocument();
     expect(screen.queryByText('No habits yet')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('navigation', { name: 'Day navigation' }),
+    ).toBeInTheDocument();
   });
 
   it('only asks for every habit when the day shown has none due', () => {

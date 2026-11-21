@@ -27,6 +27,12 @@ export default function DailyHabitTracker() {
     enabled: !isLoading && !error && habits.length === 0,
   });
   const doneCount = habits.filter((habit) => habit.completed).length;
+  // Only a successful lookup may say the user has no habits at all.
+  const hasNoHabits =
+    habits.length === 0 &&
+    !allHabitsLoading &&
+    !allHabitsError &&
+    allHabits.length === 0;
 
   if (isLoading) {
     return (
@@ -70,6 +76,21 @@ export default function DailyHabitTracker() {
               Try again
             </Button>
           </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // With no habits there is no day to move through or progress to show, so
+  // the first-habit prompt takes the whole card.
+  if (hasNoHabits) {
+    return (
+      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
+        <Card
+          variant="glass"
+          className="flex w-full flex-1 items-center justify-center"
+        >
+          <NoHabits />
         </Card>
       </div>
     );
@@ -137,8 +158,6 @@ export default function DailyHabitTracker() {
                       Try again
                     </Button>
                   </div>
-                ) : allHabits.length === 0 ? (
-                  <NoHabits />
                 ) : (
                   <NothingScheduled />
                 )
