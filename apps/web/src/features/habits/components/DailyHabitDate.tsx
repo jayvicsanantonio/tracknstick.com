@@ -8,15 +8,22 @@ const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 const DailyHabitDate = memo(function DailyHabitDate() {
   const { date, handlePreviousDate, handleNextDate, timeZone } = useDate();
 
-  const formattedDate = useMemo(() => {
-    return date.toLocaleDateString('en-US', {
-      timeZone,
-      year: 'numeric',
-      // Short, so "Today" and the date fit one line on a 360px phone and in
-      // the tracker's narrow dashboard column.
-      month: 'short',
-      day: 'numeric',
-    });
+  // The month and day, and the year apart from them: a phone leaves out
+  // this year's year, so "Wednesday" and its date fit between the arrows.
+  const { monthDay, year, isThisYear } = useMemo(() => {
+    const yearOf = (value: Date) =>
+      value.toLocaleDateString('en-US', { timeZone, year: 'numeric' });
+    return {
+      monthDay: date.toLocaleDateString('en-US', {
+        timeZone,
+        // Short, so "Today" and the date fit one line on a 360px phone and in
+        // the tracker's narrow dashboard column.
+        month: 'short',
+        day: 'numeric',
+      }),
+      year: yearOf(date),
+      isThisYear: yearOf(date) === yearOf(new Date()),
+    };
   }, [date, timeZone]);
 
   const dayLabel = useMemo(() => {
@@ -33,7 +40,9 @@ const DailyHabitDate = memo(function DailyHabitDate() {
   }, [date, timeZone]);
 
   return (
-    <div className="flex items-center justify-between">
+    // The arrows hold the row's ends and the day takes the middle, so a
+    // longer day name never moves them.
+    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
       {/* Keyboard shortcuts for date navigation */}
       <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
 
@@ -42,21 +51,27 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         variant="ghost"
         size="icon"
         aria-label="Previous Date"
-        className="rounded-full border border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) shadow-sm hover:bg-(--color-hover-surface) hover:shadow-md"
+        className="rounded-full text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:shadow-md"
       >
         <ChevronLeft aria-hidden="true" className="h-4 w-4" />
       </Button>
 
       <div className="relative text-center">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-(--color-border-primary) bg-(--color-card) px-4 py-2 shadow-sm sm:gap-3">
+        {/* Spans the room between the arrows, so only its text changes from
+            day to day. On phones, plain text, the day's name over its date;
+            from sm up, a pill with the two side by side. */}
+        <div className="flex flex-col items-center justify-center sm:flex-row sm:gap-3 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-4 sm:py-2 sm:shadow-sm">
           <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
             {dayLabel}
           </h2>
           <span className="text-sm whitespace-nowrap text-(--color-brand-primary) sm:text-base">
-            {formattedDate}
+            {monthDay}
+            <span className={isThisYear ? 'max-sm:hidden' : undefined}>
+              , {year}
+            </span>
           </span>
         </div>
-        <div className="mx-auto mt-2 h-0.5 w-28 rounded-full bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) sm:w-36"></div>
+        <div className="mx-auto mt-2 h-0.5 w-28 rounded-full bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) max-sm:hidden sm:w-36"></div>
       </div>
 
       <Button
@@ -64,7 +79,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         variant="ghost"
         size="icon"
         aria-label="Next Date"
-        className="rounded-full border border-(--color-border-primary) bg-(--color-card) text-(--color-brand-primary) shadow-sm hover:bg-(--color-hover-surface) hover:shadow-md"
+        className="rounded-full text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:shadow-md"
       >
         <ChevronRight aria-hidden="true" className="h-4 w-4" />
       </Button>

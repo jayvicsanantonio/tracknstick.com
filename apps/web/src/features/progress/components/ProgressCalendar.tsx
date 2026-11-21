@@ -11,6 +11,9 @@ import { Check } from 'lucide-react';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// Every month is drawn in six weeks, the most any month spans, so the
+// calendar keeps one height from month to month.
+const CALENDAR_CELLS = 6 * 7;
 
 interface ProgressCalendarProps {
   insightData: InsightData[];
@@ -44,23 +47,35 @@ const ProgressCalendar = memo(function ProgressCalendar({
 
   return (
     <div className="mx-auto w-full max-w-lg">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-(--color-foreground) sm:text-lg">
-          {selectedMonth.toLocaleString('default', {
-            month: 'long',
-            year: 'numeric',
-          })}
+      <div className="flex items-center gap-2">
+        {/* A phone leaves out this year's year, so the name fits on one
+            line beside "This month". Tight leading: a month of another year,
+            wrapped to two lines there, still fits the buttons' height. */}
+        <h2 className="mr-auto text-base leading-tight font-semibold text-(--color-foreground) sm:text-lg">
+          {selectedMonth.toLocaleString('default', { month: 'long' })}
+          <span
+            className={
+              selectedMonth.getFullYear() === today.getFullYear()
+                ? 'max-sm:hidden'
+                : undefined
+            }
+          >
+            {' '}
+            {selectedMonth.getFullYear()}
+          </span>
         </h2>
+        {/* Apart from the arrows, which hold their place whether or not it
+            shows. */}
+        {!isThisMonth && (
+          <button
+            type="button"
+            onClick={handleThisMonth}
+            className="min-h-11 rounded-full px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-border-primary)/60 transition-colors ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none sm:min-h-9 dark:text-(--color-brand-text-light)"
+          >
+            This month
+          </button>
+        )}
         <div className="flex items-center gap-1">
-          {!isThisMonth && (
-            <button
-              type="button"
-              onClick={handleThisMonth}
-              className="mr-1 min-h-11 rounded-full px-3 text-xs font-semibold text-(--color-brand-text) ring-1 ring-(--color-border-primary)/60 transition-colors ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none sm:min-h-9 dark:text-(--color-brand-text-light)"
-            >
-              This month
-            </button>
-          )}
           <MonthNavButton
             onClick={handlePreviousMonth}
             ariaLabel="Previous month"
@@ -76,7 +91,12 @@ const ProgressCalendar = memo(function ProgressCalendar({
           </MonthNavButton>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-7 gap-x-1 gap-y-1.5" role="grid">
+      {/* Six rows of one height under the weekdays: a week of empty cells
+          is as tall as a week of days. */}
+      <div
+        className="mt-4 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5"
+        role="grid"
+      >
         {daysOfWeek.map((day) => (
           <div
             key={day}
@@ -96,13 +116,24 @@ const ProgressCalendar = memo(function ProgressCalendar({
           ></div>
         ))}
         {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }) => (
+          // Keyed by month as well: the 1st of another month is another
+          // cell, not this one moved to a new column.
           <CalendarDayCell
-            key={dayOfMonth}
+            key={`${selectedMonth.getFullYear()}-${selectedMonth.getMonth()}-${dayOfMonth}`}
             dayOfMonth={dayOfMonth}
             isPast={isPast}
             isToday={isToday}
             dayData={dayData}
           />
+        ))}
+        {Array.from({
+          length: CALENDAR_CELLS - firstDayOfMonth - calendarDays.length,
+        }).map((_, index) => (
+          <div
+            key={`trailing-${index}`}
+            role="gridcell"
+            aria-label="Empty day"
+          ></div>
         ))}
       </div>
       {/* Each cell names its own rate; the key is for sighted readers. */}

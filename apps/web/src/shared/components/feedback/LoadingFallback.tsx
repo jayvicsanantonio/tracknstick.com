@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 const LoadingFallback = memo(function LoadingFallback() {
   return (
-    <div className="flex items-center justify-center py-24">
+    <div className="flex flex-1 items-center justify-center py-24">
       <div
         role="status"
         aria-live="polite"

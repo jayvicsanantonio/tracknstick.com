@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import {
   DialogHeader,
   DialogTitle,
@@ -8,7 +8,8 @@ import HabitDialog from '@/features/habits/components/HabitDialog';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 
 // The form, and the date picker it carries, download the first time a habit
-// dialog opens: the dialog renders its content only while open.
+// dialog opens: the dialog renders its content only while open, and HabitDialog
+// waits for the form before it shows.
 const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
 
 export default function AddHabitDialog() {
@@ -27,9 +28,7 @@ export default function AddHabitDialog() {
           Add a new habit to your list.
         </DialogDescription>
       </DialogHeader>
-      <Suspense fallback={null}>
-        <HabitForm toggleDialog={toggleShowAddHabitDialog} />
-      </Suspense>
+      <HabitForm toggleDialog={toggleShowAddHabitDialog} />
     </HabitDialog>
   );
 }

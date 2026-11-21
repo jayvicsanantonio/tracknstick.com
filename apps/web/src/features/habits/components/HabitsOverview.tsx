@@ -7,7 +7,7 @@ import {
 } from '@shared/components/ui/card';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -203,194 +203,194 @@ const HabitsOverview = memo(function HabitsOverview() {
               </Tabs>
             </div>
 
-            <AnimatePresence>
-              {filteredHabits.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="py-8 sm:py-12"
-                >
-                  {searchTerm ? (
-                    <EmptyResult
-                      Icon={SearchX}
-                      title={`No habits match “${searchTerm}”`}
-                      detail="Check the spelling, or try fewer letters."
+            {/* The empty state fades in, and either view leaves at once: an
+                exit animation would hold the old view in place above the
+                new one until it finished. */}
+            {filteredHabits.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="py-8 sm:py-12"
+              >
+                {searchTerm ? (
+                  <EmptyResult
+                    Icon={SearchX}
+                    title={`No habits match “${searchTerm}”`}
+                    detail="Check the spelling, or try fewer letters."
+                  >
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-full px-6 sm:h-9"
+                      onClick={() => setSearchTerm('')}
                     >
-                      <Button
-                        variant="outline"
-                        className="h-11 rounded-full px-6 sm:h-9"
-                        onClick={() => setSearchTerm('')}
-                      >
-                        Clear search
-                      </Button>
-                    </EmptyResult>
-                  ) : selectedTab === 'archived' ? (
-                    <EmptyResult
-                      Icon={Archive}
-                      title="No archived habits"
-                      detail="Habits you give an end date appear here, with their history intact."
-                    />
-                  ) : habits.length > 0 ? (
-                    // Every habit is archived: the Active tab is empty, the
-                    // account is not.
-                    <EmptyResult
-                      Icon={ListChecks}
-                      title="No active habits"
-                      detail="All your habits are archived. Add a new one, or find the others under Archived."
+                      Clear search
+                    </Button>
+                  </EmptyResult>
+                ) : selectedTab === 'archived' ? (
+                  <EmptyResult
+                    Icon={Archive}
+                    title="No archived habits"
+                    detail="Habits you give an end date appear here, with their history intact."
+                  />
+                ) : habits.length > 0 ? (
+                  // Every habit is archived: the Active tab is empty, the
+                  // account is not.
+                  <EmptyResult
+                    Icon={ListChecks}
+                    title="No active habits"
+                    detail="All your habits are archived. Add a new one, or find the others under Archived."
+                  >
+                    <Button
+                      className="h-11 rounded-full px-6 sm:h-9"
+                      onClick={toggleShowAddHabitDialog}
                     >
-                      <Button
-                        className="h-11 rounded-full px-6 sm:h-9"
-                        onClick={toggleShowAddHabitDialog}
-                      >
-                        Add habit
-                      </Button>
-                    </EmptyResult>
-                  ) : (
-                    <EmptyResult
-                      Icon={ListChecks}
-                      title="No habits yet"
-                      detail="Add your first habit to start tracking it every day."
+                      Add habit
+                    </Button>
+                  </EmptyResult>
+                ) : (
+                  <EmptyResult
+                    Icon={ListChecks}
+                    title="No habits yet"
+                    detail="Add your first habit to start tracking it every day."
+                  >
+                    <Button
+                      className="h-11 rounded-full px-6 sm:h-9"
+                      onClick={toggleShowAddHabitDialog}
                     >
-                      <Button
-                        className="h-11 rounded-full px-6 sm:h-9"
-                        onClick={toggleShowAddHabitDialog}
+                      Add habit
+                    </Button>
+                  </EmptyResult>
+                )}
+              </motion.div>
+            ) : (
+              <div key="habits">
+                {/* Phones: one card per habit, with 44px actions. */}
+                <ul aria-label="Habits" className="space-y-3 sm:hidden">
+                  {filteredHabits.map((habit) => {
+                    const Icon = HabitsIcons[habit.icon];
+                    return (
+                      <li
+                        key={habit.id}
+                        className="rounded-2xl bg-(--color-surface)/70 p-4 ring-1 ring-(--color-border-primary)/60 ring-inset dark:bg-(--color-surface-secondary)/60"
                       >
-                        Add habit
-                      </Button>
-                    </EmptyResult>
-                  )}
-                </motion.div>
-              ) : (
-                <div key="habits">
-                  {/* Phones: one card per habit, with 44px actions. */}
-                  <ul aria-label="Habits" className="space-y-3 sm:hidden">
-                    {filteredHabits.map((habit) => {
-                      const Icon = HabitsIcons[habit.icon];
-                      return (
-                        <li
-                          key={habit.id}
-                          className="rounded-2xl bg-(--color-surface)/70 p-4 ring-1 ring-(--color-border-primary)/60 ring-inset dark:bg-(--color-surface-secondary)/60"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
-                              <Icon
-                                aria-hidden="true"
-                                className="size-5 text-(--color-brand-primary)"
-                              />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between gap-2">
-                                <p className="truncate font-semibold text-(--color-foreground)">
-                                  {habit.name}
-                                </p>
-                                <StatusBadge habit={habit} />
-                              </div>
-                              <p className="mt-0.5 text-sm text-(--color-text-secondary)">
-                                {frequencyText(habit)}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="mt-2 flex items-center justify-between gap-2 border-t border-(--color-border-primary)/60 pt-2">
-                            <span className="text-xs text-(--color-text-secondary)">
-                              Since {formatStartDate(habit)}
-                            </span>
-                            <HabitActions
-                              habit={habit}
-                              onEdit={openEditDialog}
-                              onDelete={handleDeleteHabit}
-                              size="touch"
+                        <div className="flex items-start gap-3">
+                          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
+                            <Icon
+                              aria-hidden="true"
+                              className="size-5 text-(--color-brand-primary)"
                             />
                           </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="truncate font-semibold text-(--color-foreground)">
+                                {habit.name}
+                              </p>
+                              <StatusBadge habit={habit} />
+                            </div>
+                            <p className="mt-0.5 text-sm text-(--color-text-secondary)">
+                              {frequencyText(habit)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between gap-2 border-t border-(--color-border-primary)/60 pt-2">
+                          <span className="text-xs text-(--color-text-secondary)">
+                            Since {formatStartDate(habit)}
+                          </span>
+                          <HabitActions
+                            habit={habit}
+                            onEdit={openEditDialog}
+                            onDelete={handleDeleteHabit}
+                            size="touch"
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
 
-                  <div className="hidden overflow-hidden rounded-lg border border-(--color-border-primary) sm:block">
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-(--color-surface-secondary) text-left">
-                          <tr>
-                            <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
-                              Habit
-                            </th>
-                            <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:table-cell sm:px-4 sm:text-sm">
-                              Frequency
-                            </th>
-                            <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm lg:table-cell">
-                              Start Date
-                            </th>
-                            <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
-                              Status
-                            </th>
-                            <th className="px-3 py-3 text-right text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-(--color-border-primary) text-(--color-foreground)">
-                          {filteredHabits.map((habit) => {
-                            const Icon = HabitsIcons[habit.icon];
-                            return (
-                              <motion.tr
-                                key={habit.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="hover:bg-(--color-hover-surface)"
-                              >
-                                <td className="px-3 py-3 sm:px-4 sm:py-4">
-                                  <div className="flex items-center gap-2 sm:gap-3">
-                                    <div className="flex items-center justify-center rounded-full bg-(--color-brand-light) p-1.5 sm:p-2">
-                                      <Icon className="h-4 w-4 text-(--color-brand-primary) sm:h-5 sm:w-5" />
-                                    </div>
-                                    <span className="line-clamp-2 text-sm font-medium text-(--color-foreground) sm:text-base">
-                                      {habit.name}
+                <div className="hidden overflow-hidden rounded-lg border border-(--color-border-primary) sm:block">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-(--color-surface-secondary) text-left">
+                        <tr>
+                          <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
+                            Habit
+                          </th>
+                          <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:table-cell sm:px-4 sm:text-sm">
+                            Frequency
+                          </th>
+                          <th className="hidden px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm lg:table-cell">
+                            Start Date
+                          </th>
+                          <th className="px-3 py-3 text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
+                            Status
+                          </th>
+                          <th className="px-3 py-3 text-right text-xs font-medium text-(--color-text-secondary) sm:px-4 sm:text-sm">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-(--color-border-primary) text-(--color-foreground)">
+                        {filteredHabits.map((habit) => {
+                          const Icon = HabitsIcons[habit.icon];
+                          return (
+                            <motion.tr
+                              key={habit.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="hover:bg-(--color-hover-surface)"
+                            >
+                              <td className="px-3 py-3 sm:px-4 sm:py-4">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                  <div className="flex items-center justify-center rounded-full bg-(--color-brand-light) p-1.5 sm:p-2">
+                                    <Icon className="h-4 w-4 text-(--color-brand-primary) sm:h-5 sm:w-5" />
+                                  </div>
+                                  <span className="line-clamp-2 text-sm font-medium text-(--color-foreground) sm:text-base">
+                                    {habit.name}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="hidden px-3 py-3 sm:table-cell sm:px-4 sm:py-4">
+                                <div className="flex flex-wrap gap-1">
+                                  {habit.frequency.length === 7 ? (
+                                    <span className="rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs font-medium text-(--color-brand-text)">
+                                      {frequencyLabel(habit.frequency)}
                                     </span>
-                                  </div>
-                                </td>
-                                <td className="hidden px-3 py-3 sm:table-cell sm:px-4 sm:py-4">
-                                  <div className="flex flex-wrap gap-1">
-                                    {habit.frequency.length === 7 ? (
-                                      <span className="rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs font-medium text-(--color-brand-text)">
-                                        {frequencyLabel(habit.frequency)}
+                                  ) : (
+                                    habit.frequency.map((day) => (
+                                      <span
+                                        key={day}
+                                        className="rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs text-(--color-brand-text)"
+                                      >
+                                        {day.substring(0, 3)}
                                       </span>
-                                    ) : (
-                                      habit.frequency.map((day) => (
-                                        <span
-                                          key={day}
-                                          className="rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs text-(--color-brand-text)"
-                                        >
-                                          {day.substring(0, 3)}
-                                        </span>
-                                      ))
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="hidden px-3 py-3 text-xs text-(--color-foreground) sm:px-4 sm:py-4 sm:text-sm lg:table-cell">
-                                  {formatStartDate(habit)}
-                                </td>
-                                <td className="px-3 py-3 sm:px-4 sm:py-4">
-                                  <StatusBadge habit={habit} />
-                                </td>
-                                <td className="px-3 py-3 text-right sm:px-4 sm:py-4">
-                                  <HabitActions
-                                    habit={habit}
-                                    onEdit={openEditDialog}
-                                    onDelete={handleDeleteHabit}
-                                  />
-                                </td>
-                              </motion.tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
+                                    ))
+                                  )}
+                                </div>
+                              </td>
+                              <td className="hidden px-3 py-3 text-xs text-(--color-foreground) sm:px-4 sm:py-4 sm:text-sm lg:table-cell">
+                                {formatStartDate(habit)}
+                              </td>
+                              <td className="px-3 py-3 sm:px-4 sm:py-4">
+                                <StatusBadge habit={habit} />
+                              </td>
+                              <td className="px-3 py-3 text-right sm:px-4 sm:py-4">
+                                <HabitActions
+                                  habit={habit}
+                                  onEdit={openEditDialog}
+                                  onDelete={handleDeleteHabit}
+                                />
+                              </td>
+                            </motion.tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              )}
-            </AnimatePresence>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

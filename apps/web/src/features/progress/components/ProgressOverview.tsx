@@ -130,17 +130,13 @@ const ProgressOverview = memo(function ProgressOverview() {
 
                 <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                   <section aria-label="Calendar" className={PANEL}>
-                    {isHistoryLoading ? (
-                      <p className="py-12 text-center text-sm text-(--color-text-secondary)">
-                        Loading calendar…
-                      </p>
-                    ) : (
-                      <ProgressCalendar
-                        insightData={historyData}
-                        selectedMonth={selectedMonth}
-                        setSelectedMonth={setSelectedMonth}
-                      />
-                    )}
+                    {/* The month's grid stays while its history loads, with
+                        no rings yet, so the calendar keeps its size. */}
+                    <ProgressCalendar
+                      insightData={isHistoryLoading ? [] : historyData}
+                      selectedMonth={selectedMonth}
+                      setSelectedMonth={setSelectedMonth}
+                    />
                   </section>
 
                   <div className="flex flex-col gap-4 sm:gap-6">
@@ -155,7 +151,13 @@ const ProgressOverview = memo(function ProgressOverview() {
                         Daily completion
                       </h2>
                       {isHistoryLoading ? (
-                        <p className="py-12 text-center text-sm text-(--color-text-secondary)">
+                        // As tall as the chart and its key, so the panel
+                        // keeps its size while a month loads.
+                        <p
+                          role="status"
+                          aria-label="Loading chart"
+                          className="flex h-62 items-center justify-center text-sm text-(--color-text-secondary)"
+                        >
                           Loading chart…
                         </p>
                       ) : (

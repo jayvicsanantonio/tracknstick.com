@@ -113,45 +113,49 @@ const Header = memo(function Header() {
                 <Sun aria-hidden="true" className="size-5 dark:hidden" />
                 <Moon aria-hidden="true" className="hidden size-5 dark:block" />
               </Button>
-              <UserButton
-                appearance={{
-                  variables: {
-                    colorPrimary: 'var(--color-brand-primary)',
-                    colorBackground: 'var(--color-card)',
-                    colorText: 'var(--color-foreground)',
-                    borderRadius: '1rem',
-                  },
-                  elements: {
-                    userButtonAvatarBox:
-                      // !important: Clerk's own avatar size would otherwise win.
-                      '!size-11 ring-2 ring-(--color-surface) dark:ring-(--color-surface-secondary)',
-                    // Popover container
-                    userButtonPopoverCard:
-                      'bg-(--color-card) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-2xl border border-(--color-border-primary) shadow-2xl',
-                    userButtonPopoverMain:
-                      'bg-transparent text-(--color-foreground)',
-                    userPreview:
-                      'grid grid-cols-[auto_1fr] items-center gap-3 p-3',
-                    userPreviewText:
-                      'text-(--color-foreground) text-sm font-medium',
-                    // Action items
-                    userButtonActionButton:
-                      '!text-(--color-foreground) !opacity-100 hover:bg-(--color-hover-surface) focus:bg-(--color-hover-surface) rounded-lg h-10 px-3',
-                    userButtonActionButtonText:
-                      '!text-(--color-foreground) !opacity-100 text-sm',
-                    userButtonActionButtonIcon: '!text-(--color-foreground)',
-                    userButtonPopoverActionButton:
-                      '!text-(--color-foreground) !opacity-100 hover:bg-(--color-hover-surface) focus:bg-(--color-hover-surface) rounded-lg h-10 px-3',
-                    userButtonPopoverActionButtonText:
-                      '!text-(--color-foreground) !opacity-100 text-sm',
-                    userButtonPopoverActionButtonIcon:
-                      '!text-(--color-foreground)',
-                    // Footer area (Secured by Clerk)
-                    userButtonPopoverFooter:
-                      'bg-transparent border-t border-(--color-border-primary) text-(--color-text-secondary)',
-                  },
-                }}
-              />
+              {/* Clerk draws the button once it has loaded; the slot keeps
+                  the toolbar its full width until then. */}
+              <span className="flex size-11 shrink-0 items-center justify-center">
+                <UserButton
+                  appearance={{
+                    variables: {
+                      colorPrimary: 'var(--color-brand-primary)',
+                      colorBackground: 'var(--color-card)',
+                      colorText: 'var(--color-foreground)',
+                      borderRadius: '1rem',
+                    },
+                    elements: {
+                      userButtonAvatarBox:
+                        // !important: Clerk's own avatar size would otherwise win.
+                        '!size-11 ring-2 ring-(--color-surface) dark:ring-(--color-surface-secondary)',
+                      // Popover container
+                      userButtonPopoverCard:
+                        'bg-(--color-card) dark:bg-(--color-surface-secondary) text-(--color-foreground) rounded-2xl border border-(--color-border-primary) shadow-2xl',
+                      userButtonPopoverMain:
+                        'bg-transparent text-(--color-foreground)',
+                      userPreview:
+                        'grid grid-cols-[auto_1fr] items-center gap-3 p-3',
+                      userPreviewText:
+                        'text-(--color-foreground) text-sm font-medium',
+                      // Action items
+                      userButtonActionButton:
+                        '!text-(--color-foreground) !opacity-100 hover:bg-(--color-hover-surface) focus:bg-(--color-hover-surface) rounded-lg h-10 px-3',
+                      userButtonActionButtonText:
+                        '!text-(--color-foreground) !opacity-100 text-sm',
+                      userButtonActionButtonIcon: '!text-(--color-foreground)',
+                      userButtonPopoverActionButton:
+                        '!text-(--color-foreground) !opacity-100 hover:bg-(--color-hover-surface) focus:bg-(--color-hover-surface) rounded-lg h-10 px-3',
+                      userButtonPopoverActionButtonText:
+                        '!text-(--color-foreground) !opacity-100 text-sm',
+                      userButtonPopoverActionButtonIcon:
+                        '!text-(--color-foreground)',
+                      // Footer area (Secured by Clerk)
+                      userButtonPopoverFooter:
+                        'bg-transparent border-t border-(--color-border-primary) text-(--color-text-secondary)',
+                    },
+                  }}
+                />
+              </span>
             </div>
           </SignedIn>
           <SignedOut>

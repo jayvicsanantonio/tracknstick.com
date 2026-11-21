@@ -38,14 +38,15 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
   return (
     <div
-      className="mt-1 mb-4 flex flex-col items-center justify-center sm:mt-4 sm:mb-8 lg:mt-6 lg:mb-6"
+      className="mt-5 mb-4 flex flex-col items-center justify-center sm:mt-4 sm:mb-8 lg:mt-6 lg:mb-6"
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
-      <div className="relative h-40 w-40 sm:h-60 sm:w-60 md:h-64 md:w-64">
+      {/* Without the glass disc behind it on phones. */}
+      <div className="relative h-44 w-44 sm:h-60 sm:w-60 md:h-64 md:w-64">
         {/* Glass badge backdrop */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-(--color-surface)/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl ring-inset dark:bg-(--color-surface-secondary)/40"
+          className="absolute inset-0 rounded-full bg-(--color-surface)/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl ring-inset max-sm:hidden dark:bg-(--color-surface-secondary)/40"
         />
 
         <div className="relative h-full w-full">
@@ -147,10 +148,10 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-4xl font-extrabold tracking-tight text-(--color-foreground) sm:text-5xl">
+                <span className="text-5xl font-extrabold tracking-tight text-(--color-foreground)">
                   {displayRate}%
                 </span>
-                <span className="mt-1 text-sm text-(--color-text-secondary)">
+                <span className="mt-1 text-sm text-(--color-text-secondary) max-sm:hidden">
                   Completed
                 </span>
               </motion.div>

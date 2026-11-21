@@ -7,6 +7,12 @@ import userEvent from '@testing-library/user-event';
 import DateProvider from '@app/providers/DateProvider';
 import DailyHabitDate from '../DailyHabitDate';
 
+/** Finds the date by its whole text, which spans the year's own element. */
+function dateReading(text: string) {
+  return (_: string, element: Element | null) =>
+    element?.tagName === 'SPAN' && element.textContent === text;
+}
+
 function renderDate() {
   render(
     <DateProvider>
@@ -29,7 +35,7 @@ describe('DailyHabitDate', () => {
     renderDate();
 
     expect(screen.getByRole('heading', { name: 'Today' })).toBeInTheDocument();
-    expect(screen.getByText('Nov 18, 2026')).toBeInTheDocument();
+    expect(screen.getByText(dateReading('Nov 18, 2026'))).toBeInTheDocument();
   });
 
   it('names another day by its weekday', async () => {
@@ -42,6 +48,6 @@ describe('DailyHabitDate', () => {
     expect(
       screen.getByRole('heading', { name: 'Tuesday' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Nov 17, 2026')).toBeInTheDocument();
+    expect(screen.getByText(dateReading('Nov 17, 2026'))).toBeInTheDocument();
   });
 });

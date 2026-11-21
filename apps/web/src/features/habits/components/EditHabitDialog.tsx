@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -17,7 +17,8 @@ import HabitStats from '@/features/habits/components/HabitStats';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 
 // The form, and the date picker it carries, download the first time a habit
-// dialog opens: the dialog renders its content only while open.
+// dialog opens: the dialog renders its content only while open, and HabitDialog
+// waits for the form before it shows.
 const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
 
 export default function EditHabitDialog() {
@@ -55,17 +56,28 @@ export default function EditHabitDialog() {
             Stats
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="edit" className="pt-1 sm:pt-2">
-          <Suspense fallback={null}>
+        {/* Both panels stay laid out in one cell, the hidden one invisible,
+            so the dialog is as tall as the taller of them on either tab and
+            does not resize when the tab changes. */}
+        <div className="grid">
+          <TabsContent
+            value="edit"
+            forceMount
+            className="col-start-1 row-start-1 pt-1 data-[state=inactive]:invisible sm:pt-2"
+          >
             <HabitForm
               habit={editingHabit}
               toggleDialog={toggleShowEditHabitDialog}
             />
-          </Suspense>
-        </TabsContent>
-        <TabsContent value="stats" className="pt-1 sm:pt-2">
-          <HabitStats habit={editingHabit} />
-        </TabsContent>
+          </TabsContent>
+          <TabsContent
+            value="stats"
+            forceMount
+            className="col-start-1 row-start-1 pt-1 data-[state=inactive]:invisible sm:pt-2"
+          >
+            <HabitStats habit={editingHabit} />
+          </TabsContent>
+        </div>
       </Tabs>
     </HabitDialog>
   );

@@ -99,6 +99,22 @@ describe('ProgressCalendar', () => {
     expect(within(unscheduled).queryByText(/%/)).not.toBeInTheDocument();
   });
 
+  it('lays every month out in six weeks, so moving between months keeps its height', () => {
+    // February 2026 fills four weeks exactly; August 2026 spans six.
+    for (const month of [new Date(2026, 1, 1), new Date(2026, 7, 1)]) {
+      const { unmount } = render(
+        <ProgressCalendar
+          insightData={[]}
+          selectedMonth={month}
+          setSelectedMonth={vi.fn()}
+        />,
+      );
+
+      expect(screen.getAllByRole('gridcell')).toHaveLength(42);
+      unmount();
+    }
+  });
+
   it('moves to the previous and next month', async () => {
     const setSelectedMonth = vi.fn();
     render(
