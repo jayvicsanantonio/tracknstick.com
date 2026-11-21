@@ -4,7 +4,11 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { E2E_RATE_LIMIT, withRaisedRateLimits } from '../testApiConfig.mjs';
+import {
+  E2E_RATE_LIMIT,
+  withMainFrom,
+  withRaisedRateLimits,
+} from '../testApiConfig.mjs';
 
 const wranglerToml = readFileSync(
   path.resolve(__dirname, '../../../api/wrangler.toml'),
@@ -52,5 +56,26 @@ describe('withRaisedRateLimits', () => {
     expect(() => withRaisedRateLimits(withoutHabits)).toThrow(
       /HABITS_RATE_LIMITER/,
     );
+  });
+});
+
+describe('withMainFrom', () => {
+  it("points the entry point at the API's source from another folder", () => {
+    const config = withMainFrom(wranglerToml, '../..');
+
+    expect(config).toMatch(/^main = "\.\.\/\.\.\/src\/index\.ts"$/m);
+  });
+
+  it('changes nothing else', () => {
+    const config = withMainFrom(wranglerToml, '../..');
+    const withoutMain = (toml) => toml.replace(/^main = .*$/m, '');
+
+    expect(withoutMain(config)).toBe(withoutMain(wranglerToml));
+  });
+
+  it('fails when the config has no entry point to move', () => {
+    const withoutMain = wranglerToml.replace(/^main = .*$/m, '');
+
+    expect(() => withMainFrom(withoutMain, '../..')).toThrow(/main/);
   });
 });
