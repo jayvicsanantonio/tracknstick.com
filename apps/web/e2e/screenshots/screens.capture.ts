@@ -261,9 +261,17 @@ test('capture every screen', async ({ browser }) => {
 
     await page.goto('/progress');
     await shot(page, '09-progress-history', combo);
-    await page.getByRole('tab', { name: /Completion Rate/ }).click();
-    await shot(page, '10-progress-chart', combo);
-    await page.getByRole('tab', { name: /Achievements/ }).click();
+    // Earlier layouts put the chart and achievements behind tabs; the
+    // current one shows them together and opens the full achievement list
+    // from a button.
+    const chartTab = page.getByRole('tab', { name: /Completion Rate/ });
+    if ((await chartTab.count()) > 0) {
+      await chartTab.click();
+      await shot(page, '10-progress-chart', combo);
+      await page.getByRole('tab', { name: /Achievements/ }).click();
+    } else {
+      await page.getByRole('button', { name: 'See all achievements' }).click();
+    }
     await shot(page, '11-progress-achievements', combo, false);
 
     await page.goto('/no-such-page');

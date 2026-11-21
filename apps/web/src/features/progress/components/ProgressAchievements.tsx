@@ -1,3 +1,6 @@
+// The full list of achievements on the progress page, filtered by category.
+// Earned ones come first, then those still in progress.
+
 import { memo } from 'react';
 import { Achievement } from '../types/Achievement';
 import AchievementCard from './AchievementCard';
@@ -33,7 +36,7 @@ const ProgressAchievements = memo(function ProgressAchievements({
   if (achievements.length === 0) {
     return (
       <div className="py-8 text-center">
-        <p className="text-(--color-text-secondary) dark:text-(--color-brand-text-light)">
+        <p className="text-(--color-text-secondary)">
           No achievements available yet.
         </p>
       </div>
@@ -52,10 +55,10 @@ const ProgressAchievements = memo(function ProgressAchievements({
       {/* Earned Achievements */}
       {earnedAchievements.length > 0 && (
         <div>
-          <h3 className="mb-4 text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+          <h3 className="mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
             Earned ({earnedAchievements.length})
           </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
             {earnedAchievements.map((achievement) => (
               <AchievementCard key={achievement.id} achievement={achievement} />
             ))}
@@ -66,10 +69,10 @@ const ProgressAchievements = memo(function ProgressAchievements({
       {/* In Progress / Unearned Achievements */}
       {unearnedAchievements.length > 0 && (
         <div>
-          <h3 className="mb-4 text-lg font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+          <h3 className="mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
             In Progress ({unearnedAchievements.length})
           </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
             {unearnedAchievements.map((achievement) => (
               <AchievementCard key={achievement.id} achievement={achievement} />
             ))}

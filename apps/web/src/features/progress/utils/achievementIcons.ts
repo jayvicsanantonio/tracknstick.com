@@ -73,42 +73,12 @@ export const getAchievementIcon = (iconName?: string): LucideIcon => {
     : Trophy;
 };
 
-// Get icon color class based on achievement category
-export const getIconColorClass = (category: string, isEarned: boolean) => {
-  if (isEarned) {
-    return 'text-yellow-400 dark:text-yellow-300'; // Gold color for earned achievements
-  }
+// Icon color: one brand palette for every category, inverted once earned
+export const getIconColorClass = (isEarned: boolean) =>
+  isEarned
+    ? 'text-(--color-primary-foreground)'
+    : 'text-(--color-brand-primary)';
 
-  switch (category) {
-    case 'getting_started':
-      return 'text-green-500 dark:text-green-400';
-    case 'consistency':
-      return 'text-blue-500 dark:text-blue-400';
-    case 'dedication':
-      return 'text-purple-500 dark:text-purple-400';
-    case 'milestones':
-      return 'text-orange-500 dark:text-orange-400';
-    default:
-      return 'text-gray-500 dark:text-gray-400';
-  }
-};
-
-// Get background color class based on achievement category
-export const getIconBackgroundClass = (category: string, isEarned: boolean) => {
-  if (isEarned) {
-    return 'bg-(--color-brand-primary)';
-  }
-
-  switch (category) {
-    case 'getting_started':
-      return 'bg-green-100 dark:bg-green-900/30';
-    case 'consistency':
-      return 'bg-blue-100 dark:bg-blue-900/30';
-    case 'dedication':
-      return 'bg-purple-100 dark:bg-purple-900/30';
-    case 'milestones':
-      return 'bg-orange-100 dark:bg-orange-900/30';
-    default:
-      return 'bg-gray-100 dark:bg-gray-800/30';
-  }
-};
+// Icon background: a brand tint, filled with the brand color once earned
+export const getIconBackgroundClass = (isEarned: boolean) =>
+  isEarned ? 'bg-(--color-brand-primary)' : 'bg-(--color-brand-primary)/12';

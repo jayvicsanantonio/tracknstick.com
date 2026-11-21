@@ -1,16 +1,21 @@
-// Covers how the progress calendar marks days: past days show their rate, today stands out.
-// Future days carry no ring or percentage, so they never read as a missed "0%".
+// Covers the progress calendar: each past day's completion as a ring, with its percentage inside.
+// Today stands out; a perfect day shows a check; nothing scheduled is not a missed 0%; future days have no rate.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ProgressCalendar from '../ProgressCalendar';
 
-function renderCalendar() {
+function renderCalendar(setSelectedMonth = vi.fn()) {
   render(
     <ProgressCalendar
-      insightData={[{ date: '2026-11-17', completionRate: 33 }]}
+      insightData={[
+        { date: '2026-11-17', completionRate: 33 },
+        { date: '2026-11-05', completionRate: 0 },
+        { date: '2026-11-04', completionRate: 100 },
+      ]}
       selectedMonth={new Date(2026, 10, 17)}
-      setSelectedMonth={vi.fn()}
+      setSelectedMonth={setSelectedMonth}
     />,
   );
 }
@@ -25,15 +30,42 @@ describe('ProgressCalendar', () => {
     vi.useRealTimers();
   });
 
-  it("shows today's completion and marks today as the current date", () => {
+  it('names the month it shows', () => {
     renderCalendar();
 
-    const today = screen.getByRole('gridcell', { name: 'Day 17' });
-    expect(today).toHaveAttribute('aria-current', 'date');
-    expect(within(today).getByText('33%')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'November 2026' }),
+    ).toBeInTheDocument();
   });
 
-  it('shows no percentage on a future day', () => {
+  it("marks today as the current date and reads today's completion", () => {
+    renderCalendar();
+
+    const today = screen.getByRole('gridcell', { name: /^Day 17/ });
+    expect(today).toHaveAttribute('aria-current', 'date');
+    expect(today).toHaveAccessibleName('Day 17: 33% completed');
+  });
+
+  it('reads a fully completed day and a day with nothing done', () => {
+    renderCalendar();
+
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 4: 100% completed' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 5: 0% completed' }),
+    ).toBeInTheDocument();
+  });
+
+  it('reads a past day with no habits due as nothing scheduled, not 0%', () => {
+    renderCalendar();
+
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 6: nothing scheduled' }),
+    ).toBeInTheDocument();
+  });
+
+  it('gives a future day no rate', () => {
     renderCalendar();
 
     const future = screen.getByRole('gridcell', { name: 'Day 20' });
@@ -41,10 +73,42 @@ describe('ProgressCalendar', () => {
     expect(within(future).queryByText(/%/)).not.toBeInTheDocument();
   });
 
-  it('still shows 0% on a past day with nothing completed', () => {
+  it("shows each past day's percentage inside its ring", () => {
     renderCalendar();
 
-    const past = screen.getByRole('gridcell', { name: 'Day 5' });
-    expect(within(past).getByText('0%')).toBeInTheDocument();
+    const today = screen.getByRole('gridcell', { name: /^Day 17/ });
+    expect(today).toHaveTextContent('17');
+    expect(within(today).getByText('33%')).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('gridcell', { name: /^Day 5/ })).getByText('0%'),
+    ).toBeInTheDocument();
+  });
+
+  it('marks a perfect day with a check instead of 100%', () => {
+    renderCalendar();
+
+    const perfect = screen.getByRole('gridcell', { name: /^Day 4/ });
+    expect(within(perfect).queryByText('100%')).not.toBeInTheDocument();
+    expect(perfect.querySelector('svg.lucide-check')).not.toBeNull();
+  });
+
+  it('shows no percentage on a day with nothing scheduled', () => {
+    renderCalendar();
+
+    const unscheduled = screen.getByRole('gridcell', { name: /^Day 6/ });
+    expect(within(unscheduled).queryByText(/%/)).not.toBeInTheDocument();
+  });
+
+  it('moves to the previous and next month', async () => {
+    vi.useRealTimers();
+    const setSelectedMonth = vi.fn();
+    renderCalendar(setSelectedMonth);
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Previous month' }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Next month' }));
+
+    expect(setSelectedMonth).toHaveBeenCalledTimes(2);
   });
 });

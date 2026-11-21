@@ -11,6 +11,10 @@ import {
   getIconBackgroundClass,
 } from '../utils/achievementIcons';
 
+// Category and type labels share one neutral style; the brand color marks earned.
+const CHIP =
+  'rounded-full bg-(--color-muted) px-2 py-0.5 text-xs text-(--color-text-secondary)';
+
 interface AchievementCardProps {
   achievement: Achievement;
 }
@@ -31,23 +35,23 @@ const AchievementCard = memo(function AchievementCard({
 
   return (
     <div
-      className={`rounded-lg border-2 bg-(--color-surface) p-4 shadow-md transition-all duration-200 dark:bg-(--color-brand-light) ${
+      className={`h-full rounded-2xl p-4 ring-1 transition-colors ring-inset ${
         isEarned
-          ? 'border-(--color-brand-primary) bg-(--color-brand-primary)/8 dark:bg-(--color-brand-primary)/10'
-          : 'border-transparent hover:border-(--color-brand-primary)/30 dark:hover:border-(--color-brand-primary)/50'
-      } `}
+          ? 'bg-(--color-brand-primary)/8 ring-(--color-brand-primary)/50'
+          : 'bg-(--color-surface)/60 ring-(--color-border-primary)/50 hover:ring-(--color-brand-primary)/40 dark:bg-(--color-surface-secondary)/60'
+      }`}
     >
       {/* Achievement Header */}
-      <div className="flex items-start space-x-4">
+      <div className="flex items-start gap-3">
         {/* Icon */}
         <div
-          className={`flex-shrink-0 rounded-full p-3 ${getIconBackgroundClass(category, isEarned)} `}
+          className={`flex-shrink-0 rounded-xl p-2.5 ${getIconBackgroundClass(isEarned)}`}
         >
           {(() => {
             const IconComponent = getAchievementIcon(icon);
             return (
               <IconComponent
-                className={`h-6 w-6 ${isEarned ? 'text-(--color-primary-foreground)' : getIconColorClass(category, isEarned)}`}
+                className={`h-5 w-5 ${getIconColorClass(isEarned)}`}
                 aria-label={name}
               />
             );
@@ -57,13 +61,7 @@ const AchievementCard = memo(function AchievementCard({
         {/* Content */}
         <div className="min-w-0 flex-1">
           <div className="mb-2 flex items-center justify-between">
-            <h4
-              className={`text-sm font-semibold ${
-                isEarned
-                  ? 'text-(--color-brand-tertiary) dark:text-(--color-brand-primary)'
-                  : 'text-(--color-brand-tertiary) dark:text-gray-200'
-              } `}
-            >
+            <h4 className="text-sm font-semibold text-(--color-foreground)">
               {name}
             </h4>
 
@@ -74,7 +72,7 @@ const AchievementCard = memo(function AchievementCard({
             )}
           </div>
 
-          <p className="mb-3 text-xs text-(--color-text-secondary) dark:text-gray-300">
+          <p className="mb-3 text-xs text-(--color-text-secondary)">
             {description}
           </p>
 
@@ -89,21 +87,13 @@ const AchievementCard = memo(function AchievementCard({
 
           {/* Achievement Metadata */}
           <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span
-                className={`rounded-full px-2 py-1 text-xs ${getCategoryColor(category)} `}
-              >
-                {getCategoryLabel(category)}
-              </span>
-              <span
-                className={`rounded-full px-2 py-1 text-xs ${getTypeColor(type)} `}
-              >
-                {getTypeLabel(type)}
-              </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className={CHIP}>{getCategoryLabel(category)}</span>
+              <span className={CHIP}>{getTypeLabel(type)}</span>
             </div>
 
             {isEarned && earnedAt && (
-              <span className="text-xs text-(--color-text-secondary) dark:text-gray-400">
+              <span className="text-xs text-(--color-text-secondary)">
                 {parseUTCTimestamp(earnedAt).toLocaleDateString()}
               </span>
             )}
@@ -113,21 +103,6 @@ const AchievementCard = memo(function AchievementCard({
     </div>
   );
 });
-
-function getCategoryColor(category: string): string {
-  switch (category) {
-    case 'getting_started':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-    case 'consistency':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-    case 'dedication':
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-    case 'milestones':
-      return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-  }
-}
 
 function getCategoryLabel(category: string): string {
   switch (category) {
@@ -141,25 +116,6 @@ function getCategoryLabel(category: string): string {
       return 'Milestones';
     default:
       return category;
-  }
-}
-
-function getTypeColor(type: string): string {
-  switch (type) {
-    case 'habit_creation':
-      return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300';
-    case 'streak':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-    case 'completion':
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
-    case 'special_achievement':
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300';
-    case 'perfect_completion':
-      return 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300';
-    case 'activity_tracking':
-      return 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
   }
 }
 

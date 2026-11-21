@@ -1,3 +1,6 @@
+// A round button that moves the progress calendar back or forward a month.
+// Quiet until hovered, so the month's name leads the calendar's header.
+
 import { memo, ReactNode } from 'react';
 import { Button } from '@shared/components/ui/button';
 
@@ -15,10 +18,10 @@ const MonthNavButton = memo(function MonthNavButton({
   return (
     <Button
       onClick={onClick}
-      variant="outline"
+      variant="ghost"
       size="icon"
       aria-label={ariaLabel}
-      className="border-(--color-border-brand) hover:bg-(--color-hover-brand) dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:bg-(--color-hover-brand)"
+      className="size-11 rounded-full text-(--color-text-secondary) hover:bg-(--color-brand-primary)/10 hover:text-(--color-foreground) sm:size-9"
     >
       {children}
     </Button>

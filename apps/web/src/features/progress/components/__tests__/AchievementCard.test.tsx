@@ -33,6 +33,31 @@ describe('AchievementCard', () => {
     expect(container.innerHTML).not.toMatch(/yellow|orange-50/);
   });
 
+  it('styles an unearned card and its labels with the brand palette only', () => {
+    const { container } = render(
+      <AchievementCard
+        achievement={{
+          ...earned,
+          type: 'streak',
+          category: 'consistency',
+          isEarned: false,
+          earnedAt: undefined,
+          progress: {
+            achievementId: 1,
+            isEarned: false,
+            currentValue: 2,
+            targetValue: 7,
+            progressPercentage: 29,
+          },
+        }}
+      />,
+    );
+
+    expect(container.innerHTML).not.toMatch(
+      /\b(?:bg|text|from|to)-(?:blue|purple|orange|indigo|red|emerald|amber|cyan|teal|gray|green)-/,
+    );
+  });
+
   describe('west of UTC', () => {
     beforeEach(() => {
       vi.stubEnv('TZ', 'America/Los_Angeles');

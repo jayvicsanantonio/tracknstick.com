@@ -1,4 +1,4 @@
-// Covers the completion-rate chart: a 0-100% Y axis, and bars labelled with their own calendar day.
+// Covers the completion-rate chart: a 0-100% Y axis, bars labelled with their own day, and no empty axes.
 // A data-driven axis made a 33% day look like a full bar; each YYYY-MM-DD key is its local day in any timezone.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -30,8 +30,17 @@ describe('ProgressChart', () => {
     );
 
     // Recharts nests each tick label, so a label can match more than once.
-    expect(screen.getAllByText('100').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('50').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('100%').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('50%').length).toBeGreaterThan(0);
+  });
+
+  it('says there is nothing to chart instead of drawing empty axes', () => {
+    render(<ProgressChart data={[]} />);
+
+    expect(
+      screen.getByText('Nothing to chart for this month yet.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
   describe('west of UTC', () => {
