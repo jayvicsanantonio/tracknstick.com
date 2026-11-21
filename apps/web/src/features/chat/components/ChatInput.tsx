@@ -1,7 +1,12 @@
+// The chat panel's message box and send button.
+// The box grows with its text and stays usable while the coach replies; only sending waits.
+
+import { useLayoutEffect, type RefObject } from 'react';
 import { Button } from '@shared/components/ui/button';
 import { Send, Loader2 } from 'lucide-react';
 
 interface ChatInputProps {
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -13,11 +18,21 @@ interface ChatInputProps {
  * Supports Enter to send and Shift+Enter for new lines.
  */
 export function ChatInput({
+  textareaRef,
   input,
   onInputChange,
   onSubmit,
   isLoading,
 }: ChatInputProps) {
+  // Fit the box to its text; its max height caps the growth, then it scrolls.
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    const borders = textarea.offsetHeight - textarea.clientHeight;
+    textarea.style.height = `${textarea.scrollHeight + borders}px`;
+  }, [input, textareaRef]);
+
   return (
     <form
       onSubmit={onSubmit}
@@ -25,6 +40,7 @@ export function ChatInput({
     >
       <div className="flex items-end gap-2">
         <textarea
+          ref={textareaRef}
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={(e) => {
@@ -36,19 +52,19 @@ export function ChatInput({
           aria-label="Ask the habit coach"
           placeholder="Ask the coach anything…"
           rows={1}
-          className="max-h-32 min-h-[44px] flex-1 resize-none rounded-lg border border-(--color-input) bg-(--color-background) px-4 py-3 text-base placeholder:text-(--color-text-secondary) focus:ring-2 focus:ring-(--color-ring) focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
-          disabled={isLoading}
+          className="max-h-32 min-h-[44px] flex-1 resize-none overflow-y-auto rounded-xl border border-(--color-input) bg-(--color-background) px-4 py-2.5 text-base leading-6 placeholder:text-(--color-text-secondary) focus:ring-2 focus:ring-(--color-ring) focus:ring-offset-2 focus:outline-none sm:text-sm"
         />
         <Button
           type="submit"
           size="icon"
+          aria-label="Send message"
           disabled={isLoading || !input.trim()}
-          className="h-11 w-11 shrink-0"
+          className="h-11 w-11 shrink-0 rounded-xl"
         >
           {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin" />
           ) : (
-            <Send className="h-5 w-5" />
+            <Send aria-hidden="true" className="h-5 w-5" />
           )}
         </Button>
       </div>

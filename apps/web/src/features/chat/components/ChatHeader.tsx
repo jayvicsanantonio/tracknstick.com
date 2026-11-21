@@ -19,7 +19,7 @@ export function ChatHeader({ onClose }: ChatHeaderProps) {
         </div>
         <div>
           <h2 className="text-sm font-semibold">Habit Coach</h2>
-          <p className="text-xs text-(--color-text-secondary) sm:text-[10px]">
+          <p className="text-xs text-(--color-text-secondary)">
             Powered by Atomic Habits (James Clear)
           </p>
         </div>
