@@ -94,22 +94,24 @@ test('deletes a habit from the habits overview', async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test('opens the habit coach while a toast is showing', async ({ page }) => {
-  const name = uniqueName('Journal');
-  await addHabit(page, name);
-  // Adding a habit announces it in a toast at the bottom right, beside the
-  // chat button.
-  await expect(
-    page.getByText(`Habit "${name}" added successfully.`, { exact: true }),
-  ).toBeVisible();
+test('opens the Coach page from the header navigation', async ({ page }) => {
+  await page.goto('/');
+  const coach = page.getByRole('link', { name: 'Habit Coach' });
 
-  // The toast stays about 5s; a click that waited for it to leave would
-  // still pass, so it gets 2s, while the toast is up.
-  await page
-    .getByRole('button', { name: 'Open chat' })
-    .click({ timeout: 2_000 });
+  await coach.click();
 
+  await expect(page).toHaveURL(/\/coach$/);
+  await expect(coach).toHaveAttribute('aria-current', 'page');
+  // The page heading is for screen readers, as on Habits and Progress; the
+  // card header shows the title and subtitle.
   await expect(
-    page.getByRole('heading', { name: 'Habit Coach' }),
+    page.getByRole('heading', { level: 1, name: 'Habit Coach' }),
+  ).toBeAttached();
+  await expect(
+    page.getByText('Advice grounded in Atomic Habits by James Clear'),
   ).toBeVisible();
+  // The message box is on screen without scrolling the page.
+  await expect(
+    page.getByRole('textbox', { name: 'Ask the habit coach' }),
+  ).toBeInViewport();
 });

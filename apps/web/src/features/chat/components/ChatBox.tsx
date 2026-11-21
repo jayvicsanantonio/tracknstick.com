@@ -1,185 +1,127 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
-import { useAuth } from '@clerk/clerk-react';
-import { BookOpen } from 'lucide-react';
-import { ChatHeader } from './ChatHeader';
+// The habit coach's chat, the body of the Coach page: the conversation, suggestions and message box.
+// The conversation itself, and sending, come from useChatConversation, held above the routes.
+
+import { useRef, useEffect, useState, type ComponentType } from 'react';
+import { Ban, CalendarCheck2, Sparkles, Sprout } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
-import { getConfig } from '@shared/utils/getConfig';
+import type { ChatConversation } from '@features/chat/hooks/useChatConversation';
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-}
+const SUGGESTED_QUESTIONS: {
+  question: string;
+  Icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+}[] = [
+  { question: 'How do I build a new habit?', Icon: Sprout },
+  {
+    question: 'How can I stay consistent with my habits?',
+    Icon: CalendarCheck2,
+  },
+  { question: 'How do I break a bad habit?', Icon: Ban },
+];
 
 interface ChatBoxProps {
-  onClose: () => void;
+  /** The conversation, kept above the routes so it outlives the page. */
+  conversation: ChatConversation;
 }
 
 /**
- * The chat panel that contains messages and input.
- * Uses a custom fetch-based implementation for streaming text responses.
+ * The chat that contains messages and input. Fills the rest of its card.
  */
-export function ChatBox({ onClose }: ChatBoxProps) {
-  const { apiHost } = getConfig();
-  const { getToken } = useAuth();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+export function ChatBox({ conversation }: ChatBoxProps) {
+  const { messages, isLoading, error, sendMessage } = conversation;
+  const logRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive. Scrolls the conversation
+  // only, never the page around it, and leaves the welcome at its top.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    const log = logRef.current;
+    if (log && (messages.length > 0 || error)) log.scrollTop = log.scrollHeight;
+  }, [messages, error]);
 
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim() || isLoading) return;
-
-      setError(null);
-      setIsLoading(true);
-
-      // Add user message immediately
-      const userMessage: Message = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        content: content.trim(),
-      };
-      setMessages((prev) => [...prev, userMessage]);
-
-      // Prepare messages for API (include history)
-      const apiMessages = [...messages, userMessage].map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
-
-      // Declared here so the catch can remove exactly the placeholder this
-      // call created, rather than every empty message in the conversation.
-      let assistantMessageId: string | null = null;
-
-      try {
-        const token = await getToken();
-
-        const response = await fetch(`${apiHost}/api/v1/chat`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ messages: apiMessages }),
-        });
-
-        if (!response.ok) {
-          const errorData = (await response.json()) as {
-            error?: { message?: string };
-          };
-          throw new Error(
-            errorData.error?.message ?? `Request failed: ${response.status}`,
-          );
-        }
-
-        // Create assistant message placeholder
-        const placeholderId = `assistant-${Date.now()}`;
-        assistantMessageId = placeholderId;
-        setMessages((prev) => [
-          ...prev,
-          { id: placeholderId, role: 'assistant', content: '' },
-        ]);
-
-        // Read the streaming response
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error('No response body');
-
-        const decoder = new TextDecoder();
-        let assistantContent = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          assistantContent += chunk;
-
-          // Update the assistant message with accumulated content
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === placeholderId ? { ...m, content: assistantContent } : m,
-            ),
-          );
-        }
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
-        setError(message);
-        // Drop the placeholder only if nothing streamed into it. Filtering on
-        // empty content removed the user's own message too when it was empty.
-        setMessages((prev) =>
-          prev.filter(
-            (m) => !(m.id === assistantMessageId && m.content === ''),
-          ),
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [apiHost, getToken, isLoading, messages],
-  );
+  // Ready to type as soon as the page opens. Not on touch screens, where
+  // focusing would raise the keyboard over the suggested questions.
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    textareaRef.current?.focus();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
     void sendMessage(input);
     setInput('');
+    // Pressing the send button moves focus to it; the next message starts here.
+    textareaRef.current?.focus();
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden border-(--color-border-primary)/50 bg-(--color-card) text-(--color-card-foreground) shadow-2xl sm:h-[550px] sm:w-[400px] sm:rounded-2xl sm:border">
-      <ChatHeader onClose={onClose} />
-
+    <div className="flex min-h-0 w-full flex-1 flex-col text-(--color-card-foreground)">
       {/* Messages area */}
-      <div className="flex-1 space-y-4 overflow-y-auto p-4">
-        {messages.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
-              <BookOpen className="h-7 w-7 text-(--color-brand-primary)" />
+      {/* A live log: screen readers announce each reply once it has
+          finished streaming, not word by word. */}
+      <div
+        ref={logRef}
+        role="log"
+        aria-label="Conversation"
+        aria-busy={isLoading}
+        className="min-h-0 flex-1 overflow-y-auto px-3 sm:px-6"
+      >
+        {/* A readable column, centred on wide screens */}
+        <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-4 pb-4">
+          {messages.length === 0 && (
+            <div className="my-auto flex flex-col items-center py-2 text-center sm:py-6">
+              <div className="mb-4 flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/10 ring-1 ring-(--color-brand-primary)/20 ring-inset sm:mb-5 sm:size-16">
+                <Sparkles
+                  aria-hidden="true"
+                  className="h-6 w-6 text-(--color-brand-primary) sm:h-8 sm:w-8"
+                />
+              </div>
+              <h2 className="text-xl font-semibold tracking-tight text-(--color-foreground) sm:text-2xl">
+                How can I help?
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-(--color-text-secondary) sm:text-base">
+                Ask about starting, keeping or breaking a habit. Pick a question
+                to begin, or ask your own.
+              </p>
+              <ul
+                aria-label="Suggested questions"
+                className="mt-6 grid w-full gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-3"
+              >
+                {SUGGESTED_QUESTIONS.map(({ question, Icon }) => (
+                  <li key={question}>
+                    <SuggestionCard
+                      text={question}
+                      Icon={Icon}
+                      onClick={() => {
+                        void sendMessage(question);
+                        // The suggestions go away; the next message starts here.
+                        textareaRef.current?.focus();
+                      }}
+                    />
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h2 className="text-base font-semibold">Habits Coach</h2>
-            <p className="mt-2 max-w-[280px] text-xs text-(--color-text-secondary)">
-              Get tips on building better habits, staying productive, and
-              achieving your goals.
-            </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-2">
-              <SuggestionChip
-                text="Build habits"
-                onClick={() => setInput('How do I build a new habit?')}
-              />
-              <SuggestionChip
-                text="Stay consistent"
-                onClick={() =>
-                  setInput('How can I stay consistent with my habits?')
-                }
-              />
-              <SuggestionChip
-                text="Break bad habits"
-                onClick={() => setInput('How do I break a bad habit?')}
-              />
+          )}
+          {messages.map((message) => (
+            <ChatMessage key={message.id} message={message} />
+          ))}
+          {error && (
+            <div
+              role="alert"
+              className="rounded-xl bg-(--color-destructive)/10 px-4 py-3 text-sm text-(--color-destructive)"
+            >
+              {error}
             </div>
-          </div>
-        )}
-        {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
-        ))}
-        {error && (
-          <div className="rounded-lg bg-(--color-destructive)/10 p-3 text-xs text-(--color-destructive)">
-            Error: {error}
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          )}
+        </div>
       </div>
 
       {/* Input area */}
       <ChatInput
+        textareaRef={textareaRef}
         input={input}
         onInputChange={setInput}
         onSubmit={handleSubmit}
@@ -190,21 +132,26 @@ export function ChatBox({ onClose }: ChatBoxProps) {
 }
 
 /**
- * Suggestion chip component for quick prompts
+ * A suggested question; picking it sends it.
  */
-function SuggestionChip({
+function SuggestionCard({
   text,
+  Icon,
   onClick,
 }: {
   text: string;
+  Icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="min-h-9 rounded-full border border-(--color-border-primary)/60 bg-(--color-background) px-3 py-1.5 text-xs transition-colors hover:border-(--color-brand-primary) hover:bg-(--color-brand-primary)/5 sm:min-h-0 sm:px-2.5 sm:py-1 sm:text-[10px]"
+      className="group flex h-full min-h-11 w-full items-center gap-3 rounded-2xl bg-(--color-surface)/60 p-3 text-left text-sm font-medium text-(--color-foreground) ring-1 ring-(--color-border-primary)/50 transition-colors ring-inset hover:bg-(--color-brand-primary)/5 hover:ring-(--color-brand-primary)/60 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none sm:flex-col sm:items-start sm:gap-4 sm:p-4 dark:bg-(--color-surface-secondary)/60"
     >
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-(--color-brand-primary)/12 text-(--color-brand-primary)">
+        <Icon aria-hidden={true} className="h-5 w-5" />
+      </span>
       {text}
     </button>
   );

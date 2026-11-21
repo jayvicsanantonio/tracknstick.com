@@ -4,6 +4,7 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
+import { MessageCircle } from 'lucide-react';
 // import { NavLink } from 'react-router-dom';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Button } from '@shared/components/ui/button';
@@ -79,6 +80,9 @@ const Header = memo(function Header() {
                   aria-label="Progress Overview"
                 >
                   <BarChart2 aria-hidden="true" className="size-5" />
+                </IconNavLink>
+                <IconNavLink to="/coach" label="Coach" aria-label="Habit Coach">
+                  <MessageCircle aria-hidden="true" className="size-5" />
                 </IconNavLink>
 
                 <span

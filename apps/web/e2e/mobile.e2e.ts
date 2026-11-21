@@ -79,21 +79,21 @@ test('adds a habit in a bottom sheet and deletes it from its card', async ({
   await expect(card).toHaveCount(0);
 });
 
-test('opens the habit coach from the tab bar and closes it', async ({
-  page,
-}) => {
-  // On phones the floating chat button gives way to the tab bar's Coach tab.
-  await expect(page.getByRole('button', { name: 'Open chat' })).toBeHidden();
+test('opens the Coach page from the tab bar', async ({ page }) => {
   const tabs = page.getByRole('navigation', { name: 'Primary' });
-  await tabs.getByRole('button', { name: 'Coach' }).click();
+  const coach = tabs.getByRole('link', { name: 'Coach' });
 
-  const close = page.getByRole('button', { name: 'Close chat' });
-  await expect(close).toBeVisible();
-  await expect(
-    page.getByRole('textbox', { name: 'Ask the habit coach' }),
-  ).toBeInViewport();
+  await coach.click();
 
-  await close.click();
-  await expect(close).toBeHidden();
-  await expect(tabs).toBeVisible();
+  await expect(page).toHaveURL(/\/coach$/);
+  await expect(coach).toHaveAttribute('aria-current', 'page');
+  // The message box sits above the tab bar, not under it.
+  const textbox = page.getByRole('textbox', { name: 'Ask the habit coach' });
+  await expect(textbox).toBeInViewport();
+  const textboxBox = await textbox.boundingBox();
+  const tabsBox = await tabs.boundingBox();
+  expect(textboxBox).not.toBeNull();
+  expect(tabsBox).not.toBeNull();
+  if (!textboxBox || !tabsBox) return;
+  expect(textboxBox.y + textboxBox.height).toBeLessThanOrEqual(tabsBox.y);
 });

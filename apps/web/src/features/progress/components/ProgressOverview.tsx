@@ -1,6 +1,13 @@
+// The Progress page body: four summary figures, the month's calendar and chart, and achievements.
+// Everything shows at once; the full achievement list opens below on request.
+
 import { useState, memo } from 'react';
-import StreakDisplayDays from '@/features/progress/components/StreakDisplayDays';
-import ProgressTabs from '@/features/progress/components/ProgressTabs';
+import { CalendarCheck, Flame, Percent, Trophy } from 'lucide-react';
+import ProgressStat from '@/features/progress/components/ProgressStat';
+import ProgressCalendar from '@/features/progress/components/ProgressCalendar';
+import ProgressChart from '@/features/progress/components/ProgressChart';
+import AchievementsSummary from '@/features/progress/components/AchievementsSummary';
+import ProgressAchievements from '@/features/progress/components/ProgressAchievements';
 import {
   Card,
   CardContent,
@@ -9,10 +16,20 @@ import {
 } from '@shared/components/ui/card';
 import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressStreaks from '../hooks/useProgressStreaks';
+import {
+  useAchievementProgress,
+  useAchievements,
+} from '../hooks/useAchievements';
+import { summarizeMonth } from '../utils/monthSummary';
 import { motion } from 'framer-motion';
+
+// The panels inside the page card: a tint and a hairline, no card frame.
+const PANEL =
+  'rounded-2xl bg-(--color-surface)/60 p-4 ring-1 ring-(--color-border-primary)/50 ring-inset sm:p-5 dark:bg-(--color-surface-secondary)/60';
 
 const ProgressOverview = memo(function ProgressOverview() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [showAllAchievements, setShowAllAchievements] = useState(false);
 
   // Use separate hooks for history and streaks
   const {
@@ -26,12 +43,26 @@ const ProgressOverview = memo(function ProgressOverview() {
     isLoading: isStreaksLoading,
     error: streaksError,
   } = useProgressStreaks();
+  const {
+    achievements,
+    stats,
+    loading: achievementsLoading,
+    error: achievementsError,
+  } = useAchievements();
+  const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
-  // Combine loading states
-  const isLoading = isHistoryLoading || isStreaksLoading;
   // Either failure hides the figures: zeros and an empty calendar would read
   // as "no progress" rather than "could not load".
   const loadFailed = Boolean(historyError ?? streaksError);
+
+  // A streak equal to the longest one is the best yet; a streak of 0 is not.
+  const isBestStreak = currentStreak > 0 && currentStreak >= longestStreak;
+
+  const monthName = selectedMonth.toLocaleString('default', { month: 'long' });
+  const { averageRate, perfectDays } = summarizeMonth(
+    historyData,
+    selectedMonth,
+  );
 
   return (
     <motion.div
@@ -55,7 +86,7 @@ const ProgressOverview = memo(function ProgressOverview() {
               </p>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
+          <CardContent className="flex-1 px-3 pb-6 sm:px-6 sm:pb-8">
             {loadFailed ? (
               <p
                 role="alert"
@@ -65,26 +96,100 @@ const ProgressOverview = memo(function ProgressOverview() {
                 again.
               </p>
             ) : (
-              <>
-                <div className="mb-4 flex items-center justify-center">
-                  <div className="grid w-full grid-cols-2 gap-3 text-(--color-brand-text) sm:flex sm:w-auto sm:items-center sm:gap-8">
-                    <StreakDisplayDays
-                      value={currentStreak}
-                      label="Current Streak"
-                    />
-                    <StreakDisplayDays
-                      value={longestStreak}
-                      label="Longest Streak"
+              <div className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                  <ProgressStat
+                    Icon={Flame}
+                    label="Current streak"
+                    value={currentStreak}
+                    unit="day"
+                    loading={isStreaksLoading}
+                    badge={isBestStreak ? 'Best yet' : undefined}
+                  />
+                  <ProgressStat
+                    Icon={Trophy}
+                    label="Longest streak"
+                    value={longestStreak}
+                    unit="day"
+                    loading={isStreaksLoading}
+                  />
+                  <ProgressStat
+                    Icon={Percent}
+                    label={`${monthName} average`}
+                    value={averageRate === null ? null : `${averageRate}%`}
+                    loading={isHistoryLoading}
+                  />
+                  <ProgressStat
+                    Icon={CalendarCheck}
+                    label={`Perfect days in ${monthName}`}
+                    value={perfectDays}
+                    unit="day"
+                    loading={isHistoryLoading}
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                  <section aria-label="Calendar" className={PANEL}>
+                    {isHistoryLoading ? (
+                      <p className="py-12 text-center text-sm text-(--color-text-secondary)">
+                        Loading calendar…
+                      </p>
+                    ) : (
+                      <ProgressCalendar
+                        insightData={historyData}
+                        selectedMonth={selectedMonth}
+                        setSelectedMonth={setSelectedMonth}
+                      />
+                    )}
+                  </section>
+
+                  <div className="flex flex-col gap-4 sm:gap-6">
+                    <section
+                      aria-labelledby="daily-completion-heading"
+                      className={PANEL}
+                    >
+                      <h2
+                        id="daily-completion-heading"
+                        className="mb-4 text-base font-semibold text-(--color-foreground) sm:text-lg"
+                      >
+                        Daily completion
+                      </h2>
+                      {isHistoryLoading ? (
+                        <p className="py-12 text-center text-sm text-(--color-text-secondary)">
+                          Loading chart…
+                        </p>
+                      ) : (
+                        <ProgressChart data={historyData} />
+                      )}
+                    </section>
+
+                    <AchievementsSummary
+                      achievements={achievements}
+                      stats={stats}
+                      loading={achievementsLoading}
+                      error={achievementsError}
+                      isListOpen={showAllAchievements}
+                      onToggleList={() =>
+                        setShowAllAchievements((open) => !open)
+                      }
                     />
                   </div>
                 </div>
-                <ProgressTabs
-                  historyData={historyData}
-                  selectedMonth={selectedMonth}
-                  setSelectedMonth={setSelectedMonth}
-                  isLoading={isLoading}
-                />
-              </>
+
+                {showAllAchievements && (
+                  <section
+                    id="all-achievements"
+                    aria-label="All achievements"
+                    className={PANEL}
+                  >
+                    <ProgressAchievements
+                      achievements={achievements}
+                      selectedCategory={selectedCategory}
+                      onCategoryChange={setSelectedCategory}
+                    />
+                  </section>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>

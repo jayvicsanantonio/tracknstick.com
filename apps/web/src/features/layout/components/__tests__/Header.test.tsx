@@ -1,3 +1,6 @@
+// Covers the header's navigation links, including the habit coach's, and the logo link.
+// Coach is a page like Tracker, Habits and Progress, linked after them.
+
 import '@testing/mocks';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -83,5 +86,41 @@ describe('Header Component', () => {
     expect(
       screen.getByRole('link', { name: "Track N' Stick" }),
     ).toHaveAttribute('href', '/');
+  });
+
+  it('links to the habit coach after progress, like the other pages', () => {
+    renderHeader();
+
+    const coach = screen.getByRole('link', { name: 'Habit Coach' });
+    expect(coach).toHaveAttribute('href', '/coach');
+    expect(coach).toHaveTextContent('Coach');
+
+    const links = screen.getAllByRole('link');
+    const progress = screen.getByRole('link', { name: /progress overview/i });
+    expect(links.indexOf(coach)).toBe(links.indexOf(progress) + 1);
+  });
+
+  it('marks the coach link active on the Coach page', () => {
+    render(
+      <ThemeProvider>
+        <HabitsStateProvider>
+          <MemoryRouter initialEntries={['/coach']}>
+            <Header />
+          </MemoryRouter>
+        </HabitsStateProvider>
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Habit Coach' })).toHaveClass(
+      'bg-(--color-brand-secondary)',
+    );
+  });
+
+  it('has no separate coach button', () => {
+    renderHeader();
+
+    expect(
+      screen.queryByRole('button', { name: 'Coach' }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-// The signed-out landing page: what Track N' Stick offers, a preview of the tracker, and sign-in.
+// The signed-out landing page: what Track N' Stick offers and sign-in.
 // Stacks on small screens and splits hero and sign-in side by side from lg up.
 
 import { SignIn } from '@clerk/clerk-react';
@@ -9,7 +9,6 @@ import { memo, useMemo } from 'react';
 import {
   BarChart3,
   CalendarCheck2,
-  Check,
   Sparkles,
   type LucideIcon,
 } from 'lucide-react';
@@ -32,72 +31,6 @@ const FEATURES: { Icon: LucideIcon; title: string; detail: string }[] = [
   },
 ];
 
-/**
- * A small, static picture of the tracker for wide screens: a progress ring
- * and three habits, two of them done. Decorative, so hidden from assistive
- * technology; the feature list says the same in words.
- */
-function TrackerPreview() {
-  const radius = 42;
-  const circumference = 2 * Math.PI * radius;
-  return (
-    <div
-      aria-hidden="true"
-      data-tracker-preview
-      className="mt-10 hidden items-center gap-6 rounded-3xl bg-(--color-surface)/70 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.08)] ring-1 ring-(--color-border-primary)/50 ring-inset lg:flex dark:bg-(--color-surface-secondary)/70"
-    >
-      <div className="relative size-24 shrink-0">
-        <svg viewBox="0 0 100 100" className="size-full -rotate-90">
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            fill="none"
-            strokeWidth="9"
-            className="stroke-(--color-border-primary)"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            fill="none"
-            strokeWidth="9"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference / 3}
-            className="stroke-(--color-brand-primary)"
-          />
-        </svg>
-        <span className="absolute inset-0 flex items-center justify-center text-lg font-extrabold text-(--color-foreground)">
-          67%
-        </span>
-      </div>
-      <div className="flex gap-3">
-        {['Run', 'Read', 'Water'].map((label, index) => (
-          <div key={label} className="flex flex-col items-center gap-1.5">
-            <span
-              className={`flex size-12 items-center justify-center rounded-full ring-1 ring-inset ${
-                index < 2
-                  ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) ring-(--color-brand-primary)'
-                  : 'bg-(--color-surface) text-(--color-brand-primary) ring-(--color-border-primary) dark:bg-(--color-surface-secondary)'
-              }`}
-            >
-              {index < 2 ? (
-                <Check className="h-5 w-5" strokeWidth={3} />
-              ) : (
-                <span className="h-2 w-2 rounded-full bg-current" />
-              )}
-            </span>
-            <span className="text-xs font-medium text-(--color-text-secondary)">
-              {label}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 const Welcome = memo(function Welcome() {
   const { mode } = useTheme();
   const isDark = mode === 'dark';
@@ -109,8 +42,8 @@ const Welcome = memo(function Welcome() {
   const subtitle = useMemo(
     () =>
       isDark
-        ? 'Build habits that stick — calm, focused, and quietly powerful.'
-        : 'Build habits that shine — simple, friendly, and delightfully light.',
+        ? 'Build habits that stick. Calm, focused, and quietly powerful.'
+        : 'Build habits that shine. Simple, friendly, and delightfully light.',
     [isDark],
   );
 
@@ -137,11 +70,7 @@ const Welcome = memo(function Welcome() {
               {/* Left Side - Hero Content */}
               <div className="relative flex flex-1 flex-col items-center justify-center px-4 pt-6 pb-2 text-center sm:p-8 lg:items-start lg:p-12 lg:text-left xl:p-16">
                 <div className="z-10 w-full max-w-xl">
-                  <p className="inline-flex items-center gap-2 rounded-full bg-(--color-brand-primary)/10 px-3 py-1 text-xs font-semibold tracking-wide text-(--color-brand-text) uppercase dark:text-(--color-brand-text-light)">
-                    <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
-                    Habit tracker + AI coach
-                  </p>
-                  <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-balance text-(--color-brand-primary) sm:text-5xl xl:text-6xl dark:text-(--color-brand-text-light)">
+                  <h1 className="text-4xl font-extrabold tracking-tight text-balance text-(--color-brand-primary) sm:text-5xl xl:text-6xl dark:text-(--color-brand-text-light)">
                     {title}
                   </h1>
                   <p className="mt-3 text-base leading-relaxed text-balance text-(--color-brand-tertiary) sm:mt-4 sm:text-lg xl:text-xl dark:text-(--color-text-primary)">
@@ -150,7 +79,7 @@ const Welcome = memo(function Welcome() {
 
                   <ul
                     aria-label="What you get"
-                    className="mt-6 grid grid-cols-3 gap-2 text-center sm:gap-3 lg:mt-8 lg:grid-cols-1 lg:gap-4 lg:text-left"
+                    className="mt-6 grid grid-cols-3 gap-2 text-center sm:gap-3 lg:mt-10 lg:grid-cols-1 lg:gap-6 lg:text-left"
                   >
                     {FEATURES.map(({ Icon, title: featureTitle, detail }) => (
                       <li
@@ -171,12 +100,6 @@ const Welcome = memo(function Welcome() {
                       </li>
                     ))}
                   </ul>
-
-                  <TrackerPreview />
-
-                  <p className="mt-6 text-xs text-(--color-text-secondary) sm:text-sm">
-                    Free to try. Your data stays private.
-                  </p>
                 </div>
               </div>
 

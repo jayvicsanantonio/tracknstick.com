@@ -1,7 +1,7 @@
-// Covers the phone-width bottom navigation: its three destinations and its Add button.
+// Covers the phone-width bottom navigation: its four destinations and its Add button.
 // The bar marks the current route and opens the Add Habit dialog.
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -15,11 +15,11 @@ function AddDialogState() {
   return <output aria-label="Add dialog">{String(showAddHabitDialog)}</output>;
 }
 
-function renderBar(path = '/', onOpenChat = vi.fn()) {
+function renderBar(path = '/') {
   render(
     <HabitsStateProvider>
       <MemoryRouter initialEntries={[path]}>
-        <MobileTabBar onOpenChat={onOpenChat} />
+        <MobileTabBar />
         <AddDialogState />
       </MemoryRouter>
     </HabitsStateProvider>,
@@ -27,7 +27,7 @@ function renderBar(path = '/', onOpenChat = vi.fn()) {
 }
 
 describe('MobileTabBar', () => {
-  it('links to the tracker, habits and progress', () => {
+  it('links to the tracker, habits, progress and coach', () => {
     renderBar();
 
     const nav = screen.getByRole('navigation', { name: 'Primary' });
@@ -43,6 +43,10 @@ describe('MobileTabBar', () => {
     expect(screen.getByRole('link', { name: 'Progress' })).toHaveAttribute(
       'href',
       '/progress',
+    );
+    expect(screen.getByRole('link', { name: 'Coach' })).toHaveAttribute(
+      'href',
+      '/coach',
     );
   });
 
@@ -70,11 +74,12 @@ describe('MobileTabBar', () => {
     ).toHaveTextContent('true');
   });
 
-  it('opens the habit coach from its Coach tab', async () => {
-    const onOpenChat = vi.fn();
-    renderBar('/', onOpenChat);
+  it('marks the Coach tab current on the Coach page', () => {
+    renderBar('/coach');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Coach' }));
-    expect(onOpenChat).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('link', { name: 'Coach' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
 });

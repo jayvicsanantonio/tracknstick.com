@@ -86,7 +86,7 @@ async function open(browser: Browser, combo: Combo, signedIn: boolean) {
 }
 
 // Phone and tablet shots show one screen, as the device does: a full-page
-// stitch would draw fixed bars (the tab bar, the chat button) in the middle
+// stitch would draw fixed bars (such as the tab bar) in the middle
 // of the image. Desktop and wide shots are full-page.
 async function shot(page: Page, screen: string, combo: Combo, fullPage = true) {
   // Lets entrance animations and the chart's bar animation finish.
@@ -223,10 +223,11 @@ test('capture every screen', async ({ browser }) => {
   await eachCombo(browser, true, async (page, combo) => {
     await page.goto('/');
     await shot(page, '04-tracker', combo);
-    // Phones open the coach from the tab bar's Coach tab, wider screens (and
-    // the earlier phone layout) from the floating chat button.
+    // The coach is the Coach page, linked from the header and the phone tab
+    // bar. Earlier layouts opened a chat panel from a button instead.
     await page
-      .getByRole('button', { name: /^(Open chat|Coach)$/ })
+      .getByRole('link', { name: /^(Coach|Habit Coach)$/ })
+      .or(page.getByRole('button', { name: /^(Open chat|Coach)$/ }))
       .filter({ visible: true })
       .first()
       .click();
@@ -260,9 +261,17 @@ test('capture every screen', async ({ browser }) => {
 
     await page.goto('/progress');
     await shot(page, '09-progress-history', combo);
-    await page.getByRole('tab', { name: /Completion Rate/ }).click();
-    await shot(page, '10-progress-chart', combo);
-    await page.getByRole('tab', { name: /Achievements/ }).click();
+    // Earlier layouts put the chart and achievements behind tabs; the
+    // current one shows them together and opens the full achievement list
+    // from a button.
+    const chartTab = page.getByRole('tab', { name: /Completion Rate/ });
+    if ((await chartTab.count()) > 0) {
+      await chartTab.click();
+      await shot(page, '10-progress-chart', combo);
+      await page.getByRole('tab', { name: /Achievements/ }).click();
+    } else {
+      await page.getByRole('button', { name: 'See all achievements' }).click();
+    }
     await shot(page, '11-progress-achievements', combo, false);
 
     await page.goto('/no-such-page');

@@ -1,5 +1,8 @@
+// One message in the chat panel: the user's on the right, the coach's on the left.
+// A coach message with no text yet shows a typing indicator.
+
 import { cn } from '@shared/utils/utils';
-import { User, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import Markdown from 'react-markdown';
 
 export interface Message {
@@ -19,40 +22,46 @@ interface ChatMessageProps {
  */
 export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user';
+  const isTyping = !isUser && message.content === '';
 
   return (
     <div
       className={cn(
-        'flex max-w-[85%] items-start gap-3',
-        isUser ? 'ml-auto flex-row-reverse' : 'mr-auto',
+        'flex items-end gap-2',
+        isUser ? 'ml-auto max-w-[85%] justify-end' : 'mr-auto max-w-[92%]',
       )}
     >
-      {/* Avatar */}
-      <div
-        className={cn(
-          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-          isUser
-            ? 'bg-(--color-brand-primary) text-(--color-primary-foreground)'
-            : 'bg-(--color-brand-primary)/20 text-(--color-brand-primary)',
-        )}
-      >
-        {isUser ? (
-          <User className="h-4 w-4" />
-        ) : (
-          <Sparkles className="h-4 w-4" />
-        )}
-      </div>
+      {/* The coach's avatar; the user's side needs none */}
+      {!isUser && (
+        <div className="mb-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary)">
+          <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
+        </div>
+      )}
 
       {/* Message bubble */}
       <div
         className={cn(
-          'rounded-2xl px-4 py-3',
+          'rounded-2xl px-4 py-2.5',
           isUser
-            ? 'bg-(--color-brand-primary) text-(--color-primary-foreground)'
-            : 'bg-(--color-muted)/80 text-(--color-foreground)',
+            ? 'rounded-br-md bg-(--color-brand-primary) text-(--color-primary-foreground)'
+            : 'rounded-bl-md bg-(--color-muted)/80 text-(--color-foreground)',
         )}
       >
-        {isUser ? (
+        {isTyping ? (
+          <span
+            role="status"
+            aria-label="The coach is replying"
+            className="flex h-6 items-center gap-1"
+          >
+            {[0, 150, 300].map((delay) => (
+              <span
+                key={delay}
+                style={{ animationDelay: `${delay}ms` }}
+                className="size-1.5 animate-bounce rounded-full bg-(--color-text-secondary)"
+              />
+            ))}
+          </span>
+        ) : isUser ? (
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
             {message.content}
           </p>

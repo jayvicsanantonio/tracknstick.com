@@ -10,6 +10,8 @@ import RouteErrorBoundary from '@shared/components/feedback/RouteErrorBoundary';
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const HabitsPage = lazy(() => import('@/pages/HabitsPage'));
 const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
+// The coach's chat and its markdown renderer load only on /coach.
+const CoachPage = lazy(() => import('@/pages/CoachPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 /**
@@ -48,6 +50,14 @@ const routes: RouteObject[] = [
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <ProgressPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'coach',
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <CoachPage />
           </Suspense>
         ),
       },
