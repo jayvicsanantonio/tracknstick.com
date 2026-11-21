@@ -19,7 +19,7 @@ function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-[calc(100vh-10rem)] flex-1 flex-col items-center justify-center px-4 py-16 sm:min-h-[calc(100vh-14rem)]">
+    <div className="flex flex-1 flex-col items-center justify-center px-4 py-16">
       <div className="text-center">
         {/* 404 Icon */}
         <div className="mb-6 text-7xl font-extrabold tracking-tight text-(--color-brand-primary)/40 sm:mb-8 sm:text-8xl">

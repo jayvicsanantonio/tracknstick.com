@@ -109,8 +109,11 @@ export default function DailyHabitTracker() {
           className="relative flex w-full flex-1 flex-col overflow-hidden"
         >
           {/* From lg up: the day and its progress in a column, the habits
-              beside it. Below lg they stack. */}
-          <div className="grid flex-1 lg:grid-cols-[minmax(19rem,23rem)_1fr]">
+              beside it. Below lg they stack. The column has a fixed width,
+              wide enough for the longest day name, so moving between days
+              never moves the habits. Rows keep to their content, so the card's
+              spare height falls below the habits rather than between rows. */}
+          <div className="grid flex-1 content-start lg:grid-cols-[26rem_1fr]">
             <div className="lg:self-start lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
               <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
                 <DailyHabitDate />
@@ -123,10 +126,12 @@ export default function DailyHabitTracker() {
                   <DailyHabitProgressIndicator
                     completionRate={completionRate}
                   />
+                  {/* On phones the ring says it alone; the summary stays
+                      for screen readers. */}
                   <p
                     role="status"
                     aria-label="Day summary"
-                    className="rounded-full bg-(--color-brand-primary)/10 px-4 py-1.5 text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
+                    className="rounded-full bg-(--color-brand-primary)/10 px-4 py-1.5 text-sm font-semibold text-(--color-brand-text) max-sm:sr-only dark:text-(--color-brand-text-light)"
                   >
                     {doneCount === habits.length
                       ? `All ${habits.length} done`

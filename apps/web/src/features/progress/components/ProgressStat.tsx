@@ -59,7 +59,9 @@ const ProgressStat = memo(function ProgressStat({
             No data yet
           </p>
         ) : (
-          <p className="flex items-baseline gap-1">
+          // As tall as the placeholder, so the figure does not move when
+          // it arrives.
+          <p className="flex h-7 items-baseline gap-1 sm:h-8">
             <span className="text-2xl leading-7 font-bold tracking-tight text-(--color-foreground) tabular-nums sm:text-[1.75rem] sm:leading-8">
               {value}
             </span>
@@ -70,7 +72,10 @@ const ProgressStat = memo(function ProgressStat({
             )}
           </p>
         )}
-        <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs font-medium text-(--color-text-secondary) sm:text-sm">
+        {/* Room for two lines whatever its length, so a month whose name
+            wraps the label ("Perfect days in September") keeps the row's
+            height. */}
+        <p className="mt-0.5 flex min-h-[2lh] flex-wrap content-start items-center gap-x-1.5 gap-y-0.5 text-xs font-medium text-(--color-text-secondary) sm:text-sm">
           {label}
           {badge && !loading && (
             <span className="rounded-full bg-(--color-brand-primary)/15 px-1.5 py-px text-[10px] font-semibold tracking-wide text-(--color-brand-text) uppercase dark:text-(--color-brand-text-light)">

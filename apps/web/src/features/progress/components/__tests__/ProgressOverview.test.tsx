@@ -150,6 +150,26 @@ describe('ProgressOverview', () => {
     ).toBeInTheDocument();
   });
 
+  it("keeps the calendar's grid on screen while a month's history loads", () => {
+    vi.mocked(useProgressHistory).mockReturnValue({
+      historyData: [],
+      isLoading: true,
+      error: undefined,
+    });
+    renderOverview();
+
+    expect(
+      screen.getByRole('heading', { name: 'November 2026' }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('gridcell')).toHaveLength(42);
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 6: loading' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('status', { name: 'Loading chart' }),
+    ).toBeInTheDocument();
+  });
+
   it('shows the calendar, the chart and the achievements together, with no tabs', () => {
     renderOverview();
 

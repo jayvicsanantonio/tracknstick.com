@@ -8,10 +8,13 @@ as a Clerk test user from the **development** instance.
 - `e2e/serveApi.mjs`: deletes and recreates a local D1 database in
   `apps/api/.wrangler/e2e-state`, applies `apps/api/migrations`, then runs
   `wrangler dev --local` on port 8787. Your `pnpm dev:api` database is not
-  touched. The API runs from `apps/api/wrangler.e2e.toml` (gitignored), a copy
-  of `wrangler.toml` with the per-IP API, habits and progress rate limits raised
-  to 1000 a minute: the suite sends more requests a minute from one IP than the
-  production limits allow. `e2e/testApiConfig.mjs` builds it.
+  touched. The API runs from `apps/api/.wrangler/e2e-config/wrangler.toml`
+  (gitignored), a copy of `wrangler.toml` with the per-IP API, habits and
+  progress rate limits raised to 1000 a minute: the suite sends more requests a
+  minute from one IP than the production limits allow. `e2e/testApiConfig.mjs`
+  builds it. The copy has a folder of its own so that its Wrangler build files
+  are kept apart from those of a running `pnpm dev:api`, which a run can start
+  beside safely.
 - Vite on port 5174, pointed at that API.
 - `e2e/auth.setup.ts`: signs in once with `@clerk/testing` and saves the session
   to `e2e/.auth/user.json` (gitignored) for the other tests.

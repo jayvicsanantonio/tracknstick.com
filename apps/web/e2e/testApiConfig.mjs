@@ -1,6 +1,8 @@
 // Builds the Wrangler config the e2e run starts the API with: wrangler.toml with its per-IP limits raised.
 // The suite sends more requests a minute from one IP than any real user; the API's own tests cover the limits.
 
+import path from 'node:path';
+
 /** The per-minute limit the e2e API allows for each raised limiter. */
 export const E2E_RATE_LIMIT = 1000;
 
@@ -22,13 +24,13 @@ export function withRaisedRateLimits(toml) {
   const raised = new Set();
   const blocks = toml.split(/(?=^\[\[ratelimits\]\]$)/m).map((block) => {
     const name = block.match(/^name = "(\w+)"$/m)?.[1];
-    if (!block.startsWith('[[ratelimits]]') || !RAISED_LIMITERS.includes(name)) {
+    if (
+      !block.startsWith('[[ratelimits]]') ||
+      !RAISED_LIMITERS.includes(name)
+    ) {
       return block;
     }
-    const updated = block.replace(
-      /^(\s*limit = )\d+$/m,
-      `$1${E2E_RATE_LIMIT}`,
-    );
+    const updated = block.replace(/^(\s*limit = )\d+$/m, `$1${E2E_RATE_LIMIT}`);
     if (updated !== block) raised.add(name);
     return updated;
   });
@@ -40,4 +42,20 @@ export function withRaisedRateLimits(toml) {
     );
   }
   return blocks.join('');
+}
+
+/**
+ * The given wrangler.toml text with its `main` entry point prefixed by
+ * `pathToApi`, the API folder as seen from where the config is written, and
+ * nothing else changed. Throws if there is no `main` to move.
+ */
+export function withMainFrom(toml, pathToApi) {
+  const pattern = /^main = "(.+)"$/m;
+  if (!pattern.test(toml)) {
+    throw new Error('wrangler.toml has no main entry point to move');
+  }
+  return toml.replace(
+    pattern,
+    (_line, entry) => `main = "${path.posix.join(pathToApi, entry)}"`,
+  );
 }

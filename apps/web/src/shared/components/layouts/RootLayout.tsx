@@ -22,7 +22,11 @@ const RootLayout = memo(function RootLayout() {
   return (
     <>
       <Header />
-      <main className="relative min-h-0 flex-1">
+      {/* Pages fill the main column, so the footer sits at the foot of the
+          screen however short a page is or while it loads. On phones the main
+          column also reaches the tab bar, which keeps the footer tucked under
+          it, below the content, rather than on show above it. */}
+      <main className="relative flex min-h-0 flex-1 flex-col max-sm:min-h-[calc(100dvh-10rem)]">
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Suspense fallback={null}>

@@ -33,7 +33,9 @@ const ProgressChart = memo(function ProgressChart({
 }: ProgressChartProps) {
   if (data.length === 0) {
     return (
-      <p className="flex h-48 items-center justify-center rounded-xl text-center text-sm text-(--color-text-secondary) ring-1 ring-(--color-border-primary)/40 ring-inset">
+      // As tall as the chart and its key, so a month with nothing to chart
+      // keeps the panel's size.
+      <p className="flex h-62 items-center justify-center rounded-xl text-center text-sm text-(--color-text-secondary) ring-1 ring-(--color-border-primary)/40 ring-inset">
         Nothing to chart for this month yet.
       </p>
     );

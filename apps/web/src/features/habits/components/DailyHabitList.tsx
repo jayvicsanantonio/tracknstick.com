@@ -29,15 +29,21 @@ const DailyHabitList = memo(function DailyHabitList() {
   );
 
   return (
+    // On phones a centred, wrapping row of fixed-width habits, so a short
+    // last row sits in the middle; a grid from sm up.
     <motion.div
-      className="grid grid-cols-3 gap-x-2 gap-y-4 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+      className="flex flex-wrap justify-center gap-x-2 gap-y-5 sm:grid sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
       aria-label="List of daily habits"
       variants={container}
       initial="hidden"
       animate="show"
     >
       {habits.map((habit) => (
-        <motion.div key={habit.id} variants={itemVariants}>
+        <motion.div
+          key={habit.id}
+          variants={itemVariants}
+          className="w-24 sm:w-auto"
+        >
           <DailyHabitItem habit={habit} />
         </motion.div>
       ))}
