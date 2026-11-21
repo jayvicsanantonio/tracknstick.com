@@ -13,6 +13,7 @@
     "lint": "pnpm eslint .",
     "lint:fix": "pnpm eslint . --fix",
     "format": "prettier --write .",
+    "icons": "node scripts/generateIcons.mjs",
     "preview": "pnpm vite preview",
     "test": "vitest",
     "test:run": "vitest run",
