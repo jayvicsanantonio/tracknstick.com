@@ -1,10 +1,11 @@
 // Covers the Edit habit dialog's two tabs, the form and the habit's stats.
-// Both panels stay laid out, so the dialog keeps one size when the tab changes.
+// The stats load only once their tab opens; the form stays laid out, so the dialog keeps one size.
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import EditHabitDialog from '../EditHabitDialog';
+import useHabitStats from '@/features/habits/hooks/useHabitStats';
 import { Habit } from '@/features/habits/types/Habit';
 
 const habit: Habit = {
@@ -24,7 +25,7 @@ vi.mock('@/features/habits/hooks/useHabitsContext', () => ({
   }),
 }));
 vi.mock('@/features/habits/hooks/useHabitStats', () => ({
-  default: () => ({ streak: 0, longestStreak: 0, totalCompletions: 0 }),
+  default: vi.fn(() => ({ streak: 0, longestStreak: 0, totalCompletions: 0 })),
 }));
 // The form has tests of its own; here it only has to be there.
 vi.mock('@/features/habits/components/HabitForm', () => ({
@@ -45,15 +46,26 @@ describe('EditHabitDialog', () => {
     );
   });
 
-  it('keeps the form and the stats laid out while either tab is shown', async () => {
+  it('asks for the stats only once the Stats tab opens', async () => {
+    vi.mocked(useHabitStats).mockClear();
     render(<EditHabitDialog />);
     const dialog = await screen.findByRole('dialog', { name: 'Read' });
     await within(dialog).findByRole('form', { name: 'Habit form' });
 
-    // The stats are there, out of sight, behind the form.
+    expect(useHabitStats).not.toHaveBeenCalled();
+
+    await userEvent.click(within(dialog).getByRole('tab', { name: 'Stats' }));
+
+    expect(useHabitStats).toHaveBeenCalledWith('habit-1');
     expect(
       within(dialog).getByLabelText('Habit Statistics', { selector: 'div' }),
     ).toBeInTheDocument();
+  });
+
+  it('keeps the form laid out behind the stats, and the stats once opened', async () => {
+    render(<EditHabitDialog />);
+    const dialog = await screen.findByRole('dialog', { name: 'Read' });
+    await within(dialog).findByRole('form', { name: 'Habit form' });
 
     await userEvent.click(within(dialog).getByRole('tab', { name: 'Stats' }));
 
@@ -64,6 +76,13 @@ describe('EditHabitDialog', () => {
     // The form stays behind the stats, out of sight.
     expect(
       within(dialog).getByRole('form', { name: 'Habit form' }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(within(dialog).getByRole('tab', { name: 'Edit' }));
+
+    // Back on the form, the stats stay laid out behind it.
+    expect(
+      within(dialog).getByLabelText('Habit Statistics', { selector: 'div' }),
     ).toBeInTheDocument();
   });
 });
