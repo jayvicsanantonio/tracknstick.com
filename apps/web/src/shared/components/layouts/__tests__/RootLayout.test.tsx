@@ -4,7 +4,7 @@
 // every suite.
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import RootLayout from '../RootLayout';
 
@@ -37,8 +37,10 @@ vi.mock('@/features/layout/components/Footer', () => ({
 vi.mock('@/features/layout/components/MobileTabBar', () => ({
   default: () => <nav data-testid="mobile-tab-bar" />,
 }));
-vi.mock('@/features/chat/components/ChatWidget', () => ({
-  ChatWidget: () => <div data-testid="chat-widget" />,
+vi.mock('@features/chat/context/ChatConversationContext', () => ({
+  ChatConversationProvider: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="chat-conversation">{children}</div>
+  ),
 }));
 
 function renderLayout() {
@@ -74,12 +76,14 @@ describe('RootLayout auth gate', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the routed outlet and chat widget when signed in', () => {
+  it('renders the routed outlet inside the coach conversation when signed in', () => {
     mockAuth.isSignedIn = true;
     renderLayout();
 
-    expect(screen.getByTestId('outlet')).toBeInTheDocument();
-    expect(screen.getByTestId('chat-widget')).toBeInTheDocument();
+    // The conversation outlives each page, so it wraps the routed outlet.
+    expect(
+      within(screen.getByTestId('chat-conversation')).getByTestId('outlet'),
+    ).toBeInTheDocument();
     expect(screen.queryByTestId('welcome')).not.toBeInTheDocument();
   });
 

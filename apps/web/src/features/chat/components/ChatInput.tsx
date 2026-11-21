@@ -1,4 +1,4 @@
-// The chat panel's message box and send button.
+// The Coach page's message box: one rounded field holding the text and the send button.
 // The box grows with its text and stays usable while the coach replies; only sending waits.
 
 import { useLayoutEffect, type RefObject } from 'react';
@@ -36,9 +36,10 @@ export function ChatInput({
   return (
     <form
       onSubmit={onSubmit}
-      className="shrink-0 border-t border-(--color-border-primary)/40 bg-(--color-background)/50 p-4 pb-[max(env(safe-area-inset-bottom),1rem)] sm:pb-4"
+      className="shrink-0 px-3 pt-2 pb-3 sm:px-6 sm:pb-6"
     >
-      <div className="flex items-end gap-2">
+      {/* The field's frame shows focus for the text inside it. */}
+      <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl bg-(--color-background) p-1.5 shadow-sm ring-1 ring-(--color-border-primary)/60 transition-shadow ring-inset focus-within:ring-2 focus-within:ring-(--color-ring)">
         <textarea
           ref={textareaRef}
           value={input}
@@ -52,7 +53,7 @@ export function ChatInput({
           aria-label="Ask the habit coach"
           placeholder="Ask the coach anything…"
           rows={1}
-          className="max-h-32 min-h-[44px] flex-1 resize-none overflow-y-auto rounded-xl border border-(--color-input) bg-(--color-background) px-4 py-2.5 text-base leading-6 placeholder:text-(--color-text-secondary) focus:ring-2 focus:ring-(--color-ring) focus:ring-offset-2 focus:outline-none sm:text-sm"
+          className="max-h-40 min-h-[44px] flex-1 resize-none overflow-y-auto bg-transparent px-3 py-2.5 text-base leading-6 outline-none placeholder:text-(--color-text-secondary) sm:text-sm"
         />
         <Button
           type="submit"
@@ -68,6 +69,9 @@ export function ChatInput({
           )}
         </Button>
       </div>
+      <p className="mx-auto mt-2 hidden max-w-3xl text-center text-xs text-(--color-text-secondary) sm:block">
+        Enter to send · Shift + Enter for a new line
+      </p>
     </form>
   );
 }

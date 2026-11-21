@@ -94,34 +94,24 @@ test('deletes a habit from the habits overview', async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test('opens the habit coach from the header, under its toolbar', async ({
-  page,
-}) => {
+test('opens the Coach page from the header navigation', async ({ page }) => {
   await page.goto('/');
-  const toolbar = page.getByRole('toolbar', { name: 'User actions' }).first();
-  // The coach sits in the header beside Add Habit; there is no floating button.
-  const coach = toolbar.getByRole('button', { name: 'Coach' });
-  await expect(coach).toHaveAttribute('aria-expanded', 'false');
+  const coach = page.getByRole('link', { name: 'Habit Coach' });
 
   await coach.click();
-  await expect(coach).toHaveAttribute('aria-expanded', 'true');
+
+  await expect(page).toHaveURL(/\/coach$/);
+  await expect(coach).toHaveAttribute('aria-current', 'page');
+  // The page heading is for screen readers, as on Habits and Progress; the
+  // card header shows the title and subtitle.
   await expect(
-    page.getByRole('heading', { name: 'Habit Coach' }),
+    page.getByRole('heading', { level: 1, name: 'Habit Coach' }),
+  ).toBeAttached();
+  await expect(
+    page.getByText('Advice grounded in Atomic Habits by James Clear'),
   ).toBeVisible();
-
-  // The panel drops down from the toolbar: below it, right edges aligned.
-  const panel = page.locator('[data-chat-header]').locator('..');
-  const toolbarBox = await toolbar.boundingBox();
-  const panelBox = await panel.boundingBox();
-  expect(toolbarBox).not.toBeNull();
-  expect(panelBox).not.toBeNull();
-  if (!toolbarBox || !panelBox) return;
-  expect(panelBox.y).toBeGreaterThanOrEqual(toolbarBox.y + toolbarBox.height);
-  expect(
-    Math.abs(panelBox.x + panelBox.width - (toolbarBox.x + toolbarBox.width)),
-  ).toBeLessThanOrEqual(1);
-
-  // The same button closes it.
-  await coach.click();
-  await expect(page.getByRole('heading', { name: 'Habit Coach' })).toBeHidden();
+  // The message box is on screen without scrolling the page.
+  await expect(
+    page.getByRole('textbox', { name: 'Ask the habit coach' }),
+  ).toBeInViewport();
 });

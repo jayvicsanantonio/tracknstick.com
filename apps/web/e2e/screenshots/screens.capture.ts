@@ -223,10 +223,11 @@ test('capture every screen', async ({ browser }) => {
   await eachCombo(browser, true, async (page, combo) => {
     await page.goto('/');
     await shot(page, '04-tracker', combo);
-    // Phones open the coach from the tab bar's Coach tab, wider screens from
-    // the header's Coach button (earlier layouts: the floating chat button).
+    // The coach is the Coach page, linked from the header and the phone tab
+    // bar. Earlier layouts opened a chat panel from a button instead.
     await page
-      .getByRole('button', { name: /^(Open chat|Coach)$/ })
+      .getByRole('link', { name: /^(Coach|Habit Coach)$/ })
+      .or(page.getByRole('button', { name: /^(Open chat|Coach)$/ }))
       .filter({ visible: true })
       .first()
       .click();

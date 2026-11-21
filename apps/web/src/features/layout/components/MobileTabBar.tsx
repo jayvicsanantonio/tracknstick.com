@@ -31,14 +31,7 @@ function Tab({ to, label, Icon }: TabProps) {
   );
 }
 
-interface MobileTabBarProps {
-  /** Opens the habit coach, which has no route of its own. */
-  onOpenChat: () => void;
-}
-
-const MobileTabBar = memo(function MobileTabBar({
-  onOpenChat,
-}: MobileTabBarProps) {
+const MobileTabBar = memo(function MobileTabBar() {
   const { toggleShowAddHabitDialog } = useHabitsContext();
 
   return (
@@ -66,16 +59,7 @@ const MobileTabBar = memo(function MobileTabBar({
           </button>
         </div>
         <Tab to="/progress" label="Progress" Icon={BarChart2} />
-        <button
-          type="button"
-          onClick={onOpenChat}
-          className="flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium text-(--color-text-secondary) outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
-        >
-          <span className="flex h-8 w-12 items-center justify-center rounded-full">
-            <MessageCircle aria-hidden="true" className="h-5 w-5" />
-          </span>
-          Coach
-        </button>
+        <Tab to="/coach" label="Coach" Icon={MessageCircle} />
       </div>
     </nav>
   );

@@ -58,6 +58,17 @@ describe('Routing Integration Tests', () => {
       });
     });
 
+    it('navigates to coach page', async () => {
+      const { router } = renderWithRouter({ initialEntries: ['/coach'] });
+
+      await waitFor(() => {
+        expect(router.state.location.pathname).toBe('/coach');
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+          'Habit Coach',
+        );
+      });
+    });
+
     it('shows 404 page for unknown routes', async () => {
       const { router } = renderWithRouter({
         initialEntries: ['/unknown-route'],

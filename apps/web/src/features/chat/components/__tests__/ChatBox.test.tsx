@@ -1,4 +1,4 @@
-// Covers how the chat panel feels to use: suggestions, the replying state, the message box and closing.
+// Covers how the coach's chat feels to use: suggestions, the replying state and the message box.
 // fetch is stubbed with a streamed Response so each test controls when and what the coach replies.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -29,11 +29,11 @@ function controlledReply() {
 
 const fetchMock = vi.fn<typeof fetch>();
 
-/** The panel with the conversation its parent, ChatWidget, keeps. */
-function renderChatBox(onClose: () => void) {
+/** The chat with the conversation ChatConversationProvider keeps for it. */
+function renderChatBox() {
   function Harness() {
     const conversation = useChatConversation();
-    return <ChatBox conversation={conversation} onClose={onClose} />;
+    return <ChatBox conversation={conversation} />;
   }
   return render(<Harness />);
 }
@@ -66,7 +66,7 @@ describe('ChatBox', () => {
   it('sends a suggested question as soon as it is picked', async () => {
     const reply = controlledReply();
     fetchMock.mockResolvedValue(reply.response);
-    renderChatBox(vi.fn());
+    renderChatBox();
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -97,7 +97,7 @@ describe('ChatBox', () => {
         respond = resolve;
       }),
     );
-    renderChatBox(vi.fn());
+    renderChatBox();
 
     await userEvent.type(
       screen.getByRole('textbox', { name: 'Ask the habit coach' }),
@@ -128,7 +128,7 @@ describe('ChatBox', () => {
   it('keeps the message box usable while the coach replies', async () => {
     const reply = controlledReply();
     fetchMock.mockResolvedValue(reply.response);
-    renderChatBox(vi.fn());
+    renderChatBox();
     const textbox = screen.getByRole('textbox', {
       name: 'Ask the habit coach',
     });
@@ -156,7 +156,7 @@ describe('ChatBox', () => {
   it('says the coach did not reply when a reply ends empty', async () => {
     const reply = controlledReply();
     fetchMock.mockResolvedValue(reply.response);
-    renderChatBox(vi.fn());
+    renderChatBox();
 
     await userEvent.type(
       screen.getByRole('textbox', { name: 'Ask the habit coach' }),
@@ -179,7 +179,7 @@ describe('ChatBox', () => {
         { status: 429 },
       ),
     );
-    renderChatBox(vi.fn());
+    renderChatBox();
 
     await userEvent.type(
       screen.getByRole('textbox', { name: 'Ask the habit coach' }),
@@ -192,7 +192,7 @@ describe('ChatBox', () => {
   });
 
   it('focuses the message box when it opens', () => {
-    renderChatBox(vi.fn());
+    renderChatBox();
 
     expect(
       screen.getByRole('textbox', { name: 'Ask the habit coach' }),
@@ -210,7 +210,7 @@ describe('ChatBox', () => {
         }) as unknown as MediaQueryList,
     );
     try {
-      renderChatBox(vi.fn());
+      renderChatBox();
 
       expect(
         screen.getByRole('textbox', { name: 'Ask the habit coach' }),
@@ -228,15 +228,6 @@ describe('ChatBox', () => {
     }
   });
 
-  it('closes on Escape', async () => {
-    const onClose = vi.fn();
-    renderChatBox(onClose);
-
-    await userEvent.keyboard('{Escape}');
-
-    expect(onClose).toHaveBeenCalledTimes(1);
-  });
-
   it('grows the message box with what is typed', async () => {
     const scrollHeight = Object.getOwnPropertyDescriptor(
       HTMLElement.prototype,
@@ -247,7 +238,7 @@ describe('ChatBox', () => {
       get: () => 88,
     });
     try {
-      renderChatBox(vi.fn());
+      renderChatBox();
       const textbox = screen.getByRole('textbox', {
         name: 'Ask the habit coach',
       });

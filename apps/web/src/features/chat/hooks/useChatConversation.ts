@@ -1,5 +1,5 @@
 // The habit coach conversation: its messages, whether a reply is streaming, and the last error.
-// Held by ChatWidget rather than the panel, so a reply keeps streaming while the panel is closed.
+// Held above the routes rather than by the Coach page, so a reply keeps streaming on other pages.
 
 import { useCallback, useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';

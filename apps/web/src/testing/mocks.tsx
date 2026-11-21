@@ -82,6 +82,9 @@ vi.mock('@shared/components/layouts/RootLayout', async () => {
           <NavLink to="/progress" aria-label="Progress Overview">
             Progress
           </NavLink>
+          <NavLink to="/coach" aria-label="Habit Coach">
+            Coach
+          </NavLink>
         </header>
         <Outlet />
         <div>Footer Mock</div>
@@ -111,6 +114,14 @@ vi.mock('@/pages/ProgressPage', () => ({
   default: () => (
     <div>
       <h1>Progress</h1>
+    </div>
+  ),
+}));
+
+vi.mock('@/pages/CoachPage', () => ({
+  default: () => (
+    <div>
+      <h1>Habit Coach</h1>
     </div>
   ),
 }));
