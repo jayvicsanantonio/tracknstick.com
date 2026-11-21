@@ -86,7 +86,7 @@ async function open(browser: Browser, combo: Combo, signedIn: boolean) {
 }
 
 // Phone and tablet shots show one screen, as the device does: a full-page
-// stitch would draw fixed bars (the tab bar, the chat button) in the middle
+// stitch would draw fixed bars (such as the tab bar) in the middle
 // of the image. Desktop and wide shots are full-page.
 async function shot(page: Page, screen: string, combo: Combo, fullPage = true) {
   // Lets entrance animations and the chart's bar animation finish.
@@ -223,8 +223,8 @@ test('capture every screen', async ({ browser }) => {
   await eachCombo(browser, true, async (page, combo) => {
     await page.goto('/');
     await shot(page, '04-tracker', combo);
-    // Phones open the coach from the tab bar's Coach tab, wider screens (and
-    // the earlier phone layout) from the floating chat button.
+    // Phones open the coach from the tab bar's Coach tab, wider screens from
+    // the header's Coach button (earlier layouts: the floating chat button).
     await page
       .getByRole('button', { name: /^(Open chat|Coach)$/ })
       .filter({ visible: true })

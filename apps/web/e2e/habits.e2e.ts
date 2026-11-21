@@ -94,22 +94,34 @@ test('deletes a habit from the habits overview', async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test('opens the habit coach while a toast is showing', async ({ page }) => {
-  const name = uniqueName('Journal');
-  await addHabit(page, name);
-  // Adding a habit announces it in a toast at the bottom right, beside the
-  // chat button.
-  await expect(
-    page.getByText(`Habit "${name}" added successfully.`, { exact: true }),
-  ).toBeVisible();
+test('opens the habit coach from the header, under its toolbar', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const toolbar = page.getByRole('toolbar', { name: 'User actions' }).first();
+  // The coach sits in the header beside Add Habit; there is no floating button.
+  const coach = toolbar.getByRole('button', { name: 'Coach' });
+  await expect(coach).toHaveAttribute('aria-expanded', 'false');
 
-  // The toast stays about 5s; a click that waited for it to leave would
-  // still pass, so it gets 2s, while the toast is up.
-  await page
-    .getByRole('button', { name: 'Open chat' })
-    .click({ timeout: 2_000 });
-
+  await coach.click();
+  await expect(coach).toHaveAttribute('aria-expanded', 'true');
   await expect(
     page.getByRole('heading', { name: 'Habit Coach' }),
   ).toBeVisible();
+
+  // The panel drops down from the toolbar: below it, right edges aligned.
+  const panel = page.locator('[data-chat-header]').locator('..');
+  const toolbarBox = await toolbar.boundingBox();
+  const panelBox = await panel.boundingBox();
+  expect(toolbarBox).not.toBeNull();
+  expect(panelBox).not.toBeNull();
+  if (!toolbarBox || !panelBox) return;
+  expect(panelBox.y).toBeGreaterThanOrEqual(toolbarBox.y + toolbarBox.height);
+  expect(
+    Math.abs(panelBox.x + panelBox.width - (toolbarBox.x + toolbarBox.width)),
+  ).toBeLessThanOrEqual(1);
+
+  // The same button closes it.
+  await coach.click();
+  await expect(page.getByRole('heading', { name: 'Habit Coach' })).toBeHidden();
 });

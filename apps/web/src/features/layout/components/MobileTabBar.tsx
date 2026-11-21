@@ -1,5 +1,5 @@
 // Bottom navigation shown below the sm breakpoint: Tracker, Habits, Add, Progress and the habit Coach.
-// Puts the app's main actions within thumb reach; the header and chat button carry them on wider screens.
+// Puts the app's main actions within thumb reach; the header carries them on wider screens.
 
 import { memo, type ComponentType, type SVGProps } from 'react';
 import { NavLink } from 'react-router-dom';

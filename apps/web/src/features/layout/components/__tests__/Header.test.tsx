@@ -1,17 +1,24 @@
+// Covers the header's navigation links, the logo link, and the toolbar's habit coach button.
+// The coach button sits beside Add Habit and reports whether the chat panel is open.
+
 import '@testing/mocks';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Header from '@/features/layout/components/Header';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import ThemeProvider from '@app/providers/ThemeProvider';
 
-const renderHeader = () => {
+const renderHeader = ({
+  isChatOpen = false,
+  onToggleChat = vi.fn(),
+}: { isChatOpen?: boolean; onToggleChat?: () => void } = {}) => {
   return render(
     <ThemeProvider>
       <HabitsStateProvider>
         <BrowserRouter>
-          <Header />
+          <Header isChatOpen={isChatOpen} onToggleChat={onToggleChat} />
         </BrowserRouter>
       </HabitsStateProvider>
     </ThemeProvider>,
@@ -49,7 +56,7 @@ describe('Header Component', () => {
       <ThemeProvider>
         <HabitsStateProvider>
           <MemoryRouter initialEntries={['/habits']}>
-            <Header />
+            <Header isChatOpen={false} onToggleChat={vi.fn()} />
           </MemoryRouter>
         </HabitsStateProvider>
       </ThemeProvider>,
@@ -83,5 +90,38 @@ describe('Header Component', () => {
     expect(
       screen.getByRole('link', { name: "Track N' Stick" }),
     ).toHaveAttribute('href', '/');
+  });
+
+  it('toggles the habit coach from a toolbar button beside Add Habit', async () => {
+    const onToggleChat = vi.fn();
+    renderHeader({ onToggleChat });
+
+    // The signed-in toolbar; the Clerk mock renders the signed-out one too.
+    const coach = screen.getByRole('button', { name: 'Coach' });
+    const toolbar = coach.closest<HTMLElement>('[role="toolbar"]');
+    expect(toolbar).toHaveAccessibleName('User actions');
+    const buttons = within(toolbar!).getAllByRole('button');
+    const add = within(toolbar!).getByRole('button', {
+      name: 'Add Habit',
+    });
+    expect(buttons.indexOf(coach)).toBe(buttons.indexOf(add) + 1);
+
+    await userEvent.click(coach);
+    expect(onToggleChat).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks the coach button expanded, and active like a current page, while the chat is open', () => {
+    const { unmount } = renderHeader({ isChatOpen: false });
+    // The Button stub from @testing/mocks renders the variant it is given as
+    // an attribute; brandTonalActive is the active nav links' variant.
+    const closed = screen.getByRole('button', { name: 'Coach' });
+    expect(closed).toHaveAttribute('aria-expanded', 'false');
+    expect(closed).toHaveAttribute('variant', 'brandTonal');
+    unmount();
+
+    renderHeader({ isChatOpen: true });
+    const open = screen.getByRole('button', { name: 'Coach' });
+    expect(open).toHaveAttribute('aria-expanded', 'true');
+    expect(open).toHaveAttribute('variant', 'brandTonalActive');
   });
 });

@@ -4,6 +4,7 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
+import { MessageCircle } from 'lucide-react';
 // import { NavLink } from 'react-router-dom';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { Button } from '@shared/components/ui/button';
@@ -24,7 +25,14 @@ const PILL =
 // Header icon buttons: 44px at every width, flat inside the pill's shadow.
 const HEADER_BUTTON = 'sm:size-11 shadow-none hover:shadow-none';
 
-const Header = memo(function Header() {
+interface HeaderProps {
+  /** Whether the habit coach's chat panel is open. */
+  isChatOpen: boolean;
+  /** Opens the chat panel, or closes it when open. */
+  onToggleChat: () => void;
+}
+
+const Header = memo(function Header({ isChatOpen, onToggleChat }: HeaderProps) {
   const { toggleMode } = useTheme();
   const { toggleShowAddHabitDialog } = useHabitsContext();
 
@@ -96,6 +104,18 @@ const Header = memo(function Header() {
                   className={HEADER_BUTTON}
                 >
                   <Plus aria-hidden="true" className="size-5" />
+                </Button>
+                {/* Phones open the coach from the tab bar's Coach tab. */}
+                {/* Looks active, like the current page's link, while open. */}
+                <Button
+                  variant={isChatOpen ? 'brandTonalActive' : 'brandTonal'}
+                  size="icon"
+                  onClick={onToggleChat}
+                  aria-label="Coach"
+                  aria-expanded={isChatOpen}
+                  className={HEADER_BUTTON}
+                >
+                  <MessageCircle aria-hidden="true" className="size-5" />
                 </Button>
               </div>
 

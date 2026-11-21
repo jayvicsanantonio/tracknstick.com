@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense, useState } from 'react';
+import { lazy, memo, Suspense, useCallback, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Header from '@/features/layout/components/Header';
@@ -19,12 +19,14 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
  * - When signed out: Renders the Welcome component
  */
 const RootLayout = memo(function RootLayout() {
-  // Shared by the chat widget and the phone tab bar, which both open the chat.
+  // Shared by the chat widget, the header's Coach button and the phone tab
+  // bar, which all open the chat.
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const toggleChat = useCallback(() => setIsChatOpen((open) => !open), []);
 
   return (
     <>
-      <Header />
+      <Header isChatOpen={isChatOpen} onToggleChat={toggleChat} />
       <main className="relative min-h-0 flex-1">
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>

@@ -55,7 +55,7 @@ export function ChatBox({ conversation, onClose }: ChatBoxProps) {
       onKeyDown={(e) => {
         if (e.key === 'Escape') onClose();
       }}
-      className="flex h-full w-full flex-col overflow-hidden border-(--color-border-primary)/50 bg-(--color-card) text-(--color-card-foreground) shadow-2xl sm:h-[550px] sm:w-[400px] sm:rounded-2xl sm:border"
+      className="flex h-full w-full flex-col overflow-hidden border-(--color-border-primary)/50 bg-(--color-card) text-(--color-card-foreground) shadow-2xl sm:h-[550px] sm:max-h-[calc(100dvh-7.5rem)] sm:w-[400px] sm:rounded-2xl sm:border"
     >
       <ChatHeader onClose={onClose} />
 

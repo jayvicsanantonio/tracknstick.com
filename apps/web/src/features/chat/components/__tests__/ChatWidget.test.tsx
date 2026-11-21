@@ -1,4 +1,4 @@
-// Covers the chat widget's open state, which its parent owns so the phone tab bar can open it too,
+// Covers the chat widget's open state, which its parent owns so the header and phone tab bar can open it,
 // and the conversation it keeps while the panel is closed, cleared 10 minutes after the last message.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -42,12 +42,10 @@ describe('ChatWidget', () => {
     }
   });
 
-  it('asks to open when its floating button is pressed', async () => {
-    const onOpenChange = vi.fn();
-    render(<ChatWidget isOpen={false} onOpenChange={onOpenChange} />);
+  it('has no floating button of its own; the header opens the chat', () => {
+    render(<ChatWidget isOpen={false} onOpenChange={vi.fn()} />);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Open chat' }));
-    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('shows the real panel when open, and its own close button asks to close', async () => {

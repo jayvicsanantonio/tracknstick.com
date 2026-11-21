@@ -82,8 +82,12 @@ test('adds a habit in a bottom sheet and deletes it from its card', async ({
 test('opens the habit coach from the tab bar and closes it', async ({
   page,
 }) => {
-  // On phones the floating chat button gives way to the tab bar's Coach tab.
-  await expect(page.getByRole('button', { name: 'Open chat' })).toBeHidden();
+  // On phones the header's Coach button gives way to the tab bar's Coach tab.
+  await expect(
+    page
+      .getByRole('toolbar', { name: 'User actions' })
+      .getByRole('button', { name: 'Coach' }),
+  ).toBeHidden();
   const tabs = page.getByRole('navigation', { name: 'Primary' });
   await tabs.getByRole('button', { name: 'Coach' }).click();
 
