@@ -13,46 +13,48 @@ import {
 // in production builds, so the production files are the ones read. Without a
 // host there is no API to cache, and the rule below is left out.
 const { VITE_API_HOST } = loadEnv('production', __dirname, 'VITE_');
+const { VITE_API_HOST: DEV_API_HOST } = loadEnv(
+  'development',
+  __dirname,
+  'VITE_',
+);
+const localApiProxyTarget =
+  DEV_API_HOST &&
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(DEV_API_HOST)
+    ? DEV_API_HOST
+    : 'http://localhost:3000';
 
 export default defineConfig({
+  // Allow Cloudflare quick tunnels (`*.trycloudflare.com`) and proxy `/api`
+  // to the local API worker so an iPhone over HTTPS can talk to localhost:3000
+  // without mixed-content or CORS errors.
+  server: {
+    allowedHosts: ['.trycloudflare.com'],
+    proxy: {
+      '/api': {
+        target: localApiProxyTarget,
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    allowedHosts: ['.trycloudflare.com'],
+    proxy: {
+      '/api': {
+        target: localApiProxyTarget,
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'offline.html'],
-      manifest: {
-        name: "Track N' Stick",
-        short_name: "Track N' Stick",
-        description: "Track N' Stick - Help you track and build healthy habits",
-        theme_color: '#4f46e5',
-        icons: [
-          {
-            src: '/icons/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: '/icons/maskable-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-          {
-            src: '/icons/maskable-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-      },
+      // public/manifest.json is the single canonical manifest linked in index.html;
+      // disabling injection here avoids shipping a conflicting second manifest.webmanifest.
+      manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         navigateFallback: 'index.html',

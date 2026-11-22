@@ -1,10 +1,11 @@
 // Runs public/applyStoredTheme.js, which index.html loads before first paint.
-// It sets the stored theme's class on <html>, and dark when none is stored.
+// It applies an explicit stored theme, or resolves the OS colour scheme when set
+// to system / unset / invalid, and keeps <meta name="theme-color"> synced.
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, it, expect } from 'vitest';
-import { THEME_STORAGE_KEY } from '@shared/constants/theme';
+import { THEME_CHROME_COLOR, THEME_STORAGE_KEY } from '@shared/constants/theme';
 
 const script = readFileSync(
   path.resolve(__dirname, '../../public/applyStoredTheme.js'),
@@ -19,29 +20,57 @@ function runScript() {
   element.remove();
 }
 
+/** Sets window.matchMedia inside jsdom's classic script realm so <script> sees it. */
+function setScriptMatchMedia(darkMatches: boolean | undefined) {
+  const element = document.createElement('script');
+  element.textContent =
+    darkMatches === undefined
+      ? 'delete window.matchMedia;'
+      : `window.matchMedia = function (q) { return { matches: q === '(prefers-color-scheme: dark)' ? ${String(darkMatches)} : false }; };`;
+  document.head.append(element);
+  element.remove();
+}
+
 const root = document.documentElement;
 
 afterEach(() => {
   root.classList.remove('light', 'dark');
+  root.style.colorScheme = '';
+  document.querySelector('meta[name="theme-color"]')?.remove();
   localStorage.clear();
+  setScriptMatchMedia(undefined);
 });
 
 describe('applyStoredTheme.js', () => {
-  it.each(['light', 'dark'])('applies a stored %s theme', (mode) => {
-    localStorage.setItem(THEME_STORAGE_KEY, mode);
+  it.each(['light', 'dark'] as const)(
+    'applies a stored %s theme and syncs theme-color',
+    (mode) => {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      document.head.append(meta);
+      localStorage.setItem(THEME_STORAGE_KEY, mode);
 
+      runScript();
+
+      expect(root.classList.contains(mode)).toBe(true);
+      expect(root.style.colorScheme).toBe(mode);
+      expect(meta.content).toBe(THEME_CHROME_COLOR[mode]);
+    },
+  );
+
+  it('follows the system colour scheme when none is stored', () => {
+    setScriptMatchMedia(true);
     runScript();
-
-    expect(root.classList.contains(mode)).toBe(true);
-  });
-
-  it('applies the dark theme when none is stored', () => {
-    runScript();
-
     expect(root.classList.contains('dark')).toBe(true);
+
+    root.classList.remove('light', 'dark');
+    setScriptMatchMedia(false);
+    runScript();
+    expect(root.classList.contains('light')).toBe(true);
   });
 
-  it('applies the dark theme when the stored value is not a theme', () => {
+  it('falls back to the system colour scheme when the stored value is invalid', () => {
+    setScriptMatchMedia(true);
     localStorage.setItem(THEME_STORAGE_KEY, 'sepia');
 
     runScript();

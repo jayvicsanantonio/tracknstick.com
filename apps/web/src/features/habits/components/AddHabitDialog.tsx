@@ -6,21 +6,52 @@ import {
 } from '@shared/components/ui/dialog';
 import HabitDialog from '@/features/habits/components/HabitDialog';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import { triggerHaptic } from '@shared/utils/haptics';
 
-// The form, and the date picker it carries, download the first time a habit
-// dialog opens: the dialog renders its content only while open, and HabitDialog
-// waits for the form before it shows.
 const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
+
+const FORM_ID = 'add-habit-form';
 
 export default function AddHabitDialog() {
   const { showAddHabitDialog, toggleShowAddHabitDialog } = useHabitsContext();
+
+  const mobileHeader = (
+    <div className="flex items-center justify-between border-b border-(--color-border-primary)/50 px-4 pb-3 sm:hidden">
+      <button
+        type="button"
+        onClick={() => {
+          triggerHaptic('light');
+          toggleShowAddHabitDialog();
+        }}
+        className="flex min-h-9 min-w-16 items-center justify-start text-[16px] font-normal text-(--color-brand-primary) active:opacity-60"
+      >
+        Cancel
+      </button>
+      <span
+        aria-hidden="true"
+        className="truncate text-[17px] font-semibold tracking-tight text-(--color-foreground)"
+      >
+        New Habit
+      </span>
+      <button
+        type="submit"
+        form={FORM_ID}
+        aria-label="Add habit"
+        className="flex min-h-9 min-w-16 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
+      >
+        Add
+      </button>
+    </div>
+  );
 
   return (
     <HabitDialog
       isOpen={showAddHabitDialog}
       toggleIsOpen={toggleShowAddHabitDialog}
+      mobileHeader={mobileHeader}
     >
-      <DialogHeader>
+      {/* Keep a single accessible DialogTitle for both mobile and desktop */}
+      <DialogHeader className="max-sm:sr-only">
         <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           Add New Habit
         </DialogTitle>
@@ -28,7 +59,7 @@ export default function AddHabitDialog() {
           Add a new habit to your list.
         </DialogDescription>
       </DialogHeader>
-      <HabitForm toggleDialog={toggleShowAddHabitDialog} />
+      <HabitForm formId={FORM_ID} toggleDialog={toggleShowAddHabitDialog} />
     </HabitDialog>
   );
 }

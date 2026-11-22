@@ -45,24 +45,23 @@ const ProgressStat = memo(function ProgressStat({
       role="status"
       aria-label={spoken}
       aria-busy={loading}
-      // Icon above the figure in a phone's two columns, beside it from sm up.
-      className="flex flex-col items-start gap-2 rounded-2xl bg-(--color-surface)/60 p-3 ring-1 ring-(--color-border-primary)/50 ring-inset sm:flex-row sm:items-center sm:gap-4 sm:p-4 dark:bg-(--color-surface-secondary)/60"
+      className="flex items-center gap-4 rounded-2xl bg-(--color-surface)/60 p-4 ring-1 ring-(--color-border-primary)/50 ring-inset dark:bg-(--color-surface-secondary)/60"
     >
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-(--color-brand-primary)/12 text-(--color-brand-primary) sm:size-11">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
         <Icon aria-hidden={true} className="h-5 w-5" />
       </span>
       <div className="min-w-0">
         {loading ? (
-          <span className="block h-7 w-14 animate-pulse rounded-md bg-(--color-brand-primary)/12 motion-reduce:animate-none sm:h-8" />
+          <span className="block h-8 w-14 animate-pulse rounded-md bg-(--color-brand-primary)/14 motion-reduce:animate-none" />
         ) : value === null ? (
-          <p className="flex h-7 items-center text-sm font-medium text-(--color-text-secondary) sm:h-8">
+          <p className="flex h-8 items-center text-sm font-medium text-(--color-text-secondary)">
             No data yet
           </p>
         ) : (
           // As tall as the placeholder, so the figure does not move when
           // it arrives.
-          <p className="flex h-7 items-baseline gap-1 sm:h-8">
-            <span className="text-2xl leading-7 font-bold tracking-tight text-(--color-foreground) tabular-nums sm:text-[1.75rem] sm:leading-8">
+          <p className="flex h-8 items-baseline gap-1">
+            <span className="text-[1.75rem] leading-8 font-bold tracking-tight text-(--color-foreground) tabular-nums">
               {value}
             </span>
             {unitText && (
@@ -75,10 +74,10 @@ const ProgressStat = memo(function ProgressStat({
         {/* Room for two lines whatever its length, so a month whose name
             wraps the label ("Perfect days in September") keeps the row's
             height. */}
-        <p className="mt-0.5 flex min-h-[2lh] flex-wrap content-start items-center gap-x-1.5 gap-y-0.5 text-xs font-medium text-(--color-text-secondary) sm:text-sm">
+        <p className="mt-0.5 flex min-h-[2lh] flex-wrap content-start items-center gap-x-1.5 gap-y-0.5 text-sm font-medium text-(--color-text-secondary)">
           {label}
           {badge && !loading && (
-            <span className="rounded-full bg-(--color-brand-primary)/15 px-1.5 py-px text-[10px] font-semibold tracking-wide text-(--color-brand-text) uppercase dark:text-(--color-brand-text-light)">
+            <span className="rounded-full bg-(--color-brand-primary)/15 px-1.5 py-px text-[10px] font-semibold tracking-wide text-(--color-brand-text) uppercase ring-1 ring-(--color-brand-primary)/24 ring-inset dark:text-(--color-brand-text-light)">
               {badge}
             </span>
           )}

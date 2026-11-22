@@ -1,15 +1,21 @@
 import { useState, ReactNode, useCallback, useMemo } from 'react';
 import { useToggle } from '@shared/hooks/use-toggle';
 import { Habit } from '@/features/habits/types/Habit';
-import { HabitsStateContext } from './HabitsStateContextDefinition';
+import {
+  HabitsStateContext,
+  type EditHabitTab,
+} from './HabitsStateContextDefinition';
 
 export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [editDialogTab, setEditDialogTab] = useState<EditHabitTab>('edit');
   const [showAddHabitDialog, toggleShowAddHabitDialog] = useToggle(false);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
+
   const openEditDialog = useCallback(
-    (habit: Habit) => {
+    (habit: Habit, initialTab: EditHabitTab = 'edit') => {
       setEditingHabit(habit);
+      setEditDialogTab(initialTab);
 
       if (!showEditHabitDialog) {
         toggleShowEditHabitDialog();
@@ -22,6 +28,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
     () => ({
       editingHabit,
       setEditingHabit,
+      editDialogTab,
       showAddHabitDialog,
       toggleShowAddHabitDialog,
       showEditHabitDialog,
@@ -31,6 +38,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
     [
       editingHabit,
       setEditingHabit,
+      editDialogTab,
       showAddHabitDialog,
       toggleShowAddHabitDialog,
       showEditHabitDialog,

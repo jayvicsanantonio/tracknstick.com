@@ -1,7 +1,18 @@
 import { useState, useCallback, useMemo, memo } from 'react';
+import { Trash2 } from 'lucide-react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
 import { Separator } from '@shared/components/ui/separator';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@shared/components/ui/alert-dialog';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import { Frequency } from '@/features/habits/types/Frequency';
@@ -12,22 +23,27 @@ import IconPicker from './IconPicker';
 import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
 import { useDate } from '@app/providers/useDate';
+import { triggerHaptic } from '@shared/utils/haptics';
 import {
   getLocalEndOfDayUTC,
   getLocalStartofDayUTC,
 } from '@shared/utils/date/formatDate';
+
 interface HabitFormProps {
+  formId?: string;
   habit?: Habit | null;
   toggleDialog: () => void;
 }
 
 const HabitForm = memo(function HabitForm({
+  formId,
   habit,
   toggleDialog,
 }: HabitFormProps) {
   const { timeZone } = useDate();
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [name, setName] = useState<string>(habit?.name ?? '');
   const [frequency, setFrequency] = useState<Frequency[]>(
     habit?.frequency ?? [],
@@ -46,32 +62,36 @@ const HabitForm = memo(function HabitForm({
       : null,
   );
   const isValid = useMemo(
-    () => name && icon && frequency.length > 0 && startDate,
+    () => Boolean(name.trim() && icon && frequency.length > 0 && startDate),
     [name, icon, frequency, startDate],
   );
 
-  const handleDelete = useCallback(
-    async (habitId: string): Promise<void> => {
-      if (!habit) return;
+  const executeDelete = useCallback(async (): Promise<void> => {
+    if (!habit) return;
 
-      setIsSubmitting(true);
-      try {
-        await deleteHabit(habitId, habit.name);
-      } catch (error) {
-        console.error('Failed to delete habit:', error);
-      } finally {
-        toggleDialog();
-      }
-    },
-    [habit, deleteHabit, toggleDialog],
-  );
+    triggerHaptic('medium');
+    setIsSubmitting(true);
+    setConfirmDeleteOpen(false);
+    try {
+      await deleteHabit(habit.id, habit.name);
+    } catch (error) {
+      console.error('Failed to delete habit:', error);
+    } finally {
+      toggleDialog();
+    }
+  }, [habit, deleteHabit, toggleDialog]);
+
+  const requestDelete = useCallback(() => {
+    triggerHaptic('light');
+    setConfirmDeleteOpen(true);
+  }, []);
 
   const handleAddOrEdit = useCallback(async () => {
     try {
       if (!icon || !startDate) return;
 
       const habitData: HabitPayload = {
-        name,
+        name: name.trim(),
         icon,
         frequency,
         startDate: getLocalStartofDayUTC(startDate, timeZone),
@@ -83,6 +103,7 @@ const HabitForm = memo(function HabitForm({
       } else {
         await addHabit(habitData);
       }
+      triggerHaptic('success');
     } catch (error) {
       console.error('Failed to save habit:', error);
     } finally {
@@ -98,7 +119,6 @@ const HabitForm = memo(function HabitForm({
     habit,
     updateHabit,
     addHabit,
-    setIsSubmitting,
     toggleDialog,
     timeZone,
   ]);
@@ -106,7 +126,10 @@ const HabitForm = memo(function HabitForm({
   const handleSubmit = useCallback<React.FormEventHandler<HTMLFormElement>>(
     (event) => {
       event.preventDefault();
-      if (!isValid) return;
+      if (!isValid) {
+        triggerHaptic('error');
+        return;
+      }
       setIsSubmitting(true);
       void handleAddOrEdit();
     },
@@ -117,14 +140,15 @@ const HabitForm = memo(function HabitForm({
     <>
       <style>{datePickerStyles}</style>
       <form
+        id={formId}
         onSubmit={handleSubmit}
         className="text-foreground flex min-h-0 flex-1 flex-col gap-3 sm:gap-4"
       >
-        {/* The fields scroll; the buttons below them stay in view. The
-            padding keeps the inputs' focus rings inside the scroll area. */}
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-1 pt-1 pb-2 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] sm:space-y-4">
-          {/* Name Input */}
-          <div className="space-y-1 sm:space-y-2">
+        {/* Scrollable fields — on phones, organised into clean iOS inset grouped sections
+            with generous bottom safe-area inset since Cancel & Save sit in the top bar. */}
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 pt-3 pb-[max(env(safe-area-inset-bottom),1.75rem)] [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] sm:px-1 sm:pt-1 sm:pb-2">
+          {/* Name Section */}
+          <div className="space-y-1.5 max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 sm:space-y-2 dark:max-sm:bg-(--color-surface-tertiary)/40">
             <Label
               htmlFor="habit-name"
               className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
@@ -143,12 +167,19 @@ const HabitForm = memo(function HabitForm({
             />
           </div>
 
-          <IconPicker
-            selectedIcon={icon}
-            onIconChange={(selectedIcon) => setIcon(selectedIcon)}
-          />
+          {/* Icon Picker Section */}
+          <div className="max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 dark:max-sm:bg-(--color-surface-tertiary)/40">
+            <IconPicker
+              selectedIcon={icon}
+              onIconChange={(selectedIcon) => {
+                triggerHaptic('selection');
+                setIcon(selectedIcon);
+              }}
+            />
+          </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+          {/* Dates Section */}
+          <div className="grid grid-cols-1 gap-3 max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 sm:grid-cols-2 sm:gap-4 dark:max-sm:bg-(--color-surface-tertiary)/40">
             <DatePickerField
               id="start-date"
               label="Start Date"
@@ -167,20 +198,67 @@ const HabitForm = memo(function HabitForm({
             />
           </div>
 
-          <FrequencySelector
-            selectedDays={frequency}
-            onFrequencyChange={setFrequency}
-          />
+          {/* Frequency Section */}
+          <div className="max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 dark:max-sm:bg-(--color-surface-tertiary)/40">
+            <FrequencySelector
+              selectedDays={frequency}
+              onFrequencyChange={setFrequency}
+            />
+          </div>
+
+          {/* Mobile destructive Delete Habit button (standard iOS Contacts/Calendar pattern) */}
+          {habit?.id ? (
+            <div className="pt-1 sm:hidden">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={requestDelete}
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-(--color-destructive)/30 bg-(--color-surface)/90 px-4 text-[16px] font-semibold text-(--color-destructive) transition-colors active:bg-(--color-destructive)/10 disabled:opacity-50 dark:bg-(--color-surface-tertiary)/50"
+              >
+                <Trash2 aria-hidden="true" className="size-4" />
+                Delete Habit
+              </button>
+            </div>
+          ) : null}
         </div>
 
-        <Separator className="shrink-0 bg-(--color-border-brand) max-sm:hidden dark:bg-(--color-brand-light)" />
+        <Separator className="hidden shrink-0 bg-(--color-border-brand) sm:block dark:bg-(--color-brand-light)" />
 
-        <FormActions
-          isSubmitting={isSubmitting}
-          onDelete={handleDelete}
-          habit={habit}
-        />
+        {/* Desktop footer action bar (on mobile Cancel / Add / Save sit in the iOS top sheet header) */}
+        <div className="hidden sm:block">
+          <FormActions
+            isSubmitting={isSubmitting}
+            onDelete={habit?.id ? requestDelete : undefined}
+            habit={habit}
+          />
+        </div>
       </form>
+
+      {/* Confirm-before-delete Action Sheet (mobile) / Alert Dialog (desktop) */}
+      <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+        <AlertDialogContent className="bg-(--color-card) text-(--color-card-foreground)">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-(--color-foreground)">
+              Delete Habit
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-(--color-text-secondary)">
+              Are you sure you want to delete &quot;{habit?.name}&quot;? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-(--color-muted) text-(--color-foreground) hover:bg-(--color-hover-surface)">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void executeDelete()}
+              className="bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring)"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 });

@@ -17,6 +17,7 @@ import {
   progressHistoryResponseSchema,
   progressOverviewResponseSchema,
   progressStreaksResponseSchema,
+  progressSummaryResponseSchema,
   restoreHabitResponseSchema,
   toggleTrackerResponseSchema,
   trackersResponseSchema,
@@ -257,6 +258,13 @@ describe('API responses match the contracts package', () => {
 
       expect(res.status).toBe(200);
       expectToMatchContract(progressOverviewResponseSchema, res.body);
+    });
+
+    it('GET /progress/summary', async () => {
+      const res = await call('GET', '/api/v1/progress/summary?timeZone=UTC');
+
+      expect(res.status).toBe(200);
+      expectToMatchContract(progressSummaryResponseSchema, res.body);
     });
   });
 

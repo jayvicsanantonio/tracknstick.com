@@ -256,4 +256,42 @@ describe('ChatBox', () => {
       }
     }
   });
+
+  it('renders styled markdown lists and offers Copy once a reply finishes', async () => {
+    const reply = controlledReply();
+    fetchMock.mockResolvedValue(reply.response);
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    renderChatBox();
+
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Ask the habit coach' }),
+      'Tips?{Enter}',
+    );
+
+    reply.send('1. **Make it obvious**\n2. Make it easy');
+    expect(await screen.findByText('Make it obvious')).toBeInTheDocument();
+    // Copy stays hidden while tokens are still streaming.
+    expect(
+      screen.queryByRole('button', { name: 'Copy response' }),
+    ).not.toBeInTheDocument();
+
+    reply.end();
+    const copyButton = await screen.findByRole('button', {
+      name: 'Copy response',
+    });
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+
+    await userEvent.click(copyButton);
+    expect(writeText).toHaveBeenCalledWith(
+      '1. **Make it obvious**\n2. Make it easy',
+    );
+    expect(
+      screen.getByRole('button', { name: 'Copied response' }),
+    ).toBeInTheDocument();
+  });
 });

@@ -4,6 +4,9 @@
 # development: the CORS origins and Clerk authorized parties for localhost
 ENVIRONMENT=development
 
+# Optional (development only): comma-separated extra origins (e.g. a cloudflared tunnel URL)
+# EXTRA_ALLOWED_ORIGINS=https://your-tunnel.trycloudflare.com
+
 # Clerk development instance keys (Dashboard > API keys, Development)
 CLERK_SECRET_KEY=sk_test_replace_me
 CLERK_PUBLISHABLE_KEY=pk_test_replace_me

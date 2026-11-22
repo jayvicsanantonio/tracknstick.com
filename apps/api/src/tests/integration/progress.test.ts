@@ -179,6 +179,43 @@ describe('Progress API Integration Tests', () => {
     });
   });
 
+  describe('GET /api/v1/progress/summary', () => {
+    it('should return all-time lifetime progress summary', async () => {
+      const response = await app.request(
+        '/api/v1/progress/summary?timeZone=UTC',
+        {
+          ...authHeader,
+        },
+        testEnv.env
+      );
+
+      expect(response.status).toBe(200);
+      const data = (await response.json()) as {
+        currentStreak: number;
+        longestStreak: number;
+        totalCompletions: number;
+        activeDays: number;
+        perfectDays: number;
+        overallCompletionRate: number | null;
+        activeHabitsCount: number;
+        memberSince: string | null;
+      };
+      expect(typeof data.currentStreak).toBe('number');
+      expect(typeof data.longestStreak).toBe('number');
+      expect(typeof data.totalCompletions).toBe('number');
+      expect(typeof data.activeDays).toBe('number');
+      expect(typeof data.perfectDays).toBe('number');
+      expect(typeof data.activeHabitsCount).toBe('number');
+      expect(
+        data.overallCompletionRate === null ||
+          typeof data.overallCompletionRate === 'number'
+      ).toBe(true);
+      expect(
+        data.memberSince === null || typeof data.memberSince === 'string'
+      ).toBe(true);
+    });
+  });
+
   describe('Authentication', () => {
     it('should require authentication for all progress endpoints', async () => {
       // Mock unauthenticated state
@@ -189,6 +226,7 @@ describe('Progress API Integration Tests', () => {
         '/api/v1/progress/history',
         '/api/v1/progress/streaks',
         '/api/v1/progress/overview',
+        '/api/v1/progress/summary',
       ];
 
       for (const endpoint of endpoints) {

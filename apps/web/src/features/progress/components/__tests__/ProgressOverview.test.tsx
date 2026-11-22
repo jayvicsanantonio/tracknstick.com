@@ -7,10 +7,10 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ProgressOverview from '../ProgressOverview';
 import useProgressHistory from '../../hooks/useProgressHistory';
-import useProgressStreaks from '../../hooks/useProgressStreaks';
+import useProgressSummary from '../../hooks/useProgressSummary';
 
 vi.mock('../../hooks/useProgressHistory', () => ({ default: vi.fn() }));
-vi.mock('../../hooks/useProgressStreaks', () => ({ default: vi.fn() }));
+vi.mock('../../hooks/useProgressSummary', () => ({ default: vi.fn() }));
 vi.mock('../../hooks/useAchievements', () => ({
   useAchievements: () => ({
     achievements: [],
@@ -46,9 +46,15 @@ const loaded = {
     isLoading: false,
     error: undefined,
   },
-  streaks: {
+  summary: {
     currentStreak: 2,
     longestStreak: 5,
+    totalCompletions: 12,
+    activeDays: 8,
+    perfectDays: 5,
+    overallCompletionRate: 75,
+    activeHabitsCount: 2,
+    memberSince: '2026-10-01',
     isLoading: false,
     error: undefined,
   },
@@ -67,7 +73,7 @@ describe('ProgressOverview', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date(2026, 10, 17, 12));
     vi.mocked(useProgressHistory).mockReturnValue(loaded.history);
-    vi.mocked(useProgressStreaks).mockReturnValue(loaded.streaks);
+    vi.mocked(useProgressSummary).mockReturnValue(loaded.summary);
   });
 
   afterEach(() => {
@@ -105,8 +111,8 @@ describe('ProgressOverview', () => {
   });
 
   it('marks the current streak when it is the best yet', () => {
-    vi.mocked(useProgressStreaks).mockReturnValue({
-      ...loaded.streaks,
+    vi.mocked(useProgressSummary).mockReturnValue({
+      ...loaded.summary,
       currentStreak: 5,
       longestStreak: 5,
     });
@@ -119,8 +125,8 @@ describe('ProgressOverview', () => {
   });
 
   it('does not mark a streak of nothing as the best yet', () => {
-    vi.mocked(useProgressStreaks).mockReturnValue({
-      ...loaded.streaks,
+    vi.mocked(useProgressSummary).mockReturnValue({
+      ...loaded.summary,
       currentStreak: 0,
       longestStreak: 0,
     });
@@ -132,9 +138,9 @@ describe('ProgressOverview', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows no streak figures while the streaks load', () => {
-    vi.mocked(useProgressStreaks).mockReturnValue({
-      ...loaded.streaks,
+  it('shows no streak figures while the summary loads', () => {
+    vi.mocked(useProgressSummary).mockReturnValue({
+      ...loaded.summary,
       currentStreak: 0,
       longestStreak: 0,
       isLoading: true,
@@ -208,9 +214,9 @@ describe('ProgressOverview', () => {
     expect(screen.queryByRole('grid')).not.toBeInTheDocument();
   });
 
-  it('shows an error instead of the progress when the streaks fail to load', () => {
-    vi.mocked(useProgressStreaks).mockReturnValue({
-      ...loaded.streaks,
+  it('shows an error instead of the progress when the summary fails to load', () => {
+    vi.mocked(useProgressSummary).mockReturnValue({
+      ...loaded.summary,
       error: new Error('Network Error'),
     });
 

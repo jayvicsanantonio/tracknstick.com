@@ -30,7 +30,7 @@ const Header = memo(function Header() {
   const { toggleShowAddHabitDialog } = useHabitsContext();
 
   return (
-    <header className="sticky top-0 z-40">
+    <header className="sticky top-0 z-40 hidden sm:block">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 pt-[max(env(safe-area-inset-top),0.75rem)] pb-3 sm:px-4 sm:py-8 md:px-8 2xl:max-w-[90rem]">
         <Link
           to="/"

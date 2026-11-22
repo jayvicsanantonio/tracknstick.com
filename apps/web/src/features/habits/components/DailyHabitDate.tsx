@@ -1,90 +1,133 @@
 import { useEffect, useMemo, memo } from 'react';
+import { CalendarDays } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
 import { useDate } from '@app/providers/useDate';
+import { triggerHaptic } from '@shared/utils/haptics';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 const DailyHabitDate = memo(function DailyHabitDate() {
-  const { date, currentDate, handlePreviousDate, handleNextDate, timeZone } =
-    useDate();
+  const {
+    date,
+    currentDate,
+    setDate,
+    handlePreviousDate,
+    handleNextDate,
+    timeZone,
+  } = useDate();
 
   // The month and day, and the year apart from them: a phone leaves out
-  // this year's year, so "Wednesday" and its date fit between the arrows.
-  const { monthDay, year, isThisYear } = useMemo(() => {
+  // this year's year, so the date sits comfortably between the arrows.
+  const { monthDay, year, isThisYear, shortWeekday } = useMemo(() => {
     const yearOf = (value: Date) =>
       value.toLocaleDateString('en-US', { timeZone, year: 'numeric' });
     return {
       monthDay: date.toLocaleDateString('en-US', {
         timeZone,
-        // Short, so "Today" and the date fit one line on a 360px phone and in
-        // the tracker's narrow dashboard column.
         month: 'short',
         day: 'numeric',
       }),
       year: yearOf(date),
-      // currentDate rolls over at midnight, so a day left on screen into a
-      // new year shows its year again.
       isThisYear: yearOf(date) === yearOf(currentDate),
+      shortWeekday: date.toLocaleDateString('en-US', {
+        timeZone,
+        weekday: 'short',
+      }),
     };
   }, [date, currentDate, timeZone]);
 
+  const isToday = useMemo(
+    () => date.toDateString() === currentDate.toDateString(),
+    [date, currentDate],
+  );
+
   const dayLabel = useMemo(() => {
-    const today = new Date();
-    const isToday = date.toDateString() === today.toDateString();
     if (isToday) {
       return 'Today';
-    } else {
-      return date.toLocaleDateString('en-US', {
-        timeZone,
-        weekday: 'long',
-      });
     }
-  }, [date, timeZone]);
+    return date.toLocaleDateString('en-US', {
+      timeZone,
+      weekday: 'long',
+    });
+  }, [date, isToday, timeZone]);
 
   return (
-    // The arrows hold the row's ends and the day takes the middle, so a
-    // longer day name never moves them. The gap keeps the pill off the arrows.
-    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
-      {/* Keyboard shortcuts for date navigation */}
-      <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
+    <div className="flex flex-col sm:gap-1.5">
+      <div className="ios-tracker-card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3 sm:rounded-none sm:p-0">
+        {/* Keyboard shortcuts for date navigation */}
+        <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
 
-      <Button
-        onClick={handlePreviousDate}
-        variant="ghost"
-        size="icon"
-        aria-label="Previous Date"
-        className="rounded-full text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:shadow-md"
-      >
-        <ChevronLeft aria-hidden="true" className="h-4 w-4" />
-      </Button>
+        <Button
+          onClick={() => {
+            triggerHaptic('selection');
+            handlePreviousDate();
+          }}
+          variant="ghost"
+          size="icon"
+          aria-label="Previous Date"
+          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) hover:bg-(--color-brand-primary)/18 active:scale-92 sm:size-10 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:bg-(--color-hover-surface) sm:hover:shadow-md"
+        >
+          <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+        </Button>
 
-      <div className="relative text-center">
-        {/* Spans the room between the arrows, so only its text changes from
-            day to day. On phones, plain text, the day's name over its date;
-            from sm up, a pill with the two side by side. */}
-        <div className="flex flex-col items-center justify-center sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
-          <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
-            {dayLabel}
-          </h2>
-          <span className="text-sm whitespace-nowrap text-(--color-brand-primary) sm:text-base">
-            {monthDay}
-            <span className={isThisYear ? 'max-sm:hidden' : undefined}>
-              , {year}
+        <div className="min-w-0 text-center">
+          <div className="relative flex items-center justify-center gap-1.5 sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
+            <CalendarDays
+              aria-hidden="true"
+              className="size-3.5 shrink-0 text-(--color-brand-primary) sm:hidden"
+            />
+            {/* On phones the Large Title bar directly above displays Today / weekday. */}
+            <h2 className="text-xl font-bold tracking-tight text-(--color-foreground) max-sm:sr-only sm:text-2xl">
+              {dayLabel}
+            </h2>
+            {isToday ? (
+              <span
+                aria-hidden="true"
+                className="text-[14px] font-medium whitespace-nowrap text-(--color-text-secondary) sm:hidden"
+              >
+                {shortWeekday} ·
+              </span>
+            ) : null}
+            <span className="text-[15px] font-semibold whitespace-nowrap text-(--color-foreground) tabular-nums sm:text-base sm:font-normal sm:text-(--color-brand-primary)">
+              {monthDay}
+              <span className={isThisYear ? 'max-sm:hidden' : undefined}>
+                , {year}
+              </span>
             </span>
-          </span>
+          </div>
         </div>
+
+        <Button
+          onClick={() => {
+            triggerHaptic('selection');
+            handleNextDate();
+          }}
+          variant="ghost"
+          size="icon"
+          aria-label="Next Date"
+          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) hover:bg-(--color-brand-primary)/18 active:scale-92 sm:size-10 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:bg-(--color-hover-surface) sm:hover:shadow-md"
+        >
+          <ChevronRight aria-hidden="true" className="h-4 w-4" />
+        </Button>
       </div>
 
-      <Button
-        onClick={handleNextDate}
-        variant="ghost"
-        size="icon"
-        aria-label="Next Date"
-        className="rounded-full text-(--color-brand-primary) hover:bg-(--color-hover-surface) sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:shadow-md"
-      >
-        <ChevronRight aria-hidden="true" className="h-4 w-4" />
-      </Button>
+      {/* Desktop quick jump back to Today inside a fixed-height slot so changing
+          days never shifts layout (phones use the top-left "Today" nav pill). */}
+      <div className="hidden h-7 items-center justify-center sm:flex">
+        {!isToday ? (
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic('selection');
+              setDate(new Date());
+            }}
+            className="rounded-full bg-(--color-brand-primary)/12 px-3.5 py-1 text-xs font-semibold text-(--color-brand-text) transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
+          >
+            Back to Today
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 });
@@ -100,7 +143,6 @@ function DateHotkeys({
 }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Don't interfere with input fields or other interactive elements
       const target = e.target as HTMLElement;
       const isInteractiveElement =
         target.tagName === 'INPUT' ||
@@ -115,7 +157,6 @@ function DateHotkeys({
         return;
       }
 
-      // Only handle arrow keys if no modifiers are pressed
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
         return;
       }

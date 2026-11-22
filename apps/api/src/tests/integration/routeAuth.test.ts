@@ -34,6 +34,7 @@ describe('route auth posture', () => {
     ['GET', '/api/v1/progress/history'],
     ['GET', '/api/v1/progress/streaks'],
     ['GET', '/api/v1/progress/overview'],
+    ['GET', '/api/v1/progress/summary'],
   ])('%s %s rejects an unauthenticated request', async (method, path) => {
     const res = await app.request(path, { method }, testEnv.env);
     expect(res.status).toBe(401);

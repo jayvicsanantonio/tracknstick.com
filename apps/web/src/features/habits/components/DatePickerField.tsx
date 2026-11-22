@@ -1,9 +1,15 @@
+// Habit form date field: uses Apple's native UIKit date picker (<input type="date">)
+// on phones (< sm) and react-datepicker on wider desktop screens.
+
 import { memo } from 'react';
 import DatePicker from 'react-datepicker';
+import { Calendar, X } from 'lucide-react';
 import { Label } from '@shared/components/ui/label';
 import DatePickerInput, {
   datePickerInputStyles,
 } from '@/features/habits/components/DatePickerInput';
+import { useIsMobile } from '@shared/hooks/useIsMobile';
+import { triggerHaptic } from '@shared/utils/haptics';
 
 interface DatePickerFieldProps {
   id: string;
@@ -18,7 +24,7 @@ interface DatePickerFieldProps {
 const datePickerCalendarStyles = `
   .react-datepicker {
     font-family: inherit;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
     background-color: var(--color-card);
     border: 1px solid var(--color-border-primary);
@@ -142,6 +148,23 @@ export const datePickerStyles = `
   ${datePickerInputStyles}
 `;
 
+/** Formats a Date into local YYYY-MM-DD for native <input type="date">. */
+function toDateInputValue(date: Date | null): string {
+  if (!date || Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/** Parses YYYY-MM-DD from native <input type="date"> into a local Date. */
+function fromDateInputValue(value: string): Date | null {
+  if (!value) return null;
+  const [year, month, day] = value.split('-').map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
+
 const DatePickerField = memo(function DatePickerField({
   id,
   label,
@@ -151,6 +174,52 @@ const DatePickerField = memo(function DatePickerField({
   isClearable = false,
   isRequired = false,
 }: DatePickerFieldProps) {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <div className="space-y-1.5">
+        <Label
+          htmlFor={id}
+          className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
+        >
+          {label}
+          {isRequired && <span className="text-(--color-error)">*</span>}
+        </Label>
+        <div className="relative flex items-center">
+          <Calendar
+            aria-hidden="true"
+            className="pointer-events-none absolute left-3 size-4 text-(--color-brand-primary)"
+          />
+          <input
+            id={id}
+            type="date"
+            required={isRequired}
+            value={toDateInputValue(selected)}
+            onChange={(event) => {
+              triggerHaptic('selection');
+              onChange(fromDateInputValue(event.target.value));
+            }}
+            className="h-11 w-full appearance-none rounded-xl border-2 border-(--color-border-primary) bg-(--color-surface) pr-10 pl-9 text-base text-(--color-foreground) tabular-nums outline-none focus:border-(--color-ring) focus-visible:ring-2 focus-visible:ring-(--color-ring)/40 dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary)"
+          />
+          {isClearable && selected ? (
+            <button
+              type="button"
+              aria-label={`Clear ${label}`}
+              onClick={() => {
+                triggerHaptic('light');
+                onChange(null);
+              }}
+              className="absolute right-2 flex size-7 items-center justify-center rounded-full bg-(--color-muted) text-(--color-text-secondary) active:scale-90"
+            >
+              <X aria-hidden="true" className="size-3.5" />
+            </button>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
       <Label
@@ -161,8 +230,6 @@ const DatePickerField = memo(function DatePickerField({
         {isRequired && <span className="text-(--color-error)">*</span>}
       </Label>
       <DatePicker
-        // The picker sets its input's id itself; without this it would
-        // clear the id the label above points to.
         id={id}
         selected={selected}
         onChange={onChange}
@@ -172,8 +239,6 @@ const DatePickerField = memo(function DatePickerField({
         placeholderText={placeholder}
         wrapperClassName="w-full"
         popperClassName="z-50"
-        // Placed against the window, so the scrolling form it sits in never
-        // clips the calendar.
         popperProps={{ strategy: 'fixed' }}
       />
     </div>

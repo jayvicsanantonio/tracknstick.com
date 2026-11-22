@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useId, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { useTheme } from '@shared/hooks/useTheme';
@@ -12,7 +12,9 @@ interface DailyHabitProgressIndicatorProps {
 const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   completionRate,
 }: DailyHabitProgressIndicatorProps) {
-  const isDark = useTheme();
+  const { mode } = useTheme();
+  const isDark = mode === 'dark';
+  const arcGradientId = useId();
 
   const displayRate = useMemo(
     () => (Number.isNaN(completionRate) ? 0 : completionRate),
@@ -25,7 +27,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
     () => circumference * (1 - displayRate / 100),
     [displayRate, circumference],
   );
-  const strokeWidth = displayRate === 100 ? 10 : 8;
+  const strokeWidth = displayRate === 100 ? 9.5 : 8.5;
 
   const shimmerBackground = useMemo(() => {
     if (isDark) {
@@ -38,12 +40,12 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
   return (
     <div
-      className="mt-5 mb-4 flex flex-col items-center justify-center sm:mt-4 sm:mb-8 lg:mt-6 lg:mb-6"
+      className="flex shrink-0 flex-col items-center justify-center sm:mt-4 sm:mb-8 lg:mt-6 lg:mb-6"
       aria-label={`Daily habit completion: ${displayRate}%`}
     >
-      {/* Without the glass disc behind it on phones. */}
-      <div className="relative h-44 w-44 sm:h-60 sm:w-60 md:h-64 md:w-64">
-        {/* Glass badge backdrop */}
+      {/* Compact jewel ring inside the horizontal mobile hero card; spacious glass ring on sm+. */}
+      <div className="relative h-26 w-26 sm:h-60 sm:w-60 md:h-64 md:w-64">
+        {/* Glass badge backdrop (desktop/tablet) */}
         <div
           aria-hidden="true"
           className="absolute inset-0 rounded-full bg-(--color-surface)/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl ring-inset max-sm:hidden dark:bg-(--color-surface-secondary)/40"
@@ -51,15 +53,29 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
         <div className="relative h-full w-full">
           <svg
-            className="h-full w-full"
+            className="h-full w-full overflow-visible"
             viewBox="0 0 100 100"
             aria-hidden="true"
           >
-            {/* Background track */}
+            <defs>
+              <linearGradient id={arcGradientId} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="var(--color-brand-primary)" />
+                <stop
+                  offset="100%"
+                  stopColor={
+                    isDark
+                      ? 'var(--color-brand-text-light)'
+                      : 'var(--color-brand-secondary)'
+                  }
+                />
+              </linearGradient>
+            </defs>
+
+            {/* Brand-tinted Apple Watch-style recessed track */}
             <circle
               aria-hidden="true"
-              className="text-(--color-border-primary)"
-              strokeWidth={8}
+              className="text-(--color-brand-primary)/16 dark:text-(--color-brand-primary)/20"
+              strokeWidth={8.5}
               stroke="currentColor"
               fill="transparent"
               r={radius}
@@ -67,43 +83,31 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
               cy="50"
             />
 
-            {/* Soft gradient "glass" accent behind progress */}
-            <defs>
-              <linearGradient id="glassGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="60%" stopColor="white" stopOpacity="0.05" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <circle
-              aria-hidden="true"
-              stroke="url(#glassGradient)"
-              strokeWidth="10"
-              fill="transparent"
-              r={radius}
-              cx="50"
-              cy="50"
-            />
-
-            {/* Main progress indicator */}
+            {/* Main glowing progress arc (hidden at 0% so round caps never leave a 12-o'clock dot in WebKit) */}
             <motion.circle
               aria-hidden="true"
-              className="text-(--color-brand-primary)"
+              stroke={`url(#${arcGradientId})`}
               strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
-              stroke="currentColor"
+              strokeOpacity={displayRate > 0 ? 1 : 0}
               fill="transparent"
               r={radius}
               cx="50"
               cy="50"
               transform="rotate(-90 50 50)"
+              style={{
+                filter:
+                  displayRate > 0
+                    ? 'drop-shadow(0 0 5px color-mix(in oklab, var(--color-brand-primary) 48%, transparent))'
+                    : undefined,
+              }}
               initial={{ strokeDashoffset: radius * 2 * Math.PI }}
               animate={{
                 strokeDashoffset,
               }}
-              transition={{ duration: 1, ease: 'easeOut' }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             />
           </svg>
 
@@ -137,8 +141,8 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ scale: [0, 1.2, 1], opacity: 1 }}
                 transition={{ duration: 0.7, ease: 'easeOut' }}
               >
-                <div className={`rounded-full p-5`} aria-hidden="true">
-                  <Check className="h-20 w-20 text-(--color-brand-primary) sm:h-28 sm:w-28" />
+                <div className="rounded-full p-2 sm:p-5" aria-hidden="true">
+                  <Check className="h-11 w-11 text-(--color-brand-primary) sm:h-28 sm:w-28" />
                 </div>
               </motion.div>
             ) : (
@@ -148,7 +152,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-5xl font-extrabold tracking-tight text-(--color-foreground)">
+                <span className="text-[26px] leading-none font-bold tracking-tight text-(--color-foreground) tabular-nums sm:text-5xl sm:font-extrabold">
                   {displayRate}%
                 </span>
                 <span className="mt-1 text-sm text-(--color-text-secondary) max-sm:hidden">

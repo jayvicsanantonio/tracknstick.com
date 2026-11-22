@@ -11,11 +11,14 @@ import RootLayout from '../RootLayout';
 const mockAuth = vi.hoisted(() => ({ isSignedIn: false }));
 
 vi.mock('@clerk/clerk-react', () => ({
+  ClerkLoading: () => null,
   SignedIn: ({ children }: { children: React.ReactNode }) =>
     mockAuth.isSignedIn ? <>{children}</> : null,
   SignedOut: ({ children }: { children: React.ReactNode }) =>
     mockAuth.isSignedIn ? null : <>{children}</>,
   useAuth: () => ({ isSignedIn: mockAuth.isSignedIn, getToken: vi.fn() }),
+  useUser: () => ({ user: null }),
+  useClerk: () => ({ openUserProfile: vi.fn(), signOut: vi.fn() }),
   UserButton: () => <div />,
   SignInButton: ({ children }: { children?: React.ReactNode }) => (
     <>{children}</>

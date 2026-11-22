@@ -10,6 +10,7 @@ vi.mock('@clerk/clerk-react', () => ({
   ClerkProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
+  ClerkLoading: () => null,
   SignedIn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   SignedOut: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   UserButton: () => <div>User Button</div>,
@@ -236,6 +237,7 @@ vi.mock('@app/providers/ThemeProvider', () => ({
 vi.mock('@shared/hooks/useTheme', () => ({
   useTheme: () => ({
     mode: 'dark',
+    preference: 'dark',
     tokens: {},
     setMode: vi.fn(),
     toggleMode: vi.fn(),

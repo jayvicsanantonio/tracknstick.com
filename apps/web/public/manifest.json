@@ -4,7 +4,7 @@
   "description": "Track N' Stick - Help you track and build healthy habits",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#ec4899",
+  "theme_color": "#fdf2f8",
   "background_color": "#fdf2f8",
   "icons": [
     {

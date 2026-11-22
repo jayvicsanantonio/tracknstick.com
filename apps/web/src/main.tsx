@@ -4,6 +4,8 @@ import ThemeProvider from '@app/providers/ThemeProvider';
 import DateProvider from '@app/providers/DateProvider.tsx';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { Toaster } from '@shared/components/ui/toaster.tsx';
+import { toast } from '@shared/hooks/use-toast';
+import { ToastAction } from '@shared/components/ui/toast';
 import App from '@app/App.tsx';
 // Self-hosted, so the Content-Security-Policy needs no third-party font host.
 import '@fontsource-variable/plus-jakarta-sans';
@@ -11,18 +13,31 @@ import '@/styles/index.css';
 import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@app/routes';
+import { preloadAllPrimaryChunksWhenIdle } from '@shared/utils/preloadRoutes';
 
-// Register service worker
+// Register service worker with an in-app toast instead of a browser confirm() dialog.
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm('New content available. Reload?')) {
-      void updateSW(true);
-    }
+    toast({
+      title: 'Update available',
+      description: 'Reload to get the latest version.',
+      duration: 15000,
+      action: (
+        <ToastAction
+          altText="Reload to update"
+          onClick={() => void updateSW(true)}
+        >
+          Reload
+        </ToastAction>
+      ),
+    });
   },
   onOfflineReady() {
-    console.log('App ready to work offline');
+    // Ready to work offline silently.
   },
 });
+
+preloadAllPrimaryChunksWhenIdle();
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 

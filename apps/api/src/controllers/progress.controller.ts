@@ -3,6 +3,7 @@ import {
   progressHistorySchema,
   progressOverviewSchema,
   progressStreaksSchema,
+  progressSummarySchema,
 } from '@tracknstick/contracts';
 import { getValidated } from '../middlewares/validateRequest.js';
 import type { AppEnv } from '../types/index.js';
@@ -76,4 +77,22 @@ export async function getProgressOverview(
   );
 
   return c.json(overview);
+}
+
+/**
+ * Get user's all-time lifetime progress summary since they began using the app
+ */
+export async function getProgressSummary(
+  c: Context<AppEnv>
+): Promise<Response> {
+  const { userId } = c.get('auth');
+  const { timeZone } = getValidated(c, 'query', progressSummarySchema);
+
+  const summary = await progressService.getUserProgressSummary(
+    c.env.DB,
+    userId,
+    timeZone
+  );
+
+  return c.json(summary);
 }

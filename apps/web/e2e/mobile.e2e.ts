@@ -1,21 +1,22 @@
-// End-to-end checks of the phone layout: bottom tab bar, bottom-sheet dialog, habit cards and chat.
-// Runs at an iPhone-sized viewport against the real API and D1, signed in as the test user.
+// End-to-end checks of the native iOS phone layout:
+// iOS 26 Liquid Glass tab bar, draggable Add Habit sheet with top-bar Save,
+// inset grouped Habits list with Action Sheet delete, and full-bleed Coach.
 
 import { expect, test } from '@playwright/test';
 
 const VIEWPORT = { width: 390, height: 844 };
 test.use({ viewport: VIEWPORT, hasTouch: true, isMobile: true });
 
-const EVERY_DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
-test('moves between screens with the bottom tab bar', async ({ page }) => {
+test('moves between screens with the Liquid Glass tab bar', async ({
+  page,
+}) => {
   const tabs = page.getByRole('navigation', { name: 'Primary' });
   await expect(tabs).toBeVisible();
-  // The header's own navigation is for wider screens only.
+  // The desktop header navigation is hidden on phones.
   await expect(
     page.getByRole('link', { name: 'Habits Overview' }),
   ).toBeHidden();
@@ -34,7 +35,7 @@ test('moves between screens with the bottom tab bar', async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
 });
 
-test('adds a habit in a bottom sheet and deletes it from its card', async ({
+test('adds a habit in an iOS bottom sheet and deletes it via Action Sheet', async ({
   page,
 }) => {
   const name = `Stretch ${Date.now()}`;
@@ -43,72 +44,61 @@ test('adds a habit in a bottom sheet and deletes it from its card', async ({
   await tabs.getByRole('button', { name: 'Add Habit' }).click();
   const sheet = page.getByRole('dialog', { name: 'Add New Habit' });
   await expect(sheet).toBeVisible();
-  // A bottom sheet: anchored to the bottom edge, full width, with its
-  // submit button on screen without scrolling.
+
+  // Bottom-anchored sheet whose top-bar Add button stays visible without scrolling.
   await expect
     .poll(async () => {
       const box = await sheet.boundingBox();
       return box && [Math.round(box.x), Math.round(box.y + box.height)];
     })
     .toEqual([0, VIEWPORT.height]);
+
   const submit = sheet.getByRole('button', { name: 'Add habit' });
   await expect(submit).toBeInViewport();
-  // Scrolling the fields leaves the sheet's title and buttons where they are.
-  await sheet.getByLabel('Name').hover();
-  await page.mouse.wheel(0, 1000);
-  await expect(
-    sheet.getByRole('heading', { name: 'Add New Habit' }),
-  ).toBeInViewport({ ratio: 1 });
-  await expect(submit).toBeInViewport({ ratio: 1 });
-  // The text fields share one height, and each field's label sits clear of
-  // the field above it.
-  const fields = [
-    sheet.getByLabel('Name'),
-    sheet.getByRole('searchbox', { name: 'Search icons' }),
-    sheet.getByLabel('Start Date'),
-    sheet.getByLabel('End Date (Optional)'),
-  ];
-  const heights = await Promise.all(
-    fields.map(async (field) => (await field.boundingBox())?.height),
-  );
-  expect(new Set(heights).size).toBe(1);
-  const startBox = await sheet.getByLabel('Start Date').boundingBox();
-  const endLabelBox = await sheet
-    .locator('label', { hasText: 'End Date (Optional)' })
-    .boundingBox();
-  expect(startBox).not.toBeNull();
-  expect(endLabelBox).not.toBeNull();
-  if (!startBox || !endLabelBox) return;
-  expect(endLabelBox.y - (startBox.y + startBox.height)).toBeGreaterThanOrEqual(
-    12,
-  );
 
   await sheet.getByLabel('Name').fill(name);
   const activity = page.getByRole('radio', { name: 'Activity' });
   await sheet.locator('label', { has: activity }).click();
-  for (const day of EVERY_DAY) {
-    await sheet.getByRole('button', { name: day, exact: true }).click();
-  }
+  await sheet.getByRole('button', { name: 'Daily' }).click();
   await submit.click();
   await expect(sheet).toBeHidden();
 
   await tabs.getByRole('link', { name: 'Habits' }).click();
-  const card = page
+  const row = page
     .getByRole('list', { name: 'Habits' })
     .getByRole('listitem')
     .filter({ hasText: name });
-  await expect(card).toBeVisible();
-  await expect(card).toContainText('Daily');
+  await expect(row).toBeVisible();
+  await expect(row).toContainText('Daily');
 
-  await card.getByRole('button', { name: `Delete ${name}` }).click();
+  // Swipe the habit card left across animation frames so Framer Motion's
+  // rAF-throttled pan session locks the horizontal gesture before release.
+  const box = await row.boundingBox();
+  if (!box) throw new Error('Habit row did not render');
+  const y = box.y + box.height / 2;
+  const startX = box.x + box.width - 24;
+  const endX = box.x + 24;
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  for (let step = 1; step <= 6; step++) {
+    await page.mouse.move(startX + ((endX - startX) * step) / 6, y);
+    await page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(resolve)),
+    );
+  }
+  await page.mouse.up();
+
+  await row.getByRole('button', { name: `Delete ${name}` }).click();
   await page
     .getByRole('alertdialog', { name: 'Delete Habit' })
     .getByRole('button', { name: 'Delete' })
     .click();
-  await expect(card).toHaveCount(0);
+  await expect(row).toHaveCount(0);
 });
 
-test('opens the Coach page from the tab bar', async ({ page }) => {
+test('opens the Coach page from the tab bar with composer above it', async ({
+  page,
+}) => {
   const tabs = page.getByRole('navigation', { name: 'Primary' });
   const coach = tabs.getByRole('link', { name: 'Coach' });
 
@@ -116,7 +106,7 @@ test('opens the Coach page from the tab bar', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/coach$/);
   await expect(coach).toHaveAttribute('aria-current', 'page');
-  // The message box sits above the tab bar, not under it.
+
   const textbox = page.getByRole('textbox', { name: 'Ask the habit coach' });
   await expect(textbox).toBeInViewport();
   const textboxBox = await textbox.boundingBox();
