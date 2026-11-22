@@ -1,3 +1,4 @@
+import type { ProgressSummaryResponse } from '@tracknstick/contracts';
 import { D1Database } from '@cloudflare/workers-types';
 import * as trackerRepository from '../repositories/tracker.repository.js';
 import logger from '../utils/logger.js';
@@ -106,6 +107,28 @@ export async function getUserProgressOverview(
   } catch (error) {
     logger.error(
       `Error fetching progress overview for user ${userId}:`,
+      error as Error
+    );
+    throw error;
+  }
+}
+
+/**
+ * Gets all-time lifetime progress metrics since the user started using the app.
+ */
+export async function getUserProgressSummary(
+  db: D1Database,
+  userId: string,
+  timeZone = 'UTC'
+): Promise<ProgressSummaryResponse> {
+  try {
+    logger.info(
+      `Fetching lifetime progress summary for user ${userId} in timezone ${timeZone}`
+    );
+    return await trackerRepository.getUserProgressSummary(db, userId, timeZone);
+  } catch (error) {
+    logger.error(
+      `Error fetching lifetime progress summary for user ${userId}:`,
       error as Error
     );
     throw error;

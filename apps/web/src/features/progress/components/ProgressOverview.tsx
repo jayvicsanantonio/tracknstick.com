@@ -31,7 +31,7 @@ import { DateContext } from '@app/providers/DateContext';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { triggerHaptic } from '@shared/utils/haptics';
 import useProgressHistory from '../hooks/useProgressHistory';
-import useProgressStreaks from '../hooks/useProgressStreaks';
+import useProgressSummary from '../hooks/useProgressSummary';
 import {
   useAchievementProgress,
   useAchievements,
@@ -58,9 +58,15 @@ const ProgressOverview = memo(function ProgressOverview() {
   const {
     currentStreak,
     longestStreak,
-    isLoading: isStreaksLoading,
-    error: streaksError,
-  } = useProgressStreaks();
+    totalCompletions,
+    activeDays,
+    perfectDays: lifetimePerfectDays,
+    overallCompletionRate,
+    activeHabitsCount,
+    memberSince,
+    isLoading: isSummaryLoading,
+    error: summaryError,
+  } = useProgressSummary();
   const {
     achievements,
     stats,
@@ -69,11 +75,11 @@ const ProgressOverview = memo(function ProgressOverview() {
   } = useAchievements();
   const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
-  const loadFailed = Boolean(historyError ?? streaksError);
+  const loadFailed = Boolean(historyError ?? summaryError);
   const isBestStreak = currentStreak > 0 && currentStreak >= longestStreak;
 
   const monthName = selectedMonth.toLocaleString('default', { month: 'long' });
-  const { averageRate, perfectDays } = summarizeMonth(
+  const { averageRate, perfectDays: monthPerfectDays } = summarizeMonth(
     historyData,
     selectedMonth,
   );
@@ -136,14 +142,16 @@ const ProgressOverview = memo(function ProgressOverview() {
               <div className="space-y-4 sm:space-y-6">
                 {isMobile ? (
                   <ProgressHeroSummary
-                    monthName={monthName}
-                    averageRate={averageRate}
-                    perfectDays={perfectDays}
+                    totalCompletions={totalCompletions}
+                    overallCompletionRate={overallCompletionRate}
+                    activeDays={activeDays}
+                    perfectDays={lifetimePerfectDays}
                     currentStreak={currentStreak}
                     longestStreak={longestStreak}
+                    activeHabitsCount={activeHabitsCount}
+                    memberSince={memberSince}
                     isBestStreak={isBestStreak}
-                    isHistoryLoading={isHistoryLoading}
-                    isStreaksLoading={isStreaksLoading}
+                    isLoading={isSummaryLoading}
                   />
                 ) : (
                   <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -152,7 +160,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                       label="Current streak"
                       value={currentStreak}
                       unit="day"
-                      loading={isStreaksLoading}
+                      loading={isSummaryLoading}
                       badge={isBestStreak ? 'Best yet' : undefined}
                     />
                     <ProgressStat
@@ -160,7 +168,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                       label="Longest streak"
                       value={longestStreak}
                       unit="day"
-                      loading={isStreaksLoading}
+                      loading={isSummaryLoading}
                     />
                     <ProgressStat
                       Icon={Percent}
@@ -171,7 +179,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                     <ProgressStat
                       Icon={CalendarCheck}
                       label={`Perfect days in ${monthName}`}
-                      value={perfectDays}
+                      value={monthPerfectDays}
                       unit="day"
                       loading={isHistoryLoading}
                     />

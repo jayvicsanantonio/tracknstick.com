@@ -1,5 +1,6 @@
 // Data access for trackers (habit completions) in D1.
 // Also builds the progress history and streak figures from those rows.
+import type { ProgressSummaryResponse } from '@tracknstick/contracts';
 import { D1Database } from '@cloudflare/workers-types';
 import { computeStreaks } from '../utils/streakUtils.js';
 import {
@@ -7,6 +8,31 @@ import {
   isValidTimeZone,
 } from '../utils/dateUtils.js';
 import { Tracker } from '../types/d1.js';
+
+const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const SQLITE_DATETIME_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+const MAX_SUMMARY_YEARS = 10;
+
+function extractDateKey(value: string | null): string | null {
+  if (!value) return null;
+  const head = value.split('T')[0];
+  return DATE_KEY_RE.test(head) ? head : null;
+}
+
+function parseInstantToDateKey(
+  value: string | null,
+  formatter: Intl.DateTimeFormat
+): string | null {
+  if (!value) return null;
+  if (DATE_KEY_RE.test(value)) return value;
+  const iso = SQLITE_DATETIME_RE.test(value)
+    ? `${value.replace(' ', 'T')}Z`
+    : value;
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return formatter.format(parsed);
+}
 
 interface TrackerRow {
   id: number;
@@ -517,6 +543,231 @@ export async function getUserStreaks(
     return computeStreaks(history, today);
   } catch (error) {
     console.error('Error calculating user streaks:', error);
+    throw error;
+  }
+}
+
+/**
+ * Computes all-time lifetime progress metrics since the user started using the app.
+ * Reads user, habits, and tracker rows in a single D1 batch transaction and walks
+ * every scheduled day from the earliest habit start date through today in the user's
+ * timezone (not capped to 365 days).
+ */
+export async function getUserProgressSummary(
+  db: D1Database,
+  userId: string,
+  timeZone = 'UTC'
+): Promise<ProgressSummaryResponse> {
+  try {
+    if (!isValidTimeZone(timeZone)) {
+      console.warn(`Invalid timezone "${timeZone}", falling back to UTC`);
+      timeZone = 'UTC';
+    }
+
+    const [userResult, habitsResult, trackersResult] = await db.batch([
+      db
+        .prepare(`SELECT created_at FROM users WHERE clerk_user_id = ?`)
+        .bind(userId),
+      db
+        .prepare(
+          `SELECT id, frequency, start_date, end_date, deleted_at
+           FROM habits
+           WHERE user_id = ?`
+        )
+        .bind(userId),
+      db
+        .prepare(
+          `SELECT habit_id, timestamp
+           FROM trackers
+           WHERE user_id = ? AND deleted_at IS NULL`
+        )
+        .bind(userId),
+    ]);
+
+    if (
+      !userResult.success ||
+      !habitsResult.success ||
+      !trackersResult.success
+    ) {
+      throw new Error('Failed to fetch lifetime progress summary');
+    }
+
+    const userRow = (userResult.results[0] ?? null) as {
+      created_at: string | null;
+    } | null;
+    const habits = habitsResult.results as {
+      id: number;
+      frequency: string;
+      start_date: string;
+      end_date: string | null;
+      deleted_at: string | null;
+    }[];
+    const trackers = trackersResult.results as {
+      habit_id: number;
+      timestamp: string;
+    }[];
+
+    const dateKeyFormatter = new Intl.DateTimeFormat('en-CA', { timeZone });
+    const todayInTZ = dateKeyFormatter.format(new Date());
+
+    // Group completions by local calendar date in the user's timezone.
+    const trackersByDate = new Map<string, Set<number>>();
+    for (const tracker of trackers) {
+      const dateKey = parseInstantToDateKey(
+        tracker.timestamp,
+        dateKeyFormatter
+      );
+      if (!dateKey) continue;
+      let completedSet = trackersByDate.get(dateKey);
+      if (!completedSet) {
+        completedSet = new Set<number>();
+        trackersByDate.set(dateKey, completedSet);
+      }
+      completedSet.add(tracker.habit_id);
+    }
+
+    // Earliest date the user started using the app (never in the future).
+    let memberSince: string | null = null;
+    const considerMemberSince = (candidate: string | null) => {
+      if (!candidate || candidate > todayInTZ) return;
+      if (memberSince === null || candidate < memberSince) {
+        memberSince = candidate;
+      }
+    };
+
+    considerMemberSince(
+      parseInstantToDateKey(userRow?.created_at ?? null, dateKeyFormatter)
+    );
+    for (const dateKey of trackersByDate.keys()) {
+      considerMemberSince(dateKey);
+    }
+
+    let activeHabitsCount = 0;
+    let earliestHabitStart: string | null = null;
+    const parsedHabits: {
+      id: number;
+      startDate: string | null;
+      endDate: string | null;
+      deletedAt: string | null;
+      frequencySet: Set<string>;
+    }[] = [];
+
+    for (const habit of habits) {
+      const startDate = extractDateKey(habit.start_date);
+      const endDate = extractDateKey(habit.end_date);
+      const deletedAt = extractDateKey(habit.deleted_at);
+
+      if (habit.deleted_at === null && !habit.end_date) {
+        activeHabitsCount += 1;
+      }
+      considerMemberSince(startDate);
+      if (
+        startDate &&
+        startDate <= todayInTZ &&
+        (earliestHabitStart === null || startDate < earliestHabitStart)
+      ) {
+        earliestHabitStart = startDate;
+      }
+
+      parsedHabits.push({
+        id: habit.id,
+        startDate,
+        endDate,
+        deletedAt,
+        frequencySet: new Set(
+          habit.frequency.split(',').map((day) => day.trim())
+        ),
+      });
+    }
+
+    const totalCompletions = trackers.length;
+    const activeDays = trackersByDate.size;
+
+    if (!earliestHabitStart) {
+      return {
+        currentStreak: 0,
+        longestStreak: 0,
+        totalCompletions,
+        activeDays,
+        perfectDays: 0,
+        overallCompletionRate: null,
+        activeHabitsCount,
+        memberSince,
+      };
+    }
+
+    // Clamp extremely backdated habits so the daily walk always finishes quickly.
+    const boundDate = new Date(`${todayInTZ}T12:00:00Z`);
+    boundDate.setUTCFullYear(boundDate.getUTCFullYear() - MAX_SUMMARY_YEARS);
+    const minWalkDate = boundDate.toISOString().slice(0, 10);
+    const walkStart =
+      earliestHabitStart < minWalkDate ? minWalkDate : earliestHabitStart;
+
+    const currentDate = new Date(`${walkStart}T12:00:00Z`);
+    const endDateObj = new Date(`${todayInTZ}T12:00:00Z`);
+    const ascendingHistory: { date: string; completionRate: number }[] = [];
+    let totalScheduled = 0;
+    let totalScheduledCompleted = 0;
+    let perfectDays = 0;
+
+    while (currentDate <= endDateObj) {
+      const dateStr = currentDate.toISOString().slice(0, 10);
+      const dayOfWeek = DAY_NAMES[currentDate.getUTCDay()];
+      const completedOnDay = trackersByDate.get(dateStr);
+
+      let scheduledForDay = 0;
+      let completedForDay = 0;
+
+      for (const habit of parsedHabits) {
+        if (!habit.startDate || habit.startDate > dateStr) continue;
+        if (habit.endDate && habit.endDate < dateStr) continue;
+        if (habit.deletedAt && habit.deletedAt <= dateStr) continue;
+        if (!habit.frequencySet.has(dayOfWeek)) continue;
+
+        scheduledForDay += 1;
+        if (completedOnDay?.has(habit.id)) {
+          completedForDay += 1;
+        }
+      }
+
+      if (scheduledForDay > 0) {
+        totalScheduled += scheduledForDay;
+        totalScheduledCompleted += completedForDay;
+        const completionRate = Math.round(
+          (completedForDay / scheduledForDay) * 100
+        );
+        if (completionRate === 100) {
+          perfectDays += 1;
+        }
+        ascendingHistory.push({ date: dateStr, completionRate });
+      }
+
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+
+    const descendingHistory = ascendingHistory.reverse();
+    const { currentStreak, longestStreak } = computeStreaks(
+      descendingHistory,
+      todayInTZ
+    );
+
+    const overallCompletionRate =
+      totalScheduled === 0
+        ? null
+        : Math.round((totalScheduledCompleted / totalScheduled) * 100);
+
+    return {
+      currentStreak,
+      longestStreak,
+      totalCompletions,
+      activeDays,
+      perfectDays,
+      overallCompletionRate,
+      activeHabitsCount,
+      memberSince,
+    };
+  } catch (error) {
+    console.error('Error calculating user progress summary:', error);
     throw error;
   }
 }

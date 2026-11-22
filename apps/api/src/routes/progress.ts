@@ -8,6 +8,7 @@ import {
   progressHistorySchema,
   progressOverviewSchema,
   progressStreaksSchema,
+  progressSummarySchema,
 } from '@tracknstick/contracts';
 
 const app = new Hono<AppEnv>();
@@ -54,6 +55,18 @@ app.get(
   '/overview',
   validateRequest(progressOverviewSchema, 'query'),
   progressController.getProgressOverview
+);
+
+/**
+ * @route GET /summary
+ * @description Get user's all-time lifetime progress metrics since they started using the app
+ * @query timeZone - Optional timezone for calendar-day calculations
+ * @returns {Object} - Lifetime completions, consistency, streaks, active/perfect days, and start date
+ */
+app.get(
+  '/summary',
+  validateRequest(progressSummarySchema, 'query'),
+  progressController.getProgressSummary
 );
 
 export default app;

@@ -59,9 +59,12 @@ export const progressStreaksSchema = z.object({
   timeZone: z.string().default('UTC'),
 });
 
+export const progressSummarySchema = progressStreaksSchema;
+
 export type ProgressHistoryQuery = z.input<typeof progressHistorySchema>;
 export type ProgressOverviewQuery = z.input<typeof progressOverviewSchema>;
 export type ProgressStreaksQuery = z.input<typeof progressStreaksSchema>;
+export type ProgressSummaryQuery = z.input<typeof progressSummarySchema>;
 
 // --- Responses ------------------------------------------------------------
 
@@ -80,6 +83,18 @@ export const progressStreaksResponseSchema = z.object({
   longestStreak: z.number(),
 });
 
+/** All-time lifetime progress totals since the user started using the app. */
+export const progressSummaryResponseSchema = z.object({
+  currentStreak: z.number(),
+  longestStreak: z.number(),
+  totalCompletions: z.number(),
+  activeDays: z.number(),
+  perfectDays: z.number(),
+  overallCompletionRate: z.number().nullable(),
+  activeHabitsCount: z.number(),
+  memberSince: z.string().nullable(),
+});
+
 export const progressOverviewResponseSchema = z.object({
   history: z.array(progressHistoryEntrySchema),
   currentStreak: z.number(),
@@ -92,6 +107,9 @@ export type ProgressHistoryResponse = z.infer<
 >;
 export type ProgressStreaksResponse = z.infer<
   typeof progressStreaksResponseSchema
+>;
+export type ProgressSummaryResponse = z.infer<
+  typeof progressSummaryResponseSchema
 >;
 export type ProgressOverviewResponse = z.infer<
   typeof progressOverviewResponseSchema

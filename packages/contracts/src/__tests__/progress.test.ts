@@ -1,7 +1,11 @@
 // Progress date params normalise to one calendar-date representation
 
 import { describe, it, expect } from 'vitest';
-import { progressHistorySchema } from '../progress.js';
+import {
+  progressHistorySchema,
+  progressSummaryResponseSchema,
+  progressSummarySchema,
+} from '../progress.js';
 
 describe('progressHistorySchema', () => {
   it('accepts the documented YYYY-MM-DD form', () => {
@@ -56,5 +60,37 @@ describe('progressHistorySchema', () => {
     });
 
     expect(result.startDate).toBe('2026-06-15');
+  });
+});
+
+describe('progressSummary schemas', () => {
+  it('defaults timeZone to UTC for summary queries', () => {
+    expect(progressSummarySchema.parse({})).toEqual({ timeZone: 'UTC' });
+  });
+
+  it('validates populated and empty lifetime progress summaries', () => {
+    const populated = {
+      currentStreak: 4,
+      longestStreak: 12,
+      totalCompletions: 85,
+      activeDays: 30,
+      perfectDays: 20,
+      overallCompletionRate: 78,
+      activeHabitsCount: 3,
+      memberSince: '2026-01-15',
+    };
+    expect(progressSummaryResponseSchema.parse(populated)).toEqual(populated);
+
+    const empty = {
+      currentStreak: 0,
+      longestStreak: 0,
+      totalCompletions: 0,
+      activeDays: 0,
+      perfectDays: 0,
+      overallCompletionRate: null,
+      activeHabitsCount: 0,
+      memberSince: null,
+    };
+    expect(progressSummaryResponseSchema.parse(empty)).toEqual(empty);
   });
 });
