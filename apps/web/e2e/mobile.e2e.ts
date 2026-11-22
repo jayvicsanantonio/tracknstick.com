@@ -53,6 +53,35 @@ test('adds a habit in a bottom sheet and deletes it from its card', async ({
     .toEqual([0, VIEWPORT.height]);
   const submit = sheet.getByRole('button', { name: 'Add habit' });
   await expect(submit).toBeInViewport();
+  // Scrolling the fields leaves the sheet's title and buttons where they are.
+  await sheet.getByLabel('Name').hover();
+  await page.mouse.wheel(0, 1000);
+  await expect(
+    sheet.getByRole('heading', { name: 'Add New Habit' }),
+  ).toBeInViewport({ ratio: 1 });
+  await expect(submit).toBeInViewport({ ratio: 1 });
+  // The text fields share one height, and each field's label sits clear of
+  // the field above it.
+  const fields = [
+    sheet.getByLabel('Name'),
+    sheet.getByRole('searchbox', { name: 'Search icons' }),
+    sheet.getByLabel('Start Date'),
+    sheet.getByLabel('End Date (Optional)'),
+  ];
+  const heights = await Promise.all(
+    fields.map(async (field) => (await field.boundingBox())?.height),
+  );
+  expect(new Set(heights).size).toBe(1);
+  const startBox = await sheet.getByLabel('Start Date').boundingBox();
+  const endLabelBox = await sheet
+    .locator('label', { hasText: 'End Date (Optional)' })
+    .boundingBox();
+  expect(startBox).not.toBeNull();
+  expect(endLabelBox).not.toBeNull();
+  if (!startBox || !endLabelBox) return;
+  expect(endLabelBox.y - (startBox.y + startBox.height)).toBeGreaterThanOrEqual(
+    12,
+  );
 
   await sheet.getByLabel('Name').fill(name);
   const activity = page.getByRole('radio', { name: 'Activity' });

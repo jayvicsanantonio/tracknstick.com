@@ -118,9 +118,11 @@ const HabitForm = memo(function HabitForm({
       <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
-        className="text-foreground grid max-h-[70vh] min-h-fit gap-3 overflow-y-auto py-2 sm:h-auto sm:max-h-none sm:gap-4 sm:py-4"
+        className="text-foreground flex min-h-0 flex-1 flex-col gap-3 sm:gap-4"
       >
-        <div className="space-y-3 px-1 sm:space-y-4">
+        {/* The fields scroll; the buttons below them stay in view. The
+            padding keeps the inputs' focus rings inside the scroll area. */}
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-1 pt-1 pb-2 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] sm:space-y-4">
           {/* Name Input */}
           <div className="space-y-1 sm:space-y-2">
             <Label
@@ -137,7 +139,7 @@ const HabitForm = memo(function HabitForm({
                 setName(e.target.value);
               }}
               placeholder="Enter habit name"
-              className="dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
+              className="h-11 rounded-xl sm:h-10 dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
             />
           </div>
 
@@ -154,7 +156,6 @@ const HabitForm = memo(function HabitForm({
               onChange={setStartDate}
               placeholder="Select start date"
               isRequired={true}
-              heightClass="h-14 sm:h-16"
             />
             <DatePickerField
               id="end-date"
@@ -163,7 +164,6 @@ const HabitForm = memo(function HabitForm({
               onChange={setEndDate}
               placeholder="mm / dd / yyyy"
               isClearable={true}
-              heightClass="h-14 sm:h-16"
             />
           </div>
 
@@ -173,7 +173,7 @@ const HabitForm = memo(function HabitForm({
           />
         </div>
 
-        <Separator className="my-2 bg-(--color-border-brand) max-sm:hidden dark:bg-(--color-brand-light)" />
+        <Separator className="shrink-0 bg-(--color-border-brand) max-sm:hidden dark:bg-(--color-brand-light)" />
 
         <FormActions
           isSubmitting={isSubmitting}

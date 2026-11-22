@@ -111,10 +111,12 @@ export default function DailyHabitTracker() {
           {/* From lg up: the day and its progress in a column, the habits
               beside it. Below lg they stack. The column has a fixed width,
               wide enough for the longest day name, so moving between days
-              never moves the habits. Rows keep to their content, so the card's
-              spare height falls below the habits rather than between rows. */}
-          <div className="grid flex-1 content-start lg:grid-cols-[26rem_1fr]">
-            <div className="lg:self-start lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
+              never moves the habits. Stacked rows keep to their content, so the
+              card's spare height falls below the habits rather than between
+              rows; side by side, the one row fills the card so the divider
+              runs its full height. */}
+          <div className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch">
+            <div className="lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
               <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
                 <DailyHabitDate />
               </CardHeader>

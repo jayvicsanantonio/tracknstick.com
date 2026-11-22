@@ -66,12 +66,12 @@ function EditHabitTabs({ habit, toggleDialog }: EditHabitTabsProps) {
   return (
     <Tabs
       defaultValue="edit"
-      className="w-full"
+      className="min-h-0 w-full flex-1"
       onValueChange={(value) => {
         if (value === 'stats') setStatsOpened(true);
       }}
     >
-      <TabsList className="mb-2 grid w-full grid-cols-2 bg-(--color-muted) sm:mb-4">
+      <TabsList className="mb-2 grid w-full shrink-0 grid-cols-2 bg-(--color-muted) sm:mb-4">
         <TabsTrigger
           value="edit"
           className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
@@ -89,19 +89,20 @@ function EditHabitTabs({ habit, toggleDialog }: EditHabitTabsProps) {
           so the dialog is as tall as the taller of them on either tab and
           does not resize when the tab changes. The stats are asked for only
           once their tab first opens, then stay: the form, the taller of the
-          two, already sets the dialog's height. */}
-      <div className="grid">
+          two, already sets the dialog's height. When the dialog meets the
+          screen's height, each panel scrolls inside the cell. */}
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]">
         <TabsContent
           value="edit"
           forceMount
-          className="col-start-1 row-start-1 pt-1 data-[state=inactive]:invisible sm:pt-2"
+          className="col-start-1 row-start-1 flex min-h-0 flex-col pt-1 data-[state=inactive]:invisible sm:pt-2"
         >
           <HabitForm habit={habit} toggleDialog={toggleDialog} />
         </TabsContent>
         <TabsContent
           value="stats"
           forceMount
-          className="col-start-1 row-start-1 pt-1 data-[state=inactive]:invisible sm:pt-2"
+          className="col-start-1 row-start-1 min-h-0 overflow-y-auto overscroll-contain pt-1 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] data-[state=inactive]:invisible sm:pt-2"
         >
           {statsOpened ? <HabitStats habit={habit} /> : null}
         </TabsContent>

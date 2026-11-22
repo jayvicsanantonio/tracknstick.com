@@ -112,13 +112,14 @@ const IconPicker = memo(function IconPicker({
             if (event.key === 'Enter') event.preventDefault();
           }}
           placeholder={`Search ${ICONS.length} icons`}
-          className="h-11 w-full rounded-xl border border-(--color-border-primary) bg-(--color-surface) pr-3 pl-9 text-base text-(--color-foreground) outline-none placeholder:text-(--color-text-secondary) focus-visible:border-(--color-ring) focus-visible:ring-2 focus-visible:ring-(--color-ring)/40 sm:h-10 sm:text-sm dark:bg-(--color-surface-secondary)"
+          className="h-11 w-full rounded-xl border-2 border-(--color-border-primary) bg-(--color-surface) pr-3 pl-9 text-base text-(--color-foreground) outline-none placeholder:text-(--color-text-secondary) focus-visible:border-(--color-ring) focus-visible:ring-2 focus-visible:ring-(--color-ring)/40 sm:h-10 sm:text-sm dark:bg-(--color-surface-secondary)"
         />
       </div>
 
       {/* A fixed-height scroll area of whole rows; the fade at its foot
-          shows there are more icons below. */}
-      <div className="max-h-[13.5rem] overflow-y-auto overscroll-contain rounded-xl [mask-image:linear-gradient(to_bottom,black_calc(100%-1.5rem),transparent)] p-0.5 pb-4 sm:max-h-[10.5rem]">
+          shows there are more icons below. Once it reaches either end, a
+          scroll carries on to the form around it. */}
+      <div className="max-h-[13.5rem] overflow-y-auto rounded-xl [mask-image:linear-gradient(to_bottom,black_calc(100%-1.5rem),transparent)] p-0.5 pb-4 sm:max-h-[10.5rem]">
         {shown.length === 0 ? (
           <p className="py-6 text-center text-sm text-(--color-text-secondary)">
             No icons match “{query.trim()}”
@@ -137,7 +138,9 @@ const IconPicker = memo(function IconPicker({
                 key={name}
                 ref={name === selectedIcon ? selectedRef : undefined}
                 title={iconName}
-                className="flex aspect-square cursor-pointer items-center justify-center rounded-xl bg-(--color-surface) text-(--color-brand-primary) ring-1 ring-(--color-border-primary) transition-[background-color,color,box-shadow,transform] ring-inset hover:bg-(--color-brand-primary)/10 active:scale-95 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-(--color-ring) has-[[data-state=checked]]:bg-(--color-brand-primary) has-[[data-state=checked]]:text-(--color-primary-foreground) has-[[data-state=checked]]:shadow-md has-[[data-state=checked]]:ring-(--color-brand-primary) motion-reduce:transition-none sm:aspect-auto sm:h-11 dark:bg-(--color-surface-secondary) dark:has-[[data-state=checked]]:bg-(--color-brand-primary)"
+                // relative: the visually hidden radio stays inside its tile,
+                // so focusing it scrolls only the grid, never the dialog.
+                className="relative flex aspect-square cursor-pointer items-center justify-center rounded-xl bg-(--color-surface) text-(--color-brand-primary) ring-1 ring-(--color-border-primary) transition-[background-color,color,box-shadow,transform] ring-inset hover:bg-(--color-brand-primary)/10 active:scale-95 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-(--color-ring) has-[[data-state=checked]]:bg-(--color-brand-primary) has-[[data-state=checked]]:text-(--color-primary-foreground) has-[[data-state=checked]]:shadow-md has-[[data-state=checked]]:ring-(--color-brand-primary) motion-reduce:transition-none sm:aspect-auto sm:h-11 dark:bg-(--color-surface-secondary) dark:has-[[data-state=checked]]:bg-(--color-brand-primary)"
               >
                 {/* The icon is only a picture, so the radio carries the name */}
                 <RadioGroupItem

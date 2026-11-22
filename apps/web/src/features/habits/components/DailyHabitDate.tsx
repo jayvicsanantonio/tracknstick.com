@@ -44,8 +44,8 @@ const DailyHabitDate = memo(function DailyHabitDate() {
 
   return (
     // The arrows hold the row's ends and the day takes the middle, so a
-    // longer day name never moves them.
-    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
+    // longer day name never moves them. The gap keeps the pill off the arrows.
+    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
       {/* Keyboard shortcuts for date navigation */}
       <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
 
@@ -63,7 +63,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         {/* Spans the room between the arrows, so only its text changes from
             day to day. On phones, plain text, the day's name over its date;
             from sm up, a pill with the two side by side. */}
-        <div className="flex flex-col items-center justify-center sm:flex-row sm:gap-3 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-4 sm:py-2 sm:shadow-sm">
+        <div className="flex flex-col items-center justify-center sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
           <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
             {dayLabel}
           </h2>
@@ -74,7 +74,6 @@ const DailyHabitDate = memo(function DailyHabitDate() {
             </span>
           </span>
         </div>
-        <div className="mx-auto mt-2 h-0.5 w-28 rounded-full bg-linear-to-r from-(--color-brand-light) via-(--color-brand-primary) to-(--color-brand-light) max-sm:hidden sm:w-36"></div>
       </div>
 
       <Button

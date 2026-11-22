@@ -17,6 +17,14 @@ export default defineConfig({
       VITE_API_HOST: 'http://api.test',
       VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_stub',
     },
+    // react-datepicker ships an ES module Node cannot load directly, so the
+    // tests transform it, and its source map names files the package leaves
+    // out. Bundling it ahead keeps that warning out of the test output.
+    deps: {
+      optimizer: {
+        client: { enabled: true, include: ['react-datepicker'] },
+      },
+    },
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
