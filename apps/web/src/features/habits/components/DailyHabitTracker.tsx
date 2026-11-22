@@ -3,8 +3,9 @@
 // swipe between days, and geometry-matched skeleton loading.
 // From sm/lg up: keeps the spacious glass dashboard card layout.
 
-import { useContext, useRef } from 'react';
-import { WifiOff } from 'lucide-react';
+import { useCallback, useContext } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, WifiOff } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import NoHabits from '@/features/habits/components/NoHabits';
 import DailyHabitDate from '@/features/habits/components/DailyHabitDate';
@@ -12,13 +13,13 @@ import DailyHabitProgressIndicator from '@/features/habits/components/DailyHabit
 import DailyHabitList from '@/features/habits/components/DailyHabitList';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
+import { useDaySwipe } from '@/features/habits/hooks/useDaySwipe';
 import NothingScheduled from '@/features/habits/components/NothingScheduled';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
 import { triggerHaptic } from '@shared/utils/haptics';
-
-const SWIPE_THRESHOLD_PX = 56;
+import { cn } from '@shared/utils/utils';
 
 function TrackerSkeleton() {
   return (
@@ -27,7 +28,7 @@ function TrackerSkeleton() {
       aria-label="Loading habits"
       className="flex w-full flex-1 flex-col px-4 pt-1 pb-28 sm:items-center sm:gap-8 sm:py-12"
     >
-      {/* Mobile skeleton: matches Date pill + horizontal Hero Card + tactile habit rows */}
+      {/* Mobile skeleton: matches Date pill + horizontal Hero Card + circular orb stage */}
       <div className="flex w-full flex-col gap-3.5 sm:hidden">
         <div className="ios-tracker-card h-12 w-full animate-pulse rounded-2xl motion-reduce:animate-none" />
         <div className="ios-tracker-card flex items-center gap-5 rounded-[26px] p-5">
@@ -38,24 +39,23 @@ function TrackerSkeleton() {
             <div className="mt-1 h-1.5 w-full animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
           </div>
         </div>
-        <div className="mt-2 flex items-center justify-between px-1">
-          <div className="h-3 w-24 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
-          <div className="h-3 w-12 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
-        </div>
-        <div className="flex flex-col gap-2.5">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div
-              key={index}
-              className="ios-tracker-card flex items-center gap-3.5 rounded-[20px] px-3.5 py-3"
-            >
-              <div className="size-12 shrink-0 animate-pulse rounded-[15px] bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-              <div className="flex flex-1 flex-col gap-2">
-                <div className="h-4 w-28 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-                <div className="h-3 w-16 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
+        <div className="ios-tracker-card rounded-[26px] px-3.5 pt-4 pb-6">
+          <div className="mb-5 flex items-center justify-between px-1">
+            <div className="h-3 w-24 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+            <div className="h-5 w-12 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-6">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex w-[88px] flex-col items-center gap-2 min-[380px]:w-[96px]"
+              >
+                <div className="size-20 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+                <div className="h-3 w-16 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+                <div className="h-2.5 w-10 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
               </div>
-              <div className="size-7 shrink-0 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -79,7 +79,6 @@ export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate, mutateHabits } =
     useHabits();
   const dateContext = useContext(DateContext);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   // Every habit, due or not: tells "no habits at all" from "none due today".
   // Fetched only when the day shown has no habits, the one case that needs it.
@@ -112,32 +111,42 @@ export default function DailyHabitTracker() {
         })
     : 'Today';
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
-  };
+  const goPreviousDay = useCallback(() => {
+    dateContext?.handlePreviousDate();
+  }, [dateContext]);
 
-  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!touchStart.current || !dateContext) return;
-    const touch = event.changedTouches[0];
-    if (!touch) return;
-    const dx = touch.clientX - touchStart.current.x;
-    const dy = touch.clientY - touchStart.current.y;
-    touchStart.current = null;
+  const goNextDay = useCallback(() => {
+    dateContext?.handleNextDate();
+  }, [dateContext]);
 
-    if (
-      Math.abs(dx) >= SWIPE_THRESHOLD_PX &&
-      Math.abs(dx) > Math.abs(dy) * 1.4
-    ) {
-      triggerHaptic('selection');
-      if (dx > 0) {
-        dateContext.handlePreviousDate();
-      } else {
-        dateContext.handleNextDate();
-      }
-    }
-  };
+  const {
+    x: swipeX,
+    feedback: swipeFeedback,
+    swipeHandlers,
+  } = useDaySwipe({
+    enabled: Boolean(dateContext) && !error && !hasNoHabits,
+    onPreviousDay: goPreviousDay,
+    onNextDay: goNextDay,
+  });
+
+  const swipeEdgeIndicator = swipeFeedback ? (
+    <div
+      aria-hidden="true"
+      className={cn(
+        'pointer-events-none fixed top-1/2 z-30 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border transition-all duration-150 sm:hidden',
+        swipeFeedback.direction === 'prev' ? 'left-3' : 'right-3',
+        swipeFeedback.ready
+          ? 'scale-105 border-(--color-brand-primary) bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-md'
+          : 'scale-95 border-(--color-border-primary)/60 bg-(--color-card)/90 text-(--color-brand-primary) shadow-sm',
+      )}
+    >
+      {swipeFeedback.direction === 'prev' ? (
+        <ChevronLeft className="size-5" strokeWidth={2.5} />
+      ) : (
+        <ChevronRight className="size-5" strokeWidth={2.5} />
+      )}
+    </div>
+  ) : null;
 
   const navBar = (
     <MobileNavBar
@@ -172,8 +181,12 @@ export default function DailyHabitTracker() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full flex-1 flex-col">
+      <div
+        className="flex h-full flex-1 touch-pan-y flex-col overscroll-x-none"
+        {...swipeHandlers}
+      >
         {navBar}
+        {swipeEdgeIndicator}
         <div className="mx-auto flex w-full max-w-7xl flex-1 sm:px-4 md:px-8 2xl:max-w-[90rem]">
           <Card
             variant="glass"
@@ -237,17 +250,20 @@ export default function DailyHabitTracker() {
 
   return (
     <div
-      className="flex h-full flex-1 flex-col"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className="flex h-full flex-1 touch-pan-y flex-col overscroll-x-none"
+      {...swipeHandlers}
     >
       {navBar}
+      {swipeEdgeIndicator}
       <div className="mx-auto flex w-full max-w-7xl flex-1 max-sm:pb-28 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
           className="relative flex w-full flex-1 flex-col overflow-hidden max-sm:rounded-none max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none max-sm:ring-0 max-sm:backdrop-blur-none dark:max-sm:bg-transparent"
         >
-          <div className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch">
+          <motion.div
+            style={{ x: swipeX }}
+            className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch"
+          >
             <div className="lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
               <CardHeader className="px-4 pt-1 pb-3.5 sm:px-6 sm:pt-6 sm:pb-0">
                 <DailyHabitDate />
@@ -343,22 +359,37 @@ export default function DailyHabitTracker() {
                 )
               ) : (
                 <section aria-label="Today's Habits">
-                  <div className="mb-2.5 flex items-center justify-between px-1 sm:hidden">
-                    <span className="text-[12px] font-semibold tracking-[0.06em] text-(--color-text-secondary)/85 uppercase">
-                      {isToday ? "Today's Habits" : 'Scheduled Habits'}
-                    </span>
-                    <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-[11px] font-semibold text-(--color-brand-primary) tabular-nums">
-                      {doneCount}/{habits.length}
-                    </span>
+                  {/* Elevated frosted stage card on phones; transparent direct grid on sm+ */}
+                  <div className="ios-tracker-card relative rounded-[26px] px-3.5 pt-4 pb-6 sm:rounded-none sm:p-0">
+                    <div className="mb-5 flex items-center justify-between px-1 sm:hidden">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          aria-hidden="true"
+                          className="size-1.5 rounded-full bg-(--color-brand-primary)"
+                        />
+                        <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
+                          {isToday ? "Today's Habits" : 'Scheduled Habits'}
+                        </span>
+                      </div>
+                      <span
+                        className={`inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset ${
+                          doneCount === habits.length
+                            ? 'bg-(--color-brand-primary)/18 text-(--color-brand-text) ring-(--color-brand-primary)/30 dark:text-(--color-brand-text-light)'
+                            : 'bg-(--color-brand-primary)/10 text-(--color-brand-text) ring-(--color-brand-primary)/18 dark:text-(--color-brand-text-light)'
+                        }`}
+                      >
+                        {doneCount}/{habits.length} done
+                      </span>
+                    </div>
+                    <DailyHabitList />
                   </div>
-                  <DailyHabitList />
-                  <p className="mt-5 text-center text-[12px] text-(--color-text-secondary)/65 sm:hidden">
-                    Swipe to switch days · Hold a habit for options
+                  <p className="mt-4 text-center text-[12px] text-(--color-text-secondary)/65 sm:hidden">
+                    Swipe to switch days · Hold a circle for options
                   </p>
                 </section>
               )}
             </CardContent>
-          </div>
+          </motion.div>
         </Card>
       </div>
     </div>
