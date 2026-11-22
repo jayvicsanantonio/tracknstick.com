@@ -2,8 +2,14 @@
 // Tap the row to open Edit/Stats; swipe left to reveal the destructive Delete action
 // with spring snap physics and tactile haptic feedback.
 
-import { memo, useState } from 'react';
-import { motion, type PanInfo } from 'framer-motion';
+import { memo, useCallback, useRef, useState, type PointerEvent } from 'react';
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  type PanInfo,
+} from 'framer-motion';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import HabitsIcons from '@/icons/habits';
 import { Habit } from '@/features/habits/types/Habit';
@@ -13,6 +19,7 @@ import { IOS_SPRING_CONTROL } from '@shared/utils/motion';
 import { cn } from '@shared/utils/utils';
 
 const REVEAL_WIDTH = 84;
+const DRAG_CLICK_SUPPRESS_PX = 6;
 
 interface SwipeableHabitRowProps {
   habit: Habit;
@@ -31,17 +38,67 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
 }: SwipeableHabitRowProps) {
   const Icon = HabitsIcons[habit.icon];
   const archived = isArchived(habit);
+  const prefersReducedMotion = useReducedMotion();
+  const x = useMotionValue(0);
   const [isRevealed, setIsRevealed] = useState(false);
+  // Suppress the browser's synthetic click event fired on pointerup after a
+  // horizontal drag so swiping left to reveal Delete never opens Edit.
+  const draggedRef = useRef(false);
+  const pointerStartXRef = useRef<number | null>(null);
 
-  const handleDragEnd = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
+  const snapTo = useCallback(
+    (revealed: boolean) => {
+      setIsRevealed(revealed);
+      animate(
+        x,
+        revealed ? -REVEAL_WIDTH : 0,
+        prefersReducedMotion ? { duration: 0 } : IOS_SPRING_CONTROL,
+      );
+    },
+    [prefersReducedMotion, x],
+  );
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    draggedRef.current = false;
+    pointerStartXRef.current = event.clientX;
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (
+      pointerStartXRef.current !== null &&
+      Math.abs(event.clientX - pointerStartXRef.current) >
+        DRAG_CLICK_SUPPRESS_PX
+    ) {
+      draggedRef.current = true;
+    }
+  };
+
+  const handlePointerEnd = () => {
+    pointerStartXRef.current = null;
+  };
+
+  const handleDrag = (
+    _event: MouseEvent | TouchEvent | globalThis.PointerEvent,
     info: PanInfo,
   ) => {
-    const shouldReveal = info.offset.x < -36 || info.velocity.x < -300;
+    if (Math.abs(info.offset.x) > 4) {
+      draggedRef.current = true;
+    }
+  };
+
+  const handleDragEnd = (
+    _event: MouseEvent | TouchEvent | globalThis.PointerEvent,
+    info: PanInfo,
+  ) => {
+    const nextX = x.get();
+    const shouldReveal =
+      info.velocity.x < -300 ||
+      (info.velocity.x <= 300 &&
+        (nextX < -REVEAL_WIDTH / 2 || (!isRevealed && info.offset.x < -36)));
     if (shouldReveal !== isRevealed) {
       triggerHaptic('selection');
     }
-    setIsRevealed(shouldReveal);
+    snapTo(shouldReveal);
   };
 
   return (
@@ -54,7 +111,7 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
           aria-label={`Delete ${habit.name}`}
           onClick={() => {
             triggerHaptic('medium');
-            setIsRevealed(false);
+            snapTo(false);
             onDelete(habit);
           }}
           className="flex flex-1 flex-col items-center justify-center gap-0.5 rounded-r-[19px] text-(--color-destructive-foreground) focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none active:opacity-80"
@@ -66,12 +123,17 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
 
       {/* Foreground swipeable tactile card matching the Tracker habit cards */}
       <motion.div
+        style={{ x }}
         drag="x"
         dragDirectionLock
+        dragMomentum={false}
         dragConstraints={{ left: -REVEAL_WIDTH, right: 0 }}
         dragElastic={{ left: 0.14, right: 0.06 }}
-        animate={{ x: isRevealed ? -REVEAL_WIDTH : 0 }}
-        transition={IOS_SPRING_CONTROL}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         className="ios-tracker-card relative z-10 overflow-hidden rounded-[20px]"
       >
@@ -79,8 +141,12 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
           type="button"
           aria-label={`Edit ${habit.name}`}
           onClick={() => {
+            if (draggedRef.current) {
+              draggedRef.current = false;
+              return;
+            }
             if (isRevealed) {
-              setIsRevealed(false);
+              snapTo(false);
               return;
             }
             triggerHaptic('light');

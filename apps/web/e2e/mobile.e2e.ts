@@ -71,12 +71,21 @@ test('adds a habit in an iOS bottom sheet and deletes it via Action Sheet', asyn
   await expect(row).toBeVisible();
   await expect(row).toContainText('Daily');
 
-  // Swipe the habit card left to uncover the trailing red Delete action.
+  // Swipe the habit card left across animation frames so Framer Motion's
+  // rAF-throttled pan session locks the horizontal gesture before release.
   const box = await row.boundingBox();
   if (!box) throw new Error('Habit row did not render');
-  await page.mouse.move(box.x + box.width - 24, box.y + box.height / 2);
+  const y = box.y + box.height / 2;
+  const startX = box.x + box.width - 24;
+  const endX = box.x + 24;
+  await page.mouse.move(startX, y);
   await page.mouse.down();
-  await page.mouse.move(box.x + 24, box.y + box.height / 2, { steps: 10 });
+  for (let step = 1; step <= 6; step++) {
+    await page.mouse.move(startX + ((endX - startX) * step) / 6, y);
+    await page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(resolve)),
+    );
+  }
   await page.mouse.up();
 
   await row.getByRole('button', { name: `Delete ${name}` }).click();
