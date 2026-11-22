@@ -105,7 +105,7 @@ export const PWAInstallPrompt = memo(function PWAInstallPrompt() {
           <img
             src="/icons/apple-touch-icon.png"
             alt=""
-            className="size-12 shrink-0 rounded-[13px] shadow-sm ring-1 ring-black/10"
+            className="size-12 shrink-0 rounded-[22.37%] shadow-sm ring-1 ring-black/10"
           />
           <div className="min-w-0 flex-1">
             <h3 className="text-[15px] font-semibold tracking-tight text-(--color-foreground)">
