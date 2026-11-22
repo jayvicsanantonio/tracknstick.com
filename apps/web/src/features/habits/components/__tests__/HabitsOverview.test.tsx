@@ -67,6 +67,13 @@ describe('HabitsOverview', () => {
     ).toBe(false);
   });
 
+  it("leaves its title to the page's large title on phones", () => {
+    renderOverview([habit({ name: 'Read' })]);
+
+    const header = document.querySelector('[data-slot="card-header"]');
+    expect(header).toHaveClass('max-sm:hidden');
+  });
+
   it('gives every button an accessible name', () => {
     renderOverview([habit({})]);
 

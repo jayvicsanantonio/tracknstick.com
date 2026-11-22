@@ -47,7 +47,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
         {/* Glass badge backdrop */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-(--color-surface)/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 backdrop-blur-xl ring-inset max-sm:hidden dark:bg-(--color-surface-secondary)/40"
+          className="absolute inset-0 rounded-full bg-(--color-surface)/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 ring-(--color-border-primary)/40 ring-inset max-sm:hidden dark:bg-(--color-surface-secondary)/40"
         />
 
         <div className="relative h-full w-full">

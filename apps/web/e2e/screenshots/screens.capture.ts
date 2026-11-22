@@ -80,7 +80,7 @@ async function open(browser: Browser, combo: Combo, signedIn: boolean) {
     storageState: signedIn ? AUTH_FILE : undefined,
   });
   await context.addInitScript((theme) => {
-    localStorage.setItem('track-n-stick-theme', theme);
+    localStorage.setItem('track-n-stick-appearance', theme);
   }, combo.theme);
   return { context, page: await context.newPage() };
 }
@@ -249,6 +249,21 @@ test('capture every screen', async ({ browser }) => {
     await shot(page, '15-edit-habit-stats', combo, false);
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
+    // On a phone, Delete sits behind the habit's row until it is swiped left.
+    const swimRow = page
+      .getByRole('list', { name: 'Habits' })
+      .getByRole('listitem')
+      .filter({ hasText: 'Swim' });
+    if (await swimRow.isVisible()) {
+      const box = await swimRow.boundingBox();
+      if (box) {
+        const y = box.y + box.height / 2;
+        await page.mouse.move(box.x + box.width - 40, y);
+        await page.mouse.down();
+        await page.mouse.move(box.x + box.width - 200, y, { steps: 10 });
+        await page.mouse.up();
+      }
+    }
     await page
       .getByRole('button', { name: 'Delete Swim' })
       .filter({ visible: true })

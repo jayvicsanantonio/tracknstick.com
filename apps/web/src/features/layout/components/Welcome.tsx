@@ -70,7 +70,7 @@ const Welcome = memo(function Welcome() {
               {/* Left Side - Hero Content */}
               <div className="relative flex flex-1 flex-col items-center justify-center px-4 pt-6 pb-2 text-center sm:p-8 lg:items-start lg:p-12 lg:text-left xl:p-16">
                 <div className="z-10 w-full max-w-xl">
-                  <h1 className="text-4xl font-extrabold tracking-tight text-balance text-(--color-brand-primary) sm:text-5xl xl:text-6xl dark:text-(--color-brand-text-light)">
+                  <h1 className="font-display text-4xl font-extrabold tracking-tight text-balance text-(--color-brand-primary) sm:text-5xl xl:text-6xl dark:text-(--color-brand-text-light)">
                     {title}
                   </h1>
                   <p className="mt-3 text-base leading-relaxed text-balance text-(--color-brand-tertiary) sm:mt-4 sm:text-lg xl:text-xl dark:text-(--color-text-primary)">

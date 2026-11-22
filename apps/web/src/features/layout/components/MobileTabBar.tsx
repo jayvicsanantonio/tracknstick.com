@@ -1,4 +1,4 @@
-// Bottom navigation shown below the sm breakpoint: Tracker, Habits, Add, Progress and the habit Coach.
+// Bottom navigation shown below the sm breakpoint: Tracker, Habits, Progress and Coach tabs, and an Add button beside them.
 // Puts the app's main actions within thumb reach; the header carries them on wider screens.
 
 import {
@@ -9,11 +9,17 @@ import {
 } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { SPRINGS } from '@shared/utils/springs';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { cn } from '@shared/utils/utils';
 
 const { BarChart2, Calendar, ListChecks, Plus } = MiscellaneousIcons;
+
+/** The frosted glass of the tab bar's capsule and its Add button. */
+const GLASS =
+  'bg-(--color-surface)/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-(--color-border-primary)/50 backdrop-blur-xl backdrop-saturate-150 ring-inset dark:bg-(--color-surface-secondary)/85';
 
 interface TabProps {
   to: string;
@@ -43,12 +49,21 @@ function Tab({ to, label, Icon }: TabProps) {
       to={to}
       end
       onClick={pathname === to ? scrollToTop : undefined}
-      className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium text-(--color-text-secondary) outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) aria-[current=page]:font-bold aria-[current=page]:text-(--color-brand-tertiary) dark:aria-[current=page]:text-(--color-brand-primary)"
+      className="relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] font-medium text-(--color-text-secondary) outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) aria-[current=page]:font-semibold aria-[current=page]:text-(--color-brand-tertiary) dark:aria-[current=page]:text-(--color-brand-primary)"
     >
-      <span className="flex h-8 w-12 items-center justify-center rounded-full transition-colors group-aria-[current=page]:bg-(--color-brand-primary)/15">
-        <Icon aria-hidden="true" className="h-5 w-5" />
-      </span>
-      {label}
+      {/* One highlight, shared by every tab, slides to the tab opened, as
+          the selection in an iOS tab bar does. */}
+      {pathname === to ? (
+        <motion.span
+          aria-hidden="true"
+          data-tab-highlight
+          layoutId="tab-highlight"
+          transition={SPRINGS.snap}
+          className="absolute inset-0 rounded-full bg-(--color-brand-primary)/15"
+        />
+      ) : null}
+      <Icon aria-hidden="true" className="relative h-5 w-5" />
+      <span className="relative">{label}</span>
     </NavLink>
   );
 }
@@ -63,27 +78,35 @@ const MobileTabBar = memo(function MobileTabBar() {
       aria-label="Primary"
       className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] sm:hidden keyboard-open:hidden"
     >
-      <div className="flex items-center gap-1 rounded-3xl bg-(--color-surface)/90 px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-(--color-border-primary)/50 backdrop-blur-xl backdrop-saturate-150 ring-inset dark:bg-(--color-surface-secondary)/90">
-        <Tab to="/" label="Tracker" Icon={Calendar} />
-        <Tab to="/habits" label="Habits" Icon={ListChecks} />
-        <div className="flex flex-1 justify-center">
-          <button
-            type="button"
-            onClick={toggleShowAddHabitDialog}
-            aria-label="Add Habit"
-            className={cn(
-              '-mt-7 flex h-14 w-14 items-center justify-center rounded-full',
-              'bg-(--color-brand-primary) text-(--color-primary-foreground)',
-              'shadow-(--color-brand-primary)/30 shadow-lg ring-4 ring-(--color-background)',
-              'transition-transform outline-none active:scale-95 motion-reduce:transition-none',
-              'focus-visible:ring-(--color-ring)',
-            )}
-          >
-            <Plus aria-hidden="true" className="h-6 w-6" strokeWidth={2.5} />
-          </button>
+      {/* As iOS 26 draws a tab bar: the tabs in one glass capsule, and
+          the page's main action in a round glass button of its own. */}
+      <div className="flex items-center gap-2">
+        <div
+          data-tab-capsule
+          className={cn(
+            GLASS,
+            'flex flex-1 items-center gap-0.5 rounded-full p-1',
+          )}
+        >
+          <Tab to="/" label="Tracker" Icon={Calendar} />
+          <Tab to="/habits" label="Habits" Icon={ListChecks} />
+          <Tab to="/progress" label="Progress" Icon={BarChart2} />
+          <Tab to="/coach" label="Coach" Icon={MessageCircle} />
         </div>
-        <Tab to="/progress" label="Progress" Icon={BarChart2} />
-        <Tab to="/coach" label="Coach" Icon={MessageCircle} />
+        <button
+          type="button"
+          onClick={toggleShowAddHabitDialog}
+          aria-label="Add Habit"
+          className={cn(
+            GLASS,
+            'flex size-16 shrink-0 items-center justify-center rounded-full',
+            'text-(--color-brand-tertiary) dark:text-(--color-brand-primary)',
+            'transition-transform outline-none active:scale-90 motion-reduce:transition-none',
+            'focus-visible:ring-2 focus-visible:ring-(--color-ring)',
+          )}
+        >
+          <Plus aria-hidden="true" className="h-7 w-7" strokeWidth={2.5} />
+        </button>
       </div>
     </nav>
   );

@@ -70,7 +70,8 @@ const ProgressOverview = memo(function ProgressOverview() {
           variant="glass"
           className="flex w-full flex-1 flex-col overflow-hidden"
         >
-          <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
+          {/* On phones the page's large title names it instead. */}
+          <CardHeader className="px-3 pt-4 max-sm:hidden sm:px-6 sm:pt-6">
             <div>
               <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
                 Progress Overview
@@ -80,7 +81,7 @@ const ProgressOverview = memo(function ProgressOverview() {
               </p>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 px-3 pb-6 sm:px-6 sm:pb-8">
+          <CardContent className="flex-1 px-3 pb-6 max-sm:pt-4 sm:px-6 sm:pb-8">
             {loadFailed ? (
               <p
                 role="alert"

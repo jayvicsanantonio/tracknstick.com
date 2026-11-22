@@ -1,8 +1,12 @@
-// Theme utility functions for CSS custom properties and persistence
-// Handles theme token application and storage management
+// Theme utility functions: the root class, the stored preference and the system's appearance
+// The palettes live in CSS; these only choose between them
 
-import { ThemeMode } from '@shared/types/theme';
-import { THEME_STORAGE_KEY, DEFAULT_THEME_MODE } from '@shared/constants/theme';
+import { ThemeMode, ThemePreference } from '@shared/types/theme';
+import {
+  LEGACY_THEME_STORAGE_KEY,
+  SYSTEM_DARK_QUERY,
+  THEME_STORAGE_KEY,
+} from '@shared/constants/theme';
 
 export function updateThemeClass(mode: ThemeMode): void {
   const root = document.documentElement;
@@ -10,32 +14,38 @@ export function updateThemeClass(mode: ThemeMode): void {
   root.classList.add(mode);
 }
 
-function getStoredTheme(): ThemeMode | null {
-  if (typeof window === 'undefined') return null;
+/** The system's appearance right now. */
+export function systemTheme(): ThemeMode {
+  return window.matchMedia(SYSTEM_DARK_QUERY).matches ? 'dark' : 'light';
+}
 
+/** The chosen appearance, or 'system' when none was chosen. */
+export function getStoredPreference(): ThemePreference {
   try {
+    localStorage.removeItem(LEGACY_THEME_STORAGE_KEY);
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === 'light' || stored === 'dark' ? stored : null;
+    return stored === 'light' || stored === 'dark' ? stored : 'system';
   } catch {
-    return null;
+    return 'system';
   }
 }
 
-export function setStoredTheme(mode: ThemeMode): void {
-  if (typeof window === 'undefined') return;
-
+/** Remembers a chosen appearance; following the system stores nothing. */
+export function setStoredPreference(preference: ThemePreference): void {
   try {
-    localStorage.setItem(THEME_STORAGE_KEY, mode);
+    if (preference === 'system') {
+      localStorage.removeItem(THEME_STORAGE_KEY);
+    } else {
+      localStorage.setItem(THEME_STORAGE_KEY, preference);
+    }
   } catch {
-    // Silently handle storage errors
+    // Storage unavailable: the choice lasts until the page closes.
   }
 }
 
-export function getInitialTheme(): ThemeMode {
-  const stored = getStoredTheme();
-  return stored ?? DEFAULT_THEME_MODE;
-}
-
-export function toggleThemeMode(currentMode: ThemeMode): ThemeMode {
-  return currentMode === 'light' ? 'dark' : 'light';
+/** The next preference in the order System → Light → Dark → System. */
+export function nextPreference(current: ThemePreference): ThemePreference {
+  if (current === 'system') return 'light';
+  if (current === 'light') return 'dark';
+  return 'system';
 }

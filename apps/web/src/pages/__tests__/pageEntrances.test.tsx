@@ -1,4 +1,4 @@
-// Covers how the Tracker, Habits and Progress pages appear: at once, as a native app's tabs do.
+// Covers how the Tracker, Habits and Progress pages appear: at once, under a large title, as a native app's tabs do.
 // Each page's feature is stubbed; the page around it is real.
 
 import { describe, it, expect, vi } from 'vitest';
@@ -23,6 +23,12 @@ describe.each([
   ['Habits', HabitsPage],
   ['Progress', ProgressPage],
 ])('the %s page', (name, Page) => {
+  it('is headed by its tab name, as an iOS large title', () => {
+    render(<Page />);
+
+    expect(screen.getByRole('heading', { level: 1, name })).toBeInTheDocument();
+  });
+
   it('shows its content at once, without fading or sliding it in', () => {
     render(<Page />);
 

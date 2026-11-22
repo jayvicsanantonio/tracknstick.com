@@ -136,3 +136,30 @@ describe('MobileTabBar while typing', () => {
     );
   });
 });
+
+describe('MobileTabBar layout, as iOS 26 draws a tab bar', () => {
+  it('keeps the four tabs in one capsule, and Add Habit in a round button of its own beside it', () => {
+    renderBar();
+
+    const capsule = screen
+      .getByRole('link', { name: 'Tracker' })
+      .closest('[data-tab-capsule]');
+    expect(capsule).not.toBeNull();
+    for (const name of ['Habits', 'Progress', 'Coach']) {
+      expect(capsule).toContainElement(screen.getByRole('link', { name }));
+    }
+    expect(capsule).not.toContainElement(
+      screen.getByRole('button', { name: 'Add Habit' }),
+    );
+  });
+
+  it('marks the open tab with a highlight that slides between the tabs', () => {
+    renderBar('/progress');
+
+    const highlighted = document.querySelectorAll('[data-tab-highlight]');
+    expect(highlighted).toHaveLength(1);
+    expect(screen.getByRole('link', { name: 'Progress' })).toContainElement(
+      highlighted[0] as HTMLElement,
+    );
+  });
+});

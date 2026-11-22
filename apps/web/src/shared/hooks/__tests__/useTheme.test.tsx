@@ -1,78 +1,121 @@
-// Unit tests for the useTheme hook
-// Tests theme functionality and state management
+// Unit tests for the useTheme hook: the app follows the system's light or dark appearance by default.
+// A chosen appearance overrides the system and is remembered; the palette is set by the root class.
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { ReactNode } from 'react';
 
 import ThemeProvider from '@app/providers/ThemeProvider';
 import { useTheme } from '@shared/hooks/useTheme';
+import {
+  LEGACY_THEME_STORAGE_KEY,
+  THEME_STORAGE_KEY,
+} from '@shared/constants/theme';
 
-interface WrapperProps {
-  children: ReactNode;
-}
-
-const wrapper = ({ children }: WrapperProps) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <ThemeProvider>{children}</ThemeProvider>
 );
+
+const realMatchMedia = window.matchMedia;
+const root = document.documentElement;
+
+/** Sets the system's appearance, and returns a way to change it later. */
+function systemAppearance(initial: 'light' | 'dark') {
+  let dark = initial === 'dark';
+  const listeners = new Set<() => void>();
+  window.matchMedia = vi.fn(
+    (query: string) =>
+      ({
+        ...realMatchMedia(query),
+        get matches() {
+          return query === '(prefers-color-scheme: dark)' && dark;
+        },
+        addEventListener: (_: string, listener: () => void) => {
+          listeners.add(listener);
+        },
+        removeEventListener: (_: string, listener: () => void) => {
+          listeners.delete(listener);
+        },
+      }) as unknown as MediaQueryList,
+  );
+  return (next: 'light' | 'dark') => {
+    dark = next === 'dark';
+    listeners.forEach((listener) => listener());
+  };
+}
 
 describe('useTheme', () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  it('defaults to dark theme', () => {
-    const { result } = renderHook(() => useTheme(), { wrapper });
-
-    expect(result.current.mode).toBe('dark');
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
+  afterEach(() => {
+    window.matchMedia = realMatchMedia;
+    root.classList.remove('light', 'dark');
   });
 
-  it('can toggle theme mode', () => {
+  it('follows the system appearance by default', () => {
+    systemAppearance('dark');
     const { result } = renderHook(() => useTheme(), { wrapper });
 
-    act(() => {
-      result.current.toggleMode();
-    });
+    expect(result.current.preference).toBe('system');
+    expect(result.current.mode).toBe('dark');
+    expect(root).toHaveClass('dark');
+  });
 
+  it('changes with the system while following it', () => {
+    const setSystem = systemAppearance('light');
+    const { result } = renderHook(() => useTheme(), { wrapper });
     expect(result.current.mode).toBe('light');
 
-    act(() => {
-      result.current.toggleMode();
-    });
+    act(() => setSystem('dark'));
 
     expect(result.current.mode).toBe('dark');
+    expect(root).toHaveClass('dark');
+    expect(root).not.toHaveClass('light');
   });
 
-  it('can set theme mode directly', () => {
-    const { result } = renderHook(() => useTheme(), { wrapper });
+  it('keeps a chosen appearance over the system, and remembers it', () => {
+    systemAppearance('dark');
+    const { result, unmount } = renderHook(() => useTheme(), { wrapper });
 
-    act(() => {
-      result.current.setMode('light');
-    });
-
+    act(() => result.current.setPreference('light'));
     expect(result.current.mode).toBe('light');
+    unmount();
 
-    act(() => {
-      result.current.setMode('dark');
-    });
-
-    expect(result.current.mode).toBe('dark');
+    const { result: next } = renderHook(() => useTheme(), { wrapper });
+    expect(next.current.preference).toBe('light');
+    expect(root).toHaveClass('light');
   });
 
-  it('drives the palette through the root class, not inline styles', () => {
-    // The palettes live in CSS keyed on :root and .dark, so the only thing
-    // the provider has to get right is which class is on the element.
+  it('steps through System, Light and Dark, back to System', () => {
+    systemAppearance('light');
     const { result } = renderHook(() => useTheme(), { wrapper });
 
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-    expect(document.documentElement.classList.contains('light')).toBe(false);
+    const seen = [result.current.preference];
+    for (let i = 0; i < 3; i += 1) {
+      act(() => result.current.cyclePreference());
+      seen.push(result.current.preference);
+    }
 
-    act(() => {
-      result.current.setMode('light');
-    });
+    expect(seen).toEqual(['system', 'light', 'dark', 'system']);
+  });
 
-    expect(document.documentElement.classList.contains('light')).toBe(true);
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
+  it('ignores the mode the app used to save on every load, so it follows the system', () => {
+    systemAppearance('light');
+    localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'dark');
+
+    const { result } = renderHook(() => useTheme(), { wrapper });
+
+    expect(result.current.preference).toBe('system');
+    expect(result.current.mode).toBe('light');
+    expect(localStorage.getItem(LEGACY_THEME_STORAGE_KEY)).toBeNull();
+  });
+
+  it('saves nothing until an appearance is chosen', () => {
+    systemAppearance('dark');
+    renderHook(() => useTheme(), { wrapper });
+
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBeNull();
   });
 });

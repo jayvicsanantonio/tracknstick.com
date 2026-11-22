@@ -139,7 +139,7 @@ const HabitsOverview = memo(function HabitsOverview() {
           variant="glass"
           className="flex w-full items-center justify-center rounded-xl p-8"
         >
-          <div className="inline-flex items-center gap-4 rounded-full bg-(--color-surface)/80 px-6 py-4 shadow-sm ring-1 ring-(--color-border-primary)/40 backdrop-blur-sm ring-inset dark:bg-(--color-surface-secondary)/80">
+          <div className="inline-flex items-center gap-4 rounded-full bg-(--color-surface)/80 px-6 py-4 shadow-sm ring-1 ring-(--color-border-primary)/40 ring-inset dark:bg-(--color-surface-secondary)/80">
             <span className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-brand-primary) border-r-transparent" />
             <span className="text-base font-medium text-(--color-text-secondary) sm:text-lg">
               Loading…
@@ -165,7 +165,8 @@ const HabitsOverview = memo(function HabitsOverview() {
           variant="glass"
           className="flex w-full flex-1 flex-col overflow-hidden"
         >
-          <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
+          {/* On phones the page's large title names it instead. */}
+          <CardHeader className="px-3 pt-4 max-sm:hidden sm:px-6 sm:pt-6">
             <div>
               <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
                 Habits Overview
@@ -175,7 +176,7 @@ const HabitsOverview = memo(function HabitsOverview() {
               </p>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
+          <CardContent className="flex-1 overflow-auto px-3 pb-6 max-sm:pt-4 sm:px-6 sm:pb-8">
             <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
               <Input
                 type="search"

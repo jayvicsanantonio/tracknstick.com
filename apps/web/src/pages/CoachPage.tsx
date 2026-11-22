@@ -2,6 +2,8 @@
 // The conversation comes from ChatConversationProvider, so it survives a visit to another page.
 
 import { usePageTitle } from '@shared/hooks/usePageTitle';
+import LargeTitle from '@shared/components/layouts/LargeTitle';
+import { pageTitleFor } from '@app/routes/pageTitles';
 import { Card, CardHeader, CardTitle } from '@shared/components/ui/card';
 import { ChatBox } from '@/features/chat/components/ChatBox';
 import { useChatConversationContext } from '@/features/chat/hooks/useChatConversationContext';
@@ -24,14 +26,15 @@ function CoachPage() {
     // Shown at once, as a native app's tab is: no entrance animation. While
     // the keyboard is up the tab bar hides, and the page fits the height
     // left above the keyboard, so the message box sits just over it.
-    <section className="flex h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-[24rem] flex-col sm:h-[calc(100dvh-14.25rem)] keyboard-open:min-h-0 max-sm:keyboard-open:h-[calc(var(--visual-viewport-height)-5rem-env(safe-area-inset-top))]">
-      <h1 className="sr-only">Habit Coach</h1>
+    <section className="flex h-[calc(100dvh-8.25rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-[24rem] flex-col sm:h-[calc(100dvh-14.25rem)] keyboard-open:min-h-0 max-sm:keyboard-open:h-[calc(var(--visual-viewport-height)-3.5rem-env(safe-area-inset-top))]">
+      <LargeTitle>{pageTitleFor('/coach')}</LargeTitle>
       <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
           className="flex min-h-0 w-full flex-1 flex-col overflow-hidden"
         >
-          <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
+          {/* On phones the page's large title names it instead. */}
+          <CardHeader className="px-3 pt-4 max-sm:hidden sm:px-6 sm:pt-6">
             <div>
               <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
                 Habit Coach

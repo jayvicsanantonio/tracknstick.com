@@ -85,6 +85,13 @@ describe('ProgressOverview', () => {
     ).toBe(false);
   });
 
+  it("leaves its title to the page's large title on phones", () => {
+    renderOverview();
+
+    const header = document.querySelector('[data-slot="card-header"]');
+    expect(header).toHaveClass('max-sm:hidden');
+  });
+
   it('sums up the streaks and the month in four figures', () => {
     renderOverview();
 

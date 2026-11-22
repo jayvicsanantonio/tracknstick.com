@@ -32,7 +32,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
     >
       <div className="relative mb-3">
         <button
-          className={`relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 backdrop-blur-xl backdrop-saturate-150 outline-none ring-inset focus-visible:ring-[3px] focus-visible:ring-(--color-ring) sm:h-24 sm:w-24 md:h-28 md:w-28 ${
+          className={`relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_24px_rgba(0,0,0,0.06)] ring-1 outline-none ring-inset focus-visible:ring-[3px] focus-visible:ring-(--color-ring) sm:h-24 sm:w-24 md:h-28 md:w-28 ${
             habit.completed
               ? 'bg-(--color-brand-primary) ring-(--color-brand-primary)'
               : 'bg-(--color-surface)/60 ring-(--color-border-primary)/40 dark:bg-(--color-surface-secondary)/40'

@@ -1,4 +1,6 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
+import LargeTitle from '@shared/components/layouts/LargeTitle';
+import { pageTitleFor } from '@app/routes/pageTitles';
 import HabitsOverview from '@/features/habits/components/HabitsOverview';
 
 /**
@@ -15,7 +17,7 @@ function HabitsPage() {
   return (
     // Shown at once, as a native app's tab is: no entrance animation.
     <section className="flex flex-1 flex-col">
-      <h1 className="sr-only">Habits Overview</h1>
+      <LargeTitle>{pageTitleFor('/habits')}</LargeTitle>
       <HabitsOverview />
     </section>
   );

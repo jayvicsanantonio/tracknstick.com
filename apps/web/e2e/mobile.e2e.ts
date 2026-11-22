@@ -126,6 +126,15 @@ test('opens the Coach page from the tab bar', async ({ page }) => {
   expect(tabsBox).not.toBeNull();
   if (!textboxBox || !tabsBox) return;
   expect(textboxBox.y + textboxBox.height).toBeLessThanOrEqual(tabsBox.y);
+  // The chat's card fills the screen down to the tab bar, with no gap.
+  const cardBox = await page
+    .getByRole('main')
+    .locator('[data-slot="card"]')
+    .boundingBox();
+  expect(cardBox).not.toBeNull();
+  if (!cardBox) return;
+  expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(tabsBox.y);
+  expect(tabsBox.y - (cardBox.y + cardBox.height)).toBeLessThan(24);
 });
 
 /** Adds a habit due every day from the tab bar's Add button, and waits for the sheet to close. */

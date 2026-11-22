@@ -1,9 +1,10 @@
-// Covers the header's navigation links, including the habit coach's, and the logo link.
-// Coach is a page like Tracker, Habits and Progress, linked after them.
+// Covers the header: its navigation links and logo on wider screens, an iOS top bar on phones.
+// The app follows the system appearance; the account menu holds the choice, not a header button.
 
 import '@testing/mocks';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { useTheme } from '@shared/hooks/useTheme';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Header from '@/features/layout/components/Header';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
@@ -122,5 +123,86 @@ describe('Header Component', () => {
     expect(
       screen.queryByRole('button', { name: 'Coach' }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe('Header appearance', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('has no theme button: the app follows the system appearance', () => {
+    renderHeader();
+
+    expect(
+      screen.queryByRole('button', { name: 'Toggle Theme' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('offers the appearance in the account menu, naming the current one', () => {
+    const cyclePreference = vi.fn();
+    vi.mocked(useTheme).mockReturnValue({
+      mode: 'light',
+      preference: 'system',
+      setPreference: vi.fn(),
+      cyclePreference,
+    });
+    renderHeader();
+
+    const [item] = screen.getAllByRole('button', {
+      name: 'Appearance: System',
+    });
+    fireEvent.click(item);
+
+    expect(cyclePreference).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Header on a phone', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  function renderAt(path: string) {
+    render(
+      <ThemeProvider>
+        <HabitsStateProvider>
+          <MemoryRouter initialEntries={[path]}>
+            <Header />
+          </MemoryRouter>
+        </HabitsStateProvider>
+      </ThemeProvider>,
+    );
+    const bar = document.querySelector<HTMLElement>('[data-phone-bar]');
+    if (!bar) throw new Error('No phone top bar');
+    return bar;
+  }
+
+  it("names the page in a top bar of its own, as iOS's navigation bar does", () => {
+    const bar = renderAt('/habits');
+
+    expect(bar).toHaveClass('sm:hidden');
+    expect(bar).toHaveTextContent('Habits');
+  });
+
+  it('shows that name, and a frosted background, once the large title scrolls under it', () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(0);
+    const bar = renderAt('/progress');
+    expect(bar).toHaveAttribute('data-scrolled', 'false');
+
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(120);
+    act(() => {
+      window.dispatchEvent(new Event('scroll'));
+    });
+
+    expect(bar).toHaveAttribute('data-scrolled', 'true');
+  });
+
+  it('keeps the logo for wider screens, where the page has no large title', () => {
+    renderAt('/');
+
+    expect(screen.getByRole('link', { name: "Track N' Stick" })).toHaveClass(
+      'max-sm:hidden',
+    );
   });
 });

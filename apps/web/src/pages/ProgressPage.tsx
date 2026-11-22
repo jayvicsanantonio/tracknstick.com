@@ -1,4 +1,6 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
+import LargeTitle from '@shared/components/layouts/LargeTitle';
+import { pageTitleFor } from '@app/routes/pageTitles';
 import ProgressOverview from '@/features/progress/components/ProgressOverview';
 
 /**
@@ -15,7 +17,7 @@ function ProgressPage() {
   return (
     // Shown at once, as a native app's tab is: no entrance animation.
     <section className="flex flex-1 flex-col">
-      <h1 className="sr-only">Progress Overview</h1>
+      <LargeTitle>{pageTitleFor('/progress')}</LargeTitle>
       <ProgressOverview />
     </section>
   );

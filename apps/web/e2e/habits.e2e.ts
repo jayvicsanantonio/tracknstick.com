@@ -123,10 +123,11 @@ test('opens the Coach page from the header navigation', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/coach$/);
   await expect(coach).toHaveAttribute('aria-current', 'page');
-  // The page heading is for screen readers, as on Habits and Progress; the
-  // card header shows the title and subtitle.
+  // The page heading, named as its tab is, is for screen readers at this
+  // width, as on Habits and Progress; the card header shows the title and
+  // subtitle.
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Habit Coach' }),
+    page.getByRole('heading', { level: 1, name: 'Coach' }),
   ).toBeAttached();
   await expect(
     page.getByText('Advice grounded in Atomic Habits by James Clear'),

@@ -15,15 +15,20 @@ function rule(selector: string): string {
   return css.slice(open + 1, css.indexOf('}', open));
 }
 
+/** The declarations of every `html` rule, whichever block it sits in. */
+function htmlRules(): string {
+  return [...css.matchAll(/(?:^|[\s{])html\s*\{([^}]*)\}/g)]
+    .map(([, body]) => body)
+    .join('\n');
+}
+
 describe('touch styles', () => {
   it('draws no grey flash where the page is tapped', () => {
-    expect(rule('html {')).toMatch(
-      /-webkit-tap-highlight-color:\s*transparent/,
-    );
+    expect(htmlRules()).toMatch(/-webkit-tap-highlight-color:\s*transparent/);
   });
 
   it('keeps the text size iOS chooses when the phone turns sideways', () => {
-    const html = rule('html {');
+    const html = htmlRules();
     expect(html).toMatch(/-webkit-text-size-adjust:\s*100%/);
     expect(html).toMatch(/text-size-adjust:\s*100%/);
   });

@@ -104,10 +104,18 @@ not use, so a call to it changes nothing on screen.
 ### Theming
 
 Both palettes are declared in `src/styles/index.css` (`:root` for light, `.dark`
-for dark). `public/applyStoredTheme.js`, loaded from `index.html`, applies the
-stored class before first paint; `ThemeProvider` only selects the mode and
-persists it. There is no JavaScript token map — adding a colour means adding it
-to both CSS blocks.
+for dark). The app follows the system's light or dark appearance unless the user
+picks one from the account menu (Appearance: System, Light, Dark), which is
+stored under `track-n-stick-appearance`. `public/applyStoredTheme.js`, loaded
+from `index.html`, applies the class before first paint; `ThemeProvider` follows
+the system as it changes and stores only a chosen appearance. There is no
+JavaScript token map — adding a colour means adding it to both CSS blocks.
+
+Text and controls use the system typeface (`font-sans`, San Francisco on Apple
+devices); titles and the logo use Plus Jakarta Sans (`font-display`). On an
+iPhone the root font size follows the text size set in Settings (Dynamic Type),
+so rem-sized text and spacing scale with it. Background blur is kept to the
+bars, sheets and banner; `src/styles/__tests__/blurBudget.test.ts` lists them.
 
 ### Security Headers
 

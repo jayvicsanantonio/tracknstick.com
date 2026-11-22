@@ -1,39 +1,58 @@
-// Theme provider component managing theme mode and persistence
+// Theme provider: follows the system's light or dark appearance unless the user chose one
 // The palettes themselves live in CSS; this only selects between them
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ThemeContext } from '@app/providers/ThemeContext';
-import { ThemeMode, ThemeProviderProps } from '@shared/types/theme';
 import {
+  ThemeMode,
+  ThemePreference,
+  ThemeProviderProps,
+} from '@shared/types/theme';
+import { SYSTEM_DARK_QUERY } from '@shared/constants/theme';
+import {
+  getStoredPreference,
+  nextPreference,
+  setStoredPreference,
+  systemTheme,
   updateThemeClass,
-  getInitialTheme,
-  setStoredTheme,
-  toggleThemeMode,
 } from '@shared/utils/theme';
 
 export default function ThemeProvider({ children }: ThemeProviderProps) {
-  const [mode, setMode] = useState<ThemeMode>(() => getInitialTheme());
+  const [preference, setPreferenceState] = useState<ThemePreference>(() =>
+    getStoredPreference(),
+  );
+  const [system, setSystem] = useState<ThemeMode>(() => systemTheme());
+
+  // Follows the system as it changes, such as at sunset on Automatic.
+  useEffect(() => {
+    const query = window.matchMedia(SYSTEM_DARK_QUERY);
+    const onChange = () => setSystem(systemTheme());
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  const mode = preference === 'system' ? system : preference;
 
   useEffect(() => {
     updateThemeClass(mode);
-    setStoredTheme(mode);
   }, [mode]);
 
-  const handleSetMode = useCallback((newMode: ThemeMode) => {
-    setMode(newMode);
+  const setPreference = useCallback((next: ThemePreference) => {
+    setPreferenceState(next);
+    setStoredPreference(next);
   }, []);
 
-  const toggleMode = useCallback(() => {
-    setMode((current) => toggleThemeMode(current));
+  const cyclePreference = useCallback(() => {
+    setPreferenceState((current) => {
+      const next = nextPreference(current);
+      setStoredPreference(next);
+      return next;
+    });
   }, []);
 
   const contextValue = useMemo(
-    () => ({
-      mode,
-      setMode: handleSetMode,
-      toggleMode,
-    }),
-    [mode, handleSetMode, toggleMode],
+    () => ({ mode, preference, setPreference, cyclePreference }),
+    [mode, preference, setPreference, cyclePreference],
   );
 
   return (

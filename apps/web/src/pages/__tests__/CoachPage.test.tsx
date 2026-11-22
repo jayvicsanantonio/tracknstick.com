@@ -37,7 +37,7 @@ describe('CoachPage', () => {
     renderPage();
 
     const page = screen
-      .getByRole('heading', { level: 1, name: 'Habit Coach' })
+      .getByRole('heading', { level: 1, name: 'Coach' })
       .closest('section');
     expect(page?.className).toMatch(
       /max-sm:keyboard-open:h-\[calc\(var\(--visual-viewport-height\)/,
@@ -45,13 +45,20 @@ describe('CoachPage', () => {
     expect(page).toHaveClass('keyboard-open:min-h-0');
   });
 
-  it('is titled Habit Coach', () => {
+  it('is titled Coach, as its tab is, and Habit Coach in the window title', () => {
     renderPage();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Habit Coach' }),
+      screen.getByRole('heading', { level: 1, name: 'Coach' }),
     ).toBeInTheDocument();
     expect(document.title).toContain('Habit Coach');
+  });
+
+  it("leaves its title to the page's large title on phones", () => {
+    renderPage();
+
+    const header = document.querySelector('[data-slot="card-header"]');
+    expect(header).toHaveClass('max-sm:hidden');
   });
 
   it('shows its title and subtitle in a card header, as Habits and Progress do', () => {

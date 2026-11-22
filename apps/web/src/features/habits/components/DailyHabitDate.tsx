@@ -70,7 +70,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
             day to day. On phones, plain text, the day's name over its date;
             from sm up, a pill with the two side by side. */}
         <div className="flex flex-col items-center justify-center sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
-          <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
+          <h2 className="font-display text-xl font-bold text-(--color-foreground) sm:text-2xl">
             {/* Another day's name takes the user back to today when tapped,
                 as an iOS calendar's title does. */}
             {isToday ? (

@@ -12,7 +12,26 @@ vi.mock('@clerk/clerk-react', () => ({
   ),
   SignedIn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   SignedOut: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  UserButton: () => <div>User Button</div>,
+  // The account button, with the custom menu items the app adds to it drawn
+  // as plain buttons, so a test can find and press them.
+  UserButton: Object.assign(
+    ({ children }: { children?: React.ReactNode }) => (
+      <div>
+        User Button
+        {children}
+      </div>
+    ),
+    {
+      MenuItems: ({ children }: { children?: React.ReactNode }) => (
+        <>{children}</>
+      ),
+      Action: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button type="button" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    },
+  ),
   SignIn: () => <div>Sign In Component</div>,
   useUser: mockUseUser,
   useAuth: mockUseAuth,
@@ -234,12 +253,12 @@ vi.mock('@app/providers/ThemeProvider', () => ({
 
 // Mock the new theme system (exclude from theme-specific tests)
 vi.mock('@shared/hooks/useTheme', () => ({
-  useTheme: () => ({
+  useTheme: vi.fn(() => ({
     mode: 'dark',
-    tokens: {},
-    setMode: vi.fn(),
-    toggleMode: vi.fn(),
-  }),
+    preference: 'system',
+    setPreference: vi.fn(),
+    cyclePreference: vi.fn(),
+  })),
 }));
 
 // Mock DateProvider
