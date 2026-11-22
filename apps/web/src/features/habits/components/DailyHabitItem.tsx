@@ -3,23 +3,18 @@
 // long-press (~450ms) opens an iOS quick-action menu to Edit or View Stats right from Today.
 
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { BarChart3, Pencil } from 'lucide-react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { motion, type PanInfo } from 'framer-motion';
+import { BarChart3, ChevronRight, Pencil } from 'lucide-react';
 import HabitsIcons from '@/icons/habits';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import StarAnimation from '@shared/components/ui/animations/StarAnimation';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@shared/components/ui/dialog';
 import { Habit } from '@/features/habits/types/Habit';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { triggerHaptic } from '@shared/utils/haptics';
-import { IOS_SPRING_TAP } from '@shared/utils/motion';
+import { IOS_SPRING_SHEET, IOS_SPRING_TAP } from '@shared/utils/motion';
 import { cn } from '@shared/utils/utils';
 
 const { Check } = MiscellaneousIcons;
@@ -217,61 +212,163 @@ const DailyHabitItem = memo(function DailyHabitItem({
         <StarAnimation isVisible={animatingHabitId === habit.id} />
       </div>
 
-      {/* Native iOS Quick Action Sheet triggered by long-pressing a habit circle */}
+      {/* Native iOS Quick Action Sheet triggered by long-pressing a habit card */}
       {menuOpen ? (
-        <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
-          <DialogContent className="top-auto right-3 bottom-[max(env(safe-area-inset-bottom),0.75rem)] left-3 max-w-md translate-x-0 translate-y-0 gap-2 border-0 bg-transparent p-0 shadow-none sm:top-1/2 sm:right-auto sm:bottom-auto sm:left-1/2 sm:w-80 sm:-translate-x-1/2 sm:-translate-y-1/2 [&>button:last-child]:hidden [&>button[data-slot='dialog-close']]:hidden">
-            <div className="ios-liquid-glass overflow-hidden rounded-3xl">
-              <div className="flex items-center gap-3 border-b border-(--color-border-primary)/50 px-4 py-3.5">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary)">
-                  <Icon aria-hidden="true" className="size-5" />
-                </span>
-                <div className="min-w-0 text-left">
-                  <DialogTitle className="truncate text-[16px] font-semibold text-(--color-foreground)">
-                    {habit.name}
-                  </DialogTitle>
-                  <DialogDescription className="text-[13px] text-(--color-text-secondary)">
-                    {frequencyLabel(habit.frequency)}
-                  </DialogDescription>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setMenuOpen(false);
-                  openEditDialog(habit, 'edit');
+        <DialogPrimitive.Root open={menuOpen} onOpenChange={setMenuOpen}>
+          <DialogPrimitive.Portal>
+            <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+            <div className="pointer-events-none fixed inset-0 z-50 flex items-end justify-center px-3.5 pb-[max(env(safe-area-inset-bottom),0.875rem)] sm:items-center sm:p-4">
+              <DialogPrimitive.Content
+                asChild
+                onOpenAutoFocus={(event) => {
+                  // Prevent Safari/WebKit from drawing a focus ring around the first row on touch long-press.
+                  if (window.matchMedia?.('(pointer: coarse)').matches) {
+                    event.preventDefault();
+                  }
                 }}
-                className="flex min-h-13 w-full items-center justify-center gap-2 border-b border-(--color-border-primary)/50 px-4 text-[17px] font-medium text-(--color-brand-primary) transition-colors active:bg-(--color-active-surface)/50"
               >
-                <Pencil aria-hidden="true" className="size-4" />
-                Edit Habit
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setMenuOpen(false);
-                  openEditDialog(habit, 'stats');
-                }}
-                className="flex min-h-13 w-full items-center justify-center gap-2 px-4 text-[17px] font-medium text-(--color-foreground) transition-colors active:bg-(--color-active-surface)/50"
-              >
-                <BarChart3 aria-hidden="true" className="size-4" />
-                View Stats
-              </button>
+                <motion.div
+                  drag="y"
+                  dragConstraints={{ top: 0, bottom: 0 }}
+                  dragElastic={{ top: 0.04, bottom: 0.45 }}
+                  onDragEnd={(
+                    _event: MouseEvent | TouchEvent | PointerEvent,
+                    info: PanInfo,
+                  ) => {
+                    if (info.offset.y > 80 || info.velocity.y > 420) {
+                      triggerHaptic('light');
+                      setMenuOpen(false);
+                    }
+                  }}
+                  initial={{ y: 36, opacity: 0, scale: 0.98 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  transition={IOS_SPRING_SHEET}
+                  className="pointer-events-auto flex w-full max-w-[400px] flex-col gap-2.5 outline-none sm:w-96"
+                >
+                  <div className="ios-action-sheet-surface overflow-hidden rounded-[26px]">
+                    {/* Drag grabber pill */}
+                    <div
+                      aria-hidden="true"
+                      className="mx-auto mt-2.5 h-1 w-9 rounded-full bg-(--color-brand-primary)/25 sm:hidden"
+                    />
+
+                    {/* Habit summary header */}
+                    <div className="flex items-center gap-3.5 border-b border-(--color-brand-primary)/12 px-4 pt-3 pb-3.5 sm:pt-4">
+                      <span
+                        className={cn(
+                          'flex size-12 shrink-0 items-center justify-center rounded-[15px] ring-1 ring-inset',
+                          habit.completed
+                            ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) ring-(--color-brand-primary)'
+                            : 'bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-(--color-brand-primary)/24',
+                        )}
+                      >
+                        <Icon aria-hidden="true" className="size-6" />
+                      </span>
+                      <div className="min-w-0 flex-1 text-left">
+                        <DialogPrimitive.Title className="truncate text-[17px] leading-snug font-bold tracking-[-0.015em] text-(--color-foreground)">
+                          {habit.name}
+                        </DialogPrimitive.Title>
+                        <DialogPrimitive.Description className="mt-0.5 text-[13px] text-(--color-text-secondary)">
+                          {frequencyLabel(habit.frequency)}
+                        </DialogPrimitive.Description>
+                      </div>
+                      <span
+                        className={cn(
+                          'inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold',
+                          habit.completed
+                            ? 'bg-(--color-brand-primary)/16 text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/26 ring-inset dark:text-(--color-brand-text-light)'
+                            : 'bg-(--color-text-secondary)/12 text-(--color-text-secondary)',
+                        )}
+                      >
+                        {habit.completed ? (
+                          <>
+                            <Check
+                              aria-hidden="true"
+                              className="size-3 text-(--color-brand-primary)"
+                              strokeWidth={3}
+                            />
+                            Done
+                          </>
+                        ) : (
+                          'To do'
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Tactile left-aligned iOS action rows */}
+                    <div className="space-y-1 p-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setMenuOpen(false);
+                          openEditDialog(habit, 'edit');
+                        }}
+                        className="flex w-full cursor-pointer items-center gap-3.5 rounded-[16px] px-3 py-2.5 text-left transition-[background-color,transform] outline-none hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.985] active:bg-(--color-brand-primary)/14"
+                      >
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset">
+                          <Pencil aria-hidden="true" className="size-[18px]" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[16px] leading-snug font-semibold text-(--color-foreground)">
+                            Edit Habit
+                          </span>
+                          <span className="block text-[12px] leading-tight text-(--color-text-secondary)">
+                            Name, icon, schedule &amp; dates
+                          </span>
+                        </span>
+                        <ChevronRight
+                          aria-hidden="true"
+                          className="size-4 shrink-0 text-(--color-brand-primary)/60"
+                        />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setMenuOpen(false);
+                          openEditDialog(habit, 'stats');
+                        }}
+                        className="flex w-full cursor-pointer items-center gap-3.5 rounded-[16px] px-3 py-2.5 text-left transition-[background-color,transform] outline-none hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.985] active:bg-(--color-brand-primary)/14"
+                      >
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset">
+                          <BarChart3
+                            aria-hidden="true"
+                            className="size-[18px]"
+                          />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[16px] leading-snug font-semibold text-(--color-foreground)">
+                            View Stats
+                          </span>
+                          <span className="block text-[12px] leading-tight text-(--color-text-secondary)">
+                            Streaks, completion rate &amp; history
+                          </span>
+                        </span>
+                        <ChevronRight
+                          aria-hidden="true"
+                          className="size-4 shrink-0 text-(--color-brand-primary)/60"
+                        />
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setMenuOpen(false);
+                    }}
+                    className="ios-action-sheet-surface flex h-13 w-full cursor-pointer items-center justify-center rounded-[22px] text-[16px] font-semibold text-(--color-brand-primary) transition-transform outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.98]"
+                  >
+                    Cancel
+                  </button>
+                </motion.div>
+              </DialogPrimitive.Content>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('light');
-                setMenuOpen(false);
-              }}
-              className="ios-liquid-glass flex min-h-13 w-full items-center justify-center rounded-3xl text-[17px] font-semibold text-(--color-brand-primary) active:scale-[0.98]"
-            >
-              Cancel
-            </button>
-          </DialogContent>
-        </Dialog>
+          </DialogPrimitive.Portal>
+        </DialogPrimitive.Root>
       ) : null}
     </div>
   );
