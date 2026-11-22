@@ -1,5 +1,5 @@
 // Checks the app icons: every icon a manifest or index.html names exists at its declared size,
-// the home-screen icons are the light version, and the favicon follows the colour scheme.
+// the home-screen icons fill their square with dark emerald, and the favicon is the same icon.
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -62,6 +62,31 @@ function hslToHex(hsl: string): string {
   return `#${channel(0)}${channel(8)}${channel(4)}`;
 }
 
+/** The dark theme's page background, its --color-background, as `#rrggbb`. */
+function darkThemeBackground(): string {
+  const css = readFileSync(path.join(WEB_ROOT, 'src/styles/index.css'), 'utf8');
+  const backgrounds = [...css.matchAll(/--color-background: (hsl\([^)]+\))/g)];
+  expect(backgrounds).toHaveLength(2);
+  return hslToHex(backgrounds[1][1]);
+}
+
+/** The WCAG contrast ratio between two `#rrggbb` colours. */
+function contrastRatio(first: string, second: string): number {
+  const luminance = (hex: string) => {
+    const [red, green, blue] = [1, 3, 5].map((at) => {
+      const value = parseInt(hex.slice(at, at + 2), 16) / 255;
+      return value <= 0.03928
+        ? value / 12.92
+        : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  };
+  const [lighter, darker] = [luminance(first), luminance(second)].sort(
+    (a, b) => b - a,
+  );
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 describe.each(['manifest.json', 'manifest-dark.json'])('%s', (file) => {
   const { icons } = JSON.parse(
     readFileSync(path.join(PUBLIC, file), 'utf8'),
@@ -106,32 +131,37 @@ describe('home-screen icons', () => {
     'apple-touch-icon.png',
     'maskable-192x192.png',
     'maskable-512x512.png',
-  ])('%s fills its square with the light white background', (file) => {
-    for (const channel of topLeftPixel(path.join(PUBLIC, 'icons', file))) {
-      expect(channel).toBeGreaterThanOrEqual(0xf0);
-    }
+  ])('%s fills its square with the dark theme’s background', (file) => {
+    const [red, green, blue] = topLeftPixel(
+      path.join(PUBLIC, 'icons', file),
+    ).map((channel) => channel.toString(16).padStart(2, '0'));
+    expect(`#${red}${green}${blue}`).toBe(darkThemeBackground());
   });
 });
 
 describe('favicon', () => {
-  it('switches to its dark version with the colour scheme', () => {
+  it('is one icon in every colour scheme', () => {
     const svg = readFileSync(path.join(PUBLIC, 'icons/favicon.svg'), 'utf8');
-    expect(svg).toContain('@media (prefers-color-scheme: dark)');
+    expect(svg).not.toContain('prefers-color-scheme');
   });
 
-  it('is drawn in the light and dark themes’ brand colours', () => {
-    const css = readFileSync(
-      path.join(WEB_ROOT, 'src/styles/index.css'),
+  it('draws its ring and check at 7:1 contrast or more on the dark theme’s background', () => {
+    const svg = readFileSync(
+      path.join(PUBLIC, 'icons/favicon.svg'),
       'utf8',
-    );
-    const brandColours = [
-      ...css.matchAll(/--color-brand-primary: (hsl\([^)]+\))/g),
-    ].map((match) => hslToHex(match[1]));
-    expect(brandColours).toHaveLength(2);
+    ).toLowerCase();
+    const background = /<rect [^>]*fill="(#[0-9a-f]{6})"/.exec(svg)?.[1];
+    expect(background).toBe(darkThemeBackground());
 
-    const svg = readFileSync(path.join(PUBLIC, 'icons/favicon.svg'), 'utf8');
-    for (const colour of brandColours) {
-      expect(svg.toLowerCase().includes(colour), `uses ${colour}`).toBe(true);
+    const strokes = [...svg.matchAll(/stroke="(#[0-9a-f]{6})"/g)].map(
+      (match) => match[1],
+    );
+    expect(strokes).toHaveLength(2);
+    for (const stroke of strokes) {
+      expect(
+        contrastRatio(stroke, background ?? ''),
+        `${stroke} on ${background}`,
+      ).toBeGreaterThanOrEqual(7);
     }
   });
 
