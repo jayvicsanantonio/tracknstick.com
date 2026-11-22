@@ -185,4 +185,39 @@ describe('useDaySwipe', () => {
     expect(onPreviousDay).not.toHaveBeenCalled();
     expect(onNextDay).not.toHaveBeenCalled();
   });
+
+  it('commits a brisk short flick and cancels when flicked back toward center', () => {
+    const onPreviousDay = vi.fn();
+    const onNextDay = vi.fn();
+    render(
+      <SwipeHarness onPreviousDay={onPreviousDay} onNextDay={onNextDay} />,
+    );
+
+    const surface = screen.getByTestId('surface');
+    const nowSpy = vi.spyOn(Date, 'now');
+
+    // Brisk short flick left (32px in 40ms = 0.8 px/ms > flick threshold)
+    nowSpy.mockReturnValue(1000);
+    dispatchPointer(surface, 'pointerdown', { clientX: 240, clientY: 200 });
+    nowSpy.mockReturnValue(1020);
+    dispatchPointer(window, 'pointermove', { clientX: 224, clientY: 200 });
+    nowSpy.mockReturnValue(1040);
+    dispatchPointer(window, 'pointermove', { clientX: 208, clientY: 200 });
+    dispatchPointer(window, 'pointerup', { clientX: 208, clientY: 200 });
+
+    expect(onNextDay).toHaveBeenCalledTimes(1);
+    expect(onPreviousDay).not.toHaveBeenCalled();
+
+    // Drag right past threshold, then briskly flick back left to cancel
+    nowSpy.mockReturnValue(2000);
+    dispatchPointer(surface, 'pointerdown', { clientX: 100, clientY: 200 });
+    nowSpy.mockReturnValue(2150);
+    dispatchPointer(window, 'pointermove', { clientX: 210, clientY: 200 });
+    nowSpy.mockReturnValue(2180);
+    dispatchPointer(window, 'pointermove', { clientX: 165, clientY: 200 });
+    nowSpy.mockReturnValue(2200);
+    dispatchPointer(window, 'pointerup', { clientX: 160, clientY: 200 });
+
+    expect(onPreviousDay).not.toHaveBeenCalled();
+  });
 });

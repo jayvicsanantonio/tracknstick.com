@@ -1,13 +1,23 @@
 import { useEffect, useMemo, memo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { CalendarDays } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
 import { useDate } from '@app/providers/useDate';
 import { triggerHaptic } from '@shared/utils/haptics';
+import type { DaySwipeDirection } from '@/features/habits/hooks/useDaySwipe';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
-const DailyHabitDate = memo(function DailyHabitDate() {
+interface DailyHabitDateProps {
+  /** Direction of the latest day navigation for subtle directional label glide. */
+  transitionDirection?: DaySwipeDirection | null;
+}
+
+const DailyHabitDate = memo(function DailyHabitDate({
+  transitionDirection = null,
+}: DailyHabitDateProps) {
+  const prefersReducedMotion = useReducedMotion();
   const {
     date,
     currentDate,
@@ -19,7 +29,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
 
   // The month and day, and the year apart from them: a phone leaves out
   // this year's year, so the date sits comfortably between the arrows.
-  const { monthDay, year, isThisYear, shortWeekday } = useMemo(() => {
+  const { monthDay, year, isThisYear, shortWeekday, dateKey } = useMemo(() => {
     const yearOf = (value: Date) =>
       value.toLocaleDateString('en-US', { timeZone, year: 'numeric' });
     return {
@@ -34,6 +44,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         timeZone,
         weekday: 'short',
       }),
+      dateKey: date.toLocaleDateString('en-CA', { timeZone }),
     };
   }, [date, currentDate, timeZone]);
 
@@ -72,7 +83,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         </Button>
 
         <div className="min-w-0 text-center">
-          <div className="relative flex items-center justify-center gap-1.5 sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
+          <div className="relative flex items-center justify-center gap-1.5 overflow-hidden sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
             <CalendarDays
               aria-hidden="true"
               className="size-3.5 shrink-0 text-(--color-brand-primary) sm:hidden"
@@ -82,19 +93,51 @@ const DailyHabitDate = memo(function DailyHabitDate() {
               {dayLabel}
             </h2>
             {isToday ? (
-              <span
+              <motion.span
+                key={`weekday-${dateKey}`}
                 aria-hidden="true"
+                initial={
+                  prefersReducedMotion || !transitionDirection
+                    ? false
+                    : {
+                        opacity: 0.25,
+                        x: transitionDirection === 'next' ? 10 : -10,
+                      }
+                }
+                animate={{ opacity: 1, x: 0 }}
+                transition={
+                  prefersReducedMotion
+                    ? { duration: 0 }
+                    : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+                }
                 className="text-[14px] font-medium whitespace-nowrap text-(--color-text-secondary) sm:hidden"
               >
                 {shortWeekday} ·
-              </span>
+              </motion.span>
             ) : null}
-            <span className="text-[15px] font-semibold whitespace-nowrap text-(--color-foreground) tabular-nums sm:text-base sm:font-normal sm:text-(--color-brand-primary)">
+            <motion.span
+              key={dateKey}
+              initial={
+                prefersReducedMotion || !transitionDirection
+                  ? false
+                  : {
+                      opacity: 0.25,
+                      x: transitionDirection === 'next' ? 10 : -10,
+                    }
+              }
+              animate={{ opacity: 1, x: 0 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+              }
+              className="text-[15px] font-semibold whitespace-nowrap text-(--color-foreground) tabular-nums sm:text-base sm:font-normal sm:text-(--color-brand-primary)"
+            >
               {monthDay}
               <span className={isThisYear ? 'max-sm:hidden' : undefined}>
                 , {year}
               </span>
-            </span>
+            </motion.span>
           </div>
         </div>
 

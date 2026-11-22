@@ -11,6 +11,8 @@ interface RingProps {
   completionRate: number;
   totalHabits: number;
   completedHabits: number;
+  dayKey?: string;
+  isDayLoading?: boolean;
 }
 
 function renderRing(props: RingProps) {
@@ -145,5 +147,33 @@ describe('DailyHabitProgressIndicator', () => {
     expect(container.querySelectorAll('[data-completed="true"]')).toHaveLength(
       0,
     );
+  });
+
+  it('snaps directly to the connected checkmark when switching days onto an already-completed day', () => {
+    const { container, rerender } = renderRing({
+      completionRate: 0,
+      totalHabits: 2,
+      completedHabits: 0,
+      dayKey: '2026-11-22',
+    });
+
+    const ring = screen.getByRole('progressbar', {
+      name: 'Daily habit completion: 0%',
+    });
+    expect(ring).toHaveAttribute('data-connected', 'false');
+
+    rerender(
+      <ThemeProvider>
+        <DailyHabitProgressIndicator
+          completionRate={100}
+          totalHabits={2}
+          completedHabits={2}
+          dayKey="2026-11-21"
+        />
+      </ThemeProvider>,
+    );
+
+    expect(ring).toHaveAttribute('data-connected', 'true');
+    expect(container.querySelector('[data-completion-check]')).toBeTruthy();
   });
 });

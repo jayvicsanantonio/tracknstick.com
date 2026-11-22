@@ -3,6 +3,7 @@
 // 17px inline title fades in smoothly as the 34px Large Title scrolls underneath it.
 
 import { memo, useEffect, useState, type ReactNode } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { User } from 'lucide-react';
 import { cn } from '@shared/utils/utils';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -11,6 +12,8 @@ import { useMobileShell } from '@/features/layout/hooks/useMobileShell';
 interface MobileNavBarProps {
   /** Large & inline navigation title (e.g. "Today", "Habits", "Progress", "Habit Coach"). */
   title: string;
+  /** Optional directional hint for subtle horizontal title glides when switching days. */
+  titleDirection?: 'prev' | 'next' | null;
   /** Optional secondary line shown under the title (e.g. "Atomic Habits" on Coach). */
   subtitle?: string;
   /** Compact mode skips the 34px Large Title and shows the centered inline header immediately. */
@@ -27,12 +30,14 @@ const COLLAPSE_SCROLL_Y = 38;
 
 const MobileNavBar = memo(function MobileNavBar({
   title,
+  titleDirection = null,
   subtitle,
   compact = false,
   collapsed = false,
   leading,
   trailing,
 }: MobileNavBarProps) {
+  const prefersReducedMotion = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const { openSettings, userImageUrl, userInitial } = useMobileShell();
 
@@ -130,12 +135,27 @@ const MobileNavBar = memo(function MobileNavBar({
                   isCollapsed ? 'opacity-0' : 'opacity-100',
                 )}
               >
-                <p
+                <motion.p
+                  key={title}
                   aria-hidden="true"
+                  initial={
+                    prefersReducedMotion || !titleDirection
+                      ? false
+                      : {
+                          opacity: 0.3,
+                          x: titleDirection === 'next' ? 10 : -10,
+                        }
+                  }
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={
+                    prefersReducedMotion
+                      ? { duration: 0 }
+                      : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+                  }
                   className="text-[34px] leading-[1.12] font-bold tracking-[-0.025em] text-(--color-foreground)"
                 >
                   {title}
-                </p>
+                </motion.p>
                 {subtitle ? (
                   <p className="mt-0.5 text-[14px] text-(--color-text-secondary)">
                     {subtitle}

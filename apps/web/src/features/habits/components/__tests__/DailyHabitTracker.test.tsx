@@ -253,4 +253,42 @@ describe('DailyHabitTracker', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(retryAllHabits).toHaveBeenCalledTimes(1);
   });
+
+  it('keeps the date navigation mounted instead of flashing a full-page skeleton while switching days', () => {
+    mockHabits({
+      habits: [habit({ id: '1', name: 'Read', completed: false })],
+      isLoading: false,
+      completionRate: 0,
+    });
+
+    const { rerender } = render(
+      <HabitsStateProvider>
+        <DailyHabitTracker />
+      </HabitsStateProvider>,
+    );
+
+    expect(
+      screen.getByRole('navigation', { name: 'Day navigation' }),
+    ).toBeInTheDocument();
+
+    // Simulate SWR fetching an uncached adjacent day while keepPreviousData holds the last day.
+    mockHabits({
+      habits: [habit({ id: '1', name: 'Read', completed: false })],
+      isLoading: true,
+      completionRate: 0,
+    });
+
+    rerender(
+      <HabitsStateProvider>
+        <DailyHabitTracker />
+      </HabitsStateProvider>,
+    );
+
+    expect(
+      screen.getByRole('navigation', { name: 'Day navigation' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { name: 'Loading habits' }),
+    ).not.toBeInTheDocument();
+  });
 });

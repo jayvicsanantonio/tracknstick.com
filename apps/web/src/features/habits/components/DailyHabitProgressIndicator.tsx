@@ -17,6 +17,10 @@ interface DailyHabitProgressIndicatorProps {
   completionRate: number;
   totalHabits: number;
   completedHabits: number;
+  /** Identifies the selected day so switching days snaps cleanly without replaying live animations. */
+  dayKey?: string;
+  /** True while an uncached day's habits are still being fetched during a day switch. */
+  isDayLoading?: boolean;
 }
 
 interface SegmentArc {
@@ -139,6 +143,8 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   completionRate,
   totalHabits,
   completedHabits,
+  dayKey,
+  isDayLoading = false,
 }: DailyHabitProgressIndicatorProps) {
   const { mode } = useTheme();
   const isDark = mode === 'dark';
@@ -160,30 +166,37 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   );
   const isAllCompleted =
     safeTotal > 0 ? safeCompleted >= safeTotal : displayRate === 100;
+  const dayResetKey = `${dayKey ?? ''}:${isDayLoading ? 'loading' : 'ready'}`;
 
   // Mount already-completed days directly in the connected checkmark state;
-  // live transitions from <100% -> 100% play the 3-beat fill -> connect -> check sequence.
+  // live transitions from <100% -> 100% on the same day play the 3-beat fill -> connect -> check sequence.
   const [phase, setPhase] = useState<CompletionPhase>(() =>
     isAllCompleted ? 'checked' : 'idle',
   );
   const [celebrationCount, setCelebrationCount] = useState(0);
+  const [liveCelebrationActive, setLiveCelebrationActive] = useState(false);
   const [animatedRate, setAnimatedRate] = useState(displayRate);
 
   const prevRef = useRef({
     total: safeTotal,
     allCompleted: isAllCompleted,
+    dayResetKey,
   });
   const rateRef = useRef({
     value: displayRate,
     total: safeTotal,
+    dayResetKey,
   });
 
   // Smoothly count the percentage in sync with the segment sweep on live toggles.
   useEffect(() => {
-    const totalChanged = rateRef.current.total !== safeTotal;
+    const contextChanged =
+      rateRef.current.total !== safeTotal ||
+      rateRef.current.dayResetKey !== dayResetKey;
     rateRef.current.total = safeTotal;
+    rateRef.current.dayResetKey = dayResetKey;
 
-    if (prefersReducedMotion || totalChanged) {
+    if (prefersReducedMotion || contextChanged || isDayLoading) {
       rateRef.current.value = displayRate;
       setAnimatedRate(displayRate);
       return;
@@ -208,26 +221,39 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
     });
 
     return () => controls.stop();
-  }, [displayRate, safeTotal, prefersReducedMotion]);
+  }, [displayRate, safeTotal, dayResetKey, isDayLoading, prefersReducedMotion]);
 
   // Choreograph segment fill -> gap connection -> checkmark reveal when all habits finish.
   useEffect(() => {
     const prev = prevRef.current;
-    const totalChanged = prev.total !== safeTotal;
+    const contextChanged =
+      prev.total !== safeTotal || prev.dayResetKey !== dayResetKey;
     const justCompletedAll = !prev.allCompleted && isAllCompleted;
-    prevRef.current = { total: safeTotal, allCompleted: isAllCompleted };
+    prevRef.current = {
+      total: safeTotal,
+      allCompleted: isAllCompleted,
+      dayResetKey,
+    };
 
     if (!isAllCompleted) {
       setPhase('idle');
+      setLiveCelebrationActive(false);
       return;
     }
 
-    if (prefersReducedMotion || totalChanged || !justCompletedAll) {
+    if (
+      prefersReducedMotion ||
+      contextChanged ||
+      isDayLoading ||
+      !justCompletedAll
+    ) {
       setPhase('checked');
+      setLiveCelebrationActive(false);
       return;
     }
 
     setPhase('filling');
+    setLiveCelebrationActive(true);
     const connectDelay =
       segmentCount > 1
         ? MULTI_SEGMENT_CONNECT_DELAY_MS
@@ -250,11 +276,18 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
       clearTimeout(connectTimer);
       clearTimeout(checkTimer);
     };
-  }, [isAllCompleted, safeTotal, segmentCount, prefersReducedMotion]);
+  }, [
+    isAllCompleted,
+    safeTotal,
+    dayResetKey,
+    isDayLoading,
+    segmentCount,
+    prefersReducedMotion,
+  ]);
 
   const isConnected = phase === 'connecting' || phase === 'checked';
   const showCheckmark = phase === 'checked';
-  const isLiveCelebration = celebrationCount > 0 && isConnected;
+  const isLiveCelebration = liveCelebrationActive && isConnected;
 
   const { strokeWidth, arcs, bridges } = useMemo(
     () => getSegmentGeometry(segmentCount),
@@ -417,7 +450,9 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
           />
 
           {/* Crisp vector ripple emitted the instant all segments connect */}
-          {celebrationCount > 0 && !prefersReducedMotion ? (
+          {liveCelebrationActive &&
+          celebrationCount > 0 &&
+          !prefersReducedMotion ? (
             <motion.circle
               key={`ripple-${celebrationCount}`}
               cx={CENTER}
@@ -433,6 +468,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
           {segmentCount === 1 ? (
             <g
+              key={`single-${dayResetKey}`}
               data-segment
               data-completed={singleSegmentComplete ? 'true' : 'false'}
             >
@@ -472,7 +508,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
 
                 return (
                   <g
-                    key={`${segmentCount}-${index}`}
+                    key={`${dayResetKey}-${segmentCount}-${index}`}
                     data-segment
                     data-completed={isCompleted ? 'true' : 'false'}
                   >
@@ -507,7 +543,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 const bridgeDashSpan = bridge.halfLength + 0.5;
                 return (
                   <g
-                    key={`bridge-${segmentCount}-${index}`}
+                    key={`bridge-${dayResetKey}-${segmentCount}-${index}`}
                     data-segment-bridge
                   >
                     <motion.path

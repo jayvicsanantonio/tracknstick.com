@@ -1,8 +1,9 @@
-// Horizontal swipe gesture hook for navigating between days on the Daily Tracker.
-// Tracks pointer movement across touch devices and mobile viewports with rubber-band
-// visual drag feedback, direction locking (so vertical scroll stays native), edge-back
-// gesture protection on iOS, and post-swipe click suppression so swiping across a habit
-// circle never accidentally toggles it.
+// Interactive horizontal swipe hook for navigating between days on the Daily Tracker.
+// Uses iOS-style hyperbolic rubber-band drag physics, rolling instantaneous velocity
+// (supporting both brisk flick-commits and flick-back cancels), threshold detent
+// haptics, continuous 60/120fps MotionValues for zero-rerender edge feedback,
+// directional incoming transitions (shared with arrow/keyboard day navigation),
+// iOS edge-back protection, and post-swipe click suppression.
 
 import {
   useCallback,
@@ -12,22 +13,37 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import { animate, useMotionValue, useReducedMotion } from 'framer-motion';
+import {
+  animate,
+  useMotionValue,
+  useReducedMotion,
+  type AnimationPlaybackControls,
+} from 'framer-motion';
 import { triggerHaptic } from '@shared/utils/haptics';
-import { IOS_SPRING_CONTROL } from '@shared/utils/motion';
+import { IOS_SPRING_PAGE } from '@shared/utils/motion';
 
-const DIRECTION_LOCK_PX = 8;
-const COMMIT_DISTANCE_PX = 48;
+const DIRECTION_LOCK_PX = 10;
+const COMMIT_DISTANCE_PX = 52;
 const FLICK_MIN_DISTANCE_PX = 24;
-const FLICK_VELOCITY_PX_PER_MS = 0.35;
-const MAX_VISUAL_OFFSET_PX = 84;
-const DRAG_DAMPING = 0.45;
-const INCOMING_OFFSET_PX = 26;
+const FLICK_VELOCITY_PX_PER_MS = 0.32;
+const CANCEL_FLICK_VELOCITY_PX_PER_MS = 0.3;
+const MAX_VISUAL_OFFSET_PX = 148;
+const INITIAL_DRAG_SLOPE = 0.85;
+const SWIPE_INCOMING_OFFSET_PX = 56;
+const BUTTON_INCOMING_OFFSET_PX = 32;
 const IOS_EDGE_GUARD_PX = 16;
 const MOBILE_BREAKPOINT_PX = 640;
+const VELOCITY_WINDOW_MS = 100;
+const MAX_VELOCITY_SAMPLES = 6;
+const DRAG_MIN_OPACITY = 0.54;
+
+const INTERACTIVE_EXCLUDE_SELECTOR =
+  'input, textarea, select, [contenteditable="true"], [data-no-day-swipe]';
+
+export type DaySwipeDirection = 'prev' | 'next';
 
 export interface DaySwipeFeedback {
-  direction: 'prev' | 'next';
+  direction: DaySwipeDirection;
   ready: boolean;
 }
 
@@ -37,12 +53,51 @@ interface UseDaySwipeOptions {
   onNextDay: () => void;
 }
 
+interface VelocitySample {
+  x: number;
+  t: number;
+}
+
 interface DragSession {
   pointerId: number;
   startX: number;
   startY: number;
   startTime: number;
   axis: 'none' | 'x' | 'y';
+  wasReady: boolean;
+  samples: VelocitySample[];
+}
+
+/** Smooth hyperbolic rubber-band curve (responsive near 0, never hits a hard wall). */
+function rubberBandOffset(dx: number): number {
+  const abs = Math.abs(dx);
+  if (abs === 0) return 0;
+  const damped =
+    (MAX_VISUAL_OFFSET_PX * abs) /
+    (abs + MAX_VISUAL_OFFSET_PX / INITIAL_DRAG_SLOPE);
+  return Math.sign(dx) * damped;
+}
+
+/** Signed velocity in px/ms over the trailing ~100ms of pointer movement. */
+function computeSignedVelocity(
+  samples: VelocitySample[],
+  endX: number,
+  endTime: number,
+  startX: number,
+  startTime: number,
+): number {
+  const cutoff = endTime - VELOCITY_WINDOW_MS;
+  let anchor: VelocitySample = { x: startX, t: startTime };
+
+  for (const sample of samples) {
+    if (sample.t >= cutoff) {
+      anchor = sample;
+      break;
+    }
+  }
+
+  const dt = Math.max(1, endTime - anchor.t);
+  return (endX - anchor.x) / dt;
 }
 
 export function useDaySwipe({
@@ -52,6 +107,8 @@ export function useDaySwipe({
 }: UseDaySwipeOptions) {
   const prefersReducedMotion = useReducedMotion();
   const x = useMotionValue(0);
+  const opacity = useMotionValue(1);
+  const dragProgress = useMotionValue(0);
   const [feedback, setFeedback] = useState<DaySwipeFeedback | null>(null);
 
   const sessionRef = useRef<DragSession | null>(null);
@@ -60,6 +117,19 @@ export function useDaySwipe({
     null,
   );
   const cleanupListenersRef = useRef<(() => void) | null>(null);
+  const activeAnimationsRef = useRef<AnimationPlaybackControls[]>([]);
+
+  const stopAnimations = useCallback(() => {
+    for (const control of activeAnimationsRef.current) {
+      control.stop();
+    }
+    activeAnimationsRef.current = [];
+  }, []);
+
+  const trackAnimation = useCallback((control: AnimationPlaybackControls) => {
+    activeAnimationsRef.current.push(control);
+    return control;
+  }, []);
 
   const clearClickGuardTimer = useCallback(() => {
     if (resetClickGuardTimer.current !== null) {
@@ -77,23 +147,136 @@ export function useDaySwipe({
     return () => {
       detachWindowListeners();
       clearClickGuardTimer();
+      stopAnimations();
     };
-  }, [clearClickGuardTimer, detachWindowListeners]);
+  }, [clearClickGuardTimer, detachWindowListeners, stopAnimations]);
 
-  const springToRest = useCallback(() => {
-    animate(
+  // Guarantee content never stays shifted or dimmed if swipe is disabled mid-gesture.
+  useEffect(() => {
+    if (enabled) return;
+    detachWindowListeners();
+    sessionRef.current = null;
+    setFeedback(null);
+    stopAnimations();
+    x.jump(0);
+    opacity.jump(1);
+    dragProgress.jump(0);
+  }, [
+    detachWindowListeners,
+    dragProgress,
+    enabled,
+    opacity,
+    stopAnimations,
+    x,
+  ]);
+
+  const springToRest = useCallback(
+    (velocityPxPerSec = 0) => {
+      stopAnimations();
+      if (prefersReducedMotion) {
+        x.jump(0);
+        opacity.jump(1);
+        dragProgress.jump(0);
+        return;
+      }
+
+      trackAnimation(
+        animate(x, 0, {
+          ...IOS_SPRING_PAGE,
+          velocity: Math.max(-1200, Math.min(1200, velocityPxPerSec)),
+        }),
+      );
+      trackAnimation(
+        animate(opacity, 1, {
+          duration: 0.22,
+          ease: [0.22, 1, 0.36, 1],
+        }),
+      );
+      trackAnimation(
+        animate(dragProgress, 0, {
+          duration: 0.18,
+          ease: [0.22, 1, 0.36, 1],
+        }),
+      );
+    },
+    [
+      dragProgress,
+      opacity,
+      prefersReducedMotion,
+      stopAnimations,
+      trackAnimation,
       x,
-      0,
-      prefersReducedMotion
-        ? { duration: 0 }
-        : { ...IOS_SPRING_CONTROL, velocity: 0 },
-    );
-  }, [prefersReducedMotion, x]);
+    ],
+  );
+
+  /**
+   * Plays a crisp directional incoming glide for the newly selected day.
+   * Shared by swipe commits and arrow/keyboard/Today date navigation.
+   */
+  const playIncomingTransition = useCallback(
+    (
+      direction: DaySwipeDirection,
+      options?: { source?: 'swipe' | 'button'; releaseVelocity?: number },
+    ) => {
+      stopAnimations();
+      dragProgress.jump(0);
+
+      if (prefersReducedMotion) {
+        x.jump(0);
+        opacity.jump(1);
+        return;
+      }
+
+      const source = options?.source ?? 'button';
+      const offset =
+        source === 'swipe'
+          ? SWIPE_INCOMING_OFFSET_PX
+          : BUTTON_INCOMING_OFFSET_PX;
+      const startX = direction === 'prev' ? -offset : offset;
+      const startOpacity = source === 'swipe' ? 0 : 0.2;
+      const clampedVelocity = options?.releaseVelocity
+        ? Math.max(-900, Math.min(900, options.releaseVelocity))
+        : 0;
+
+      x.jump(startX);
+      opacity.jump(startOpacity);
+
+      trackAnimation(
+        animate(x, 0, {
+          ...IOS_SPRING_PAGE,
+          velocity: clampedVelocity,
+        }),
+      );
+      trackAnimation(
+        animate(opacity, 1, {
+          duration: source === 'swipe' ? 0.24 : 0.2,
+          ease: [0.22, 1, 0.36, 1],
+        }),
+      );
+    },
+    [
+      dragProgress,
+      opacity,
+      prefersReducedMotion,
+      stopAnimations,
+      trackAnimation,
+      x,
+    ],
+  );
 
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       if (!enabled) return;
       if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+      // Never hijack text fields or explicitly excluded interactive surfaces.
+      if (
+        event.target instanceof Element &&
+        event.target.closest(INTERACTIVE_EXCLUDE_SELECTOR)
+      ) {
+        return;
+      }
+
       // Preserve normal mouse text selection on wide desktop screens while
       // allowing swipe on all touch screens and phone-sized viewports.
       if (
@@ -103,6 +286,7 @@ export function useDaySwipe({
       ) {
         return;
       }
+
       // Leave the 16px left/right edge zone free for iOS Safari's back/forward swipe.
       if (
         event.pointerType === 'touch' &&
@@ -116,14 +300,20 @@ export function useDaySwipe({
       clearClickGuardTimer();
       didSwipeRef.current = false;
       detachWindowListeners();
-      x.stop();
+      stopAnimations();
+      if (opacity.get() < 0.95) {
+        opacity.jump(1);
+      }
 
+      const now = Date.now();
       sessionRef.current = {
         pointerId: event.pointerId,
         startX: event.clientX,
         startY: event.clientY,
-        startTime: Date.now(),
+        startTime: now,
         axis: 'none',
+        wasReady: false,
+        samples: [{ x: event.clientX, t: now }],
       };
 
       const onPointerMove = (moveEvent: PointerEvent) => {
@@ -132,6 +322,12 @@ export function useDaySwipe({
 
         const dx = moveEvent.clientX - session.startX;
         const dy = moveEvent.clientY - session.startY;
+        const moveNow = Date.now();
+
+        session.samples.push({ x: moveEvent.clientX, t: moveNow });
+        if (session.samples.length > MAX_VELOCITY_SAMPLES) {
+          session.samples.shift();
+        }
 
         if (session.axis === 'none') {
           if (Math.max(Math.abs(dx), Math.abs(dy)) < DIRECTION_LOCK_PX) {
@@ -150,13 +346,25 @@ export function useDaySwipe({
 
         if (session.axis !== 'x') return;
 
-        const damped =
-          Math.sign(dx) *
-          Math.min(MAX_VISUAL_OFFSET_PX, Math.abs(dx) * DRAG_DAMPING);
-        x.set(prefersReducedMotion ? 0 : damped);
+        const absDx = Math.abs(dx);
+        const progress = Math.min(1, absDx / COMMIT_DISTANCE_PX);
+        dragProgress.set(progress);
 
-        const nextDirection: 'prev' | 'next' = dx > 0 ? 'prev' : 'next';
-        const nextReady = Math.abs(dx) >= COMMIT_DISTANCE_PX;
+        if (!prefersReducedMotion) {
+          const offset = rubberBandOffset(dx);
+          x.set(offset);
+          const dragFade = Math.min(1, absDx / (COMMIT_DISTANCE_PX * 2.4));
+          opacity.set(1 - dragFade * (1 - DRAG_MIN_OPACITY));
+        }
+
+        const nextDirection: DaySwipeDirection = dx > 0 ? 'prev' : 'next';
+        const nextReady = absDx >= COMMIT_DISTANCE_PX;
+
+        // Subtle tactile detent the instant the drag crosses the commit threshold.
+        if (nextReady && !session.wasReady) {
+          triggerHaptic('light');
+        }
+        session.wasReady = nextReady;
 
         setFeedback((prev) =>
           prev && prev.direction === nextDirection && prev.ready === nextReady
@@ -188,31 +396,41 @@ export function useDaySwipe({
         }
 
         const dx = endEvent.clientX - session.startX;
-        const elapsedMs = Math.max(1, Date.now() - session.startTime);
-        const velocity = Math.abs(dx) / elapsedMs;
+        const absDx = Math.abs(dx);
+        const dragSign = Math.sign(dx);
+        const signedVx = computeSignedVelocity(
+          session.samples,
+          endEvent.clientX,
+          Date.now(),
+          session.startX,
+          session.startTime,
+        );
+        const alignedVx = signedVx * dragSign;
+
+        // If the user actively flicked back toward center, honor the cancel intent.
+        const isFlickCancel = alignedVx <= -CANCEL_FLICK_VELOCITY_PX_PER_MS;
         const shouldCommit =
-          Math.abs(dx) >= COMMIT_DISTANCE_PX ||
-          (Math.abs(dx) >= FLICK_MIN_DISTANCE_PX &&
-            velocity >= FLICK_VELOCITY_PX_PER_MS);
+          !isFlickCancel &&
+          (absDx >= COMMIT_DISTANCE_PX ||
+            (absDx >= FLICK_MIN_DISTANCE_PX &&
+              alignedVx >= FLICK_VELOCITY_PX_PER_MS));
 
         if (!shouldCommit) {
-          springToRest();
+          springToRest(signedVx * 1000);
           return;
         }
 
+        const direction: DaySwipeDirection = dx > 0 ? 'prev' : 'next';
         triggerHaptic('selection');
-        if (dx > 0) {
+        if (direction === 'prev') {
           onPreviousDay();
-          if (!prefersReducedMotion) {
-            x.jump(-INCOMING_OFFSET_PX);
-          }
         } else {
           onNextDay();
-          if (!prefersReducedMotion) {
-            x.jump(INCOMING_OFFSET_PX);
-          }
         }
-        springToRest();
+        playIncomingTransition(direction, {
+          source: 'swipe',
+          releaseVelocity: signedVx * 650,
+        });
       };
 
       const onPointerUp = (endEvent: PointerEvent) => finish(endEvent, false);
@@ -234,11 +452,15 @@ export function useDaySwipe({
     [
       clearClickGuardTimer,
       detachWindowListeners,
+      dragProgress,
       enabled,
       onNextDay,
       onPreviousDay,
+      opacity,
+      playIncomingTransition,
       prefersReducedMotion,
       springToRest,
+      stopAnimations,
       x,
     ],
   );
@@ -256,7 +478,10 @@ export function useDaySwipe({
 
   return {
     x,
+    opacity,
+    dragProgress,
     feedback,
+    playIncomingTransition,
     swipeHandlers: {
       onPointerDown: handlePointerDown,
       onClickCapture: handleClickCapture,
