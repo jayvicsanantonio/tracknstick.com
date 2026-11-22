@@ -136,7 +136,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
         >
           <span
             className={cn(
-              'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 group-focus-visible/habit-btn:ring-[3px] group-focus-visible/habit-btn:ring-(--color-ring) group-focus-visible/habit-btn:ring-offset-2 group-focus-visible/habit-btn:ring-offset-(--color-background) motion-reduce:transition-none sm:size-[88px] sm:group-hover/habit-btn:-translate-y-0.5 sm:group-hover/habit-btn:scale-[1.04] sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:size-24',
+              'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 group-focus-visible/habit-btn:ring-[3px] group-focus-visible/habit-btn:ring-(--color-ring) group-focus-visible/habit-btn:ring-offset-2 group-focus-visible/habit-btn:ring-offset-(--color-background) motion-reduce:transition-none sm:size-[88px] sm:group-hover/habit-btn:-translate-y-0.5 sm:group-hover/habit-btn:scale-[1.04] sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:size-[92px] lg:size-[88px]',
               habit.completed ? 'ios-habit-orb-done' : 'ios-habit-orb',
             )}
           >
@@ -206,7 +206,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
       {/* Unclipped celebration star burst centered right over the circular orb */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 flex h-20 items-center justify-center sm:h-[88px] md:h-24"
+        className="pointer-events-none absolute inset-x-0 top-0 flex h-20 items-center justify-center sm:h-[88px] md:h-[92px] lg:h-[88px]"
       >
         <StarAnimation isVisible={animatingHabitId === habit.id} />
       </div>

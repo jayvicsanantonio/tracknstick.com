@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, useMemo } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { useDate } from '@app/providers/useDate';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -16,6 +16,14 @@ import {
 } from '@/features/habits/api';
 import { achievementApi } from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
+
+/** Revalidates cached progress summary and history panels after habit mutations. */
+const mutateProgressCaches = () =>
+  mutate(
+    (key) =>
+      Array.isArray(key) &&
+      (key[0] === 'progressSummary' || key[0] === 'progressHistory'),
+  );
 
 interface UseHabitsReturn {
   habits: Habit[];
@@ -98,6 +106,7 @@ export function useHabits(): UseHabitsReturn {
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
         void mutateHabitLists();
+        void mutateProgressCaches();
         // Check for achievements after adding a habit
         void checkAchievements();
       } catch (err) {
@@ -146,6 +155,7 @@ export function useHabits(): UseHabitsReturn {
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
         void mutateHabitLists();
+        void mutateProgressCaches();
       } catch (err) {
         console.error('Failed to update habit:', err);
         toast({
@@ -174,6 +184,7 @@ export function useHabits(): UseHabitsReturn {
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
         void mutateHabitLists();
+        void mutateProgressCaches();
       } catch (err) {
         console.error('Failed to delete habit:', err);
         toast({
@@ -201,6 +212,7 @@ export function useHabits(): UseHabitsReturn {
         if (!date) throw new Error('Date context is not available');
         await apiToggleHabitCompletion(habitId, date, timeZone);
         void mutateHabits();
+        void mutateProgressCaches();
         // Check for achievements after toggling habit completion
         void checkAchievements();
       } catch (err) {

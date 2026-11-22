@@ -5,6 +5,7 @@ import { Button } from '@shared/components/ui/button';
 import { useDate } from '@app/providers/useDate';
 import { triggerHaptic } from '@shared/utils/haptics';
 import type { DaySwipeDirection } from '@/features/habits/hooks/useDaySwipe';
+import { cn } from '@shared/utils/utils';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
@@ -12,10 +13,13 @@ const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 interface DailyHabitDateProps {
   /** Direction of the latest day navigation for subtle directional label glide. */
   transitionDirection?: DaySwipeDirection | null;
+  /** Renders with a recessed surface on lg+ when seated inside the desktop Progress Hero card. */
+  embeddedOnDesktop?: boolean;
 }
 
 const DailyHabitDate = memo(function DailyHabitDate({
   transitionDirection = null,
+  embeddedOnDesktop = false,
 }: DailyHabitDateProps) {
   const prefersReducedMotion = useReducedMotion();
   const { date, currentDate, handlePreviousDate, handleNextDate, timeZone } =
@@ -59,7 +63,14 @@ const DailyHabitDate = memo(function DailyHabitDate({
 
   return (
     <div className="flex flex-col">
-      <div className="ios-tracker-card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3">
+      <div
+        className={cn(
+          'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3',
+          embeddedOnDesktop
+            ? 'ios-tracker-card-until-lg lg:bg-(--color-brand-primary)/[0.055] lg:ring-1 lg:ring-(--color-brand-primary)/14 lg:ring-inset dark:lg:bg-(--color-brand-primary)/[0.07]'
+            : 'ios-tracker-card',
+        )}
+      >
         {/* Keyboard shortcuts for date navigation */}
         <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
 

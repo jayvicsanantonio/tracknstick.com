@@ -12,7 +12,7 @@ const DailyHabitList = memo(function DailyHabitList() {
     // on phones so there are no awkward 3+1 orphans, and artistically centered rows on tablet & desktop.
     <div
       className={cn(
-        'flex flex-wrap justify-center gap-y-6 sm:mx-auto sm:max-w-none sm:gap-x-7 sm:gap-y-7 md:gap-x-8 md:gap-y-8',
+        'flex flex-wrap justify-center gap-y-6 sm:mx-auto sm:max-w-none sm:gap-x-7 sm:gap-y-6 md:gap-x-8 md:gap-y-6 lg:gap-y-5',
         isTwoUp
           ? 'mx-auto max-w-[260px] gap-x-10'
           : 'gap-x-3.5 min-[380px]:gap-x-4',
@@ -23,7 +23,7 @@ const DailyHabitList = memo(function DailyHabitList() {
         <div
           key={habit.id}
           className={cn(
-            'sm:w-[108px] md:w-[116px]',
+            'sm:w-[108px] md:w-[116px] lg:w-[124px]',
             isTwoUp ? 'w-[104px]' : 'w-[88px] min-[380px]:w-[96px]',
           )}
         >

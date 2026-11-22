@@ -356,7 +356,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             ? { duration: 0 }
             : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
         }
-        className="relative size-56 min-[390px]:size-64 sm:size-68 md:size-72"
+        className="relative size-56 min-[390px]:size-64 sm:size-68 md:size-72 lg:size-52"
       >
         <svg
           className="h-full w-full overflow-visible"

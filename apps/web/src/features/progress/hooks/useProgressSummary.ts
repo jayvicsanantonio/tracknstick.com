@@ -1,12 +1,15 @@
+import { useContext } from 'react';
 import useSWR, { SWRResponse } from 'swr';
 import {
   fetchProgressSummary,
   ProgressSummaryResponse,
 } from '@/features/progress/api';
-import { useDate } from '@app/providers/useDate';
+import { DateContext } from '@app/providers/DateContext';
 
-export default function useProgressSummary() {
-  const { timeZone } = useDate();
+export default function useProgressSummary(enabled = true) {
+  const dateContext = useContext(DateContext);
+  const timeZone =
+    dateContext?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const {
     data,
     error,
@@ -14,7 +17,7 @@ export default function useProgressSummary() {
   }: SWRResponse<ProgressSummaryResponse, Error> = useSWR<
     ProgressSummaryResponse,
     Error
-  >(['progressSummary', timeZone] as const, () =>
+  >(enabled ? (['progressSummary', timeZone] as const) : null, () =>
     fetchProgressSummary(timeZone),
   );
 

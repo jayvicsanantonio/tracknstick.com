@@ -124,7 +124,7 @@ const Welcome = memo(function Welcome() {
 
             {/* Right Side - Sign In Stage */}
             <div className="flex justify-center pt-1 pb-2 sm:p-0">
-              <div className="ios-tracker-card w-full max-w-sm rounded-[26px] p-7 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none sm:max-w-md lg:p-8 dark:max-sm:bg-transparent">
+              <div className="ios-tracker-card-sm w-full max-w-sm sm:max-w-md sm:rounded-[26px] sm:p-7 lg:p-8">
                 <div className="mb-3 text-center sm:mb-5">
                   <h2 className="text-[17px] font-bold tracking-[-0.015em] text-(--color-foreground) sm:text-xl">
                     Start Your Journey
