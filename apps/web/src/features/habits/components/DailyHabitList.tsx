@@ -5,15 +5,17 @@ import { cn } from '@shared/utils/utils';
 
 const DailyHabitList = memo(function DailyHabitList() {
   const { habits } = useHabits();
-  const isSparse = habits.length <= 2;
+  const isTwoUp = habits.length <= 2 || habits.length === 4;
 
   return (
-    // On phones: centered circular medallion constellation (always centering
-    // partial last rows cleanly on 360px+ viewports); from sm up: classic glass-orb grid.
+    // On phones: centered circular grid (2-up for 1-2 or 4 habits so there are no
+    // awkward 3+1 orphans, 3-up centered flex-wrap for 3 and 5+); from sm up: classic glass-orb grid.
     <div
       className={cn(
-        'flex flex-wrap justify-center gap-y-6 sm:grid sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
-        isSparse ? 'gap-x-8' : 'gap-x-3.5 min-[380px]:gap-x-4',
+        'flex flex-wrap justify-center gap-y-5 sm:mx-0 sm:grid sm:max-w-none sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
+        isTwoUp
+          ? 'mx-auto max-w-[260px] gap-x-10'
+          : 'gap-x-3.5 min-[380px]:gap-x-4',
       )}
       aria-label="List of daily habits"
     >
@@ -22,7 +24,7 @@ const DailyHabitList = memo(function DailyHabitList() {
           key={habit.id}
           className={cn(
             'sm:w-auto',
-            isSparse ? 'w-[104px]' : 'w-[88px] min-[380px]:w-[96px]',
+            isTwoUp ? 'w-[104px]' : 'w-[88px] min-[380px]:w-[96px]',
           )}
         >
           <DailyHabitItem habit={habit} />

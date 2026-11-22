@@ -4,7 +4,12 @@
 
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { motion, type PanInfo } from 'framer-motion';
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type PanInfo,
+} from 'framer-motion';
 import { BarChart3, ChevronRight, Pencil } from 'lucide-react';
 import HabitsIcons from '@/icons/habits';
 import MiscellaneousIcons from '@/icons/miscellaneous';
@@ -30,9 +35,11 @@ const DailyHabitItem = memo(function DailyHabitItem({
 }: DailyHabitItemProps) {
   const { toggleHabit, animatingHabitId } = useHabits();
   const { openEditDialog } = useHabitsContext();
+  const prefersReducedMotion = useReducedMotion();
   const Icon = HabitsIcons[habit.icon];
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isPressing, setIsPressing] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
   const startPoint = useRef<{ x: number; y: number } | null>(null);
@@ -50,10 +57,12 @@ const DailyHabitItem = memo(function DailyHabitItem({
     (event: React.PointerEvent<HTMLButtonElement>) => {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
       longPressed.current = false;
+      setIsPressing(true);
       startPoint.current = { x: event.clientX, y: event.clientY };
       clearTimer();
       longPressTimer.current = setTimeout(() => {
         longPressed.current = true;
+        setIsPressing(false);
         triggerHaptic('medium');
         setMenuOpen(true);
       }, LONG_PRESS_MS);
@@ -63,11 +72,12 @@ const DailyHabitItem = memo(function DailyHabitItem({
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLButtonElement>) => {
-      if (!startPoint.current || !longPressTimer.current) return;
+      if (!startPoint.current) return;
       const dx = Math.abs(event.clientX - startPoint.current.x);
       const dy = Math.abs(event.clientY - startPoint.current.y);
       if (dx > 10 || dy > 10) {
         clearTimer();
+        setIsPressing(false);
       }
     },
     [clearTimer],
@@ -75,6 +85,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
 
   const handlePointerEnd = useCallback(() => {
     clearTimer();
+    setIsPressing(false);
     startPoint.current = null;
   }, [clearTimer]);
 
@@ -115,66 +126,69 @@ const DailyHabitItem = memo(function DailyHabitItem({
             : `Mark ${habit.name} as complete`
         }
       >
-        {/* Circular medallion orb (sculpted watch-dial medallion on mobile; classic glass orb on sm+) */}
-        <span className="relative mb-2.5 shrink-0 sm:mb-3">
+        {/* Clean circular habit button (minimal tinted orb on mobile; glass orb on sm+) */}
+        <motion.span
+          animate={
+            prefersReducedMotion ? undefined : { scale: isPressing ? 0.92 : 1 }
+          }
+          transition={IOS_SPRING_TAP}
+          className="relative mb-2.5 shrink-0 sm:mb-3"
+        >
           <span
             className={cn(
-              'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 motion-reduce:transition-none max-sm:group-focus-visible/habit-btn:ring-[3px] max-sm:group-focus-visible/habit-btn:ring-(--color-ring) max-sm:group-focus-visible/habit-btn:ring-offset-2 max-sm:group-focus-visible/habit-btn:ring-offset-(--color-background) max-sm:group-active/habit-btn:scale-92 sm:h-24 sm:w-24 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] sm:ring-1 sm:backdrop-blur-xl sm:backdrop-saturate-150 sm:ring-inset sm:group-hover/habit-btn:-translate-y-1 sm:group-hover/habit-btn:scale-105 sm:group-focus-visible/habit-btn:ring-[3px] sm:group-focus-visible/habit-btn:ring-(--color-ring) sm:group-active/habit-btn:scale-92 sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:h-28 md:w-28',
+              'relative flex size-[76px] items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 motion-reduce:transition-none max-sm:group-focus-visible/habit-btn:ring-[3px] max-sm:group-focus-visible/habit-btn:ring-(--color-ring) max-sm:group-focus-visible/habit-btn:ring-offset-2 max-sm:group-focus-visible/habit-btn:ring-offset-(--color-background) sm:h-24 sm:w-24 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] sm:ring-1 sm:backdrop-blur-xl sm:backdrop-saturate-150 sm:ring-inset sm:group-hover/habit-btn:-translate-y-1 sm:group-hover/habit-btn:scale-105 sm:group-focus-visible/habit-btn:ring-[3px] sm:group-focus-visible/habit-btn:ring-(--color-ring) sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:h-28 md:w-28',
               habit.completed
                 ? 'ios-habit-orb-done sm:bg-(--color-brand-primary) sm:ring-(--color-brand-primary)'
                 : 'ios-habit-orb sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/40 dark:sm:bg-(--color-surface-secondary)/40',
             )}
           >
-            {/* Inner concentric horological bezel ring on mobile */}
-            <span
-              aria-hidden="true"
-              className={cn(
-                'pointer-events-none absolute inset-[5px] rounded-full border transition-colors duration-200 sm:hidden',
-                habit.completed
-                  ? 'border-white/30'
-                  : 'border-dashed border-(--color-brand-primary)/25 dark:border-(--color-brand-primary)/28',
-              )}
-            />
-
             <Icon
               aria-hidden="true"
+              strokeWidth={1.85}
               className={cn(
-                'relative z-10 size-8 transition-transform duration-200 sm:h-12 sm:w-12 md:h-14 md:w-14',
+                'relative z-10 size-[30px] transition-[color,transform] duration-200 sm:h-12 sm:w-12 md:h-14 md:w-14',
                 habit.completed
-                  ? 'scale-105 text-(--color-primary-foreground)'
+                  ? 'scale-[1.04] text-(--color-primary-foreground)'
                   : 'text-(--color-brand-primary)',
               )}
             />
           </span>
 
-          {/* Floating spring checkmark seal (outside overflow-hidden orb on mobile & desktop) */}
-          {habit.completed ? (
-            <motion.span
-              aria-hidden="true"
-              data-completed-badge
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={IOS_SPRING_TAP}
-              className="pointer-events-none absolute -top-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:h-7 sm:w-7"
-            >
-              <Check className="size-3.5 sm:h-4 sm:w-4" strokeWidth={3.2} />
-            </motion.span>
-          ) : null}
-        </span>
+          {/* Crisp spring checkmark seal (cutout ring on mobile; crisp badge on desktop) */}
+          <AnimatePresence initial={false}>
+            {habit.completed ? (
+              <motion.span
+                key="completed-badge"
+                aria-hidden="true"
+                data-completed-badge
+                initial={
+                  prefersReducedMotion ? false : { scale: 0.4, opacity: 0 }
+                }
+                animate={{ scale: 1, opacity: 1 }}
+                exit={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        scale: 0.5,
+                        opacity: 0,
+                        transition: { duration: 0.14 },
+                      }
+                }
+                transition={IOS_SPRING_TAP}
+                className="ios-habit-check-badge pointer-events-none absolute -top-0.5 -right-0.5 flex size-[22px] items-center justify-center rounded-full bg-(--color-brand-primary) text-(--color-primary-foreground) sm:h-7 sm:w-7 sm:bg-(--color-card) sm:text-(--color-brand-primary) sm:shadow-md sm:ring-2 sm:ring-(--color-brand-primary)"
+              >
+                <Check className="size-3 sm:h-4 sm:w-4" strokeWidth={3.25} />
+              </motion.span>
+            ) : null}
+          </AnimatePresence>
+        </motion.span>
 
-        {/* Centered habit title & schedule beneath the orb */}
+        {/* Centered habit title & quiet schedule beneath the circle */}
         <span className="flex w-full min-w-0 flex-col items-center">
-          <span
-            className={cn(
-              'line-clamp-2 max-w-full px-0.5 text-center text-[13px] leading-[1.25] font-semibold tracking-[-0.01em] transition-colors duration-150 sm:px-1 sm:text-sm sm:text-(--color-brand-tertiary) dark:sm:text-(--color-brand-text-light)',
-              habit.completed
-                ? 'text-(--color-foreground)'
-                : 'text-(--color-foreground)/92',
-            )}
-          >
+          <span className="line-clamp-2 max-w-full px-0.5 text-center text-[13.5px] leading-[1.25] font-semibold tracking-[-0.015em] text-(--color-foreground) sm:px-1 sm:text-sm sm:text-(--color-brand-tertiary) dark:sm:text-(--color-brand-text-light)">
             {habit.name}
           </span>
-          <span className="mt-0.5 truncate text-[11px] leading-tight font-medium text-(--color-text-secondary)/80 sm:text-xs sm:font-normal sm:text-(--color-brand-text) dark:sm:text-(--color-brand-text-light)">
+          <span className="mt-0.5 max-w-full truncate text-[11px] leading-tight font-normal text-(--color-text-secondary)/55 sm:text-xs sm:text-(--color-brand-text)/80 dark:sm:text-(--color-brand-text-light)/80">
             {frequencyLabel(habit.frequency)}
           </span>
         </span>
@@ -183,7 +197,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
       {/* Unclipped celebration star burst centered right over the circular orb */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 flex h-20 items-center justify-center sm:h-24 md:h-28"
+        className="pointer-events-none absolute inset-x-0 top-0 flex h-[76px] items-center justify-center sm:h-24 md:h-28"
       >
         <StarAnimation isVisible={animatingHabitId === habit.id} />
       </div>
