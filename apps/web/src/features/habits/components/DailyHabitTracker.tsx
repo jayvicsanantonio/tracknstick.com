@@ -36,17 +36,18 @@ function TrackerSkeleton() {
         <div className="flex justify-center pt-3 pb-7">
           <div className="size-56 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none min-[390px]:size-64" />
         </div>
-        <div className="ios-tracker-card rounded-[26px] px-4 pt-5 pb-6">
-          <div className="mb-5 flex items-center px-1">
+        <div className="ios-tracker-card rounded-[26px] px-4 pt-4 pb-6">
+          <div className="mb-5 flex items-center justify-between px-1">
             <div className="h-[11px] w-24 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+            <div className="h-6 w-16 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
           </div>
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-5">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-6">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
                 className="flex w-[88px] flex-col items-center min-[380px]:w-[96px]"
               >
-                <div className="mb-2.5 size-[76px] animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+                <div className="mb-2.5 size-20 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
                 <div className="h-[17px] w-16 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
                 <div className="mt-0.5 h-[14px] w-10 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
               </div>
@@ -288,20 +289,32 @@ export default function DailyHabitTracker() {
               ) : (
                 <section aria-label="Today's Habits">
                   {/* Elevated frosted stage card on phones; transparent direct grid on sm+ */}
-                  <div className="ios-tracker-card relative rounded-[26px] px-4 pt-5 pb-6 sm:rounded-none sm:p-0">
-                    <div className="mb-5 flex items-center gap-1.5 px-1 sm:hidden">
+                  <div className="ios-tracker-card relative rounded-[26px] px-4 pt-4 pb-6 sm:rounded-none sm:p-0">
+                    <div className="mb-5 flex items-center justify-between px-1 sm:hidden">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          aria-hidden="true"
+                          className="size-1.5 rounded-full bg-(--color-brand-primary)"
+                        />
+                        <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
+                          {isToday ? "Today's Habits" : 'Scheduled Habits'}
+                        </span>
+                      </div>
                       <span
-                        aria-hidden="true"
-                        className="size-1.5 rounded-full bg-(--color-brand-primary)"
-                      />
-                      <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
-                        {isToday ? "Today's Habits" : 'Scheduled Habits'}
+                        className={cn(
+                          'inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-semibold text-(--color-brand-text) tabular-nums ring-1 ring-inset dark:text-(--color-brand-text-light)',
+                          doneCount === habits.length
+                            ? 'bg-(--color-brand-primary)/16 ring-(--color-brand-primary)/30'
+                            : 'bg-(--color-brand-primary)/10 ring-(--color-brand-primary)/20',
+                        )}
+                      >
+                        {doneCount}/{habits.length} done
                       </span>
                     </div>
                     <DailyHabitList />
                   </div>
-                  <p className="mt-4 text-center text-[12px] text-(--color-text-secondary)/65 sm:hidden">
-                    Swipe to switch days · Hold a circle for options
+                  <p className="mt-4 text-center text-[12px] text-(--color-text-secondary)/70 sm:hidden">
+                    Tap a circle to check off · Hold for options
                   </p>
                 </section>
               )}

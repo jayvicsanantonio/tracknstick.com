@@ -93,19 +93,20 @@ describe('DailyHabitTracker', () => {
     mockAllHabits([]);
   });
 
-  it("names the habit list section Today's Habits without a duplicate done pill", () => {
+  it("names the habit list section Today's Habits with a done count pill", () => {
     mockHabits({
       habits: [
         habit({ id: '1', name: 'Workout', completed: false }),
-        habit({ id: '2', name: 'Bible Study', completed: false }),
+        habit({ id: '2', name: 'Bible Study', completed: true }),
       ],
+      completionRate: 50,
     });
 
     renderTracker();
 
     const section = screen.getByRole('region', { name: "Today's Habits" });
     expect(section).toBeInTheDocument();
-    expect(within(section).queryByText(/\d+\/\d+\s+done/i)).toBeNull();
+    expect(within(section).getByText('1/2 done')).toBeInTheDocument();
   });
 
   it('shows a check badge on completed habits only', () => {
