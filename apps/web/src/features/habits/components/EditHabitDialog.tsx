@@ -1,4 +1,4 @@
-import { lazy, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -16,24 +16,73 @@ import HabitDialog from '@/features/habits/components/HabitDialog';
 import HabitStats from '@/features/habits/components/HabitStats';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { Habit } from '@/features/habits/types/Habit';
+import { triggerHaptic } from '@shared/utils/haptics';
+import type { EditHabitTab } from '@/features/habits/context/HabitsStateContextDefinition';
 
-// The form, and the date picker it carries, download the first time a habit
-// dialog opens: the dialog renders its content only while open, and HabitDialog
-// waits for the form before it shows.
 const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
 
+const FORM_ID = 'edit-habit-form';
+
 export default function EditHabitDialog() {
-  const { editingHabit, showEditHabitDialog, toggleShowEditHabitDialog } =
-    useHabitsContext();
+  const {
+    editingHabit,
+    editDialogTab = 'edit',
+    showEditHabitDialog,
+    toggleShowEditHabitDialog,
+  } = useHabitsContext();
+  const [activeTab, setActiveTab] = useState<EditHabitTab>(editDialogTab);
+
+  useEffect(() => {
+    if (showEditHabitDialog) {
+      setActiveTab(editDialogTab);
+    }
+  }, [showEditHabitDialog, editDialogTab]);
 
   const HabitIcon = editingHabit ? HabitsIcons[editingHabit.icon] : null;
+
+  const mobileHeader = (
+    <div className="flex items-center justify-between border-b border-(--color-border-primary)/50 px-4 pb-3 sm:hidden">
+      <button
+        type="button"
+        onClick={() => {
+          triggerHaptic('light');
+          toggleShowEditHabitDialog();
+        }}
+        className="flex min-h-9 min-w-16 items-center justify-start text-[16px] font-normal text-(--color-brand-primary) active:opacity-60"
+      >
+        {activeTab === 'edit' ? 'Cancel' : 'Done'}
+      </button>
+      <span
+        aria-hidden="true"
+        className="flex min-w-0 items-center gap-1.5 px-2 text-[17px] font-semibold tracking-tight text-(--color-foreground)"
+      >
+        {HabitIcon ? (
+          <HabitIcon className="size-4 shrink-0 text-(--color-brand-primary)" />
+        ) : null}
+        <span className="truncate">{editingHabit?.name ?? 'Edit Habit'}</span>
+      </span>
+      <div className="flex min-w-16 items-center justify-end">
+        {activeTab === 'edit' ? (
+          <button
+            type="submit"
+            form={FORM_ID}
+            aria-label="Save Changes"
+            className="flex min-h-9 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
+          >
+            Save
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
 
   return (
     <HabitDialog
       isOpen={showEditHabitDialog}
       toggleIsOpen={toggleShowEditHabitDialog}
+      mobileHeader={mobileHeader}
     >
-      <DialogHeader>
+      <DialogHeader className="max-sm:sr-only">
         <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
           {HabitIcon && <HabitIcon className="mr-2 inline-block h-8 w-8" />}
           {editingHabit?.name}
@@ -44,6 +93,8 @@ export default function EditHabitDialog() {
       </DialogHeader>
       <EditHabitTabs
         habit={editingHabit}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
         toggleDialog={toggleShowEditHabitDialog}
       />
     </HabitDialog>
@@ -52,57 +103,68 @@ export default function EditHabitDialog() {
 
 interface EditHabitTabsProps {
   habit: Habit | null;
+  activeTab: EditHabitTab;
+  onTabChange: (tab: EditHabitTab) => void;
   toggleDialog: () => void;
 }
 
-/**
- * The dialog's Edit and Stats tabs. It lives inside the dialog's content,
- * which unmounts on close, so each opening starts on Edit with no stats
- * asked for yet.
- */
-function EditHabitTabs({ habit, toggleDialog }: EditHabitTabsProps) {
-  const [statsOpened, setStatsOpened] = useState(false);
+function EditHabitTabs({
+  habit,
+  activeTab,
+  onTabChange,
+  toggleDialog,
+}: EditHabitTabsProps) {
+  const [statsOpened, setStatsOpened] = useState(activeTab === 'stats');
+
+  useEffect(() => {
+    if (activeTab === 'stats') setStatsOpened(true);
+  }, [activeTab]);
 
   return (
     <Tabs
-      defaultValue="edit"
-      className="min-h-0 w-full flex-1"
+      value={activeTab}
+      className="flex min-h-0 w-full flex-1 flex-col max-sm:pt-3"
       onValueChange={(value) => {
-        if (value === 'stats') setStatsOpened(true);
+        triggerHaptic('selection');
+        const next = value as EditHabitTab;
+        onTabChange(next);
+        if (next === 'stats') setStatsOpened(true);
       }}
     >
-      <TabsList className="mb-2 grid w-full shrink-0 grid-cols-2 bg-(--color-muted) sm:mb-4">
-        <TabsTrigger
-          value="edit"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-        >
-          Edit
-        </TabsTrigger>
-        <TabsTrigger
-          value="stats"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-        >
-          Stats
-        </TabsTrigger>
-      </TabsList>
-      {/* Both panels stay laid out in one cell, the hidden one invisible,
-          so the dialog is as tall as the taller of them on either tab and
-          does not resize when the tab changes. The stats are asked for only
-          once their tab first opens, then stay: the form, the taller of the
-          two, already sets the dialog's height. When the dialog meets the
-          screen's height, each panel scrolls inside the cell. */}
+      <div className="shrink-0 max-sm:px-4">
+        <TabsList className="mb-2 grid w-full shrink-0 grid-cols-2 bg-(--color-muted) sm:mb-4">
+          <TabsTrigger
+            value="edit"
+            className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
+          >
+            Edit
+          </TabsTrigger>
+          <TabsTrigger
+            value="stats"
+            className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
+          >
+            Stats
+          </TabsTrigger>
+        </TabsList>
+      </div>
       <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]">
         <TabsContent
           value="edit"
           forceMount
           className="col-start-1 row-start-1 flex min-h-0 flex-col pt-1 data-[state=inactive]:invisible sm:pt-2"
         >
-          <HabitForm habit={habit} toggleDialog={toggleDialog} />
+          <Suspense fallback={null}>
+            <HabitForm
+              formId={FORM_ID}
+              habit={habit}
+              toggleDialog={toggleDialog}
+            />
+          </Suspense>
         </TabsContent>
         <TabsContent
           value="stats"
           forceMount
-          className="col-start-1 row-start-1 min-h-0 overflow-y-auto overscroll-contain pt-1 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] data-[state=inactive]:invisible sm:pt-2"
+          className="col-start-1 row-start-1 min-h-0 overflow-y-auto overscroll-contain pt-1 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] data-[state=inactive]:invisible max-sm:px-4 max-sm:pb-[max(env(safe-area-inset-bottom),1.5rem)] sm:pt-2"
         >
           {statsOpened ? <HabitStats habit={habit} /> : null}
         </TabsContent>

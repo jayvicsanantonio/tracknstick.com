@@ -7,7 +7,6 @@ import {
 } from '@shared/components/ui/card';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
-import { motion } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,11 +20,21 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
 import { Input } from '@shared/components/ui/input';
 import { Button } from '@shared/components/ui/button';
-import { Archive, ListChecks, SearchX, type LucideIcon } from 'lucide-react';
+import {
+  Archive,
+  ListChecks,
+  Search,
+  SearchX,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import HabitActions from '@/features/habits/components/HabitActions';
+import SwipeableHabitRow from '@/features/habits/components/SwipeableHabitRow';
+import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
+import { triggerHaptic } from '@shared/utils/haptics';
 import {
   isArchived,
   TAB_FILTER,
@@ -85,10 +94,31 @@ function StatusBadge({ habit }: { habit: Habit }) {
   );
 }
 
+function HabitsListSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading habits"
+      className="ios-grouped-card divide-y divide-(--color-border-primary)/40 overflow-hidden rounded-2xl"
+    >
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index} className="flex items-center gap-3 px-4 py-3.5">
+          <div className="size-10 shrink-0 animate-pulse rounded-xl bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-36 animate-pulse rounded bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
+            <div className="h-3 w-24 animate-pulse rounded bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const HabitsOverview = memo(function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit } = useAllHabits();
   const { openEditDialog, toggleShowAddHabitDialog } = useHabitsContext();
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const [selectedTab, setSelectedTab] = useState<OverviewTab>('all');
   // Only the id is local state. The habit itself is derived from the list, so
   // the dialog cannot describe a habit that is no longer there -- SWR
@@ -103,6 +133,7 @@ const HabitsOverview = memo(function HabitsOverview() {
 
   const confirmDelete = useCallback(() => {
     if (!habitToDelete) return;
+    triggerHaptic('medium');
     void deleteHabit(habitToDelete.id, habitToDelete.name);
     setDeletingId(null);
   }, [habitToDelete, deleteHabit]);
@@ -119,43 +150,43 @@ const HabitsOverview = memo(function HabitsOverview() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
-        <Card
-          variant="glass"
-          className="flex w-full items-center justify-center rounded-xl p-8"
-        >
-          <div className="inline-flex items-center gap-4 rounded-full bg-(--color-surface)/80 px-6 py-4 shadow-sm ring-1 ring-(--color-border-primary)/40 backdrop-blur-sm ring-inset dark:bg-(--color-surface-secondary)/80">
-            <span className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-brand-primary) border-r-transparent" />
-            <span className="text-base font-medium text-(--color-text-secondary) sm:text-lg">
-              Loading…
-            </span>
-          </div>
-        </Card>
+      <div className="flex h-full flex-1 flex-col">
+        <MobileNavBar title="Habits" />
+        <div className="mx-auto flex w-full max-w-7xl flex-1 px-4 max-sm:pb-28 sm:px-4 md:px-8 2xl:max-w-[90rem]">
+          <Card
+            variant="glass"
+            className="flex w-full flex-1 flex-col max-sm:rounded-none max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none max-sm:ring-0 max-sm:backdrop-blur-none sm:p-6 dark:max-sm:bg-transparent"
+          >
+            <HabitsListSkeleton />
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center text-red-600 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
-        Error loading habits. Please try again.
+      <div className="flex h-full flex-1 flex-col">
+        <MobileNavBar title="Habits" />
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-4 md:px-8">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-600 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
+            Error loading habits. Please try again.
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <motion.div
-      className="flex h-full flex-1 flex-col"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
+    <div className="flex h-full flex-1 flex-col">
+      <MobileNavBar title="Habits" />
+
+      <div className="mx-auto flex w-full max-w-7xl flex-1 max-sm:pb-28 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
-          className="flex w-full flex-1 flex-col overflow-hidden"
+          className="flex w-full flex-1 flex-col overflow-hidden max-sm:rounded-none max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none max-sm:ring-0 max-sm:backdrop-blur-none dark:max-sm:bg-transparent"
         >
-          <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
+          <CardHeader className="hidden px-3 pt-4 sm:grid sm:px-6 sm:pt-6">
             <div>
               <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
                 Habits Overview
@@ -165,36 +196,80 @@ const HabitsOverview = memo(function HabitsOverview() {
               </p>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 overflow-auto px-3 pb-6 sm:px-6 sm:pb-8">
-            <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row">
-              <Input
-                type="search"
-                aria-label="Search habits"
-                className="w-full sm:max-w-[300px]"
-                placeholder="Search habits..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <CardContent className="flex-1 overflow-auto px-4 pb-6 sm:px-6 sm:pb-8">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:gap-4">
+              {/* Native iOS UISearchBar on phones, classic Input on wider screens */}
+              <div className="flex w-full items-center gap-2 sm:max-w-[300px]">
+                <div className="relative flex-1">
+                  <Search
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-(--color-text-secondary) sm:hidden"
+                  />
+                  <Input
+                    type="search"
+                    aria-label="Search habits"
+                    className="w-full max-sm:h-10 max-sm:rounded-xl max-sm:border-0 max-sm:bg-(--color-muted) max-sm:pr-9 max-sm:pl-9 max-sm:shadow-none max-sm:ring-1 max-sm:ring-(--color-border-primary)/40 max-sm:ring-inset"
+                    placeholder="Search habits..."
+                    value={searchTerm}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {searchTerm ? (
+                    <button
+                      type="button"
+                      aria-label="Clear search text"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        triggerHaptic('light');
+                        setSearchTerm('');
+                      }}
+                      className="absolute top-1/2 right-2.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-full bg-(--color-text-secondary)/25 text-(--color-foreground) sm:hidden"
+                    >
+                      <X aria-hidden="true" className="size-3" />
+                    </button>
+                  ) : null}
+                </div>
+                {searchFocused || searchTerm ? (
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setSearchTerm('');
+                      setSearchFocused(false);
+                      (document.activeElement as HTMLElement | null)?.blur();
+                    }}
+                    className="shrink-0 text-[15px] font-medium text-(--color-brand-primary) active:opacity-60 sm:hidden"
+                  >
+                    Cancel
+                  </button>
+                ) : null}
+              </div>
+
               <Tabs
                 value={selectedTab}
-                onValueChange={(value) => setSelectedTab(value as OverviewTab)}
+                onValueChange={(value) => {
+                  triggerHaptic('selection');
+                  setSelectedTab(value as OverviewTab);
+                }}
                 className="w-full sm:max-w-[300px]"
               >
                 <TabsList className="grid w-full grid-cols-3 bg-(--color-muted)">
                   <TabsTrigger
-                    className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
+                    className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
                     value="all"
                   >
                     All
                   </TabsTrigger>
                   <TabsTrigger
-                    className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
+                    className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
                     value="active"
                   >
                     Active
                   </TabsTrigger>
                   <TabsTrigger
-                    className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
+                    className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
                     value="archived"
                   >
                     Archived
@@ -203,15 +278,8 @@ const HabitsOverview = memo(function HabitsOverview() {
               </Tabs>
             </div>
 
-            {/* The empty state fades in, and either view leaves at once: an
-                exit animation would hold the old view in place above the
-                new one until it finished. */}
             {filteredHabits.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="py-8 sm:py-12"
-              >
+              <div className="py-8 sm:py-12">
                 {searchTerm ? (
                   <EmptyResult
                     Icon={SearchX}
@@ -233,8 +301,6 @@ const HabitsOverview = memo(function HabitsOverview() {
                     detail="Habits you give an end date appear here, with their history intact."
                   />
                 ) : habits.length > 0 ? (
-                  // Every habit is archived: the Active tab is empty, the
-                  // account is not.
                   <EmptyResult
                     Icon={ListChecks}
                     title="No active habits"
@@ -261,53 +327,32 @@ const HabitsOverview = memo(function HabitsOverview() {
                     </Button>
                   </EmptyResult>
                 )}
-              </motion.div>
+              </div>
             ) : (
               <div key="habits">
-                {/* Phones: one card per habit, with 44px actions. */}
-                <ul aria-label="Habits" className="space-y-3 sm:hidden">
-                  {filteredHabits.map((habit) => {
-                    const Icon = HabitsIcons[habit.icon];
-                    return (
-                      <li
+                {/* Phones: native iOS Inset Grouped List — tap to edit, swipe left to delete. */}
+                <div className="sm:hidden">
+                  <ul
+                    aria-label="Habits"
+                    className="ios-grouped-card divide-y divide-(--color-border-primary)/50 overflow-hidden rounded-2xl"
+                  >
+                    {filteredHabits.map((habit) => (
+                      <SwipeableHabitRow
                         key={habit.id}
-                        className="rounded-2xl bg-(--color-surface)/70 p-4 ring-1 ring-(--color-border-primary)/60 ring-inset dark:bg-(--color-surface-secondary)/60"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
-                            <Icon
-                              aria-hidden="true"
-                              className="size-5 text-(--color-brand-primary)"
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="truncate font-semibold text-(--color-foreground)">
-                                {habit.name}
-                              </p>
-                              <StatusBadge habit={habit} />
-                            </div>
-                            <p className="mt-0.5 text-sm text-(--color-text-secondary)">
-                              {frequencyText(habit)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex items-center justify-between gap-2 border-t border-(--color-border-primary)/60 pt-2">
-                          <span className="text-xs text-(--color-text-secondary)">
-                            Since {formatStartDate(habit)}
-                          </span>
-                          <HabitActions
-                            habit={habit}
-                            onEdit={openEditDialog}
-                            onDelete={handleDeleteHabit}
-                            size="touch"
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                        habit={habit}
+                        frequencyLabelText={frequencyText(habit)}
+                        startDateText={formatStartDate(habit)}
+                        onEdit={openEditDialog}
+                        onDelete={handleDeleteHabit}
+                      />
+                    ))}
+                  </ul>
+                  <p className="mt-2.5 px-2 text-center text-[12px] text-(--color-text-secondary)/75">
+                    Tap a habit to edit or view stats · Swipe left to delete
+                  </p>
+                </div>
 
+                {/* Desktop & tablet: table view preserved intact. */}
                 <div className="hidden overflow-hidden rounded-lg border border-(--color-border-primary) sm:block">
                   <div className="overflow-x-auto">
                     <table className="w-full">
@@ -334,12 +379,9 @@ const HabitsOverview = memo(function HabitsOverview() {
                         {filteredHabits.map((habit) => {
                           const Icon = HabitsIcons[habit.icon];
                           return (
-                            <motion.tr
+                            <tr
                               key={habit.id}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="hover:bg-(--color-hover-surface)"
+                              className="transition-colors hover:bg-(--color-hover-surface)"
                             >
                               <td className="px-3 py-3 sm:px-4 sm:py-4">
                                 <div className="flex items-center gap-2 sm:gap-3">
@@ -369,7 +411,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                                   )}
                                 </div>
                               </td>
-                              <td className="hidden px-3 py-3 text-xs text-(--color-foreground) sm:px-4 sm:py-4 sm:text-sm lg:table-cell">
+                              <td className="hidden px-3 py-3 text-xs text-(--color-foreground) tabular-nums sm:px-4 sm:py-4 sm:text-sm lg:table-cell">
                                 {formatStartDate(habit)}
                               </td>
                               <td className="px-3 py-3 sm:px-4 sm:py-4">
@@ -382,7 +424,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                                   onDelete={handleDeleteHabit}
                                 />
                               </td>
-                            </motion.tr>
+                            </tr>
                           );
                         })}
                       </tbody>
@@ -422,7 +464,7 @@ const HabitsOverview = memo(function HabitsOverview() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </motion.div>
+    </div>
   );
 });
 
