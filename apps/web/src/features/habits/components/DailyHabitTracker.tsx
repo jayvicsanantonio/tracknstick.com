@@ -39,20 +39,19 @@ function TrackerSkeleton() {
             <div className="mt-1 h-1.5 w-full animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
           </div>
         </div>
-        <div className="ios-tracker-card rounded-[26px] px-3.5 pt-4 pb-6">
-          <div className="mb-5 flex items-center justify-between px-1">
-            <div className="h-3 w-24 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-            <div className="h-5 w-12 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+        <div className="ios-tracker-card rounded-[26px] px-4 pt-5 pb-6">
+          <div className="mb-5 flex items-center px-1">
+            <div className="h-[11px] w-24 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
           </div>
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-6">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-5">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="flex w-[88px] flex-col items-center gap-2 min-[380px]:w-[96px]"
+                className="flex w-[88px] flex-col items-center min-[380px]:w-[96px]"
               >
-                <div className="size-20 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-                <div className="h-3 w-16 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-                <div className="h-2.5 w-10 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
+                <div className="mb-2.5 size-[76px] animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+                <div className="h-[17px] w-16 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+                <div className="mt-0.5 h-[14px] w-10 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
               </div>
             ))}
           </div>
@@ -360,25 +359,14 @@ export default function DailyHabitTracker() {
               ) : (
                 <section aria-label="Today's Habits">
                   {/* Elevated frosted stage card on phones; transparent direct grid on sm+ */}
-                  <div className="ios-tracker-card relative rounded-[26px] px-3.5 pt-4 pb-6 sm:rounded-none sm:p-0">
-                    <div className="mb-5 flex items-center justify-between px-1 sm:hidden">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          aria-hidden="true"
-                          className="size-1.5 rounded-full bg-(--color-brand-primary)"
-                        />
-                        <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
-                          {isToday ? "Today's Habits" : 'Scheduled Habits'}
-                        </span>
-                      </div>
+                  <div className="ios-tracker-card relative rounded-[26px] px-4 pt-5 pb-6 sm:rounded-none sm:p-0">
+                    <div className="mb-5 flex items-center gap-1.5 px-1 sm:hidden">
                       <span
-                        className={`inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset ${
-                          doneCount === habits.length
-                            ? 'bg-(--color-brand-primary)/18 text-(--color-brand-text) ring-(--color-brand-primary)/30 dark:text-(--color-brand-text-light)'
-                            : 'bg-(--color-brand-primary)/10 text-(--color-brand-text) ring-(--color-brand-primary)/18 dark:text-(--color-brand-text-light)'
-                        }`}
-                      >
-                        {doneCount}/{habits.length} done
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full bg-(--color-brand-primary)"
+                      />
+                      <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
+                        {isToday ? "Today's Habits" : 'Scheduled Habits'}
                       </span>
                     </div>
                     <DailyHabitList />

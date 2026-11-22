@@ -2,7 +2,7 @@
 // A completed habit carries a visible check, and a load error offers a way to try again.
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DailyHabitTracker from '../DailyHabitTracker';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
@@ -74,14 +74,19 @@ describe('DailyHabitTracker', () => {
     mockAllHabits([]);
   });
 
-  it("names the habit list section Today's Habits", () => {
-    mockHabits({ habits: [habit({})] });
+  it("names the habit list section Today's Habits without a duplicate done pill", () => {
+    mockHabits({
+      habits: [
+        habit({ id: '1', name: 'Workout', completed: false }),
+        habit({ id: '2', name: 'Bible Study', completed: false }),
+      ],
+    });
 
     renderTracker();
 
-    expect(
-      screen.getByRole('region', { name: "Today's Habits" }),
-    ).toBeInTheDocument();
+    const section = screen.getByRole('region', { name: "Today's Habits" });
+    expect(section).toBeInTheDocument();
+    expect(within(section).queryByText(/\d+\/\d+\s+done/i)).toBeNull();
   });
 
   it('shows a check badge on completed habits only', () => {
