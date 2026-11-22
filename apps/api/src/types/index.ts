@@ -5,6 +5,8 @@ import type { AchievementIcon } from '@tracknstick/contracts';
 export interface Bindings {
   DB: D1Database;
   ENVIRONMENT: string;
+  /** Optional comma-separated extra origins honored ONLY in development (e.g. a tunnel URL). */
+  EXTRA_ALLOWED_ORIGINS?: string;
   CLERK_SECRET_KEY: string;
   CLERK_PUBLISHABLE_KEY: string;
   AI: Ai;

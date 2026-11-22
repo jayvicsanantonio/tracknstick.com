@@ -9,6 +9,7 @@ import {
   takeConsole,
 } from '../setup.js';
 import app from '../../index.js';
+import { getSecurityConfig } from '../../config/security.js';
 
 describe('Security Integration Tests', () => {
   const { env: testEnv } = createTestEnv();
@@ -172,6 +173,22 @@ describe('Security Integration Tests', () => {
 
       // Should not include CORS headers for unauthorized origins
       expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
+    });
+
+    it('honors EXTRA_ALLOWED_ORIGINS only in development and ignores wildcards and production', () => {
+      const dev = getSecurityConfig(
+        'development',
+        'https://demo.trycloudflare.com/, *, http://192.168.1.10:5173'
+      );
+      expect(dev.cors.origins).toContain('https://demo.trycloudflare.com');
+      expect(dev.cors.origins).toContain('http://192.168.1.10:5173');
+      expect(dev.cors.origins).not.toContain('*');
+
+      const prod = getSecurityConfig(
+        'production',
+        'https://demo.trycloudflare.com'
+      );
+      expect(prod.cors.origins).toEqual(['https://tracknstick.com']);
     });
   });
 

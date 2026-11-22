@@ -28,7 +28,10 @@ app.use('*', withRateLimitFailureHandling(rateLimit()));
 app.use(
   '*',
   withFailureHandling('cors_middleware', async (c, next) => {
-    const config = getSecurityConfig(c.env.ENVIRONMENT);
+    const config = getSecurityConfig(
+      c.env.ENVIRONMENT,
+      c.env.EXTRA_ALLOWED_ORIGINS
+    );
     return cors({
       origin: config.cors.origins,
       allowMethods: config.cors.methods,

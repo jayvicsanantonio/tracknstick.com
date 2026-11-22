@@ -36,7 +36,10 @@ export const clerkMiddleware = () => async (c: Context<AppEnv>, next: Next) => {
         // Accept only tokens issued to an origin this environment serves --
         // the same list CORS allows. An empty list makes Clerk skip the
         // check, so a token issued to any origin would be accepted.
-        authorizedParties: getSecurityConfig(c.env.ENVIRONMENT).cors.origins,
+        authorizedParties: getSecurityConfig(
+          c.env.ENVIRONMENT,
+          c.env.EXTRA_ALLOWED_ORIGINS
+        ).cors.origins,
       });
 
       // A rejection is not logged here: the error handler logs each 401

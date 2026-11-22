@@ -79,6 +79,7 @@ const developmentConfig: SecurityConfig = {
   cors: {
     origins: [
       'http://localhost:3000',
+      'http://localhost:4173',
       'http://localhost:5173',
       'http://localhost:5174',
     ],
@@ -145,16 +146,40 @@ const testConfig: SecurityConfig = {
   },
 };
 
+/** Parses comma-separated explicit http(s) origins (never wildcards). */
+function parseExtraOrigins(raw?: string): string[] {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((entry) => entry.trim().replace(/\/+$/, ''))
+    .filter((entry) => /^https?:\/\/[^/\s*]+$/i.test(entry));
+}
+
 /**
- * Gets security configuration based on current environment
- * @param env - Optional explicit environment string
+ * Gets security configuration based on current environment.
+ * `extraAllowedOrigins` is honored ONLY in `development` (for local tunnels / LAN testing)
+ * and is strictly ignored in `production` and `test`.
  */
-export function getSecurityConfig(env?: string): SecurityConfig {
+export function getSecurityConfig(
+  env?: string,
+  extraAllowedOrigins?: string
+): SecurityConfig {
   const environment = detectEnvironment(env);
 
   switch (environment) {
-    case 'development':
-      return developmentConfig;
+    case 'development': {
+      const extras = parseExtraOrigins(extraAllowedOrigins);
+      if (extras.length === 0) return developmentConfig;
+      return {
+        ...developmentConfig,
+        cors: {
+          ...developmentConfig.cors,
+          origins: Array.from(
+            new Set([...developmentConfig.cors.origins, ...extras])
+          ),
+        },
+      };
+    }
     case 'test':
       return testConfig;
     case 'production':

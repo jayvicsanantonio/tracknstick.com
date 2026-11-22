@@ -110,8 +110,33 @@ describe('clerkMiddleware', () => {
         {
           authorizedParties: [
             'http://localhost:3000',
+            'http://localhost:4173',
             'http://localhost:5173',
             'http://localhost:5174',
+          ],
+        }
+      );
+    });
+
+    it('includes EXTRA_ALLOWED_ORIGINS in development authorizedParties', async () => {
+      mockClerkClient.authenticateRequest.mockResolvedValue({
+        isAuthenticated: true,
+        toAuth: () => ({ userId: 'user_123' }),
+      });
+      mockContext.env.ENVIRONMENT = 'development';
+      mockContext.env.EXTRA_ALLOWED_ORIGINS = 'https://demo.trycloudflare.com';
+
+      await middleware(mockContext, mockNext);
+
+      expect(mockClerkClient.authenticateRequest).toHaveBeenCalledWith(
+        mockContext.req.raw,
+        {
+          authorizedParties: [
+            'http://localhost:3000',
+            'http://localhost:4173',
+            'http://localhost:5173',
+            'http://localhost:5174',
+            'https://demo.trycloudflare.com',
           ],
         }
       );
