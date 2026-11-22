@@ -155,8 +155,8 @@ const MobileTabBar = memo(function MobileTabBar() {
           className={cn(
             'pointer-events-auto flex size-[60px] shrink-0 items-center justify-center rounded-full',
             'bg-(--color-brand-primary) text-(--color-primary-foreground)',
-            'shadow-[inset_0_1.5px_0_rgba(255,255,255,0.45),0_10px_28px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)]',
-            'ring-1 ring-white/25 outline-none ring-inset',
+            'shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_8px_20px_rgba(0,0,0,0.16),0_2px_6px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_24px_rgba(0,0,0,0.45),0_2px_6px_rgba(0,0,0,0.25)]',
+            'ring-1 ring-white/20 outline-none ring-inset',
             'focus-visible:ring-2 focus-visible:ring-(--color-ring)',
           )}
         >

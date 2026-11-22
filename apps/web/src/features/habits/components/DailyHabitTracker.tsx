@@ -344,24 +344,11 @@ export default function DailyHabitTracker() {
                 <section aria-label="Today's Habits">
                   {/* Elevated frosted stage card on phones; transparent direct grid on sm+ */}
                   <div className="ios-tracker-card relative rounded-[26px] px-3.5 pt-4 pb-6 sm:rounded-none sm:p-0">
-                    {/* Clipped ambient glow layer so StarAnimation bursts never clip */}
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 overflow-hidden rounded-[26px] sm:hidden"
-                    >
-                      <div
-                        className={`absolute -right-14 -bottom-14 size-44 rounded-full bg-(--color-brand-primary) blur-3xl transition-opacity duration-500 ${
-                          doneCount === habits.length
-                            ? 'opacity-20'
-                            : 'opacity-10'
-                        }`}
-                      />
-                    </div>
-                    <div className="relative z-10 mb-5 flex items-center justify-between px-1 sm:hidden">
+                    <div className="mb-5 flex items-center justify-between px-1 sm:hidden">
                       <div className="flex items-center gap-1.5">
                         <span
                           aria-hidden="true"
-                          className="size-1.5 rounded-full bg-(--color-brand-primary) shadow-[0_0_6px_var(--color-brand-primary)]"
+                          className="size-1.5 rounded-full bg-(--color-brand-primary)"
                         />
                         <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
                           {isToday ? "Today's Habits" : 'Scheduled Habits'}
@@ -377,9 +364,7 @@ export default function DailyHabitTracker() {
                         {doneCount}/{habits.length} done
                       </span>
                     </div>
-                    <div className="relative z-10">
-                      <DailyHabitList />
-                    </div>
+                    <DailyHabitList />
                   </div>
                   <p className="mt-4 text-center text-[12px] text-(--color-text-secondary)/65 sm:hidden">
                     Tap a circle to check off · Hold for options

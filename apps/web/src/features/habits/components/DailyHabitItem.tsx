@@ -117,15 +117,6 @@ const DailyHabitItem = memo(function DailyHabitItem({
       >
         {/* Circular medallion orb (sculpted watch-dial medallion on mobile; classic glass orb on sm+) */}
         <span className="relative mb-2.5 shrink-0 sm:mb-3">
-          {/* Subtle ambient glow behind completed orb on mobile */}
-          <span
-            aria-hidden="true"
-            className={cn(
-              'pointer-events-none absolute -inset-2 rounded-full bg-(--color-brand-primary) blur-xl transition-opacity duration-300 sm:hidden',
-              habit.completed ? 'opacity-28' : 'opacity-0',
-            )}
-          />
-
           <span
             className={cn(
               'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 motion-reduce:transition-none max-sm:group-focus-visible/habit-btn:ring-[3px] max-sm:group-focus-visible/habit-btn:ring-(--color-ring) max-sm:group-focus-visible/habit-btn:ring-offset-2 max-sm:group-focus-visible/habit-btn:ring-offset-(--color-background) max-sm:group-active/habit-btn:scale-92 sm:h-24 sm:w-24 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] sm:ring-1 sm:backdrop-blur-xl sm:backdrop-saturate-150 sm:ring-inset sm:group-hover/habit-btn:-translate-y-1 sm:group-hover/habit-btn:scale-105 sm:group-focus-visible/habit-btn:ring-[3px] sm:group-focus-visible/habit-btn:ring-(--color-ring) sm:group-active/habit-btn:scale-92 sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:h-28 md:w-28',
