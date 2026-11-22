@@ -1,9 +1,11 @@
 import { lazy, memo, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
-import { SignedIn, SignedOut } from '@clerk/clerk-react';
+import { ClerkLoading, SignedIn, SignedOut } from '@clerk/clerk-react';
+import { Check } from 'lucide-react';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
+import { MobileShellProvider } from '@/features/layout/context/MobileShellContext';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
 
 // Only signed-out visitors see the welcome page, so it loads on demand and
@@ -13,20 +15,30 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
 /**
  * Root layout component that handles authentication-based rendering
  *
- * This layout wraps all routes and conditionally renders content based on
- * authentication status:
- * - When signed in: Renders the matched route component via Outlet
- * - When signed out: Renders the Welcome component
+ * - On phones (< sm): full-bleed native iOS shell — each page renders its own
+ *   Collapsing Large Title nav bar, the iOS 26 Liquid Glass tab bar floats at
+ *   the bottom, and website Header/Footer chrome stay hidden.
+ * - On wider screens (sm+): classic glass Header, routed content, and Footer.
  */
 const RootLayout = memo(function RootLayout() {
   return (
     <>
       <Header />
-      {/* Pages fill the main column, so the footer sits at the foot of the
-          screen however short a page is or while it loads. On phones the main
-          column also reaches the tab bar, which keeps the footer tucked under
-          it, below the content, rather than on show above it. */}
-      <main className="relative flex min-h-0 flex-1 flex-col max-sm:min-h-[calc(100dvh-10rem)]">
+      <main className="relative flex min-h-0 flex-1 flex-col">
+        <ClerkLoading>
+          <div
+            role="status"
+            aria-label="Loading Track N' Stick"
+            className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-24"
+          >
+            <span
+              aria-hidden="true"
+              className="flex size-16 animate-pulse items-center justify-center rounded-[20px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-lg motion-reduce:animate-none"
+            >
+              <Check className="size-8" strokeWidth={3} />
+            </span>
+          </div>
+        </ClerkLoading>
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Suspense fallback={null}>
@@ -34,16 +46,16 @@ const RootLayout = memo(function RootLayout() {
           </Suspense>
         </SignedOut>
         <SignedIn>
-          {/* The coach conversation outlives each page, so it wraps them. */}
-          <ChatConversationProvider>
-            <Outlet />
-          </ChatConversationProvider>
+          <MobileShellProvider>
+            {/* The coach conversation outlives each page, so it wraps them. */}
+            <ChatConversationProvider>
+              <Outlet />
+            </ChatConversationProvider>
+          </MobileShellProvider>
         </SignedIn>
       </main>
       <Footer />
       <SignedIn>
-        {/* Keeps the footer clear of the fixed tab bar on phones. */}
-        <div aria-hidden="true" className="h-24 sm:hidden" />
         <MobileTabBar />
       </SignedIn>
     </>

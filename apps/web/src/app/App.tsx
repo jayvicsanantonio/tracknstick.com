@@ -26,13 +26,21 @@ function App({ children }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="text-foreground min-h-screen px-2 [scroll-timeline-name:--wicked] sm:px-4 md:px-8">
-        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
+      <div
+        data-ios-shell=""
+        className="text-foreground min-h-dvh sm:px-4 md:px-8"
+      >
+        {/* Soft aurora blurs on desktop; phones rely on the lightweight CSS gradient
+            in index.css to keep 120Hz scrolling free of heavy blur-3xl GPU fill-rate. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 -z-10 hidden sm:block"
+        >
           <div className="absolute top-[-10%] left-[-10%] h-[40vmax] w-[40vmax] rounded-full bg-(--color-brand-light) opacity-25 blur-3xl" />
           <div className="absolute top-[20%] right-[-15%] h-[36vmax] w-[36vmax] rounded-full bg-(--color-brand-primary)/30 opacity-25 blur-3xl" />
           <div className="absolute bottom-[-15%] left-[20%] h-[32vmax] w-[32vmax] rounded-full bg-(--color-accent) opacity-20 blur-3xl" />
         </div>
-        <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col 2xl:max-w-[90rem]">
+        <div className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col 2xl:max-w-[90rem]">
           <HabitsStateProvider>
             <AppContent>{children}</AppContent>
           </HabitsStateProvider>
