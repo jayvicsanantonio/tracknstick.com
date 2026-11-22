@@ -26,7 +26,7 @@ const FormActions = memo(function FormActions({
     void onDelete(habit.id);
   }, [habit?.id, onDelete]);
   return (
-    <div className="mt-2 flex flex-row items-center gap-2 max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:-mx-4 max-sm:border-t max-sm:border-(--color-border-brand) max-sm:bg-(--color-brand-lighter) max-sm:px-4 max-sm:pt-3 max-sm:pb-[max(env(safe-area-inset-bottom),1rem)] sm:mt-0 dark:max-sm:border-(--color-border-secondary) dark:max-sm:bg-(--color-surface-secondary)">
+    <div className="flex shrink-0 flex-row items-center gap-2 max-sm:-mx-4 max-sm:border-t max-sm:border-(--color-border-brand) max-sm:bg-(--color-brand-lighter) max-sm:px-4 max-sm:pt-3 max-sm:pb-[max(env(safe-area-inset-bottom),1rem)] dark:max-sm:border-(--color-border-secondary) dark:max-sm:bg-(--color-surface-secondary)">
       <div className="max-sm:empty:hidden sm:flex-1">
         {habit?.id && onDelete && (
           <Button

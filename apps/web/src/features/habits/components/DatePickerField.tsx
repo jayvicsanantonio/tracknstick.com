@@ -13,7 +13,6 @@ interface DatePickerFieldProps {
   placeholder?: string;
   isClearable?: boolean;
   isRequired?: boolean;
-  heightClass?: string;
 }
 
 const datePickerCalendarStyles = `
@@ -151,18 +150,20 @@ const DatePickerField = memo(function DatePickerField({
   placeholder,
   isClearable = false,
   isRequired = false,
-  heightClass = 'h-16',
 }: DatePickerFieldProps) {
   return (
-    <div className={`space-y-2 ${heightClass}`}>
+    <div className="space-y-2">
       <Label
         htmlFor={id}
         className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
       >
         {label}
-        {isRequired && <span className="ml-1 text-(--color-error)">*</span>}
+        {isRequired && <span className="text-(--color-error)">*</span>}
       </Label>
       <DatePicker
+        // The picker sets its input's id itself; without this it would
+        // clear the id the label above points to.
+        id={id}
         selected={selected}
         onChange={onChange}
         customInput={<DatePickerInput id={id} placeholder={placeholder} />}
@@ -171,6 +172,9 @@ const DatePickerField = memo(function DatePickerField({
         placeholderText={placeholder}
         wrapperClassName="w-full"
         popperClassName="z-50"
+        // Placed against the window, so the scrolling form it sits in never
+        // clips the calendar.
+        popperProps={{ strategy: 'fixed' }}
       />
     </div>
   );

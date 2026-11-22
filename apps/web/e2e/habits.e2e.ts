@@ -36,6 +36,27 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
+test('keeps the Add Habit title and buttons on screen in a short window', async ({
+  page,
+}) => {
+  // A small laptop's window, too short for the whole form.
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await page.getByRole('button', { name: 'Add Habit', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Add New Habit' });
+  const title = dialog.getByRole('heading', { name: 'Add New Habit' });
+  const submit = dialog.getByRole('button', { name: 'Add habit' });
+  await expect(submit).toBeInViewport({ ratio: 1 });
+
+  // Only the fields between the title and the buttons scroll.
+  await dialog.getByLabel('Name').hover();
+  await page.mouse.wheel(0, 1000);
+  await expect(dialog.getByRole('button', { name: 'Sat' })).toBeInViewport({
+    ratio: 1,
+  });
+  await expect(title).toBeInViewport({ ratio: 1 });
+  await expect(submit).toBeInViewport({ ratio: 1 });
+});
+
 test("adds a habit and shows it on today's tracker", async ({ page }) => {
   const name = uniqueName('Read');
 
