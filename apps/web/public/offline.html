@@ -2,95 +2,115 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ec4899" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0ea5a5" media="(prefers-color-scheme: dark)" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#fdf2f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#00140b" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <title>Track N' Stick - Offline</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-          Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        background-color: #f5f3ff;
-        color: #4b5563;
+          -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+          system-ui, sans-serif;
+        background-color: #fdf2f8;
+        color: #150a0f;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        min-height: 100dvh;
         margin: 0;
-        padding: 20px;
+        padding: max(env(safe-area-inset-top), 24px) 20px
+          max(env(safe-area-inset-bottom), 24px);
         text-align: center;
       }
       .container {
-        max-width: 500px;
-        padding: 40px 20px;
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        color: #7c3aed;
-        margin-bottom: 16px;
-      }
-      p {
-        margin-bottom: 24px;
-        line-height: 1.5;
+        width: 100%;
+        max-width: 380px;
+        padding: 32px 24px;
+        background-color: #fff5fa;
+        border: 1px solid #f7c5df;
+        border-radius: 24px;
       }
       .icon {
-        font-size: 64px;
-        margin-bottom: 24px;
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 18px;
+        border-radius: 16px;
+        background: rgba(225, 61, 151, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+      }
+      h1 {
+        color: #150a0f;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0 0 10px;
+      }
+      p {
+        color: #a61162;
+        font-size: 15px;
+        line-height: 1.45;
+        margin: 0 0 22px;
       }
       .button {
-        background-color: #7c3aed;
-        color: white;
+        background-color: #e13d97;
+        color: #ffffff;
         border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
+        padding: 13px 28px;
+        border-radius: 9999px;
+        font-size: 16px;
         font-weight: 600;
         cursor: pointer;
         display: inline-block;
         text-decoration: none;
-        transition: background-color 0.2s;
-      }
-      .button:hover {
-        background-color: #6d28d9;
+        width: 100%;
       }
       @media (prefers-color-scheme: dark) {
         body {
-          background-color: #1f2937;
-          color: #e5e7eb;
+          background-color: #00140b;
+          color: #ecfdf5;
         }
         .container {
-          background-color: #111827;
+          background-color: #0f0f0f;
+          border-color: #2d343e;
+        }
+        .icon {
+          background: rgba(44, 237, 172, 0.15);
         }
         h1 {
-          color: #a78bfa;
+          color: #ecfdf5;
+        }
+        p {
+          color: #9aeec9;
         }
         .button {
-          background-color: #8b5cf6;
-        }
-        .button:hover {
-          background-color: #7c3aed;
+          background-color: #2cedac;
+          color: #000000;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="icon">📶</div>
-      <h1>You're Offline</h1>
+      <div class="icon" aria-hidden="true">☁️</div>
+      <h1>You&apos;re Offline</h1>
       <p>
-        It looks like you've lost your internet connection. Some features of
-        Track N' Stick may be unavailable until you're back online.
+        Check your internet connection to sync your latest habits and progress.
       </p>
-      <p>
-        Don't worry though, any changes you make will sync once your connection
-        is restored.
-      </p>
-      <!-- A link to this page rather than a reload handler, which the
-           Content-Security-Policy would block -->
       <a class="button" href="">Try Again</a>
     </div>
   </body>
