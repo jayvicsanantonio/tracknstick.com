@@ -41,10 +41,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
       {/* Message bubble */}
       <div
         className={cn(
-          'rounded-2xl px-4 py-2.5',
+          'rounded-[20px] px-4 py-2.5 select-text',
           isUser
-            ? 'rounded-br-md bg-(--color-brand-primary) text-(--color-primary-foreground)'
-            : 'rounded-bl-md bg-(--color-muted)/80 text-(--color-foreground)',
+            ? 'rounded-br-[6px] bg-(--color-brand-primary) text-(--color-primary-foreground)'
+            : 'rounded-bl-[6px] bg-(--color-muted)/85 text-(--color-foreground)',
         )}
       >
         {isTyping ? (

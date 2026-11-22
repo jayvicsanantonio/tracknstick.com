@@ -70,7 +70,7 @@ const AchievementsSummary = memo(function AchievementsSummary({
   return (
     <section
       aria-labelledby="achievements-heading"
-      className="flex flex-col rounded-2xl bg-(--color-surface)/60 p-4 ring-1 ring-(--color-border-primary)/50 ring-inset sm:p-5 dark:bg-(--color-surface-secondary)/60"
+      className="ios-grouped-card flex flex-col rounded-2xl p-4 sm:border-0 sm:bg-(--color-surface)/60 sm:p-5 sm:shadow-none sm:ring-1 sm:ring-(--color-border-primary)/50 sm:ring-inset dark:sm:bg-(--color-surface-secondary)/60"
     >
       <div className="flex items-baseline justify-between gap-2">
         <h2

@@ -1,19 +1,19 @@
 // The progress calendar: a month of days, each past one with a ring showing how much was done.
-// Moves between past months and back to this one, and explains its rings with a small key.
+// Supports horizontal touch swipes between months and tapping a past day to jump to it on Tracker.
 
-import { memo, useCallback, Dispatch, SetStateAction } from 'react';
+import { memo, useCallback, useRef, Dispatch, SetStateAction } from 'react';
 import { useProgressCalendar } from '@/features/progress/hooks/useProgressCalendar';
 import MonthNavButton from '@/features/progress/components/MonthNavButton';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { InsightData } from '@/features/progress/types/InsightData';
 import CalendarDayCell from '@/features/progress/components/CalendarDayCell';
+import { triggerHaptic } from '@shared/utils/haptics';
 import { Check } from 'lucide-react';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-// Every month is drawn in six weeks, the most any month spans, so the
-// calendar keeps one height from month to month.
 const CALENDAR_CELLS = 6 * 7;
+const MONTH_SWIPE_THRESHOLD = 52;
 
 interface ProgressCalendarProps {
   insightData: InsightData[];
@@ -21,6 +21,8 @@ interface ProgressCalendarProps {
   setSelectedMonth: Dispatch<SetStateAction<Date>>;
   /** The month's history is still loading: past days show no result yet. */
   loading?: boolean;
+  /** Called when the user taps a past or current day in the calendar. */
+  onSelectDate?: (date: Date) => void;
 }
 
 const ProgressCalendar = memo(function ProgressCalendar({
@@ -28,32 +30,85 @@ const ProgressCalendar = memo(function ProgressCalendar({
   selectedMonth,
   setSelectedMonth,
   loading = false,
+  onSelectDate,
 }: ProgressCalendarProps) {
   const { changeMonth, firstDayOfMonth, calendarDays } = useProgressCalendar(
     insightData,
     selectedMonth,
     setSelectedMonth,
   );
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
-  const handlePreviousMonth = useCallback(() => changeMonth(-1), [changeMonth]);
-  const handleNextMonth = useCallback(() => changeMonth(1), [changeMonth]);
-  const handleThisMonth = useCallback(
-    () => setSelectedMonth(new Date()),
-    [setSelectedMonth],
-  );
+  const handlePreviousMonth = useCallback(() => {
+    triggerHaptic('selection');
+    changeMonth(-1);
+  }, [changeMonth]);
 
-  // Months after this one hold nothing yet, so the calendar stops here.
+  const handleNextMonth = useCallback(() => {
+    triggerHaptic('selection');
+    changeMonth(1);
+  }, [changeMonth]);
+
+  const handleThisMonth = useCallback(() => {
+    triggerHaptic('selection');
+    setSelectedMonth(new Date());
+  }, [setSelectedMonth]);
+
   const today = new Date();
   const isThisMonth =
     selectedMonth.getFullYear() === today.getFullYear() &&
     selectedMonth.getMonth() === today.getMonth();
 
+  const handleDaySelect = useCallback(
+    (dayOfMonth: number) => {
+      if (!onSelectDate) return;
+      onSelectDate(
+        new Date(
+          selectedMonth.getFullYear(),
+          selectedMonth.getMonth(),
+          dayOfMonth,
+          12,
+          0,
+          0,
+        ),
+      );
+    },
+    [onSelectDate, selectedMonth],
+  );
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStart.current) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const dx = touch.clientX - touchStart.current.x;
+    const dy = touch.clientY - touchStart.current.y;
+    touchStart.current = null;
+
+    if (
+      Math.abs(dx) >= MONTH_SWIPE_THRESHOLD &&
+      Math.abs(dx) > Math.abs(dy) * 1.4
+    ) {
+      if (dx > 0) {
+        handlePreviousMonth();
+      } else if (!isThisMonth) {
+        handleNextMonth();
+      }
+    }
+  };
+
   return (
-    <div className="mx-auto w-full max-w-lg">
+    <div
+      className="mx-auto w-full max-w-lg"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex items-center gap-2">
-        {/* A phone leaves out this year's year, so the name fits on one
-            line beside "This month". Tight leading: a month of another year,
-            wrapped to two lines there, still fits the buttons' height. */}
         <h2 className="mr-auto text-base leading-tight font-semibold text-(--color-foreground) sm:text-lg">
           {selectedMonth.toLocaleString('default', { month: 'long' })}
           <span
@@ -67,13 +122,11 @@ const ProgressCalendar = memo(function ProgressCalendar({
             {selectedMonth.getFullYear()}
           </span>
         </h2>
-        {/* Apart from the arrows, which hold their place whether or not it
-            shows. */}
         {!isThisMonth && (
           <button
             type="button"
             onClick={handleThisMonth}
-            className="min-h-11 rounded-full px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-border-primary)/60 transition-colors ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none sm:min-h-9 dark:text-(--color-brand-text-light)"
+            className="min-h-11 rounded-full px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-border-primary)/60 transition-colors ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 sm:min-h-9 dark:text-(--color-brand-text-light)"
           >
             This month
           </button>
@@ -94,8 +147,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
           </MonthNavButton>
         </div>
       </div>
-      {/* Six rows of one height under the weekdays: a week of empty cells
-          is as tall as a week of days. */}
+
       <div
         className="mt-4 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5"
         role="grid"
@@ -119,8 +171,6 @@ const ProgressCalendar = memo(function ProgressCalendar({
           ></div>
         ))}
         {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }) => (
-          // Keyed by month as well: the 1st of another month is another
-          // cell, not this one moved to a new column.
           <CalendarDayCell
             key={`${selectedMonth.getFullYear()}-${selectedMonth.getMonth()}-${dayOfMonth}`}
             dayOfMonth={dayOfMonth}
@@ -128,6 +178,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
             isToday={isToday}
             dayData={dayData}
             loading={loading}
+            onSelect={onSelectDate ? handleDaySelect : undefined}
           />
         ))}
         {Array.from({
@@ -140,7 +191,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
           ></div>
         ))}
       </div>
-      {/* Each cell names its own rate; the key is for sighted readers. */}
+
       <div
         aria-hidden="true"
         className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-(--color-text-secondary)"

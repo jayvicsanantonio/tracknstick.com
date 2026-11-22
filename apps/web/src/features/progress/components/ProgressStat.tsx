@@ -46,7 +46,7 @@ const ProgressStat = memo(function ProgressStat({
       aria-label={spoken}
       aria-busy={loading}
       // Icon above the figure in a phone's two columns, beside it from sm up.
-      className="flex flex-col items-start gap-2 rounded-2xl bg-(--color-surface)/60 p-3 ring-1 ring-(--color-border-primary)/50 ring-inset sm:flex-row sm:items-center sm:gap-4 sm:p-4 dark:bg-(--color-surface-secondary)/60"
+      className="ios-grouped-card flex flex-col items-start gap-2 rounded-2xl p-3.5 sm:flex-row sm:items-center sm:gap-4 sm:border-0 sm:bg-(--color-surface)/60 sm:p-4 sm:shadow-none sm:ring-1 sm:ring-(--color-border-primary)/50 sm:ring-inset dark:sm:bg-(--color-surface-secondary)/60"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-(--color-brand-primary)/12 text-(--color-brand-primary) sm:size-11">
         <Icon aria-hidden={true} className="h-5 w-5" />

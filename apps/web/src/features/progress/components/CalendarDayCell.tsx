@@ -1,10 +1,11 @@
 // One day in the progress calendar: its number above a ring that fills with the day's completion.
-// A perfect day shows a check; a past day with nothing scheduled gets a dashed ring, not a missed 0%.
+// Past & today cells are tappable to jump straight to that day in the Tracker.
 
 import { memo } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@shared/utils/utils';
 import { InsightData } from '@/features/progress/types/InsightData';
+import { triggerHaptic } from '@shared/utils/haptics';
 
 interface CalendarDayCellProps {
   dayOfMonth: number;
@@ -13,6 +14,8 @@ interface CalendarDayCellProps {
   dayData?: InsightData;
   /** The month's history is still on its way: a past day shows a plain ring. */
   loading?: boolean;
+  /** Invoked when a past or today cell is tapped. */
+  onSelect?: (dayOfMonth: number) => void;
 }
 
 const RADIUS = 15;
@@ -44,8 +47,6 @@ function DayRing({ rate }: { rate: number | null }) {
   return (
     <div aria-hidden="true" className={RING_BOX}>
       <svg viewBox="0 0 36 36" className="size-full -rotate-90">
-        {/* The track: dashed when nothing was scheduled, filled softly when
-            every habit was done. */}
         <circle
           cx="18"
           cy="18"
@@ -68,7 +69,7 @@ function DayRing({ rate }: { rate: number | null }) {
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={CIRCUMFERENCE * (1 - Math.min(rate, 100) / 100)}
-            className="fill-none stroke-(--color-brand-primary) transition-[stroke-dashoffset] duration-700 ease-out motion-reduce:transition-none"
+            className="fill-none stroke-(--color-brand-primary) transition-[stroke-dashoffset] duration-500 ease-out motion-reduce:transition-none"
           />
         )}
       </svg>
@@ -81,7 +82,6 @@ function DayRing({ rate }: { rate: number | null }) {
           />
         ) : (
           rate !== null && (
-            // Too small to read on phones; the cell's name carries the rate.
             <span className="hidden text-[10px] font-semibold text-(--color-text-secondary) tabular-nums sm:block">
               {rate}%
             </span>
@@ -98,12 +98,11 @@ const CalendarDayCell = memo(function CalendarDayCell({
   isToday,
   dayData,
   loading = false,
+  onSelect,
 }: CalendarDayCellProps) {
   const hasHappened = isPast || isToday;
   const rate = dayData ? Math.round(dayData.completionRate) : null;
 
-  // Unknown is not empty: until the history arrives, no day reads as having
-  // nothing scheduled.
   const label = !hasHappened
     ? `Day ${dayOfMonth}`
     : loading
@@ -112,13 +111,37 @@ const CalendarDayCell = memo(function CalendarDayCell({
         ? `Day ${dayOfMonth}: nothing scheduled`
         : `Day ${dayOfMonth}: ${rate}% completed`;
 
+  const interactive = hasHappened && Boolean(onSelect);
+
+  const handleActivate = () => {
+    if (!interactive || !onSelect) return;
+    triggerHaptic('selection');
+    onSelect(dayOfMonth);
+  };
+
   return (
     <div
       role="gridcell"
       aria-label={label}
       aria-current={isToday ? 'date' : undefined}
       title={hasHappened ? label.replace(/^Day \d+: /, '') : undefined}
-      className="flex flex-col items-center gap-1 py-1"
+      tabIndex={interactive ? 0 : undefined}
+      onClick={interactive ? handleActivate : undefined}
+      onKeyDown={
+        interactive
+          ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleActivate();
+              }
+            }
+          : undefined
+      }
+      className={cn(
+        'flex flex-col items-center gap-1 rounded-xl py-1 outline-none',
+        interactive &&
+          'cursor-pointer transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-92',
+      )}
     >
       <span
         aria-hidden="true"
@@ -138,7 +161,6 @@ const CalendarDayCell = memo(function CalendarDayCell({
       ) : hasHappened ? (
         <DayRing rate={rate} />
       ) : (
-        // Nothing to measure yet: a faint dot keeps the grid's rhythm.
         <div
           aria-hidden="true"
           className={cn(RING_BOX, 'flex items-center justify-center')}
