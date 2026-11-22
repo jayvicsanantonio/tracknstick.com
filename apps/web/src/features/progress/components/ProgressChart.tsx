@@ -23,11 +23,11 @@ interface ProgressChartProps {
 
 const AXIS_TICK = { fill: 'var(--color-text-secondary)', fontSize: 12 };
 
-/** How strongly a bar is filled: full for a perfect day, faint for a missed one. */
+/** How strongly a bar is filled: full for a perfect day, soft for a missed one. */
 function barOpacity(rate: number) {
   if (rate >= 100) return 1;
-  if (rate > 0) return 0.55;
-  return 0.3;
+  if (rate > 0) return 0.68;
+  return 0.24;
 }
 
 const ProgressChart = memo(function ProgressChart({
@@ -71,7 +71,7 @@ const ProgressChart = memo(function ProgressChart({
 
   if (data.length === 0) {
     return (
-      <p className="flex h-62 items-center justify-center rounded-xl text-center text-sm text-(--color-text-secondary) ring-1 ring-(--color-border-primary)/40 ring-inset">
+      <p className="flex h-62 items-center justify-center rounded-2xl border border-dashed border-(--color-brand-primary)/25 bg-(--color-brand-primary)/5 px-4 text-center text-sm text-(--color-text-secondary)">
         Nothing to chart for this month yet.
       </p>
     );
@@ -83,29 +83,34 @@ const ProgressChart = memo(function ProgressChart({
   return (
     <div>
       {/* Live touch-scrub readout or monthly average key */}
-      <div className="mb-2 flex min-h-5 items-center justify-end gap-2 text-xs text-(--color-text-secondary) tabular-nums">
-        {scrubbedDay ? (
-          <span
-            role="status"
-            aria-live="polite"
-            className="rounded-full bg-(--color-brand-primary)/15 px-2.5 py-0.5 font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
-          >
-            {parseDateKey(scrubbedDay.date).toLocaleDateString(undefined, {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-            })}{' '}
-            · {Math.round(scrubbedDay.completionRate)}%
-          </span>
-        ) : (
-          <p className="flex items-center gap-2">
+      <div className="mb-2 flex min-h-6 items-center justify-between gap-2 text-xs text-(--color-text-secondary) tabular-nums">
+        <span className="text-[11px] text-(--color-text-secondary)/65 sm:hidden">
+          {scrubbedDay ? 'Release to reset' : 'Touch & drag bars'}
+        </span>
+        <div className="ml-auto flex items-center">
+          {scrubbedDay ? (
             <span
-              aria-hidden="true"
-              className="w-5 border-t-2 border-dashed border-(--color-foreground)/45"
-            />
-            Avg {average}%
-          </p>
-        )}
+              role="status"
+              aria-live="polite"
+              className="rounded-full bg-(--color-brand-primary)/15 px-2.5 py-0.5 font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/24 ring-inset dark:text-(--color-brand-text-light)"
+            >
+              {parseDateKey(scrubbedDay.date).toLocaleDateString(undefined, {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+              })}{' '}
+              · {Math.round(scrubbedDay.completionRate)}%
+            </span>
+          ) : (
+            <p className="flex items-center gap-2 rounded-full bg-(--color-brand-primary)/10 px-2.5 py-0.5 font-medium text-(--color-brand-text) dark:text-(--color-brand-text-light)">
+              <span
+                aria-hidden="true"
+                className="w-4 border-t-2 border-dashed border-(--color-brand-primary)/70"
+              />
+              Avg {average}%
+            </p>
+          )}
+        </div>
       </div>
 
       <div
@@ -131,8 +136,9 @@ const ProgressChart = memo(function ProgressChart({
           >
             <CartesianGrid
               vertical={false}
-              stroke="var(--color-border-primary)"
-              strokeOpacity={0.5}
+              stroke="var(--color-brand-primary)"
+              strokeDasharray="3 4"
+              strokeOpacity={0.16}
             />
             <XAxis
               dataKey="date"
@@ -166,14 +172,14 @@ const ProgressChart = memo(function ProgressChart({
               contentStyle={{
                 backgroundColor: 'var(--color-card)',
                 border: '1px solid var(--color-border-primary)',
-                borderRadius: '0.75rem',
+                borderRadius: '0.875rem',
                 color: 'var(--color-card-foreground)',
               }}
             />
             <Bar
               dataKey="completionRate"
               fill="var(--color-brand-primary)"
-              radius={[6, 6, 0, 0]}
+              radius={[7, 7, 2, 2]}
               maxBarSize={28}
               minPointSize={3}
             >
@@ -192,9 +198,9 @@ const ProgressChart = memo(function ProgressChart({
             </Bar>
             <ReferenceLine
               y={average}
-              stroke="var(--color-foreground)"
+              stroke="var(--color-brand-primary)"
               strokeDasharray="4 4"
-              strokeOpacity={0.45}
+              strokeOpacity={0.55}
             />
           </BarChart>
         </ResponsiveContainer>

@@ -3,6 +3,7 @@
 
 import { memo } from 'react';
 import { Trophy, Sprout, Flame, Shield, Star } from 'lucide-react';
+import { triggerHaptic } from '@shared/utils/haptics';
 import { Achievement } from '../types/Achievement';
 
 interface AchievementCategoryTabsProps {
@@ -57,11 +58,14 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
               key={category.key}
               type="button"
               aria-pressed={isSelected}
-              onClick={() => onCategoryChange?.(category.key)}
-              className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap ring-1 transition-colors ring-inset ${
+              onClick={() => {
+                triggerHaptic('selection');
+                onCategoryChange?.(category.key);
+              }}
+              className={`flex min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold whitespace-nowrap ring-1 transition-[background-color,color,transform,box-shadow] ring-inset active:scale-95 sm:min-h-10 sm:text-sm ${
                 isSelected
-                  ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) ring-(--color-brand-primary)'
-                  : 'text-(--color-text-secondary) ring-(--color-border-primary)/60 hover:bg-(--color-brand-primary)/8 hover:text-(--color-foreground)'
+                  ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] ring-(--color-brand-primary)'
+                  : 'bg-(--color-brand-primary)/8 text-(--color-text-secondary) ring-(--color-brand-primary)/18 hover:bg-(--color-brand-primary)/14 hover:text-(--color-foreground)'
               }`}
             >
               <category.icon className="h-4 w-4" aria-hidden="true" />
@@ -69,8 +73,8 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
               <span
                 className={`rounded-full px-1.5 text-xs tabular-nums ${
                   isSelected
-                    ? 'bg-(--color-primary-foreground)/15'
-                    : 'bg-(--color-muted)'
+                    ? 'bg-(--color-primary-foreground)/18'
+                    : 'bg-(--color-brand-primary)/12 text-(--color-brand-text) dark:text-(--color-brand-text-light)'
                 }`}
               >
                 {earnedCount}/{count}

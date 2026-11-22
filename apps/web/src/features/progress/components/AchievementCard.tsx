@@ -11,9 +11,9 @@ import {
   getIconBackgroundClass,
 } from '../utils/achievementIcons';
 
-// Category and type labels share one neutral style; the brand color marks earned.
+// Category and type labels share one subtle tinted style; the brand color marks earned.
 const CHIP =
-  'rounded-full bg-(--color-muted) px-2 py-0.5 text-xs text-(--color-text-secondary)';
+  'rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs text-(--color-text-secondary)';
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -35,10 +35,10 @@ const AchievementCard = memo(function AchievementCard({
 
   return (
     <div
-      className={`h-full rounded-2xl p-4 ring-1 transition-colors ring-inset ${
+      className={`h-full rounded-[20px] p-4 transition-colors sm:rounded-2xl sm:ring-1 sm:ring-inset ${
         isEarned
-          ? 'bg-(--color-brand-primary)/8 ring-(--color-brand-primary)/50'
-          : 'bg-(--color-surface)/60 ring-(--color-border-primary)/50 hover:ring-(--color-brand-primary)/40 dark:bg-(--color-surface-secondary)/60'
+          ? 'ios-tracker-card-done sm:bg-(--color-brand-primary)/8 sm:ring-(--color-brand-primary)/50'
+          : 'ios-tracker-card sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/50 sm:hover:ring-(--color-brand-primary)/40 dark:sm:bg-(--color-surface-secondary)/60'
       }`}
     >
       {/* Achievement Header */}

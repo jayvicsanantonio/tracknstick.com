@@ -31,7 +31,15 @@ function nextUp(achievements: Achievement[]): Achievement[] {
     .slice(0, NEXT_UP_COUNT);
 }
 
-function ProgressBar({ percent, label }: { percent: number; label?: string }) {
+function ProgressBar({
+  percent,
+  label,
+  prominent = false,
+}: {
+  percent: number;
+  label?: string;
+  prominent?: boolean;
+}) {
   const clamped = Math.min(100, Math.max(0, Math.round(percent)));
   return (
     <div
@@ -41,10 +49,13 @@ function ProgressBar({ percent, label }: { percent: number; label?: string }) {
       aria-valuemin={label ? 0 : undefined}
       aria-valuemax={label ? 100 : undefined}
       aria-hidden={label ? undefined : true}
-      className="h-1.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/12"
+      className={cn(
+        'w-full overflow-hidden rounded-full bg-(--color-brand-primary)/16',
+        prominent ? 'h-2' : 'h-1.5',
+      )}
     >
       <div
-        className="h-full rounded-full bg-(--color-brand-primary) transition-[width] duration-500"
+        className="h-full rounded-full bg-(--color-brand-primary) shadow-[0_0_8px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)] transition-[width] duration-500"
         style={{ width: `${clamped}%` }}
       />
     </div>
@@ -70,17 +81,17 @@ const AchievementsSummary = memo(function AchievementsSummary({
   return (
     <section
       aria-labelledby="achievements-heading"
-      className="ios-grouped-card flex flex-col rounded-2xl p-4 sm:border-0 sm:bg-(--color-surface)/60 sm:p-5 sm:shadow-none sm:ring-1 sm:ring-(--color-border-primary)/50 sm:ring-inset dark:sm:bg-(--color-surface-secondary)/60"
+      className="ios-tracker-card flex flex-col rounded-[26px] p-5 sm:rounded-2xl sm:border-0 sm:bg-(--color-surface)/60 sm:p-5 sm:shadow-none sm:ring-1 sm:ring-(--color-border-primary)/50 sm:ring-inset dark:sm:bg-(--color-surface-secondary)/60"
     >
-      <div className="flex items-baseline justify-between gap-2">
+      <div className="flex items-center justify-between gap-2">
         <h2
           id="achievements-heading"
-          className="text-base font-semibold text-(--color-foreground) sm:text-lg"
+          className="text-[18px] font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-lg sm:font-semibold"
         >
           Achievements
         </h2>
         {!loading && !error && (
-          <span className="text-sm text-(--color-text-secondary)">
+          <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-xs font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
             {earned} of {total} earned
           </span>
         )}
@@ -96,34 +107,38 @@ const AchievementsSummary = memo(function AchievementsSummary({
         </p>
       ) : (
         <>
-          <div className="mt-3">
-            <ProgressBar percent={percent} label="Achievements earned" />
+          <div className="mt-3.5">
+            <ProgressBar
+              percent={percent}
+              label="Achievements earned"
+              prominent
+            />
           </div>
 
           {upcoming.length > 0 ? (
             <>
-              <h3 className="mt-5 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
+              <h3 className="mt-5 text-[11px] font-semibold tracking-[0.06em] text-(--color-text-secondary)/85 uppercase">
                 Next up
               </h3>
-              <ul aria-label="Next up" className="mt-2 space-y-2">
+              <ul aria-label="Next up" className="mt-2.5 space-y-2">
                 {upcoming.map((achievement) => {
                   const Icon = getAchievementIcon(achievement.icon);
                   const progress = achievement.progress;
                   return (
                     <li
                       key={achievement.id}
-                      className="flex items-center gap-3 rounded-xl p-2"
+                      className="flex items-center gap-3 rounded-2xl bg-(--color-brand-primary)/6 p-2.5 ring-1 ring-(--color-brand-primary)/12 ring-inset"
                     >
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-(--color-brand-primary)/12 text-(--color-brand-primary)">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
                         <Icon aria-hidden="true" className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="truncate text-sm font-medium text-(--color-foreground)">
+                          <p className="truncate text-[14px] font-semibold text-(--color-foreground)">
                             {achievement.name}
                           </p>
                           {progress && (
-                            <span className="shrink-0 text-xs text-(--color-text-secondary) tabular-nums">
+                            <span className="shrink-0 text-xs font-medium text-(--color-text-secondary) tabular-nums">
                               {progress.currentValue} / {progress.targetValue}
                             </span>
                           )}
@@ -152,7 +167,7 @@ const AchievementsSummary = memo(function AchievementsSummary({
             onClick={onToggleList}
             aria-expanded={isListOpen}
             aria-controls="all-achievements"
-            className="mt-auto flex min-h-11 items-center justify-center gap-1.5 rounded-xl pt-4 text-sm font-semibold text-(--color-brand-text) hover:text-(--color-foreground) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none dark:text-(--color-brand-text-light)"
+            className="mt-4 flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl bg-(--color-brand-primary)/12 px-4 text-sm font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/20 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/18 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] dark:text-(--color-brand-text-light)"
           >
             {isListOpen ? 'Hide all achievements' : 'See all achievements'}
             <ChevronDown

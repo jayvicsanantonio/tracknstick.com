@@ -34,7 +34,7 @@ function PendingRing() {
           cy="18"
           r={RADIUS}
           strokeWidth="3"
-          className="fill-none stroke-(--color-border-primary)/50"
+          className="fill-none stroke-(--color-brand-primary)/18"
         />
       </svg>
     </div>
@@ -46,7 +46,10 @@ function DayRing({ rate }: { rate: number | null }) {
 
   return (
     <div aria-hidden="true" className={RING_BOX}>
-      <svg viewBox="0 0 36 36" className="size-full -rotate-90">
+      <svg
+        viewBox="0 0 36 36"
+        className="size-full -rotate-90 overflow-visible"
+      >
         <circle
           cx="18"
           cy="18"
@@ -55,9 +58,9 @@ function DayRing({ rate }: { rate: number | null }) {
           strokeDasharray={rate === null ? '2 3.5' : undefined}
           className={cn(
             rate === null
-              ? 'fill-none stroke-(--color-border-primary)'
-              : 'stroke-(--color-brand-primary)/15',
-            isPerfect ? 'fill-(--color-brand-primary)/15' : 'fill-none',
+              ? 'fill-none stroke-(--color-text-secondary)/30'
+              : 'stroke-(--color-brand-primary)/18',
+            isPerfect ? 'fill-(--color-brand-primary)/16' : 'fill-none',
           )}
         />
         {rate !== null && rate > 0 && (
@@ -69,6 +72,14 @@ function DayRing({ rate }: { rate: number | null }) {
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={CIRCUMFERENCE * (1 - Math.min(rate, 100) / 100)}
+            style={
+              isPerfect
+                ? {
+                    filter:
+                      'drop-shadow(0 0 3px color-mix(in oklab, var(--color-brand-primary) 42%, transparent))',
+                  }
+                : undefined
+            }
             className="fill-none stroke-(--color-brand-primary) transition-[stroke-dashoffset] duration-500 ease-out motion-reduce:transition-none"
           />
         )}
@@ -140,7 +151,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
       className={cn(
         'flex flex-col items-center gap-1 rounded-xl py-1 outline-none',
         interactive &&
-          'cursor-pointer transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-92',
+          'cursor-pointer transition-[transform,background-color] hover:bg-(--color-brand-primary)/8 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-92 active:bg-(--color-brand-primary)/14',
       )}
     >
       <span
@@ -148,10 +159,10 @@ const CalendarDayCell = memo(function CalendarDayCell({
         className={cn(
           'flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-medium tabular-nums',
           isToday
-            ? 'bg-(--color-brand-primary) font-bold text-(--color-primary-foreground)'
+            ? 'bg-(--color-brand-primary) font-bold text-(--color-primary-foreground) shadow-[0_2px_8px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)]'
             : hasHappened
               ? 'text-(--color-foreground)'
-              : 'text-(--color-text-secondary)/60',
+              : 'text-(--color-text-secondary)/55',
         )}
       >
         {dayOfMonth}
@@ -165,7 +176,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
           aria-hidden="true"
           className={cn(RING_BOX, 'flex items-center justify-center')}
         >
-          <span className="size-1 rounded-full bg-(--color-border-primary)" />
+          <span className="size-1 rounded-full bg-(--color-brand-primary)/25" />
         </div>
       )}
     </div>

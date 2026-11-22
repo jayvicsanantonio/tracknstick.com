@@ -29,9 +29,9 @@ const AchievementProgressBar = memo(function AchievementProgressBar({
       </div>
 
       {/* Progress Bar */}
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/12">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/16">
         <div
-          className="h-full rounded-full bg-(--color-brand-primary) transition-all duration-300 ease-out"
+          className="h-full rounded-full bg-(--color-brand-primary) shadow-[0_0_8px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)] transition-all duration-300 ease-out"
           style={{ width: `${clampedPercentage}%` }}
         />
       </div>

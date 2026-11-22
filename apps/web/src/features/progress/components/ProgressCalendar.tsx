@@ -108,8 +108,8 @@ const ProgressCalendar = memo(function ProgressCalendar({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="flex items-center gap-2">
-        <h2 className="mr-auto text-base leading-tight font-semibold text-(--color-foreground) sm:text-lg">
+      <div className="flex h-9 items-center gap-2">
+        <h2 className="mr-auto text-[18px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-lg sm:font-semibold">
           {selectedMonth.toLocaleString('default', { month: 'long' })}
           <span
             className={
@@ -126,12 +126,12 @@ const ProgressCalendar = memo(function ProgressCalendar({
           <button
             type="button"
             onClick={handleThisMonth}
-            className="min-h-11 rounded-full px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-border-primary)/60 transition-colors ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 sm:min-h-9 dark:text-(--color-brand-text-light)"
+            className="flex h-9 items-center rounded-full bg-(--color-brand-primary)/14 px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/24 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/20 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
           >
             This month
           </button>
         )}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <MonthNavButton
             onClick={handlePreviousMonth}
             ariaLabel="Previous month"
@@ -194,7 +194,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
 
       <div
         aria-hidden="true"
-        className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-(--color-text-secondary)"
+        className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-(--color-brand-primary)/12 pt-3.5 text-xs text-(--color-text-secondary)"
       >
         <span className="flex items-center gap-1.5">
           <svg viewBox="0 0 36 36" className="size-4 -rotate-90">
@@ -203,7 +203,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
               cy="18"
               r="15"
               strokeWidth="4"
-              className="fill-none stroke-(--color-brand-primary)/15"
+              className="fill-none stroke-(--color-brand-primary)/18"
             />
             <circle
               cx="18"
@@ -219,7 +219,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
           Completed
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="flex size-4 items-center justify-center rounded-full bg-(--color-brand-primary)/15 ring-2 ring-(--color-brand-primary) ring-inset">
+          <span className="flex size-4 items-center justify-center rounded-full bg-(--color-brand-primary)/16 ring-2 ring-(--color-brand-primary) ring-inset">
             <Check
               strokeWidth={4}
               className="size-2.5 text-(--color-brand-primary)"
@@ -235,12 +235,17 @@ const ProgressCalendar = memo(function ProgressCalendar({
               r="15"
               strokeWidth="4"
               strokeDasharray="2 3.5"
-              className="fill-none stroke-(--color-border-primary)"
+              className="fill-none stroke-(--color-text-secondary)/35"
             />
           </svg>
           Nothing scheduled
         </span>
       </div>
+      {onSelectDate ? (
+        <p className="mt-2.5 text-center text-[11px] text-(--color-text-secondary)/65 sm:hidden">
+          Tap a day to open in Tracker · Swipe to change month
+        </p>
+      ) : null}
     </div>
   );
 });
