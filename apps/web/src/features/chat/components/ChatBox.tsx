@@ -16,7 +16,6 @@ import {
   Ban,
   CalendarCheck2,
   ChevronDown,
-  Sparkles,
   Sprout,
 } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
@@ -176,32 +175,17 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
                   className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:hidden"
                 />
 
-                <div className="relative flex items-start gap-3.5 sm:flex-col sm:items-center sm:gap-0">
-                  <div className="relative mt-0.5 shrink-0 sm:mt-0 sm:mb-5">
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -inset-4 hidden rounded-full bg-(--color-brand-primary)/20 blur-2xl sm:block"
-                    />
-                    <div className="relative flex size-12 items-center justify-center rounded-[15px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset sm:size-16 sm:rounded-[22px] sm:bg-(--color-brand-primary)/15 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_10px_28px_color-mix(in_oklab,var(--color-brand-primary)_22%,transparent)] sm:ring-(--color-brand-primary)/30">
-                      <Sparkles
-                        aria-hidden="true"
-                        className="size-6 sm:h-8 sm:w-8"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="min-w-0 flex-1 sm:flex-none">
-                    <span className="mb-0.5 block text-[11px] font-semibold tracking-[0.06em] text-(--color-brand-primary) uppercase sm:hidden">
-                      Atomic Habits
-                    </span>
-                    <h2 className="text-[19px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-2xl sm:font-semibold">
-                      How can I help?
-                    </h2>
-                    <p className="mt-1 text-[14px] leading-snug text-(--color-text-secondary) sm:mt-2 sm:max-w-md sm:text-base sm:leading-relaxed">
-                      Ask about starting, keeping or breaking a habit. Pick a
-                      question to begin, or ask your own.
-                    </p>
-                  </div>
+                <div className="relative min-w-0 sm:flex sm:flex-col sm:items-center">
+                  <span className="mb-0.5 block text-[11px] font-semibold tracking-[0.06em] text-(--color-brand-primary) uppercase sm:hidden">
+                    Atomic Habits
+                  </span>
+                  <h2 className="text-[19px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-2xl sm:font-semibold">
+                    How can I help?
+                  </h2>
+                  <p className="mt-1 text-[14px] leading-snug text-(--color-text-secondary) sm:mt-2 sm:max-w-md sm:text-base sm:leading-relaxed">
+                    Ask about starting, keeping or breaking a habit. Pick a
+                    question to begin, or ask your own.
+                  </p>
                 </div>
               </div>
 
