@@ -150,8 +150,11 @@ const CalendarDayCell = memo(function CalendarDayCell({
       }
       className={cn(
         'flex flex-col items-center gap-1 rounded-xl py-1 outline-none',
+        isToday &&
+          'bg-(--color-brand-primary)/[0.09] ring-1 ring-(--color-brand-primary)/24 ring-inset',
+        !hasHappened && 'opacity-65',
         interactive &&
-          'cursor-pointer transition-[transform,background-color] hover:bg-(--color-brand-primary)/8 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-92 active:bg-(--color-brand-primary)/14',
+          'cursor-pointer transition-[transform,background-color] hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-92 active:bg-(--color-brand-primary)/16',
       )}
     >
       <span

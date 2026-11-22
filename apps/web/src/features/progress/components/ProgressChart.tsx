@@ -2,7 +2,7 @@
 // On touch screens, dragging a finger across the bars scrubs through days with a live
 // Apple Health-style readout and subtle haptic ticks on each bar change.
 
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useId, useMemo, useRef, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -35,6 +35,7 @@ const ProgressChart = memo(function ProgressChart({
 }: ProgressChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrubIndex, setScrubIndex] = useState<number | null>(null);
+  const barGradientId = useId();
 
   const chronological = useMemo(
     () => [...data].sort((a, b) => a.date.localeCompare(b.date)),
@@ -134,6 +135,20 @@ const ProgressChart = memo(function ProgressChart({
             data={chronological}
             margin={{ top: 8, right: 4, bottom: 0, left: -12 }}
           >
+            <defs>
+              <linearGradient id={barGradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="0%"
+                  stopColor="var(--color-brand-primary)"
+                  stopOpacity="1"
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--color-brand-primary)"
+                  stopOpacity="0.45"
+                />
+              </linearGradient>
+            </defs>
             <CartesianGrid
               vertical={false}
               stroke="var(--color-brand-primary)"
@@ -174,11 +189,12 @@ const ProgressChart = memo(function ProgressChart({
                 border: '1px solid var(--color-border-primary)',
                 borderRadius: '0.875rem',
                 color: 'var(--color-card-foreground)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
               }}
             />
             <Bar
               dataKey="completionRate"
-              fill="var(--color-brand-primary)"
+              fill={`url(#${barGradientId})`}
               radius={[7, 7, 2, 2]}
               maxBarSize={28}
               minPointSize={3}

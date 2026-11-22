@@ -149,20 +149,25 @@ const ProgressCalendar = memo(function ProgressCalendar({
       </div>
 
       <div
-        className="mt-4 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5"
+        className="mt-3.5 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5"
         role="grid"
       >
-        {daysOfWeek.map((day) => (
-          <div
-            key={day}
-            className="pb-1 text-center text-[11px] font-medium tracking-wide text-(--color-text-secondary) uppercase"
-            role="columnheader"
-            aria-label={day}
-          >
-            {day.slice(0, 1)}
-            <span className="hidden sm:inline">{day.slice(1)}</span>
-          </div>
-        ))}
+        <div
+          role="row"
+          className="col-span-7 mb-1 grid grid-cols-7 gap-x-1 rounded-xl bg-(--color-brand-primary)/[0.07] py-1.5"
+        >
+          {daysOfWeek.map((day) => (
+            <div
+              key={day}
+              className="text-center text-[11px] font-semibold tracking-wide text-(--color-text-secondary) uppercase"
+              role="columnheader"
+              aria-label={day}
+            >
+              {day.slice(0, 1)}
+              <span className="hidden sm:inline">{day.slice(1)}</span>
+            </div>
+          ))}
+        </div>
         {Array.from({ length: firstDayOfMonth }).map((_, index) => (
           <div
             key={`empty-${index}`}

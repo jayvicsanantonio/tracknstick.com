@@ -133,12 +133,12 @@ const AchievementsSummary = memo(function AchievementsSummary({
                         <Icon aria-hidden="true" className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-baseline justify-between gap-2">
+                        <div className="flex items-center justify-between gap-2">
                           <p className="truncate text-[14px] font-semibold text-(--color-foreground)">
                             {achievement.name}
                           </p>
                           {progress && (
-                            <span className="shrink-0 text-xs font-medium text-(--color-text-secondary) tabular-nums">
+                            <span className="shrink-0 rounded-full bg-(--color-brand-primary)/12 px-2 py-0.5 text-[11px] font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
                               {progress.currentValue} / {progress.targetValue}
                             </span>
                           )}

@@ -13,6 +13,7 @@ import {
   WifiOff,
 } from 'lucide-react';
 import ProgressStat from '@/features/progress/components/ProgressStat';
+import ProgressHeroSummary from '@/features/progress/components/ProgressHeroSummary';
 import ProgressCalendar from '@/features/progress/components/ProgressCalendar';
 import ProgressChart from '@/features/progress/components/ProgressChart';
 import AchievementsSummary from '@/features/progress/components/AchievementsSummary';
@@ -133,16 +134,19 @@ const ProgressOverview = memo(function ProgressOverview() {
               </div>
             ) : (
               <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <div className="mb-2.5 flex items-center justify-between px-1 sm:hidden">
-                    <span className="text-[12px] font-semibold tracking-[0.06em] text-(--color-text-secondary)/85 uppercase">
-                      Overview
-                    </span>
-                    <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-[11px] font-semibold text-(--color-brand-primary)">
-                      {monthName}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+                {isMobile ? (
+                  <ProgressHeroSummary
+                    monthName={monthName}
+                    averageRate={averageRate}
+                    perfectDays={perfectDays}
+                    currentStreak={currentStreak}
+                    longestStreak={longestStreak}
+                    isBestStreak={isBestStreak}
+                    isHistoryLoading={isHistoryLoading}
+                    isStreaksLoading={isStreaksLoading}
+                  />
+                ) : (
+                  <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                     <ProgressStat
                       Icon={Flame}
                       label="Current streak"
@@ -172,7 +176,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                       loading={isHistoryLoading}
                     />
                   </div>
-                </div>
+                )}
 
                 <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                   <section aria-label="Calendar" className={PANEL}>
