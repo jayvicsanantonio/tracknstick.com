@@ -30,3 +30,10 @@ export const IOS_SPRING_TAB = {
   damping: 36,
   mass: 0.75,
 } as const satisfies Transition;
+
+export const IOS_SPRING_PAGE = {
+  type: 'spring',
+  stiffness: 400,
+  damping: 36,
+  mass: 0.78,
+} as const satisfies Transition;

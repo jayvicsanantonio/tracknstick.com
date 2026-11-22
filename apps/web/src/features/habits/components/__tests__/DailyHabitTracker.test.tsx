@@ -19,7 +19,26 @@ vi.mock('@/features/habits/hooks/useAllHabits', () => ({
 vi.mock('../DailyHabitDate', () => ({
   default: () => <nav aria-label="Day navigation" />,
 }));
-vi.mock('../DailyHabitProgressIndicator', () => ({ default: () => null }));
+vi.mock('../DailyHabitProgressIndicator', () => ({
+  default: ({
+    completionRate,
+    totalHabits,
+    completedHabits,
+  }: {
+    completionRate: number;
+    totalHabits: number;
+    completedHabits: number;
+  }) => (
+    <div
+      role="progressbar"
+      aria-label={`Daily habit completion: ${completionRate}%`}
+      data-total-habits={totalHabits}
+      data-completed-habits={completedHabits}
+    >
+      {completionRate}%
+    </div>
+  ),
+}));
 
 const habit = (overrides: Partial<Habit>): Habit =>
   ({
@@ -74,19 +93,20 @@ describe('DailyHabitTracker', () => {
     mockAllHabits([]);
   });
 
-  it("names the habit list section Today's Habits without a duplicate done pill", () => {
+  it("names the habit list section Today's Habits with a done count pill", () => {
     mockHabits({
       habits: [
         habit({ id: '1', name: 'Workout', completed: false }),
-        habit({ id: '2', name: 'Bible Study', completed: false }),
+        habit({ id: '2', name: 'Bible Study', completed: true }),
       ],
+      completionRate: 50,
     });
 
     renderTracker();
 
     const section = screen.getByRole('region', { name: "Today's Habits" });
     expect(section).toBeInTheDocument();
-    expect(within(section).queryByText(/\d+\/\d+\s+done/i)).toBeNull();
+    expect(within(section).getByText('1/2 done')).toBeInTheDocument();
   });
 
   it('shows a check badge on completed habits only', () => {
@@ -126,40 +146,28 @@ describe('DailyHabitTracker', () => {
     expect(mutateHabits).toHaveBeenCalledTimes(1);
   });
 
-  it("sums up how many of the day's habits are done", () => {
+  it('passes daily completion rate and habit counts to the segmented progress circle', () => {
     mockHabits({
       habits: [
         habit({ id: '1', name: 'Read', completed: true }),
         habit({ id: '2', name: 'Walk', completed: true }),
         habit({ id: '3', name: 'Swim', completed: false }),
       ],
+      completionRate: 67,
     });
 
     renderTracker();
 
-    expect(
-      screen.getByRole('status', { name: 'Day summary' }),
-    ).toHaveTextContent('2 of 3 done');
-  });
-
-  it('says so when every habit of the day is done', () => {
-    mockHabits({
-      habits: [
-        habit({ id: '1', name: 'Read', completed: true }),
-        habit({ id: '2', name: 'Walk', completed: true }),
-      ],
-      completionRate: 100,
+    const progress = screen.getByRole('region', { name: 'Progress' });
+    const ring = within(progress).getByRole('progressbar', {
+      name: 'Daily habit completion: 67%',
     });
-
-    renderTracker();
-
-    expect(
-      screen.getByRole('status', { name: 'Day summary' }),
-    ).toHaveTextContent('All 2 done');
-    expect(screen.getByText('All caught up!')).toBeInTheDocument();
+    expect(ring).toHaveTextContent('67%');
+    expect(ring).toHaveAttribute('data-total-habits', '3');
+    expect(ring).toHaveAttribute('data-completed-habits', '2');
   });
 
-  it('shows contextual progress copy and renders each habit name once', () => {
+  it('replaces the Ready for today summary panel with only the segmented percentage circle', () => {
     mockHabits({
       habits: [
         habit({ id: '1', name: 'Workout', completed: false }),
@@ -170,7 +178,13 @@ describe('DailyHabitTracker', () => {
 
     renderTracker();
 
-    expect(screen.getByText('Ready for today')).toBeInTheDocument();
+    const progress = screen.getByRole('region', { name: 'Progress' });
+    expect(within(progress).getByText('0%')).toBeInTheDocument();
+    expect(screen.queryByText('Ready for today')).not.toBeInTheDocument();
+    expect(screen.queryByText('All caught up!')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { name: 'Day summary' }),
+    ).not.toBeInTheDocument();
     expect(screen.getAllByText('Workout')).toHaveLength(1);
     expect(screen.getAllByText('Meditate')).toHaveLength(1);
   });
@@ -238,5 +252,43 @@ describe('DailyHabitTracker', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(retryAllHabits).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the date navigation mounted instead of flashing a full-page skeleton while switching days', () => {
+    mockHabits({
+      habits: [habit({ id: '1', name: 'Read', completed: false })],
+      isLoading: false,
+      completionRate: 0,
+    });
+
+    const { rerender } = render(
+      <HabitsStateProvider>
+        <DailyHabitTracker />
+      </HabitsStateProvider>,
+    );
+
+    expect(
+      screen.getByRole('navigation', { name: 'Day navigation' }),
+    ).toBeInTheDocument();
+
+    // Simulate SWR fetching an uncached adjacent day while keepPreviousData holds the last day.
+    mockHabits({
+      habits: [habit({ id: '1', name: 'Read', completed: false })],
+      isLoading: true,
+      completionRate: 0,
+    });
+
+    rerender(
+      <HabitsStateProvider>
+        <DailyHabitTracker />
+      </HabitsStateProvider>,
+    );
+
+    expect(
+      screen.getByRole('navigation', { name: 'Day navigation' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { name: 'Loading habits' }),
+    ).not.toBeInTheDocument();
   });
 });
