@@ -119,7 +119,7 @@ const IconPicker = memo(function IconPicker({
       {/* A fixed-height scroll area of whole rows; the fade at its foot
           shows there are more icons below. Once it reaches either end, a
           scroll carries on to the form around it. */}
-      <div className="max-h-[13.5rem] overflow-y-auto rounded-xl [mask-image:linear-gradient(to_bottom,black_calc(100%-1.5rem),transparent)] p-0.5 pb-4 sm:max-h-[10.5rem]">
+      <div className="max-h-[13.5rem] overflow-y-auto rounded-xl [mask-image:linear-gradient(to_bottom,black_calc(100%-1.5rem),transparent)] p-0.5 pb-4 sm:max-h-[9rem]">
         {shown.length === 0 ? (
           <p className="py-6 text-center text-sm text-(--color-text-secondary)">
             No icons match “{query.trim()}”

@@ -109,7 +109,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
       onTouchEnd={handleTouchEnd}
     >
       <div className="flex h-9 items-center gap-2">
-        <h2 className="mr-auto text-[18px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-lg sm:font-semibold">
+        <h2 className="mr-auto text-[18px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground)">
           {selectedMonth.toLocaleString('default', { month: 'long' })}
           <span
             className={
@@ -247,9 +247,14 @@ const ProgressCalendar = memo(function ProgressCalendar({
         </span>
       </div>
       {onSelectDate ? (
-        <p className="mt-2.5 text-center text-[11px] text-(--color-text-secondary)/65 sm:hidden">
-          Tap a day to open in Tracker · Swipe to change month
-        </p>
+        <>
+          <p className="mt-2.5 text-center text-[11px] text-(--color-text-secondary)/65 sm:hidden">
+            Tap a day to open in Tracker · Swipe to change month
+          </p>
+          <p className="mt-2.5 hidden text-center text-xs text-(--color-text-secondary)/65 sm:block">
+            Click a day to open in Tracker
+          </p>
+        </>
       ) : null}
     </div>
   );

@@ -8,11 +8,11 @@ const DailyHabitList = memo(function DailyHabitList() {
   const isTwoUp = habits.length <= 2 || habits.length === 4;
 
   return (
-    // On phones: centered circular grid (2-up for 1-2 or 4 habits so there are no
-    // awkward 3+1 orphans, 3-up centered flex-wrap for 3 and 5+); from sm up: classic glass-orb grid.
+    // Centered circular medallion grid across all viewports: 2-up for 1-2 or 4 habits
+    // on phones so there are no awkward 3+1 orphans, and artistically centered rows on tablet & desktop.
     <div
       className={cn(
-        'flex flex-wrap justify-center gap-y-6 sm:mx-0 sm:grid sm:max-w-none sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
+        'flex flex-wrap justify-center gap-y-6 sm:mx-auto sm:max-w-none sm:gap-x-7 sm:gap-y-7 md:gap-x-8 md:gap-y-8',
         isTwoUp
           ? 'mx-auto max-w-[260px] gap-x-10'
           : 'gap-x-3.5 min-[380px]:gap-x-4',
@@ -23,7 +23,7 @@ const DailyHabitList = memo(function DailyHabitList() {
         <div
           key={habit.id}
           className={cn(
-            'sm:w-auto',
+            'sm:w-[108px] md:w-[116px]',
             isTwoUp ? 'w-[104px]' : 'w-[88px] min-[380px]:w-[96px]',
           )}
         >

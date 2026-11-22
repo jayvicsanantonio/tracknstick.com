@@ -81,12 +81,12 @@ const AchievementsSummary = memo(function AchievementsSummary({
   return (
     <section
       aria-labelledby="achievements-heading"
-      className="ios-tracker-card flex flex-col rounded-[26px] p-5 sm:rounded-2xl sm:border-0 sm:bg-(--color-surface)/60 sm:p-5 sm:shadow-none sm:ring-1 sm:ring-(--color-border-primary)/50 sm:ring-inset dark:sm:bg-(--color-surface-secondary)/60"
+      className="ios-tracker-card flex flex-col rounded-[26px] p-5 sm:p-6"
     >
       <div className="flex items-center justify-between gap-2">
         <h2
           id="achievements-heading"
-          className="text-[18px] font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-lg sm:font-semibold"
+          className="text-[18px] font-bold tracking-[-0.02em] text-(--color-foreground)"
         >
           Achievements
         </h2>

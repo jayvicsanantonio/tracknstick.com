@@ -80,9 +80,15 @@ describe('ProgressOverview', () => {
     vi.useRealTimers();
   });
 
-  it('sums up the streaks and the month in four figures', () => {
+  it('shows the all-time lifetime progress hero summary across viewports', () => {
     renderOverview();
 
+    expect(
+      screen.getByRole('status', { name: 'Total check-ins: 12 check-ins' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('status', { name: 'All-time consistency: 75%' }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('status', { name: 'Current streak: 2 days' }),
     ).toBeInTheDocument();
@@ -90,23 +96,23 @@ describe('ProgressOverview', () => {
       screen.getByRole('status', { name: 'Longest streak: 5 days' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('status', { name: 'November average: 50%' }),
+      screen.getByRole('status', { name: 'Active days: 8 days' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('status', { name: 'Perfect days in November: 1 day' }),
+      screen.getByRole('status', { name: 'Perfect days: 5 days' }),
     ).toBeInTheDocument();
   });
 
-  it('has no average for a month with nothing scheduled', () => {
-    vi.mocked(useProgressHistory).mockReturnValue({
-      ...loaded.history,
-      historyData: [],
+  it('shows no data yet for consistency when there is no history yet', () => {
+    vi.mocked(useProgressSummary).mockReturnValue({
+      ...loaded.summary,
+      overallCompletionRate: null,
     });
 
     renderOverview();
 
     expect(
-      screen.getByRole('status', { name: 'November average: no data yet' }),
+      screen.getByRole('status', { name: 'All-time consistency: no data yet' }),
     ).toBeInTheDocument();
   });
 

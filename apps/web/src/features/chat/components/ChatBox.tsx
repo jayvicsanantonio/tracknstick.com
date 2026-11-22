@@ -162,27 +162,36 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
         onScroll={handleLogScroll}
         onTouchMove={dismissMobileKeyboard}
         onClick={dismissMobileKeyboard}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-1 sm:px-6 sm:pt-4"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-1 sm:px-0 sm:pt-3"
       >
         <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-3.5 pb-6 sm:gap-4">
           {messages.length === 0 && (
-            <div className="flex flex-col sm:my-auto sm:items-center sm:py-6 sm:text-center">
-              {/* Mobile Hero Card (matches Tracker's rounded-[26px] hero card rhythm);
-                  clean centered welcome header on desktop. */}
-              <div className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:flex sm:flex-col sm:items-center sm:overflow-visible sm:rounded-none sm:p-0">
+            <div className="flex flex-col sm:my-auto sm:py-4">
+              {/* Elevated welcome hero card matching phone across all screen sizes */}
+              <div className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:p-7">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:hidden"
+                  className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:size-56"
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-12 -bottom-12 hidden size-48 rounded-full bg-(--color-brand-primary)/10 blur-3xl sm:block"
                 />
 
-                <div className="relative min-w-0 sm:flex sm:flex-col sm:items-center">
-                  <span className="mb-0.5 block text-[11px] font-semibold tracking-[0.06em] text-(--color-brand-primary) uppercase sm:hidden">
-                    Atomic Habits
-                  </span>
-                  <h2 className="text-[19px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-2xl sm:font-semibold">
+                <div className="relative min-w-0">
+                  <div className="mb-1.5 flex items-center gap-1.5">
+                    <span
+                      aria-hidden="true"
+                      className="size-1.5 rounded-full bg-(--color-brand-primary)"
+                    />
+                    <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
+                      Atomic Habits
+                    </span>
+                  </div>
+                  <h2 className="text-[19px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-2xl">
                     How can I help?
                   </h2>
-                  <p className="mt-1 text-[14px] leading-snug text-(--color-text-secondary) sm:mt-2 sm:max-w-md sm:text-base sm:leading-relaxed">
+                  <p className="mt-1 text-[14px] leading-snug text-(--color-text-secondary) sm:mt-1.5 sm:max-w-xl sm:text-[15px] sm:leading-relaxed">
                     Ask about starting, keeping or breaking a habit. Pick a
                     question to begin, or ask your own.
                   </p>
@@ -190,18 +199,24 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
               </div>
 
               {/* Section header matching Tracker's TODAY'S HABITS & Habits' ALL HABITS */}
-              <div className="mt-5 mb-2.5 flex items-center justify-between px-1 sm:hidden">
-                <span className="text-[12px] font-semibold tracking-[0.06em] text-(--color-text-secondary)/85 uppercase">
-                  Suggested Prompts
-                </span>
-                <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-[11px] font-semibold text-(--color-brand-primary) tabular-nums">
+              <div className="mt-5 mb-2.5 flex items-center justify-between px-1 sm:mt-6 sm:mb-3">
+                <div className="flex items-center gap-1.5">
+                  <span
+                    aria-hidden="true"
+                    className="size-1.5 rounded-full bg-(--color-brand-primary)"
+                  />
+                  <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
+                    Suggested Prompts
+                  </span>
+                </div>
+                <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-[11px] font-semibold text-(--color-brand-text) tabular-nums ring-1 ring-(--color-brand-primary)/20 ring-inset dark:text-(--color-brand-text-light)">
                   {SUGGESTED_QUESTIONS.length}
                 </span>
               </div>
 
               <ul
                 aria-label="Suggested questions"
-                className="grid w-full gap-2.5 sm:mt-8 sm:grid-cols-3 sm:gap-3"
+                className="grid w-full gap-2.5 sm:gap-3 md:grid-cols-3"
               >
                 {SUGGESTED_QUESTIONS.map(({ question, Icon }) => (
                   <li key={question}>
@@ -267,10 +282,10 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
         </div>
       ) : null}
 
-      {/* Soft edge fade so messages dissolve cleanly behind the floating mobile composer */}
+      {/* Soft edge fade so messages dissolve cleanly behind the floating pill composer */}
       <div
         aria-hidden="true"
-        className="pointer-events-none -mt-5 h-5 shrink-0 bg-gradient-to-t from-(--color-background) to-transparent sm:hidden"
+        className="pointer-events-none -mt-5 h-5 shrink-0 bg-gradient-to-t from-(--color-background) to-transparent"
       />
 
       {/* Input area */}
@@ -298,21 +313,21 @@ function SuggestionCard({
     <button
       type="button"
       onClick={onClick}
-      className="ios-tracker-card group flex h-full min-h-[72px] w-full cursor-pointer items-center gap-3.5 rounded-[20px] px-3.5 py-3 text-left text-[15px] leading-snug font-semibold text-(--color-foreground) transition-[background-color,transform,box-shadow] focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] sm:min-h-0 sm:flex-col sm:items-start sm:gap-3.5 sm:rounded-2xl sm:border-0 sm:bg-(--color-surface)/60 sm:p-4 sm:text-sm sm:font-medium sm:shadow-none sm:ring-1 sm:ring-(--color-border-primary)/50 sm:ring-inset sm:hover:bg-(--color-brand-primary)/6 sm:hover:ring-(--color-brand-primary)/50 dark:sm:bg-(--color-surface-secondary)/60"
+      className="ios-tracker-card group flex h-full min-h-[72px] w-full cursor-pointer items-center gap-3.5 rounded-[20px] px-3.5 py-3 text-left text-[15px] leading-snug font-semibold text-(--color-foreground) transition-[background-color,border-color,transform] hover:border-(--color-brand-primary)/35 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] md:min-h-0 md:flex-col md:items-start md:gap-4 md:p-4"
     >
-      <div className="flex shrink-0 items-center justify-between sm:w-full">
-        <span className="flex size-12 items-center justify-center rounded-[15px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset sm:size-9 sm:rounded-xl">
-          <Icon aria-hidden={true} className="size-6 sm:h-5 sm:w-5" />
+      <div className="flex shrink-0 items-center justify-between md:w-full">
+        <span className="flex size-12 items-center justify-center rounded-[15px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset md:size-11 md:rounded-[14px]">
+          <Icon aria-hidden={true} className="size-6 md:size-5" />
         </span>
         <ArrowUpRight
           aria-hidden="true"
-          className="hidden size-4 text-(--color-text-secondary)/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) sm:block"
+          className="hidden size-4 text-(--color-brand-primary)/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:block"
         />
       </div>
       <span className="flex-1">{text}</span>
       <ArrowUpRight
         aria-hidden="true"
-        className="size-4 shrink-0 text-(--color-brand-primary)/60 sm:hidden"
+        className="size-4 shrink-0 text-(--color-brand-primary)/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:hidden"
       />
     </button>
   );

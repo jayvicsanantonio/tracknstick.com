@@ -343,7 +343,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
           : `${displayRate}%`
       }
       data-connected={isConnected ? 'true' : 'false'}
-      className="flex shrink-0 flex-col items-center justify-center sm:mt-4 sm:mb-6 lg:mt-6 lg:mb-6"
+      className="flex shrink-0 flex-col items-center justify-center"
     >
       <motion.div
         animate={

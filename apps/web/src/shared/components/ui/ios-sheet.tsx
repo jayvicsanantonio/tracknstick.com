@@ -76,11 +76,11 @@ const IosSheet = memo(function IosSheet({
               animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
               transition={IOS_SPRING_SHEET}
               className={cn(
-                'fixed z-50 flex flex-col overflow-hidden border border-(--color-border-brand) bg-(--color-brand-lighter) text-(--color-card-foreground) shadow-2xl outline-none dark:border-(--color-border-secondary) dark:bg-(--color-surface-secondary)/98',
+                'ios-action-sheet-surface fixed z-50 flex flex-col overflow-hidden text-(--color-card-foreground) outline-none',
                 // Mobile: bottom-anchored draggable iOS sheet
-                'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:w-full max-sm:rounded-t-[28px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0 max-sm:backdrop-blur-2xl',
-                // Desktop: centered modal dialog
-                'sm:top-1/2 sm:left-1/2 sm:max-h-[90dvh] sm:w-[95vw] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6 sm:backdrop-blur-2xl',
+                'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:w-full max-sm:rounded-t-[28px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0',
+                // Tablet & desktop: centered frosted modal matching phone sheets
+                'sm:top-1/2 sm:left-1/2 sm:max-h-[90dvh] sm:w-[95vw] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[26px] sm:p-6',
                 className,
               )}
             >

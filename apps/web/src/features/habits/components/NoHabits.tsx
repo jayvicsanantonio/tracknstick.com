@@ -15,9 +15,9 @@ const NoHabits = memo(function NoHabits() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="ios-tracker-card mx-auto w-full max-w-md rounded-[26px] px-6 py-12 text-center sm:rounded-none sm:py-16"
+      className="ios-tracker-card mx-auto w-full max-w-md rounded-[26px] px-6 py-12 text-center sm:px-8 sm:py-14"
     >
-      <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-(--color-brand-primary)/10 ring-1 ring-(--color-brand-primary)/20 ring-inset">
+      <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 ring-1 ring-(--color-brand-primary)/24 ring-inset">
         <Sprout
           className="h-8 w-8 text-(--color-brand-primary)"
           aria-hidden="true"

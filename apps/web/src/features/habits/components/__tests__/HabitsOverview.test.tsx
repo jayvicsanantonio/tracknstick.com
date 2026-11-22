@@ -76,13 +76,16 @@ describe('HabitsOverview', () => {
       habit({ id: '2', name: 'Swim', frequency: ['Mon', 'Wed', 'Fri'] }),
     ]);
 
-    const read = screen.getByRole('row', { name: /Read/ });
-    expect(within(read).getByText('Daily')).toBeInTheDocument();
-    expect(within(read).queryByText('Sun')).not.toBeInTheDocument();
+    const cards = within(
+      screen.getByRole('list', { name: 'Habits' }),
+    ).getAllByRole('listitem');
+    expect(cards[0]).toHaveTextContent('Read');
+    expect(cards[0]).toHaveTextContent('Daily');
+    expect(cards[0]).not.toHaveTextContent('Sun');
 
-    const swim = screen.getByRole('row', { name: /Swim/ });
-    expect(within(swim).getByText('Mon')).toBeInTheDocument();
-    expect(within(swim).queryByText('Daily')).not.toBeInTheDocument();
+    expect(cards[1]).toHaveTextContent('Swim');
+    expect(cards[1]).toHaveTextContent('Mon · Wed · Fri');
+    expect(cards[1]).not.toHaveTextContent('Daily');
   });
 
   describe('on phones, as a card list', () => {

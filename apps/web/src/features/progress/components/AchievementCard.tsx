@@ -35,10 +35,10 @@ const AchievementCard = memo(function AchievementCard({
 
   return (
     <div
-      className={`h-full rounded-[20px] p-4 transition-colors sm:rounded-2xl sm:ring-1 sm:ring-inset ${
+      className={`h-full rounded-[20px] p-4 transition-colors ${
         isEarned
-          ? 'ios-tracker-card-done sm:bg-(--color-brand-primary)/8 sm:ring-(--color-brand-primary)/50'
-          : 'ios-tracker-card sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/50 sm:hover:ring-(--color-brand-primary)/40 dark:sm:bg-(--color-surface-secondary)/60'
+          ? 'ios-tracker-card-done'
+          : 'ios-tracker-card hover:border-(--color-brand-primary)/40'
       }`}
     >
       {/* Achievement Header */}

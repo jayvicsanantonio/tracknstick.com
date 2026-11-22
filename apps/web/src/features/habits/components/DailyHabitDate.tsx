@@ -18,14 +18,8 @@ const DailyHabitDate = memo(function DailyHabitDate({
   transitionDirection = null,
 }: DailyHabitDateProps) {
   const prefersReducedMotion = useReducedMotion();
-  const {
-    date,
-    currentDate,
-    setDate,
-    handlePreviousDate,
-    handleNextDate,
-    timeZone,
-  } = useDate();
+  const { date, currentDate, handlePreviousDate, handleNextDate, timeZone } =
+    useDate();
 
   // The month and day, and the year apart from them: a phone leaves out
   // this year's year, so the date sits comfortably between the arrows.
@@ -64,8 +58,8 @@ const DailyHabitDate = memo(function DailyHabitDate({
   }, [date, isToday, timeZone]);
 
   return (
-    <div className="flex flex-col sm:gap-1.5">
-      <div className="ios-tracker-card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3 sm:rounded-none sm:p-0">
+    <div className="flex flex-col">
+      <div className="ios-tracker-card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3">
         {/* Keyboard shortcuts for date navigation */}
         <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
 
@@ -77,21 +71,19 @@ const DailyHabitDate = memo(function DailyHabitDate({
           variant="ghost"
           size="icon"
           aria-label="Previous Date"
-          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) hover:bg-(--color-brand-primary)/18 active:scale-92 sm:size-10 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:bg-(--color-hover-surface) sm:hover:shadow-md"
+          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 sm:size-10"
         >
           <ChevronLeft aria-hidden="true" className="h-4 w-4" />
         </Button>
 
         <div className="min-w-0 text-center">
-          <div className="relative flex items-center justify-center gap-1.5 overflow-hidden sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
+          <div className="relative flex items-center justify-center gap-1.5 overflow-hidden">
             <CalendarDays
               aria-hidden="true"
-              className="size-3.5 shrink-0 text-(--color-brand-primary) sm:hidden"
+              className="size-3.5 shrink-0 text-(--color-brand-primary) sm:size-4"
             />
-            {/* On phones the Large Title bar directly above displays Today / weekday. */}
-            <h2 className="text-xl font-bold tracking-tight text-(--color-foreground) max-sm:sr-only sm:text-2xl">
-              {dayLabel}
-            </h2>
+            {/* The visible Large Title directly above displays Today / weekday across all screen sizes. */}
+            <h2 className="sr-only">{dayLabel}</h2>
             {isToday ? (
               <motion.span
                 key={`weekday-${dateKey}`}
@@ -110,7 +102,7 @@ const DailyHabitDate = memo(function DailyHabitDate({
                     ? { duration: 0 }
                     : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
                 }
-                className="text-[14px] font-medium whitespace-nowrap text-(--color-text-secondary) sm:hidden"
+                className="text-[14px] font-medium whitespace-nowrap text-(--color-text-secondary) sm:text-[15px]"
               >
                 {shortWeekday} ·
               </motion.span>
@@ -131,7 +123,7 @@ const DailyHabitDate = memo(function DailyHabitDate({
                   ? { duration: 0 }
                   : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
               }
-              className="text-[15px] font-semibold whitespace-nowrap text-(--color-foreground) tabular-nums sm:text-base sm:font-normal sm:text-(--color-brand-primary)"
+              className="text-[15px] font-semibold whitespace-nowrap text-(--color-foreground) tabular-nums"
             >
               {monthDay}
               <span className={isThisYear ? 'max-sm:hidden' : undefined}>
@@ -149,27 +141,10 @@ const DailyHabitDate = memo(function DailyHabitDate({
           variant="ghost"
           size="icon"
           aria-label="Next Date"
-          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) hover:bg-(--color-brand-primary)/18 active:scale-92 sm:size-10 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:shadow-sm sm:hover:bg-(--color-hover-surface) sm:hover:shadow-md"
+          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 sm:size-10"
         >
           <ChevronRight aria-hidden="true" className="h-4 w-4" />
         </Button>
-      </div>
-
-      {/* Desktop quick jump back to Today inside a fixed-height slot so changing
-          days never shifts layout (phones use the top-left "Today" nav pill). */}
-      <div className="hidden h-7 items-center justify-center sm:flex">
-        {!isToday ? (
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('selection');
-              setDate(new Date());
-            }}
-            className="rounded-full bg-(--color-brand-primary)/12 px-3.5 py-1 text-xs font-semibold text-(--color-brand-text) transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
-          >
-            Back to Today
-          </button>
-        ) : null}
       </div>
     </div>
   );

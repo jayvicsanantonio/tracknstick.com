@@ -19,34 +19,34 @@ function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-16">
-      <div className="text-center">
+    <div className="flex flex-1 flex-col items-center justify-center px-4 py-12">
+      <div className="ios-tracker-card w-full max-w-md rounded-[26px] px-6 py-12 text-center sm:px-10 sm:py-14">
         {/* 404 Icon */}
-        <div className="mb-6 text-7xl font-extrabold tracking-tight text-(--color-brand-primary)/40 sm:mb-8 sm:text-8xl">
+        <div className="mb-5 text-7xl font-extrabold tracking-tight text-(--color-brand-primary)/40 sm:mb-6 sm:text-8xl">
           404
         </div>
 
         {/* Error Message */}
-        <h1 className="mb-4 text-2xl font-bold text-(--color-foreground) sm:text-3xl">
+        <h1 className="mb-3 text-2xl font-bold tracking-[-0.02em] text-(--color-foreground) sm:text-3xl">
           Page Not Found
         </h1>
-        <p className="mb-8 max-w-md text-(--color-text-secondary)">
+        <p className="mb-8 text-sm leading-relaxed text-(--color-text-secondary) sm:text-base">
           The page you&apos;re looking for doesn&apos;t exist. It might have
           been moved, deleted, or you may have typed the wrong URL.
         </p>
 
         {/* Navigation Options */}
-        <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+        <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center sm:gap-3">
           <Button
             onClick={() => void navigate('/')}
-            className="h-11 min-w-[140px] rounded-full sm:h-9"
+            className="h-11 min-w-[148px] rounded-full px-6"
           >
             Go to Dashboard
           </Button>
           <Button
             onClick={() => void navigate(-1)}
             variant="outline"
-            className="h-11 min-w-[140px] rounded-full sm:h-9"
+            className="h-11 min-w-[132px] rounded-full px-6"
           >
             Go Back
           </Button>

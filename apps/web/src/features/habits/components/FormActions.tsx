@@ -32,7 +32,7 @@ const FormActions = memo(function FormActions({
           <Button
             type="button"
             variant="outline"
-            className="border-(--color-error) bg-(--color-surface) px-3 text-sm text-(--color-error) hover:bg-(--color-error) hover:text-(--color-text-inverse) sm:text-base dark:bg-transparent dark:hover:border-(--color-error) dark:hover:bg-(--color-error)"
+            className="h-10 rounded-full border-(--color-destructive)/40 bg-transparent px-4 text-sm font-semibold text-(--color-destructive) transition-[background-color,color,transform] hover:border-(--color-destructive) hover:bg-(--color-destructive) hover:text-(--color-destructive-foreground) active:scale-[0.98]"
             onClick={handleDelete}
             disabled={isSubmitting}
           >
@@ -41,19 +41,19 @@ const FormActions = memo(function FormActions({
         )}
       </div>
       <div className="flex flex-1 flex-row gap-2 sm:w-auto sm:flex-none">
-        <DialogClose asChild className={`flex-1 sm:flex-none`}>
+        <DialogClose asChild className="flex-1 sm:flex-none">
           <Button
             type="button"
             variant="outline"
             disabled={isSubmitting}
-            className="border-(--color-border-brand) text-sm text-(--color-brand-primary) hover:bg-(--color-hover-brand) hover:text-(--color-brand-secondary) sm:text-base dark:border-(--color-border-brand) dark:bg-(--color-brand-light) dark:text-(--color-brand-text-light) dark:hover:border-(--color-border-brand) dark:hover:bg-(--color-hover-brand) dark:hover:text-(--color-brand-text-light)"
+            className="h-10 rounded-full border-(--color-border-primary)/80 bg-(--color-brand-primary)/8 px-5 text-sm font-semibold text-(--color-brand-text) transition-[background-color,transform] hover:bg-(--color-brand-primary)/15 active:scale-[0.98] dark:text-(--color-brand-text-light)"
           >
             Cancel
           </Button>
         </DialogClose>
         <Button
           type="submit"
-          className="flex-1 bg-(--color-brand-primary) text-sm text-(--color-text-inverse) hover:bg-(--color-brand-secondary) sm:w-32 sm:flex-none sm:text-base dark:bg-(--color-brand-primary) dark:hover:bg-(--color-brand-primary)/90"
+          className="h-10 flex-1 rounded-full bg-(--color-brand-primary) px-5 text-sm font-semibold text-(--color-primary-foreground) shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_4px_12px_rgba(0,0,0,0.12)] transition-[background-color,transform] hover:bg-(--color-brand-secondary) active:scale-[0.98] sm:min-w-[132px] sm:flex-none"
           disabled={isSubmitting}
         >
           {isSubmitting ? submittingLabel : submitLabel}

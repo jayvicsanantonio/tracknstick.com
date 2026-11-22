@@ -82,14 +82,22 @@ export default function EditHabitDialog() {
       toggleIsOpen={toggleShowEditHabitDialog}
       mobileHeader={mobileHeader}
     >
-      <DialogHeader className="max-sm:sr-only">
-        <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
-          {HabitIcon && <HabitIcon className="mr-2 inline-block h-8 w-8" />}
-          {editingHabit?.name}
-        </DialogTitle>
-        <DialogDescription>
-          {editingHabit ? frequencyLabel(editingHabit.frequency) : null}
-        </DialogDescription>
+      <DialogHeader className="max-sm:sr-only sm:pb-3">
+        <div className="flex items-center gap-3.5">
+          {HabitIcon ? (
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
+              <HabitIcon aria-hidden="true" className="size-5" />
+            </span>
+          ) : null}
+          <div className="min-w-0 flex-1 text-left">
+            <DialogTitle className="truncate text-xl font-extrabold tracking-[-0.02em] text-(--color-foreground) sm:text-2xl">
+              {editingHabit?.name}
+            </DialogTitle>
+            <DialogDescription className="mt-0.5 text-sm text-(--color-text-secondary)">
+              {editingHabit ? frequencyLabel(editingHabit.frequency) : null}
+            </DialogDescription>
+          </div>
+        </div>
       </DialogHeader>
       <EditHabitTabs
         habit={editingHabit}
@@ -131,21 +139,23 @@ function EditHabitTabs({
         if (next === 'stats') setStatsOpened(true);
       }}
     >
-      <div className="shrink-0 max-sm:px-4">
-        <TabsList className="mb-2 grid w-full shrink-0 grid-cols-2 bg-(--color-muted) sm:mb-4">
-          <TabsTrigger
-            value="edit"
-            className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
-          >
-            Edit
-          </TabsTrigger>
-          <TabsTrigger
-            value="stats"
-            className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
-          >
-            Stats
-          </TabsTrigger>
-        </TabsList>
+      <div className="shrink-0 max-sm:px-4 sm:mb-3">
+        <div className="ios-tracker-card rounded-2xl p-1">
+          <TabsList className="grid h-9 w-full shrink-0 grid-cols-2 bg-transparent p-0 ring-0">
+            <TabsTrigger
+              value="edit"
+              className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+            >
+              Edit
+            </TabsTrigger>
+            <TabsTrigger
+              value="stats"
+              className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+            >
+              Stats
+            </TabsTrigger>
+          </TabsList>
+        </div>
       </div>
       <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]">
         <TabsContent

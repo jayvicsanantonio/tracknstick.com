@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo, memo } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
-import { Separator } from '@shared/components/ui/separator';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -144,11 +143,10 @@ const HabitForm = memo(function HabitForm({
         onSubmit={handleSubmit}
         className="text-foreground flex min-h-0 flex-1 flex-col gap-3 sm:gap-4"
       >
-        {/* Scrollable fields — on phones, organised into clean iOS inset grouped sections
-            with generous bottom safe-area inset since Cancel & Save sit in the top bar. */}
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 pt-3 pb-[max(env(safe-area-inset-bottom),1.75rem)] [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] sm:px-1 sm:pt-1 sm:pb-2">
+        {/* Scrollable fields organised into clean inset grouped sections across all viewports */}
+        <div className="min-h-0 flex-1 space-y-3.5 overflow-y-auto overscroll-contain px-4 pt-3 pb-[max(env(safe-area-inset-bottom),1.75rem)] [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] sm:space-y-3 sm:px-0.5 sm:pt-1 sm:pb-1">
           {/* Name Section */}
-          <div className="space-y-1.5 max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 sm:space-y-2 dark:max-sm:bg-(--color-surface-tertiary)/40">
+          <div className="space-y-1.5 rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 dark:bg-(--color-surface-tertiary)/35">
             <Label
               htmlFor="habit-name"
               className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
@@ -168,7 +166,7 @@ const HabitForm = memo(function HabitForm({
           </div>
 
           {/* Icon Picker Section */}
-          <div className="max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 dark:max-sm:bg-(--color-surface-tertiary)/40">
+          <div className="rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 dark:bg-(--color-surface-tertiary)/35">
             <IconPicker
               selectedIcon={icon}
               onIconChange={(selectedIcon) => {
@@ -179,7 +177,7 @@ const HabitForm = memo(function HabitForm({
           </div>
 
           {/* Dates Section */}
-          <div className="grid grid-cols-1 gap-3 max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 sm:grid-cols-2 sm:gap-4 dark:max-sm:bg-(--color-surface-tertiary)/40">
+          <div className="grid grid-cols-1 gap-3 rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 sm:grid-cols-2 sm:gap-4 dark:bg-(--color-surface-tertiary)/35">
             <DatePickerField
               id="start-date"
               label="Start Date"
@@ -199,7 +197,7 @@ const HabitForm = memo(function HabitForm({
           </div>
 
           {/* Frequency Section */}
-          <div className="max-sm:rounded-2xl max-sm:border max-sm:border-(--color-border-primary)/60 max-sm:bg-(--color-surface)/85 max-sm:p-3.5 dark:max-sm:bg-(--color-surface-tertiary)/40">
+          <div className="rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 dark:bg-(--color-surface-tertiary)/35">
             <FrequencySelector
               selectedDays={frequency}
               onFrequencyChange={setFrequency}
@@ -222,10 +220,8 @@ const HabitForm = memo(function HabitForm({
           ) : null}
         </div>
 
-        <Separator className="hidden shrink-0 bg-(--color-border-brand) sm:block dark:bg-(--color-brand-light)" />
-
         {/* Desktop footer action bar (on mobile Cancel / Add / Save sit in the iOS top sheet header) */}
-        <div className="hidden sm:block">
+        <div className="hidden border-t border-(--color-border-primary)/40 pt-4 sm:block">
           <FormActions
             isSubmitting={isSubmitting}
             onDelete={habit?.id ? requestDelete : undefined}
@@ -234,9 +230,9 @@ const HabitForm = memo(function HabitForm({
         </div>
       </form>
 
-      {/* Confirm-before-delete Action Sheet (mobile) / Alert Dialog (desktop) */}
+      {/* Confirm-before-delete Action Sheet (mobile) / Frosted Modal (desktop) */}
       <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
-        <AlertDialogContent className="bg-(--color-card) text-(--color-card-foreground)">
+        <AlertDialogContent className="text-(--color-card-foreground)">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-(--color-foreground)">
               Delete Habit
