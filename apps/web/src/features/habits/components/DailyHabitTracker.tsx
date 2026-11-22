@@ -3,8 +3,9 @@
 // swipe between days, and geometry-matched skeleton loading.
 // From sm/lg up: keeps the spacious glass dashboard card layout.
 
-import { useContext, useRef } from 'react';
-import { WifiOff } from 'lucide-react';
+import { useCallback, useContext } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, WifiOff } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@shared/components/ui/card';
 import NoHabits from '@/features/habits/components/NoHabits';
 import DailyHabitDate from '@/features/habits/components/DailyHabitDate';
@@ -12,13 +13,13 @@ import DailyHabitProgressIndicator from '@/features/habits/components/DailyHabit
 import DailyHabitList from '@/features/habits/components/DailyHabitList';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
+import { useDaySwipe } from '@/features/habits/hooks/useDaySwipe';
 import NothingScheduled from '@/features/habits/components/NothingScheduled';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
 import { triggerHaptic } from '@shared/utils/haptics';
-
-const SWIPE_THRESHOLD_PX = 56;
+import { cn } from '@shared/utils/utils';
 
 function TrackerSkeleton() {
   return (
@@ -78,7 +79,6 @@ export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate, mutateHabits } =
     useHabits();
   const dateContext = useContext(DateContext);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   // Every habit, due or not: tells "no habits at all" from "none due today".
   // Fetched only when the day shown has no habits, the one case that needs it.
@@ -111,32 +111,42 @@ export default function DailyHabitTracker() {
         })
     : 'Today';
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
-  };
+  const goPreviousDay = useCallback(() => {
+    dateContext?.handlePreviousDate();
+  }, [dateContext]);
 
-  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!touchStart.current || !dateContext) return;
-    const touch = event.changedTouches[0];
-    if (!touch) return;
-    const dx = touch.clientX - touchStart.current.x;
-    const dy = touch.clientY - touchStart.current.y;
-    touchStart.current = null;
+  const goNextDay = useCallback(() => {
+    dateContext?.handleNextDate();
+  }, [dateContext]);
 
-    if (
-      Math.abs(dx) >= SWIPE_THRESHOLD_PX &&
-      Math.abs(dx) > Math.abs(dy) * 1.4
-    ) {
-      triggerHaptic('selection');
-      if (dx > 0) {
-        dateContext.handlePreviousDate();
-      } else {
-        dateContext.handleNextDate();
-      }
-    }
-  };
+  const {
+    x: swipeX,
+    feedback: swipeFeedback,
+    swipeHandlers,
+  } = useDaySwipe({
+    enabled: Boolean(dateContext) && !error && !hasNoHabits,
+    onPreviousDay: goPreviousDay,
+    onNextDay: goNextDay,
+  });
+
+  const swipeEdgeIndicator = swipeFeedback ? (
+    <div
+      aria-hidden="true"
+      className={cn(
+        'pointer-events-none fixed top-1/2 z-30 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border transition-all duration-150 sm:hidden',
+        swipeFeedback.direction === 'prev' ? 'left-3' : 'right-3',
+        swipeFeedback.ready
+          ? 'scale-105 border-(--color-brand-primary) bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-md'
+          : 'scale-95 border-(--color-border-primary)/60 bg-(--color-card)/90 text-(--color-brand-primary) shadow-sm',
+      )}
+    >
+      {swipeFeedback.direction === 'prev' ? (
+        <ChevronLeft className="size-5" strokeWidth={2.5} />
+      ) : (
+        <ChevronRight className="size-5" strokeWidth={2.5} />
+      )}
+    </div>
+  ) : null;
 
   const navBar = (
     <MobileNavBar
@@ -171,8 +181,12 @@ export default function DailyHabitTracker() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full flex-1 flex-col">
+      <div
+        className="flex h-full flex-1 touch-pan-y flex-col overscroll-x-none"
+        {...swipeHandlers}
+      >
         {navBar}
+        {swipeEdgeIndicator}
         <div className="mx-auto flex w-full max-w-7xl flex-1 sm:px-4 md:px-8 2xl:max-w-[90rem]">
           <Card
             variant="glass"
@@ -236,17 +250,20 @@ export default function DailyHabitTracker() {
 
   return (
     <div
-      className="flex h-full flex-1 flex-col"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className="flex h-full flex-1 touch-pan-y flex-col overscroll-x-none"
+      {...swipeHandlers}
     >
       {navBar}
+      {swipeEdgeIndicator}
       <div className="mx-auto flex w-full max-w-7xl flex-1 max-sm:pb-28 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
           className="relative flex w-full flex-1 flex-col overflow-hidden max-sm:rounded-none max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none max-sm:ring-0 max-sm:backdrop-blur-none dark:max-sm:bg-transparent"
         >
-          <div className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch">
+          <motion.div
+            style={{ x: swipeX }}
+            className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch"
+          >
             <div className="lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
               <CardHeader className="px-4 pt-1 pb-3.5 sm:px-6 sm:pt-6 sm:pb-0">
                 <DailyHabitDate />
@@ -367,12 +384,12 @@ export default function DailyHabitTracker() {
                     <DailyHabitList />
                   </div>
                   <p className="mt-4 text-center text-[12px] text-(--color-text-secondary)/65 sm:hidden">
-                    Tap a circle to check off · Hold for options
+                    Swipe to switch days · Hold a circle for options
                   </p>
                 </section>
               )}
             </CardContent>
-          </div>
+          </motion.div>
         </Card>
       </div>
     </div>
