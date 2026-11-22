@@ -169,13 +169,8 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
             <div className="flex flex-col sm:my-auto sm:items-center sm:py-6 sm:text-center">
               {/* Mobile Hero Card (matches Tracker's rounded-[26px] hero card rhythm);
                   clean centered welcome header on desktop. */}
-              <div className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:flex sm:flex-col sm:items-center sm:overflow-visible sm:rounded-none sm:p-0">
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:hidden"
-                />
-
-                <div className="relative min-w-0 sm:flex sm:flex-col sm:items-center">
+              <div className="ios-tracker-card rounded-[26px] p-5 sm:flex sm:flex-col sm:items-center sm:rounded-none sm:p-0">
+                <div className="min-w-0 sm:flex sm:flex-col sm:items-center">
                   <span className="mb-0.5 block text-[11px] font-semibold tracking-[0.06em] text-(--color-brand-primary) uppercase sm:hidden">
                     Atomic Habits
                   </span>

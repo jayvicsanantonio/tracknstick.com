@@ -143,26 +143,14 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
   return (
     <section
       aria-label="All-time progress summary"
-      className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5"
+      className="ios-tracker-card rounded-[26px] p-5"
     >
-      {/* Layered ambient aura tuned to overall lifetime consistency */}
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute -top-16 -right-12 size-48 rounded-full bg-(--color-brand-primary) blur-3xl transition-opacity duration-500 ${
-          numericRate >= 80 ? 'opacity-24' : 'opacity-14'
-        }`}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-14 -left-14 size-40 rounded-full bg-(--color-brand-primary)/10 blur-3xl"
-      />
-
       {/* Row 1: All-Time eyebrow + Since journey pill */}
-      <div className="relative z-10 flex h-6 items-center justify-between gap-2">
+      <div className="flex h-6 items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
           <span
             aria-hidden="true"
-            className="size-1.5 rounded-full bg-(--color-brand-primary) shadow-[0_0_6px_var(--color-brand-primary)]"
+            className="size-1.5 rounded-full bg-(--color-brand-primary)"
           />
           <p className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
             All-time
@@ -179,7 +167,7 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
       </div>
 
       {/* Row 2: Lifetime check-ins hero numeral + all-time consistency score */}
-      <div className="relative z-10 mt-3.5 flex items-end justify-between gap-4">
+      <div className="mt-3.5 flex items-end justify-between gap-4">
         <div
           role="status"
           aria-label={completionsSpoken}
@@ -239,7 +227,7 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
       {/* Row 3: Precision lifetime consistency meter with subtle quartile ticks */}
       <div
         aria-hidden="true"
-        className="relative z-10 mt-3.5 h-2.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/12 ring-1 ring-(--color-brand-primary)/16 ring-inset dark:bg-(--color-brand-primary)/16"
+        className="relative mt-3.5 h-2.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/12 ring-1 ring-(--color-brand-primary)/16 ring-inset dark:bg-(--color-brand-primary)/16"
       >
         <motion.div
           className="h-full rounded-full bg-gradient-to-r from-(--color-brand-primary) to-(--color-brand-secondary) shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] dark:to-(--color-brand-text-light)"
@@ -263,7 +251,7 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
       </div>
 
       {/* Row 4: Unified recessed 2x2 lifetime metrics matrix */}
-      <div className="relative z-10 mt-4 overflow-hidden rounded-2xl bg-(--color-brand-primary)/[0.055] ring-1 ring-(--color-brand-primary)/14 ring-inset">
+      <div className="mt-4 overflow-hidden rounded-2xl bg-(--color-brand-primary)/[0.055] ring-1 ring-(--color-brand-primary)/14 ring-inset">
         <div className="grid grid-cols-2 divide-x divide-(--color-brand-primary)/14">
           <MetricTile
             Icon={Flame}

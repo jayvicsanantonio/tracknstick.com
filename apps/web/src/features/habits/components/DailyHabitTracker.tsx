@@ -272,22 +272,12 @@ export default function DailyHabitTracker() {
                   aria-label="Progress"
                   className="relative mx-auto mb-5 w-full px-4 sm:mb-8 sm:max-w-md sm:px-6 lg:mb-0"
                 >
-                  <div className="ios-tracker-card relative flex w-full flex-row items-center gap-5 overflow-hidden rounded-[26px] p-5 sm:flex-col sm:gap-0 sm:overflow-visible sm:rounded-none sm:p-0">
-                    {/* Ambient corner glow behind the ring on mobile */}
-                    <div
-                      aria-hidden="true"
-                      className={`pointer-events-none absolute -top-12 -left-12 size-44 rounded-full bg-(--color-brand-primary) blur-3xl transition-opacity duration-500 sm:hidden ${
-                        doneCount === habits.length
-                          ? 'opacity-25'
-                          : 'opacity-12'
-                      }`}
-                    />
-
+                  <div className="ios-tracker-card flex w-full flex-row items-center gap-5 rounded-[26px] p-5 sm:flex-col sm:gap-0 sm:rounded-none sm:p-0">
                     <DailyHabitProgressIndicator
                       completionRate={completionRate}
                     />
 
-                    <div className="relative z-10 flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:items-center sm:gap-0">
+                    <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:items-center sm:gap-0">
                       <p className="truncate text-[19px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:hidden">
                         {statusHeadline}
                       </p>
