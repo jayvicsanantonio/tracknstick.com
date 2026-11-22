@@ -71,9 +71,15 @@ test('adds a habit in an iOS bottom sheet and deletes it via Action Sheet', asyn
   await expect(row).toBeVisible();
   await expect(row).toContainText('Daily');
 
-  await row.getByRole('button', { name: `Delete ${name}` }).click({
-    force: true,
-  });
+  // Swipe the habit card left to uncover the trailing red Delete action.
+  const box = await row.boundingBox();
+  if (!box) throw new Error('Habit row did not render');
+  await page.mouse.move(box.x + box.width - 24, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 24, box.y + box.height / 2, { steps: 10 });
+  await page.mouse.up();
+
+  await row.getByRole('button', { name: `Delete ${name}` }).click();
   await page
     .getByRole('alertdialog', { name: 'Delete Habit' })
     .getByRole('button', { name: 'Delete' })

@@ -3,7 +3,7 @@
 // swipe-down-to-dismiss via the grabber/header handle, and scales the underlying
 // app shell back (iOS pageSheet effect). On wider screens: renders a centered dialog.
 
-import { memo, type ReactNode } from 'react';
+import { memo, Suspense, type ReactNode } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { motion, useDragControls, type PanInfo } from 'framer-motion';
 import { XIcon } from 'lucide-react';
@@ -53,64 +53,68 @@ const IosSheet = memo(function IosSheet({
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content
-          asChild
-          onOpenAutoFocus={(event) => {
-            // Avoid immediately popping the mobile keyboard or focusing the close X.
-            if (isMobile) event.preventDefault();
-          }}
-        >
-          <motion.div
-            drag={isMobile ? 'y' : false}
-            dragControls={dragControls}
-            dragListener={false}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0.06, bottom: 0.55 }}
-            onDragEnd={handleDragEnd}
-            initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.96 }}
-            animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
-            transition={IOS_SPRING_SHEET}
-            className={cn(
-              'fixed z-50 flex flex-col overflow-hidden border border-(--color-border-brand) bg-(--color-brand-lighter) text-(--color-card-foreground) shadow-2xl outline-none dark:border-(--color-border-secondary) dark:bg-(--color-surface-secondary)/98',
-              // Mobile: bottom-anchored draggable iOS sheet
-              'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:w-full max-sm:rounded-t-[28px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0 max-sm:backdrop-blur-2xl',
-              // Desktop: centered modal dialog
-              'sm:top-1/2 sm:left-1/2 sm:max-h-[90dvh] sm:w-[95vw] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6 sm:backdrop-blur-2xl',
-              className,
-            )}
+      {/* Wait for any lazy child (such as HabitForm) before mounting the sheet so it
+          opens at its full final height in one paint without shifting layout. */}
+      <Suspense fallback={null}>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+          <DialogPrimitive.Content
+            asChild
+            onOpenAutoFocus={(event) => {
+              // Avoid immediately popping the mobile keyboard or focusing the close X.
+              if (isMobile) event.preventDefault();
+            }}
           >
-            {/* Interactive drag handle + mobile top bar region */}
-            <div
-              onPointerDown={(event) => {
-                if (isMobile) dragControls.start(event);
-              }}
-              className="shrink-0 touch-none max-sm:pt-2.5"
-            >
-              <div
-                aria-hidden="true"
-                className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-(--color-border-brand)/75 sm:hidden"
-              />
-              {header}
-            </div>
-
-            {children}
-
-            <DialogPrimitive.Close
+            <motion.div
+              drag={isMobile ? 'y' : false}
+              dragControls={dragControls}
+              dragListener={false}
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0.06, bottom: 0.55 }}
+              onDragEnd={handleDragEnd}
+              initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.96 }}
+              animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
+              transition={IOS_SPRING_SHEET}
               className={cn(
-                'absolute top-4 right-4 flex size-9 items-center justify-center rounded-full text-(--color-text-secondary) opacity-80 transition-opacity hover:opacity-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-(--color-ring)',
-                !showMobileCloseButton && 'max-sm:hidden',
-                showMobileCloseButton &&
-                  'max-sm:top-3 max-sm:right-3 max-sm:size-11',
+                'fixed z-50 flex flex-col overflow-hidden border border-(--color-border-brand) bg-(--color-brand-lighter) text-(--color-card-foreground) shadow-2xl outline-none dark:border-(--color-border-secondary) dark:bg-(--color-surface-secondary)/98',
+                // Mobile: bottom-anchored draggable iOS sheet
+                'max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:w-full max-sm:rounded-t-[28px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0 max-sm:backdrop-blur-2xl',
+                // Desktop: centered modal dialog
+                'sm:top-1/2 sm:left-1/2 sm:max-h-[90dvh] sm:w-[95vw] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6 sm:backdrop-blur-2xl',
+                className,
               )}
             >
-              <XIcon className="size-4" />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          </motion.div>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
+              {/* Interactive drag handle + mobile top bar region */}
+              <div
+                onPointerDown={(event) => {
+                  if (isMobile) dragControls.start(event);
+                }}
+                className="shrink-0 touch-none max-sm:pt-2.5"
+              >
+                <div
+                  aria-hidden="true"
+                  className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-(--color-border-brand)/75 sm:hidden"
+                />
+                {header}
+              </div>
+
+              {children}
+
+              <DialogPrimitive.Close
+                className={cn(
+                  'absolute top-4 right-4 flex size-9 items-center justify-center rounded-full text-(--color-text-secondary) opacity-80 transition-opacity hover:opacity-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-(--color-ring)',
+                  !showMobileCloseButton && 'max-sm:hidden',
+                  showMobileCloseButton &&
+                    'max-sm:top-3 max-sm:right-3 max-sm:size-11',
+                )}
+              >
+                <XIcon className="size-4" />
+                <span className="sr-only">Close</span>
+              </DialogPrimitive.Close>
+            </motion.div>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </Suspense>
     </DialogPrimitive.Root>
   );
 });

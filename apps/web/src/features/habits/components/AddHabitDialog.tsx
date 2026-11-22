@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import {
   DialogHeader,
   DialogTitle,
@@ -59,9 +59,7 @@ export default function AddHabitDialog() {
           Add a new habit to your list.
         </DialogDescription>
       </DialogHeader>
-      <Suspense fallback={null}>
-        <HabitForm formId={FORM_ID} toggleDialog={toggleShowAddHabitDialog} />
-      </Suspense>
+      <HabitForm formId={FORM_ID} toggleDialog={toggleShowAddHabitDialog} />
     </HabitDialog>
   );
 }

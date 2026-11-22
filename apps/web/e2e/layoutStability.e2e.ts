@@ -187,7 +187,12 @@ for (const [device, viewport] of [
         await page.goto('/');
         await expect(markButton(page, habit)).toBeVisible();
         await expect(
-          page.getByRole('button', { name: /open user menu/i }),
+          page.getByRole('button', {
+            name:
+              device === 'desktop'
+                ? /open user menu/i
+                : /open profile and settings/i,
+          }),
         ).toBeVisible();
       });
     });

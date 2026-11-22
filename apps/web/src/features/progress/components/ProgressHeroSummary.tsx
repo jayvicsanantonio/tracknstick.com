@@ -201,7 +201,7 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
           </div>
 
           {isHistoryLoading ? (
-            <span className="mt-1 block h-6 w-32 animate-pulse rounded-full bg-(--color-brand-primary)/14 motion-reduce:animate-none" />
+            <span className="mt-0.5 block h-6 w-32 animate-pulse rounded-full bg-(--color-brand-primary)/14 motion-reduce:animate-none" />
           ) : (
             <p className="mt-0.5 h-6 truncate text-[20px] leading-6 font-bold tracking-[-0.025em] text-(--color-foreground)">
               {monthlyHeadline(averageRate)}

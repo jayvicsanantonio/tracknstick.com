@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -153,13 +153,11 @@ function EditHabitTabs({
           forceMount
           className="col-start-1 row-start-1 flex min-h-0 flex-col pt-1 data-[state=inactive]:invisible sm:pt-2"
         >
-          <Suspense fallback={null}>
-            <HabitForm
-              formId={FORM_ID}
-              habit={habit}
-              toggleDialog={toggleDialog}
-            />
-          </Suspense>
+          <HabitForm
+            formId={FORM_ID}
+            habit={habit}
+            toggleDialog={toggleDialog}
+          />
         </TabsContent>
         <TabsContent
           value="stats"
