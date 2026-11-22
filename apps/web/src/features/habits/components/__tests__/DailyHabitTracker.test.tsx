@@ -19,7 +19,26 @@ vi.mock('@/features/habits/hooks/useAllHabits', () => ({
 vi.mock('../DailyHabitDate', () => ({
   default: () => <nav aria-label="Day navigation" />,
 }));
-vi.mock('../DailyHabitProgressIndicator', () => ({ default: () => null }));
+vi.mock('../DailyHabitProgressIndicator', () => ({
+  default: ({
+    completionRate,
+    totalHabits,
+    completedHabits,
+  }: {
+    completionRate: number;
+    totalHabits: number;
+    completedHabits: number;
+  }) => (
+    <div
+      role="progressbar"
+      aria-label={`Daily habit completion: ${completionRate}%`}
+      data-total-habits={totalHabits}
+      data-completed-habits={completedHabits}
+    >
+      {completionRate}%
+    </div>
+  ),
+}));
 
 const habit = (overrides: Partial<Habit>): Habit =>
   ({
@@ -126,40 +145,28 @@ describe('DailyHabitTracker', () => {
     expect(mutateHabits).toHaveBeenCalledTimes(1);
   });
 
-  it("sums up how many of the day's habits are done", () => {
+  it('passes daily completion rate and habit counts to the segmented progress circle', () => {
     mockHabits({
       habits: [
         habit({ id: '1', name: 'Read', completed: true }),
         habit({ id: '2', name: 'Walk', completed: true }),
         habit({ id: '3', name: 'Swim', completed: false }),
       ],
+      completionRate: 67,
     });
 
     renderTracker();
 
-    expect(
-      screen.getByRole('status', { name: 'Day summary' }),
-    ).toHaveTextContent('2 of 3 done');
-  });
-
-  it('says so when every habit of the day is done', () => {
-    mockHabits({
-      habits: [
-        habit({ id: '1', name: 'Read', completed: true }),
-        habit({ id: '2', name: 'Walk', completed: true }),
-      ],
-      completionRate: 100,
+    const progress = screen.getByRole('region', { name: 'Progress' });
+    const ring = within(progress).getByRole('progressbar', {
+      name: 'Daily habit completion: 67%',
     });
-
-    renderTracker();
-
-    expect(
-      screen.getByRole('status', { name: 'Day summary' }),
-    ).toHaveTextContent('All 2 done');
-    expect(screen.getByText('All caught up!')).toBeInTheDocument();
+    expect(ring).toHaveTextContent('67%');
+    expect(ring).toHaveAttribute('data-total-habits', '3');
+    expect(ring).toHaveAttribute('data-completed-habits', '2');
   });
 
-  it('shows contextual progress copy and renders each habit name once', () => {
+  it('replaces the Ready for today summary panel with only the segmented percentage circle', () => {
     mockHabits({
       habits: [
         habit({ id: '1', name: 'Workout', completed: false }),
@@ -170,7 +177,13 @@ describe('DailyHabitTracker', () => {
 
     renderTracker();
 
-    expect(screen.getByText('Ready for today')).toBeInTheDocument();
+    const progress = screen.getByRole('region', { name: 'Progress' });
+    expect(within(progress).getByText('0%')).toBeInTheDocument();
+    expect(screen.queryByText('Ready for today')).not.toBeInTheDocument();
+    expect(screen.queryByText('All caught up!')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { name: 'Day summary' }),
+    ).not.toBeInTheDocument();
     expect(screen.getAllByText('Workout')).toHaveLength(1);
     expect(screen.getAllByText('Meditate')).toHaveLength(1);
   });

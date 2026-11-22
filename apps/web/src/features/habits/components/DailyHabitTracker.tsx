@@ -28,16 +28,13 @@ function TrackerSkeleton() {
       aria-label="Loading habits"
       className="flex w-full flex-1 flex-col px-4 pt-1 pb-28 sm:items-center sm:gap-8 sm:py-12"
     >
-      {/* Mobile skeleton: matches Date pill + horizontal Hero Card + circular orb stage */}
-      <div className="flex w-full flex-col gap-3.5 sm:hidden">
-        <div className="ios-tracker-card h-12 w-full animate-pulse rounded-2xl motion-reduce:animate-none" />
-        <div className="ios-tracker-card flex items-center gap-5 rounded-[26px] p-5">
-          <div className="size-26 shrink-0 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-          <div className="flex flex-1 flex-col gap-2.5">
-            <div className="h-5 w-32 animate-pulse rounded-full bg-(--color-brand-primary)/14 motion-reduce:animate-none" />
-            <div className="h-3.5 w-28 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
-            <div className="mt-1 h-1.5 w-full animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-          </div>
+      {/* Mobile skeleton: matches Date pill + huge segmented circle + circular orb stage */}
+      <div className="flex w-full flex-col sm:hidden">
+        <div className="pb-3.5">
+          <div className="ios-tracker-card h-12 w-full animate-pulse rounded-2xl motion-reduce:animate-none" />
+        </div>
+        <div className="flex justify-center pt-3 pb-7">
+          <div className="size-56 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none min-[390px]:size-64" />
         </div>
         <div className="ios-tracker-card rounded-[26px] px-4 pt-5 pb-6">
           <div className="mb-5 flex items-center px-1">
@@ -60,7 +57,7 @@ function TrackerSkeleton() {
 
       {/* Desktop skeleton: matches centered ring + orb grid */}
       <div className="hidden w-full flex-col items-center gap-8 sm:flex">
-        <div className="h-56 w-56 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
+        <div className="size-68 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none md:size-72" />
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-6">
           {Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="flex w-20 flex-col items-center gap-2">
@@ -167,17 +164,6 @@ export default function DailyHabitTracker() {
     />
   );
 
-  const statusHeadline =
-    doneCount === habits.length
-      ? 'All caught up!'
-      : doneCount === 0
-        ? isToday
-          ? 'Ready for today'
-          : 'Not started'
-        : completionRate >= 50
-          ? 'Almost there'
-          : 'Off to a good start';
-
   if (isLoading) {
     return (
       <div
@@ -270,70 +256,13 @@ export default function DailyHabitTracker() {
               {habits.length > 0 ? (
                 <section
                   aria-label="Progress"
-                  className="relative mx-auto mb-5 w-full px-4 sm:mb-8 sm:max-w-md sm:px-6 lg:mb-0"
+                  className="relative mx-auto flex w-full max-w-md flex-col items-center justify-center px-4 pt-3 pb-7 sm:mb-8 sm:px-6 sm:py-0 lg:mb-0"
                 >
-                  <div className="ios-tracker-card relative flex w-full flex-row items-center gap-5 overflow-hidden rounded-[26px] p-5 sm:flex-col sm:gap-0 sm:overflow-visible sm:rounded-none sm:p-0">
-                    {/* Ambient corner glow behind the ring on mobile */}
-                    <div
-                      aria-hidden="true"
-                      className={`pointer-events-none absolute -top-12 -left-12 size-44 rounded-full bg-(--color-brand-primary) blur-3xl transition-opacity duration-500 sm:hidden ${
-                        doneCount === habits.length
-                          ? 'opacity-25'
-                          : 'opacity-12'
-                      }`}
-                    />
-
-                    <DailyHabitProgressIndicator
-                      completionRate={completionRate}
-                    />
-
-                    <div className="relative z-10 flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:items-center sm:gap-0">
-                      <p className="truncate text-[19px] leading-tight font-bold tracking-[-0.02em] text-(--color-foreground) sm:hidden">
-                        {statusHeadline}
-                      </p>
-
-                      <p
-                        role="status"
-                        aria-label="Day summary"
-                        className="text-[14px] font-medium text-(--color-brand-text) tabular-nums sm:rounded-full sm:bg-(--color-brand-primary)/12 sm:px-4 sm:py-1.5 sm:text-sm sm:font-semibold dark:text-(--color-brand-text-light)"
-                      >
-                        {doneCount === habits.length
-                          ? `All ${habits.length} done`
-                          : `${doneCount} of ${habits.length} done`}
-                        <span className="font-normal text-(--color-text-secondary)">
-                          {doneCount === habits.length
-                            ? ' · nice work'
-                            : ` · ${habits.length - doneCount} to go`}
-                        </span>
-                      </p>
-
-                      {/* Tactile per-habit completion pips (or linear bar when > 8 habits) on mobile */}
-                      <div
-                        aria-hidden="true"
-                        className="mt-2 flex w-full items-center gap-1.5 sm:hidden"
-                      >
-                        {habits.length <= 8 ? (
-                          habits.map((item, index) => (
-                            <span
-                              key={item.id}
-                              className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                                index < doneCount
-                                  ? 'bg-(--color-brand-primary) shadow-[0_0_8px_color-mix(in_oklab,var(--color-brand-primary)_45%,transparent)]'
-                                  : 'bg-(--color-brand-primary)/18'
-                              }`}
-                            />
-                          ))
-                        ) : (
-                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/18">
-                            <div
-                              className="h-full rounded-full bg-(--color-brand-primary) transition-[width] duration-500 ease-out"
-                              style={{ width: `${completionRate}%` }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <DailyHabitProgressIndicator
+                    completionRate={completionRate}
+                    totalHabits={habits.length}
+                    completedHabits={doneCount}
+                  />
                 </section>
               ) : null}
             </div>
