@@ -22,6 +22,11 @@ function hideApp() {
   Reflect.deleteProperty(document, 'visibilityState');
 }
 
+/** A request's data as the cache restores it: settled, neither loading nor refreshing. */
+function settled(data: unknown) {
+  return { data, isLoading: false, isValidating: false };
+}
+
 function saved(): unknown {
   return JSON.parse(localStorage.getItem(SWR_CACHE_STORAGE_KEY) ?? 'null');
 }
@@ -39,7 +44,7 @@ describe('the saved data cache', () => {
 
     const after = createPersistentCache();
 
-    expect(after.get(HABITS_KEY)).toEqual({ data: habits });
+    expect(after.get(HABITS_KEY)).toEqual(settled(habits));
   });
 
   it('saves when the page is closed, too', () => {
@@ -48,10 +53,10 @@ describe('the saved data cache', () => {
 
     window.dispatchEvent(new Event('pagehide'));
 
-    expect(createPersistentCache().get(HABITS_KEY)).toEqual({ data: habits });
+    expect(createPersistentCache().get(HABITS_KEY)).toEqual(settled(habits));
   });
 
-  it('keeps only the data, not errors or loading state', () => {
+  it('keeps only the data, not errors or the loading state it had', () => {
     const cache = createPersistentCache();
     cache.set(HABITS_KEY, {
       data: habits,
@@ -63,7 +68,7 @@ describe('the saved data cache', () => {
 
     const after = createPersistentCache();
 
-    expect(after.get(HABITS_KEY)).toEqual({ data: habits });
+    expect(after.get(HABITS_KEY)).toEqual(settled(habits));
     expect(after.has('/api/v1/progress')).toBe(false);
   });
 

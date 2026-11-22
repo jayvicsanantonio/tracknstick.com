@@ -2,12 +2,11 @@ import { useState, useCallback, useMemo, memo } from 'react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
 import { Separator } from '@shared/components/ui/separator';
-import 'react-datepicker/dist/react-datepicker.css';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import { Frequency } from '@/features/habits/types/Frequency';
 import HabitsIcons from '@/icons/habits';
 import { useHabits } from '@/features/habits/hooks/useHabits';
-import DatePickerField, { datePickerStyles } from './DatePickerField';
+import DatePickerField from './DatePickerField';
 import IconPicker from './IconPicker';
 import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
@@ -115,7 +114,6 @@ const HabitForm = memo(function HabitForm({
 
   return (
     <>
-      <style>{datePickerStyles}</style>
       <form
         onSubmit={handleSubmit}
         className="text-foreground flex min-h-0 flex-1 flex-col gap-3 sm:gap-4"
@@ -154,7 +152,6 @@ const HabitForm = memo(function HabitForm({
               label="Start Date"
               selected={startDate}
               onChange={setStartDate}
-              placeholder="Select start date"
               isRequired={true}
             />
             <DatePickerField
@@ -162,8 +159,6 @@ const HabitForm = memo(function HabitForm({
               label="End Date (Optional)"
               selected={endDate}
               onChange={setEndDate}
-              placeholder="mm / dd / yyyy"
-              isClearable={true}
             />
           </div>
 

@@ -1,7 +1,7 @@
 // Hook for fetching all habits without date filtering
 // Used in contexts where we need to see all user habits regardless of schedule
 import { useCallback } from 'react';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { Habit } from '@/features/habits/types/Habit';
 import {
@@ -31,6 +31,7 @@ export function useAllHabits({
 }: UseAllHabitsOptions = {}): UseAllHabitsReturn {
   const { toast } = useToast();
   const { isSignedIn } = useAuth();
+  const { cache, mutate } = useSWRConfig();
 
   const {
     data: fetchedHabits,
@@ -50,14 +51,12 @@ export function useAllHabits({
 
   const deleteHabit = useCallback(
     async (habitId: string, habitName: string) => {
-      void mutateHabits(
-        (currentHabits) => currentHabits?.filter((h) => h.id !== habitId),
-        false,
-      );
+      // Out of every list at once, the Tracker's days included.
+      void mutateHabitLists({ cache, mutate }, habitId);
 
       try {
+        // No message on success: the row leaving the list says it.
         await apiDeleteHabit(habitId);
-        toast({ description: `Habit "${habitName}" deleted.` });
       } catch (err) {
         console.error('Failed to delete habit:', err);
         toast({
@@ -67,10 +66,10 @@ export function useAllHabits({
       } finally {
         // Both branches revalidated identically before; the only difference
         // between them was the toast.
-        void mutateHabitLists();
+        void mutateHabitLists({ cache, mutate });
       }
     },
-    [mutateHabits, toast],
+    [cache, mutate, toast],
   );
 
   const retry = useCallback(() => mutateHabits(), [mutateHabits]);

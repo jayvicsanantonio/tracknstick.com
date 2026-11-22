@@ -4,7 +4,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
@@ -15,12 +15,18 @@ function AddDialogState() {
   return <output aria-label="Add dialog">{String(showAddHabitDialog)}</output>;
 }
 
+/** Shows the current history entry, which changes on every navigation. */
+function LocationKey() {
+  return <output aria-label="Location key">{useLocation().key}</output>;
+}
+
 function renderBar(path = '/') {
   render(
     <HabitsStateProvider>
       <MemoryRouter initialEntries={[path]}>
         <MobileTabBar />
         <AddDialogState />
+        <LocationKey />
       </MemoryRouter>
     </HabitsStateProvider>,
   );
@@ -99,6 +105,17 @@ describe('MobileTabBar on a second tap', () => {
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
   });
 
+  it('stays on the same history entry, so nothing restores the old scroll position', async () => {
+    vi.stubGlobal('scrollTo', vi.fn());
+    renderBar('/habits');
+    const key = screen.getByRole('status', { name: 'Location key' });
+    const before = key.textContent;
+
+    await userEvent.click(screen.getByRole('link', { name: 'Habits' }));
+
+    expect(key).toHaveTextContent(before ?? '');
+  });
+
   it('leaves the scrolling to the new tab when moving to another', async () => {
     const scrollTo = vi.fn();
     vi.stubGlobal('scrollTo', scrollTo);
@@ -107,5 +124,15 @@ describe('MobileTabBar on a second tap', () => {
     await userEvent.click(screen.getByRole('link', { name: 'Progress' }));
 
     expect(scrollTo).not.toHaveBeenCalled();
+  });
+});
+
+describe('MobileTabBar while typing', () => {
+  it('steps out of the way while the keyboard is up, as iOS hides it', () => {
+    renderBar();
+
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toHaveClass(
+      'keyboard-open:hidden',
+    );
   });
 });

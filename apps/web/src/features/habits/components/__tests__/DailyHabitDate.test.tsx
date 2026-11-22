@@ -51,6 +51,30 @@ describe('DailyHabitDate', () => {
     expect(screen.getByText(dateReading('Nov 17, 2026'))).toBeInTheDocument();
   });
 
+  it("goes back to today when another day's title is tapped", async () => {
+    renderDate();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Previous Date' }),
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Tuesday',
+        description: 'Back to Today',
+      }),
+    );
+
+    expect(screen.getByRole('heading', { name: 'Today' })).toBeInTheDocument();
+  });
+
+  it("offers nothing to tap on today's own title", () => {
+    renderDate();
+
+    expect(
+      screen.queryByRole('button', { name: 'Today' }),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows the year once midnight makes the day shown last year's", () => {
     vi.useFakeTimers({ toFake: ['Date', 'setTimeout'] });
     vi.setSystemTime(new Date(2026, 11, 31, 23, 59, 59));

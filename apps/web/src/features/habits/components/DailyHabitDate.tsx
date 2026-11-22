@@ -6,8 +6,14 @@ import MiscellaneousIcons from '@/icons/miscellaneous';
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
 
 const DailyHabitDate = memo(function DailyHabitDate() {
-  const { date, currentDate, handlePreviousDate, handleNextDate, timeZone } =
-    useDate();
+  const {
+    date,
+    setDate,
+    currentDate,
+    handlePreviousDate,
+    handleNextDate,
+    timeZone,
+  } = useDate();
 
   // The month and day, and the year apart from them: a phone leaves out
   // this year's year, so "Wednesday" and its date fit between the arrows.
@@ -29,9 +35,9 @@ const DailyHabitDate = memo(function DailyHabitDate() {
     };
   }, [date, currentDate, timeZone]);
 
+  const isToday = date.toDateString() === new Date().toDateString();
+
   const dayLabel = useMemo(() => {
-    const today = new Date();
-    const isToday = date.toDateString() === today.toDateString();
     if (isToday) {
       return 'Today';
     } else {
@@ -40,7 +46,7 @@ const DailyHabitDate = memo(function DailyHabitDate() {
         weekday: 'long',
       });
     }
-  }, [date, timeZone]);
+  }, [date, timeZone, isToday]);
 
   return (
     // The arrows hold the row's ends and the day takes the middle, so a
@@ -65,7 +71,23 @@ const DailyHabitDate = memo(function DailyHabitDate() {
             from sm up, a pill with the two side by side. */}
         <div className="flex flex-col items-center justify-center sm:flex-row sm:items-baseline sm:gap-2.5 sm:rounded-full sm:border sm:border-(--color-border-primary) sm:bg-(--color-card) sm:px-5 sm:py-1.5 sm:shadow-sm">
           <h2 className="text-xl font-bold text-(--color-foreground) sm:text-2xl">
-            {dayLabel}
+            {/* Another day's name takes the user back to today when tapped,
+                as an iOS calendar's title does. */}
+            {isToday ? (
+              dayLabel
+            ) : (
+              <button
+                type="button"
+                onClick={() => setDate(new Date())}
+                aria-describedby="back-to-today"
+                className="rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) active:opacity-60"
+              >
+                {dayLabel}
+                <span id="back-to-today" hidden>
+                  Back to Today
+                </span>
+              </button>
+            )}
           </h2>
           <span className="text-sm whitespace-nowrap text-(--color-brand-primary) sm:text-base">
             {monthDay}

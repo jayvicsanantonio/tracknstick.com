@@ -26,7 +26,12 @@ function App({ children }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div className="text-foreground min-h-screen px-2 [scroll-timeline-name:--wicked] sm:px-4 md:px-8">
+      {/* An open habit sheet shrinks this back, as iOS does the page
+          behind a sheet. */}
+      <div
+        data-vaul-drawer-wrapper=""
+        className="text-foreground min-h-screen px-2 [scroll-timeline-name:--wicked] sm:px-4 md:px-8"
+      >
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
           <div className="absolute top-[-10%] left-[-10%] h-[40vmax] w-[40vmax] rounded-full bg-(--color-brand-light) opacity-25 blur-3xl" />
           <div className="absolute top-[20%] right-[-15%] h-[36vmax] w-[36vmax] rounded-full bg-(--color-brand-primary)/30 opacity-25 blur-3xl" />

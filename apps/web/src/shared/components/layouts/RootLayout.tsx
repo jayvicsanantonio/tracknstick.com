@@ -1,11 +1,19 @@
-import { lazy, memo, Suspense, useEffect } from 'react';
-import { Outlet, ScrollRestoration, type Location } from 'react-router-dom';
+import { lazy, memo, Suspense, useCallback, useEffect } from 'react';
+import {
+  Outlet,
+  ScrollRestoration,
+  useLocation,
+  type Location,
+} from 'react-router-dom';
+import { useSWRConfig } from 'swr';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
 import { preloadPages } from '@app/routes/pages';
+import PullToRefresh from '@shared/components/feedback/PullToRefresh';
+import { useIsPhone } from '@shared/hooks/useIsPhone';
 
 // Only signed-out visitors see the welcome page, so it loads on demand and
 // signed-in users never download it.
@@ -29,6 +37,20 @@ function PreloadPages() {
 }
 
 /**
+ * Pull to refresh on a phone, which asks the API again for everything on
+ * screen. Not on the Coach page, where a pull scrolls the conversation.
+ */
+function PagePullToRefresh() {
+  const isPhone = useIsPhone();
+  const { pathname } = useLocation();
+  const { mutate } = useSWRConfig();
+  const refreshAll = useCallback(() => mutate(() => true), [mutate]);
+
+  if (!isPhone || pathname === '/coach') return null;
+  return <PullToRefresh onRefresh={refreshAll} />;
+}
+
+/**
  * Root layout component that handles authentication-based rendering
  *
  * This layout wraps all routes and conditionally renders content based on
@@ -45,7 +67,7 @@ const RootLayout = memo(function RootLayout() {
           screen however short a page is or while it loads. On phones the main
           column also reaches the tab bar, which keeps the footer tucked under
           it, below the content, rather than on show above it. */}
-      <main className="relative flex min-h-0 flex-1 flex-col max-sm:min-h-[calc(100dvh-10rem)]">
+      <main className="relative flex min-h-0 flex-1 flex-col max-sm:min-h-[calc(100dvh-10rem)] keyboard-open:min-h-0">
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Suspense fallback={null}>
@@ -54,6 +76,7 @@ const RootLayout = memo(function RootLayout() {
         </SignedOut>
         <SignedIn>
           <PreloadPages />
+          <PagePullToRefresh />
           {/* The coach conversation outlives each page, so it wraps them. */}
           <ChatConversationProvider>
             <Outlet />
@@ -63,7 +86,10 @@ const RootLayout = memo(function RootLayout() {
       <Footer />
       <SignedIn>
         {/* Keeps the footer clear of the fixed tab bar on phones. */}
-        <div aria-hidden="true" className="h-24 sm:hidden" />
+        <div
+          aria-hidden="true"
+          className="h-24 sm:hidden keyboard-open:hidden"
+        />
         <MobileTabBar />
       </SignedIn>
     </>

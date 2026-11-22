@@ -45,6 +45,14 @@ vi.mock('@features/chat/context/ChatConversationContext', () => ({
   ),
 }));
 
+vi.mock('@shared/components/feedback/PullToRefresh', () => ({
+  default: () => <div data-testid="pull-to-refresh" />,
+}));
+const isPhone = vi.hoisted(() => ({ value: true }));
+vi.mock('@shared/hooks/useIsPhone', () => ({
+  useIsPhone: () => isPhone.value,
+}));
+
 vi.mock('@app/routes/pages', () => ({
   preloadPages: vi.fn(() => Promise.resolve()),
 }));
@@ -190,5 +198,55 @@ describe('RootLayout scroll positions', () => {
 
     await screen.findByText('Tracker page');
     expect(scrollTo).toHaveBeenLastCalledWith(0, 600);
+  });
+});
+
+describe('RootLayout pull to refresh', () => {
+  function renderAt(path: string) {
+    const router = createMemoryRouter(
+      [
+        {
+          path: '/',
+          element: <RootLayout />,
+          children: [
+            { index: true, element: <div /> },
+            { path: 'coach', element: <div /> },
+          ],
+        },
+      ],
+      { initialEntries: [path] },
+    );
+    render(<RouterProvider router={router} />);
+  }
+
+  beforeEach(() => {
+    mockAuth.isSignedIn = true;
+    isPhone.value = true;
+  });
+
+  it('lets a phone pull a page down to refresh it', () => {
+    renderAt('/');
+
+    expect(screen.getByTestId('pull-to-refresh')).toBeInTheDocument();
+  });
+
+  it('leaves a pull on the Coach page to its conversation', () => {
+    renderAt('/coach');
+
+    expect(screen.queryByTestId('pull-to-refresh')).not.toBeInTheDocument();
+  });
+
+  it('is left out on wider screens', () => {
+    isPhone.value = false;
+    renderAt('/');
+
+    expect(screen.queryByTestId('pull-to-refresh')).not.toBeInTheDocument();
+  });
+
+  it('is left out for a signed-out visitor', () => {
+    mockAuth.isSignedIn = false;
+    renderAt('/');
+
+    expect(screen.queryByTestId('pull-to-refresh')).not.toBeInTheDocument();
   });
 });

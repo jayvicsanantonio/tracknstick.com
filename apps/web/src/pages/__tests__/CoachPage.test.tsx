@@ -33,6 +33,18 @@ describe('CoachPage', () => {
     ).toBe(false);
   });
 
+  it('fits above the keyboard while it is up, so the message box stays in view', () => {
+    renderPage();
+
+    const page = screen
+      .getByRole('heading', { level: 1, name: 'Habit Coach' })
+      .closest('section');
+    expect(page?.className).toMatch(
+      /max-sm:keyboard-open:h-\[calc\(var\(--visual-viewport-height\)/,
+    );
+    expect(page).toHaveClass('keyboard-open:min-h-0');
+  });
+
   it('is titled Habit Coach', () => {
     renderPage();
 

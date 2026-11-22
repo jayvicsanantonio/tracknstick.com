@@ -17,12 +17,15 @@ export default defineConfig({
       VITE_API_HOST: 'http://api.test',
       VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_stub',
     },
-    // react-datepicker ships an ES module Node cannot load directly, so the
-    // tests transform it, and its source map names files the package leaves
-    // out. Bundling it ahead keeps that warning out of the test output.
+    // vaul and Radix Dialog are bundled ahead together, so that the sheet and
+    // the app share one copy of Radix Dialog, as they do in the browser;
+    // loaded apart, a DialogTitle inside the sheet could not find its dialog.
     deps: {
       optimizer: {
-        client: { enabled: true, include: ['react-datepicker'] },
+        client: {
+          enabled: true,
+          include: ['vaul', '@radix-ui/react-dialog'],
+        },
       },
     },
     coverage: {

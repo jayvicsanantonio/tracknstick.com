@@ -1,4 +1,4 @@
-// Edit and Delete buttons for one habit, shared by the habits table and the phone card list.
+// Edit and Delete buttons for one habit, in a row of the habits table.
 // The "touch" size gives each button a 44px target for fingers; "compact" fits a table row.
 
 import { memo } from 'react';

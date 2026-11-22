@@ -36,7 +36,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
             habit.completed
               ? 'bg-(--color-brand-primary) ring-(--color-brand-primary)'
               : 'bg-(--color-surface)/60 ring-(--color-border-primary)/40 dark:bg-(--color-surface-secondary)/40'
-          } transition-[transform,background-color] duration-200 hover:-translate-y-1 hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100`}
+          } transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-105 active:scale-90 active:duration-75 active:ease-out motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100`}
           onClick={handleToggle}
           aria-pressed={habit.completed}
           aria-label={

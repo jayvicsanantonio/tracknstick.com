@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { SPRINGS } from '@shared/utils/springs';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { useTheme } from '@shared/hooks/useTheme';
 
@@ -103,7 +104,9 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
               animate={{
                 strokeDashoffset,
               }}
-              transition={{ duration: 1, ease: 'easeOut' }}
+              // Fills like iOS progress: a spring that settles on the value
+              // and carries on smoothly when a tap changes it mid-fill.
+              transition={SPRINGS.settle}
             />
           </svg>
 
@@ -134,8 +137,8 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             {displayRate === 100 ? (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 1.2, 1], opacity: 1 }}
-                transition={{ duration: 0.7, ease: 'easeOut' }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={SPRINGS.pop}
               >
                 <div className={`rounded-full p-5`} aria-hidden="true">
                   <Check className="h-20 w-20 text-(--color-brand-primary) sm:h-28 sm:w-28" />

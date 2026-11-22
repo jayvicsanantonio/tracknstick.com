@@ -1,7 +1,7 @@
 // End-to-end checks of the phone layout: bottom tab bar, bottom-sheet dialog, habit cards and chat.
 // Runs at an iPhone-sized viewport against the real API and D1, signed in as the test user.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const VIEWPORT = { width: 390, height: 844 };
 test.use({ viewport: VIEWPORT, hasTouch: true, isMobile: true });
@@ -34,7 +34,7 @@ test('moves between screens with the bottom tab bar', async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
 });
 
-test('adds a habit in a bottom sheet and deletes it from its card', async ({
+test('adds a habit in a bottom sheet and deletes it with a swipe', async ({
   page,
 }) => {
   const name = `Stretch ${Date.now()}`;
@@ -93,19 +93,20 @@ test('adds a habit in a bottom sheet and deletes it from its card', async ({
   await expect(sheet).toBeHidden();
 
   await tabs.getByRole('link', { name: 'Habits' }).click();
-  const card = page
+  const row = page
     .getByRole('list', { name: 'Habits' })
     .getByRole('listitem')
     .filter({ hasText: name });
-  await expect(card).toBeVisible();
-  await expect(card).toContainText('Daily');
+  await expect(row).toBeVisible();
+  await expect(row).toContainText('Daily');
 
-  await card.getByRole('button', { name: `Delete ${name}` }).click();
+  await swipeOpen(page, row);
+  await row.getByRole('button', { name: `Delete ${name}` }).click();
   await page
     .getByRole('alertdialog', { name: 'Delete Habit' })
     .getByRole('button', { name: 'Delete' })
     .click();
-  await expect(card).toHaveCount(0);
+  await expect(row).toHaveCount(0);
 });
 
 test('opens the Coach page from the tab bar', async ({ page }) => {
@@ -142,20 +143,32 @@ async function addDailyHabit(page: Page, name: string) {
   await expect(sheet).toBeHidden();
 }
 
-/** Deletes the habit from its card on the Habits tab. */
+/** Swipes a row of the Habits list left, as a finger would, to reveal its Delete button. */
+async function swipeOpen(page: Page, row: Locator) {
+  const box = await row.boundingBox();
+  if (!box) throw new Error('The row is not on screen');
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width - 40, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width - 200, y, { steps: 10 });
+  await page.mouse.up();
+}
+
+/** Deletes the habit from its row on the Habits tab. */
 async function deleteHabit(page: Page, name: string) {
   const tabs = page.getByRole('navigation', { name: 'Primary' });
   await tabs.getByRole('link', { name: 'Habits' }).click();
-  const card = page
+  const row = page
     .getByRole('list', { name: 'Habits' })
     .getByRole('listitem')
     .filter({ hasText: name });
-  await card.getByRole('button', { name: `Delete ${name}` }).click();
+  await swipeOpen(page, row);
+  await row.getByRole('button', { name: `Delete ${name}` }).click();
   await page
     .getByRole('alertdialog', { name: 'Delete Habit' })
     .getByRole('button', { name: 'Delete' })
     .click();
-  await expect(card).toHaveCount(0);
+  await expect(row).toHaveCount(0);
 }
 
 test('answers taps as a native app does: no grey flash, zoom wait or copy menu', async ({
@@ -187,9 +200,17 @@ test('keeps each tab where it was left, and opens a new one at its top', async (
   const tabs = page.getByRole('navigation', { name: 'Primary' });
   await tabs.getByRole('link', { name: 'Progress' }).click();
   await expect(page).toHaveURL(/\/progress$/);
-  // Tall enough to scroll on a phone: the calendar, chart and achievements.
-  await page.evaluate(() => window.scrollTo(0, 400));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(400);
+  // Tall enough to scroll on a phone once loaded: the calendar, chart and
+  // achievements.
+  await expect(
+    page.getByRole('status', { name: /^Current streak/ }),
+  ).toBeVisible();
+  await expect
+    .poll(async () => {
+      await page.evaluate(() => window.scrollTo(0, 400));
+      return page.evaluate(() => window.scrollY);
+    })
+    .toBe(400);
 
   await tabs.getByRole('link', { name: 'Coach' }).click();
   await expect(page).toHaveURL(/\/coach$/);
@@ -227,7 +248,103 @@ test('opens to the habits it showed last time, before the API has answered', asy
 
   await expect(toggle).toBeVisible();
   release();
-  await page.unroute('**/api/v1/habits?**');
+  // Lets the held request finish before the route goes.
+  await page.unrouteAll({ behavior: 'wait' });
+
+  await deleteHabit(page, name);
+});
+
+test('closes the habit sheet when it is dragged down, as an iOS sheet does', async ({
+  page,
+}) => {
+  const tabs = page.getByRole('navigation', { name: 'Primary' });
+  await tabs.getByRole('button', { name: 'Add Habit' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Add New Habit' });
+  await expect(sheet).toBeVisible();
+  // Settled at the bottom edge before the drag starts.
+  await expect
+    .poll(async () => {
+      const box = await sheet.boundingBox();
+      return box && Math.round(box.y + box.height);
+    })
+    .toBe(VIEWPORT.height);
+
+  const title = sheet.getByRole('heading', { name: 'Add New Habit' });
+  const box = await title.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, VIEWPORT.height - 40, {
+    steps: 12,
+  });
+  await page.mouse.up();
+
+  await expect(sheet).toBeHidden();
+});
+
+test('opens a habit from its row, and a tap on a swiped row only shuts it', async ({
+  page,
+}) => {
+  const name = `Floss ${Date.now()}`;
+  await addDailyHabit(page, name);
+  const tabs = page.getByRole('navigation', { name: 'Primary' });
+  await tabs.getByRole('link', { name: 'Habits' }).click();
+  const row = page
+    .getByRole('list', { name: 'Habits' })
+    .getByRole('listitem')
+    .filter({ hasText: name });
+  const open = row.getByRole('button', { name: `Edit ${name}` });
+
+  const rowBox = await row.boundingBox();
+  expect(rowBox).not.toBeNull();
+  if (!rowBox) return;
+  await swipeOpen(page, row);
+  // The row has slid left, uncovering Delete.
+  await expect
+    .poll(async () => (await open.boundingBox())?.x ?? rowBox.x)
+    .toBeLessThan(rowBox.x - 40);
+  await open.click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+
+  await open.click();
+  await expect(page.getByRole('dialog', { name: name })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await deleteHabit(page, name);
+});
+
+test('swipes between days on the Tracker, and back to today from the title', async ({
+  page,
+}) => {
+  const name = `Stretch ${Date.now()}`;
+  await addDailyHabit(page, name);
+  const today = page.getByRole('heading', { name: 'Today' });
+  await expect(today).toBeVisible();
+  const toggle = page.getByRole('button', { name: `Mark ${name} as complete` });
+  const box = await toggle.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+
+  // A swipe left that starts on a habit turns the day, without ticking it.
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width / 2, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 - 200, y, { steps: 10 });
+  await page.mouse.up();
+
+  const tomorrow = new Date(
+    Date.now() + 24 * 60 * 60 * 1000,
+  ).toLocaleDateString('en-US', { weekday: 'long' });
+  const tomorrowTitle = page.getByRole('button', {
+    name: tomorrow,
+    description: 'Back to Today',
+  });
+  await expect(tomorrowTitle).toBeVisible();
+
+  await tomorrowTitle.click();
+  await expect(today).toBeVisible();
+  await expect(toggle).toBeVisible();
 
   await deleteHabit(page, name);
 });

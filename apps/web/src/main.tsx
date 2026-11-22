@@ -14,6 +14,7 @@ import { SWRConfig } from 'swr';
 import { router } from '@app/routes';
 import { createPersistentCache } from '@shared/services/swrCache';
 import { applyUpdateWhenHidden } from '@shared/services/serviceWorkerUpdates';
+import { watchKeyboard } from '@shared/services/keyboard';
 
 // Register service worker. A new version waits until the app is out of
 // sight, then reloads unseen, as a native app updates between uses.
@@ -25,6 +26,14 @@ const updateSW = registerSW({
     console.log('App ready to work offline');
   },
 });
+
+// The layout fits itself above the on-screen keyboard; see keyboard.ts.
+watchKeyboard();
+
+// One saved cache for the app's life. Made here rather than inside
+// SWRConfig, whose provider React may call twice: the spare would still save
+// itself, empty, over the real one when the page hides.
+const swrCache = createPersistentCache();
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -56,7 +65,7 @@ createRoot(document.getElementById('root')!).render(
       >
         {/* The data cache is saved between launches, so the app opens to
             what it showed last time while it asks the API for fresh data. */}
-        <SWRConfig value={{ provider: createPersistentCache }}>
+        <SWRConfig value={{ provider: () => swrCache }}>
           <DateProvider>
             <App>
               <RouterProvider router={router} />

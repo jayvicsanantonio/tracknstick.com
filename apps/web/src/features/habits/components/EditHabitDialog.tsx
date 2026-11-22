@@ -1,10 +1,6 @@
 import { lazy, useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@shared/components/ui/tabs';
+import { Tabs, TabsContent } from '@shared/components/ui/tabs';
+import { SegmentedTabsList } from '@shared/components/ui/segmented-control';
 import {
   DialogHeader,
   DialogTitle,
@@ -60,31 +56,29 @@ interface EditHabitTabsProps {
  * which unmounts on close, so each opening starts on Edit with no stats
  * asked for yet.
  */
+const TAB_OPTIONS = [
+  { value: 'edit', label: 'Edit' },
+  { value: 'stats', label: 'Stats' },
+];
+
 function EditHabitTabs({ habit, toggleDialog }: EditHabitTabsProps) {
+  const [tab, setTab] = useState('edit');
   const [statsOpened, setStatsOpened] = useState(false);
 
   return (
     <Tabs
-      defaultValue="edit"
+      value={tab}
       className="min-h-0 w-full flex-1"
       onValueChange={(value) => {
+        setTab(value);
         if (value === 'stats') setStatsOpened(true);
       }}
     >
-      <TabsList className="mb-2 grid w-full shrink-0 grid-cols-2 bg-(--color-muted) sm:mb-4">
-        <TabsTrigger
-          value="edit"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-        >
-          Edit
-        </TabsTrigger>
-        <TabsTrigger
-          value="stats"
-          className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-        >
-          Stats
-        </TabsTrigger>
-      </TabsList>
+      <SegmentedTabsList
+        value={tab}
+        options={TAB_OPTIONS}
+        className="mb-2 sm:mb-4"
+      />
       {/* Both panels stay laid out in one cell, the hidden one invisible,
           so the dialog is as tall as the taller of them on either tab and
           does not resize when the tab changes. The stats are asked for only

@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DailyHabitTracker from '../DailyHabitTracker';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
+import DateProvider from '@app/providers/DateProvider';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import type { Habit } from '@/features/habits/types/Habit';
@@ -63,9 +64,11 @@ function mockAllHabits(habits: Habit[], error?: unknown) {
 
 function renderTracker() {
   render(
-    <HabitsStateProvider>
-      <DailyHabitTracker />
-    </HabitsStateProvider>,
+    <DateProvider>
+      <HabitsStateProvider>
+        <DailyHabitTracker />
+      </HabitsStateProvider>
+    </DateProvider>,
   );
 }
 
@@ -109,6 +112,21 @@ describe('DailyHabitTracker', () => {
     renderTracker();
 
     expect(isEnteringOnScreen(screen.getByRole('status'))).toBe(false);
+  });
+
+  it('shrinks a habit the moment it is pressed, and springs it back on release', () => {
+    mockHabits({ habits: [habit({ name: 'Read' })] });
+
+    renderTracker();
+
+    const toggle = screen.getByRole('button', {
+      name: 'Mark Read as complete',
+    });
+    // Pressed: smaller, at once. Released: back with a slight overshoot.
+    expect(toggle).toHaveClass('active:scale-90', 'active:duration-75');
+    expect(toggle.className).toMatch(
+      /ease-\[cubic-bezier\(0\.34,1\.56,0\.64,1\)\]/,
+    );
   });
 
   it('shows a check badge on completed habits only', () => {

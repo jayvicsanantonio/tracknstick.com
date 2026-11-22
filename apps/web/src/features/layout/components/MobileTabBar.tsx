@@ -1,7 +1,12 @@
 // Bottom navigation shown below the sm breakpoint: Tracker, Habits, Add, Progress and the habit Coach.
 // Puts the app's main actions within thumb reach; the header carries them on wider screens.
 
-import { memo, type ComponentType, type SVGProps } from 'react';
+import {
+  memo,
+  type ComponentType,
+  type MouseEvent,
+  type SVGProps,
+} from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
 import MiscellaneousIcons from '@/icons/miscellaneous';
@@ -18,9 +23,12 @@ interface TabProps {
 
 /**
  * A tap on the tab already open scrolls it back to its top, as an iOS tab
- * bar does. Moving to another tab leaves its scroll position to the layout.
+ * bar does, and goes nowhere: a fresh visit to the same page would have the
+ * layout put back the scroll position it keeps for that tab. Moving to
+ * another tab leaves its scroll position to the layout.
  */
-function scrollToTop() {
+function scrollToTop(event: MouseEvent<HTMLAnchorElement>) {
+  event.preventDefault();
   const reduceMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)',
   ).matches;
@@ -49,9 +57,11 @@ const MobileTabBar = memo(function MobileTabBar() {
   const { toggleShowAddHabitDialog } = useHabitsContext();
 
   return (
+    // Hidden while the keyboard is up, as iOS hides a tab bar: Safari would
+    // otherwise leave it floating over the page above the keyboard.
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] sm:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] sm:hidden keyboard-open:hidden"
     >
       <div className="flex items-center gap-1 rounded-3xl bg-(--color-surface)/90 px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-(--color-border-primary)/50 backdrop-blur-xl backdrop-saturate-150 ring-inset dark:bg-(--color-surface-secondary)/90">
         <Tab to="/" label="Tracker" Icon={Calendar} />

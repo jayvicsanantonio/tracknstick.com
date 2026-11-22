@@ -33,6 +33,11 @@ const toastVariants = cva(
         default: '',
         destructive:
           'destructive group border-(--color-destructive) bg-(--color-destructive) text-(--color-destructive-foreground)',
+        // A banner across the top, as iOS announces something: a rounded
+        // glass capsule that drops in from above on every screen size and
+        // leaves on its own.
+        achievement:
+          'mx-auto w-fit max-w-full rounded-[1.75rem] border-0 bg-(--color-card)/90 px-5 py-3 pr-5 shadow-xl ring-1 ring-(--color-border-primary)/50 backdrop-blur-xl ring-inset data-[state=closed]:slide-out-to-top-full sm:data-[state=open]:slide-in-from-top-full',
       },
     },
     defaultVariants: {

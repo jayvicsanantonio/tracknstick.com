@@ -97,6 +97,10 @@ opens to the data it last showed. It belongs to the user
 `useClearApiCacheOnUserChange` last saw, and is cleared with the service
 worker's API cache when that user changes.
 
+Because the app gives SWRConfig its own cache, mutate through `useSWRConfig()`.
+The `mutate` exported by `swr` works on SWR's default cache, which the app does
+not use, so a call to it changes nothing on screen.
+
 ### Theming
 
 Both palettes are declared in `src/styles/index.css` (`:root` for light, `.dark`

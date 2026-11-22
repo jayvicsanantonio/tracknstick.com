@@ -5,6 +5,9 @@
 /* Dark mode variant for class-based dark mode */
 @custom-variant dark (&:is(.dark *));
 
+/* Styles for while the on-screen keyboard is up; see shared/services/keyboard.ts */
+@custom-variant keyboard-open (:root[data-keyboard-open] &);
+
 /* Theme configuration for TailwindCSS v4.1 */
 @theme {
   /* Border radius values */
@@ -49,7 +52,8 @@
     --color-muted-foreground: hsl(327, 73%, 42%);
     --color-accent: hsl(327, 73%, 77%);
     --color-accent-foreground: hsl(329, 36%, 6%);
-    --color-destructive: hsl(327, 84%, 25%);
+    /* Red, as iOS draws a destructive action in either appearance. */
+    --color-destructive: hsl(0, 72%, 48%);
     --color-destructive-foreground: hsl(327, 100%, 98%);
     --color-border: hsl(327, 73%, 87%);
     --color-input: hsl(327, 73%, 87%);
@@ -154,8 +158,11 @@
     --radius: 0.5rem;
   }
 
+  /* The app's wrapper carries the page background too: an open sheet
+     shrinks it back into a card, over black, as iOS does behind a sheet. */
   html,
-  body {
+  body,
+  [data-vaul-drawer-wrapper] {
     background-color: var(--color-background);
     color: var(--color-foreground);
     /* Wicked aurora backdrop: subtle parallax layers */
@@ -205,6 +212,17 @@
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+  }
+}
+
+/*
+  The wrapper is a stacking context of its own, so the decoration drawn
+  behind the content (App's blurred circles, at a negative z-index) stays
+  inside it, above its background, rather than falling behind it.
+*/
+@layer base {
+  [data-vaul-drawer-wrapper] {
+    isolation: isolate;
   }
 }
 

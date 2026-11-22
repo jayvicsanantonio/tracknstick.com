@@ -11,6 +11,10 @@ import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import NothingScheduled from '@/features/habits/components/NothingScheduled';
 import { Button } from '@shared/components/ui/button';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
+import { useRef } from 'react';
+import { motion, type PanInfo } from 'framer-motion';
+import { useDate } from '@app/providers/useDate';
+import { dayStepForSwipe } from '@/features/habits/components/daySwipe';
 
 export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate, mutateHabits } =
@@ -25,6 +29,21 @@ export default function DailyHabitTracker() {
   } = useAllHabits({
     enabled: !isLoading && !error && habits.length === 0,
   });
+  const { handlePreviousDate, handleNextDate } = useDate();
+  // A swipe ends with the finger lifting on whatever it started on, which
+  // the browser also reports as a tap. This keeps that tap from toggling a
+  // habit.
+  const swiping = useRef(false);
+
+  const handleSwipeEnd = (_: unknown, { offset, velocity }: PanInfo) => {
+    const step = dayStepForSwipe(offset, velocity);
+    if (step === 1) handleNextDate();
+    if (step === -1) handlePreviousDate();
+    setTimeout(() => {
+      swiping.current = false;
+    });
+  };
+
   const doneCount = habits.filter((habit) => habit.completed).length;
   // Only a successful lookup may say the user has no habits at all.
   const hasNoHabits =
@@ -104,7 +123,24 @@ export default function DailyHabitTracker() {
               card's spare height falls below the habits rather than between
               rows; side by side, the one row fills the card so the divider
               runs its full height. */}
-          <div className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch">
+          {/* A swipe across the day turns to the next or the one before,
+              as a page does: the day follows the finger a little, then
+              springs back as the new day takes its place. */}
+          <motion.div
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.25}
+            onDragStart={() => {
+              swiping.current = true;
+            }}
+            onDragEnd={handleSwipeEnd}
+            onClickCapture={(event) => {
+              if (!swiping.current) return;
+              event.stopPropagation();
+              event.preventDefault();
+            }}
+            className="grid flex-1 content-start lg:grid-cols-[26rem_1fr] lg:content-stretch"
+          >
             <div className="lg:border-r lg:border-(--color-border-primary)/50 lg:pb-8">
               <CardHeader className="px-3 pt-4 sm:px-6 sm:pt-6">
                 <DailyHabitDate />
@@ -163,7 +199,7 @@ export default function DailyHabitTracker() {
                 </section>
               )}
             </CardContent>
-          </div>
+          </motion.div>
         </Card>
       </div>
     </div>

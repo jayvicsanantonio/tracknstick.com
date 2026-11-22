@@ -17,6 +17,8 @@ vi.mock('@clerk/clerk-react', () => ({
   useAuth: () => ({ isSignedIn: true }),
 }));
 vi.mock('@shared/utils/haptics', () => ({ hapticTick: vi.fn() }));
+const toast = vi.hoisted(() => vi.fn());
+vi.mock('@shared/hooks/use-toast', () => ({ useToast: () => ({ toast }) }));
 vi.mock('@shared/utils/sound', () => ({
   playSound: vi.fn(),
   preloadSounds: vi.fn(),
@@ -122,5 +124,111 @@ describe('useHabits toggle feedback', () => {
     });
 
     expect(playSound).toHaveBeenCalledExactlyOnceWith('all-done');
+  });
+});
+
+describe('useHabits messages', () => {
+  beforeEach(() => {
+    toast.mockClear();
+    vi.spyOn(achievementApi, 'checkAchievements').mockResolvedValue({
+      count: 0,
+      newAchievements: [],
+    } as unknown as Awaited<
+      ReturnType<typeof achievementApi.checkAchievements>
+    >);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  async function renderLoaded() {
+    vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([habit({})]);
+    const { result } = renderHook(() => useHabits(), { wrapper });
+    await waitFor(() => expect(result.current.habits).toHaveLength(1));
+    return result;
+  }
+
+  it('adds a habit without a toast: the new habit on screen says it', async () => {
+    vi.spyOn(habitsApi, 'addHabit').mockResolvedValue(
+      {} as Awaited<ReturnType<typeof habitsApi.addHabit>>,
+    );
+    const result = await renderLoaded();
+
+    await act(() =>
+      result.current.addHabit({ name: 'Walk' } as Parameters<
+        typeof result.current.addHabit
+      >[0]),
+    );
+
+    expect(toast).not.toHaveBeenCalled();
+  });
+
+  it('updates a habit without a toast', async () => {
+    vi.spyOn(habitsApi, 'updateHabit').mockResolvedValue(
+      {} as Awaited<ReturnType<typeof habitsApi.updateHabit>>,
+    );
+    const result = await renderLoaded();
+
+    await act(() => result.current.updateHabit('1', { name: 'Read more' }));
+
+    expect(toast).not.toHaveBeenCalled();
+  });
+
+  it('deletes a habit without a toast', async () => {
+    vi.spyOn(habitsApi, 'deleteHabit').mockResolvedValue(
+      {} as Awaited<ReturnType<typeof habitsApi.deleteHabit>>,
+    );
+    const result = await renderLoaded();
+
+    await act(() => result.current.deleteHabit('1', 'Read'));
+
+    expect(toast).not.toHaveBeenCalled();
+  });
+
+  it('still says so when a habit cannot be added', async () => {
+    const error = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    vi.spyOn(habitsApi, 'addHabit').mockRejectedValue(new Error('offline'));
+    const result = await renderLoaded();
+
+    await act(() =>
+      result.current.addHabit({ name: 'Walk' } as Parameters<
+        typeof result.current.addHabit
+      >[0]),
+    );
+
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({ variant: 'destructive' }),
+    );
+    expect(error).toHaveBeenCalled();
+  });
+
+  it('announces a new achievement in a banner', async () => {
+    vi.spyOn(achievementApi, 'checkAchievements').mockResolvedValue({
+      count: 1,
+      newAchievements: [
+        { name: 'First Step', description: 'Tick a habit off' },
+      ],
+    } as unknown as Awaited<
+      ReturnType<typeof achievementApi.checkAchievements>
+    >);
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue(
+      {} as Awaited<ReturnType<typeof habitsApi.toggleHabitCompletion>>,
+    );
+    const result = await renderLoaded();
+
+    await act(() => result.current.toggleHabit('1'));
+
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: 'achievement',
+          title: 'Achievement earned',
+          description: 'First Step: Tick a habit off',
+        }),
+      ),
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { mutate } from 'swr';
+import type { Cache, ScopedMutator } from 'swr';
 import { axiosInstance } from '@shared/services/api/axiosInstance';
 import type {
   CreateHabitResponse,
@@ -123,14 +123,39 @@ export const habitStatsKey = (habitId: string, timeZone: string) =>
   `${allHabitsKey}/${habitId}/stats?timeZone=${timeZone}`;
 
 /**
- * Revalidates every habit list: the unfiltered one and every date-scoped one.
- *
- * Deliberately not a startsWith(allHabitsKey) sweep -- that would also match
+ * Whether a cache key names a habit list: the unfiltered one or a day's.
+ * Deliberately not a startsWith(allHabitsKey) test -- that would also match
  * the per-habit stats keys, which are not lists.
  */
-export const mutateHabitLists = () =>
-  mutate(
-    (key) =>
-      typeof key === 'string' &&
-      (key === allHabitsKey || key.startsWith(`${allHabitsKey}?date=`)),
+const isHabitList = (key: unknown) =>
+  typeof key === 'string' &&
+  (key === allHabitsKey || key.startsWith(`${allHabitsKey}?date=`));
+
+/**
+ * Revalidates every habit list in the cache: the unfiltered one and every
+ * date-scoped one. Given a deleted habit's id, it first takes that habit out
+ * of each list, so no screen shows it while the API answers.
+ *
+ * `swr` is useSWRConfig(), for the cache the app provides; SWR's own exported
+ * mutate works on a default cache the app does not use. The lists are found
+ * by their keys in that cache, which also holds lists saved from the last
+ * launch that no screen has asked for yet.
+ */
+export const mutateHabitLists = (
+  swr: { cache: Cache; mutate: ScopedMutator },
+  deletedHabitId?: string,
+) =>
+  Promise.all(
+    [...swr.cache.keys()]
+      .filter(isHabitList)
+      .map((key) =>
+        deletedHabitId === undefined
+          ? swr.mutate(key)
+          : swr.mutate(
+              key,
+              (habits?: Habit[]) =>
+                habits?.filter((habit) => habit.id !== deletedHabitId),
+              { revalidate: true },
+            ),
+      ),
   );

@@ -21,8 +21,10 @@ function CoachPage() {
   const conversation = useChatConversationContext();
 
   return (
-    // Shown at once, as a native app's tab is: no entrance animation.
-    <section className="flex h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-[24rem] flex-col sm:h-[calc(100dvh-14.25rem)]">
+    // Shown at once, as a native app's tab is: no entrance animation. While
+    // the keyboard is up the tab bar hides, and the page fits the height
+    // left above the keyboard, so the message box sits just over it.
+    <section className="flex h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-[24rem] flex-col sm:h-[calc(100dvh-14.25rem)] keyboard-open:min-h-0 max-sm:keyboard-open:h-[calc(var(--visual-viewport-height)-5rem-env(safe-area-inset-top))]">
       <h1 className="sr-only">Habit Coach</h1>
       <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card

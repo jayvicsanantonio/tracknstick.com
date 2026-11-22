@@ -63,6 +63,28 @@ describe('light palette', () => {
   });
 });
 
+describe('light palette destructive colour', () => {
+  it('is red, as iOS draws a destructive action in either appearance', () => {
+    const [hue] = get(light, 'color-destructive');
+    expect(hue <= 15 || hue >= 345).toBe(true);
+  });
+
+  it('keeps destructive button text readable', () => {
+    expect(
+      contrast(
+        get(light, 'color-destructive-foreground'),
+        get(light, 'color-destructive'),
+      ),
+    ).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('keeps destructive text readable on cards', () => {
+    expect(
+      contrast(get(light, 'color-destructive'), get(light, 'color-card')),
+    ).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
 describe('dark palette', () => {
   it('uses a red hue for destructive actions', () => {
     const [hue] = get(dark, 'color-destructive');

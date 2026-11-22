@@ -1,154 +1,38 @@
+// A labelled date field for the habit form: the device's own date input, so iOS opens its native picker.
+// It reads and reports whole local days; an emptied field reports no date.
+
 import { memo } from 'react';
-import DatePicker from 'react-datepicker';
+import { Calendar } from 'lucide-react';
+import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
-import DatePickerInput, {
-  datePickerInputStyles,
-} from '@/features/habits/components/DatePickerInput';
 
 interface DatePickerFieldProps {
   id: string;
   label: string;
   selected: Date | null;
   onChange: (date: Date | null) => void;
-  placeholder?: string;
-  isClearable?: boolean;
   isRequired?: boolean;
 }
 
-const datePickerCalendarStyles = `
-  .react-datepicker {
-    font-family: inherit;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: var(--color-card);
-    border: 1px solid var(--color-border-primary);
-    color: var(--color-card-foreground);
-  }
-  
-  .dark .react-datepicker {
-    background-color: var(--color-card);
-    border: 1px solid var(--color-border-primary);
-    color: var(--color-card-foreground);
-  }
-  
-  .react-datepicker__navigation {
-    top: 1em;
-  }
-  
-  .react-datepicker__day--keyboard-selected,
-  .react-datepicker__day--selected {
-    border-radius: 50%;
-    background-color: var(--color-brand-primary);
-    color: var(--color-text-inverse);
-  }
-  
-  .react-datepicker__current-month,
-  .react-datepicker__day-name {
-    color: var(--color-brand-text);
-  }
-  
-  .dark .react-datepicker__current-month,
-  .dark .react-datepicker__day-name {
-    color: var(--color-brand-text);
-  }
-  
-  .react-datepicker__day {
-    color: var(--color-foreground);
-    margin: 0;
-    width: 2.2rem;
-    height: 2.2rem;
-    line-height: 2.2rem;
-    transition: all 0.2s ease;
-    font-weight: 500;
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .dark .react-datepicker__day {
-    color: var(--color-foreground);
-    background: transparent;
-  }
-  
-  .react-datepicker__day:hover {
-    background-color: var(--color-hover-surface);
-    border-radius: 100%;
-  }
+/** The day, as a date input holds it: `YYYY-MM-DD`, in local time. */
+function toInputValue(date: Date | null): string {
+  if (!date) return '';
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
 
-  .dark .react-datepicker__day:hover {
-    color: var(--color-foreground);
-    background-color: var(--color-hover-surface);
-    border-radius: 100%;
-  }
-
-  .react-datepicker__day-name {
-    margin: 0 0.25rem;
-    font-weight: 700;
-  }
-
-  .react-datepicker__month {
-    background: var(--color-card);
-    margin: 0;
-    padding: 0.4rem;
-  }
-
-  .dark .react-datepicker__month {
-    background-color: var(--color-card);
-  }
-
-  .react-datepicker__close-icon::after {
-    background-color: var(--color-brand-primary);
-  }
-
-  .react-datepicker__header {
-    padding: 0.8em 0;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    background-color: var(--color-card);
-    border-bottom-color: var(--color-border-primary);
-  }
-
-  .dark .react-datepicker__header {
-    background-color: var(--color-card);
-    border-bottom-color: var(--color-border-primary);
-  }
-
-  .react-datepicker__current-month {
-    padding: 8px 0;
-  }
-  
-  .react-datepicker__day--outside-month {
-    color: var(--color-text-tertiary);
-  }
-
-  .dark .react-datepicker__day--outside-month {
-    color: var(--color-text-tertiary);
-  }
-
-  .dark .react-datepicker__month-container {
-    background-color: var(--color-card);
-  }
-
-  .dark .react-datepicker-popper .react-datepicker__triangle {
-    fill: var(--color-card);
-    color: var(--color-card);
-    stroke: var(--color-card);
-  }
-`;
-
-export const datePickerStyles = `
-  ${datePickerCalendarStyles}
-  ${datePickerInputStyles}
-`;
+/** The start of the day a date input holds, in local time; null when empty. */
+function fromInputValue(value: string): Date | null {
+  const [year, month, day] = value.split('-').map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
 
 const DatePickerField = memo(function DatePickerField({
   id,
   label,
   selected,
   onChange,
-  placeholder,
-  isClearable = false,
   isRequired = false,
 }: DatePickerFieldProps) {
   return (
@@ -160,22 +44,22 @@ const DatePickerField = memo(function DatePickerField({
         {label}
         {isRequired && <span className="text-(--color-error)">*</span>}
       </Label>
-      <DatePicker
-        // The picker sets its input's id itself; without this it would
-        // clear the id the label above points to.
-        id={id}
-        selected={selected}
-        onChange={onChange}
-        customInput={<DatePickerInput id={id} placeholder={placeholder} />}
-        dateFormat="MM/dd/yyyy"
-        isClearable={isClearable}
-        placeholderText={placeholder}
-        wrapperClassName="w-full"
-        popperClassName="z-50"
-        // Placed against the window, so the scrolling form it sits in never
-        // clips the calendar.
-        popperProps={{ strategy: 'fixed' }}
-      />
+      <div className="relative">
+        <Calendar
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-(--color-brand-primary)"
+        />
+        {/* appearance-none and the left-aligned value keep iOS from drawing
+            its own centred, shorter field in place of this one. */}
+        <Input
+          id={id}
+          type="date"
+          value={toInputValue(selected)}
+          onChange={(event) => onChange(fromInputValue(event.target.value))}
+          required={isRequired}
+          className="h-11 appearance-none rounded-xl pl-10 text-left sm:h-10 dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) [&::-webkit-date-and-time-value]:text-left"
+        />
+      </div>
     </div>
   );
 });

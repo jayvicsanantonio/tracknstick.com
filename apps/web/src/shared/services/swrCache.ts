@@ -36,7 +36,13 @@ function readSaved(): [string, CacheState][] {
     if (!saved || saved.owner !== owner || !Array.isArray(saved.entries)) {
       return [];
     }
-    return saved.entries.map(([key, data]) => [key, { data }]);
+    // Settled, as the data was when saved. Without these SWR would take an
+    // entry it is about to refresh for one still loading, and show a
+    // spinner in place of the data it has.
+    return saved.entries.map(([key, data]) => [
+      key,
+      { data, isLoading: false, isValidating: false },
+    ]);
   } catch {
     // An unreadable copy is no worse than none: the app fetches afresh.
     return [];

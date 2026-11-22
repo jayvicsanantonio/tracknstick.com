@@ -14,16 +14,21 @@ export function Toaster() {
   return (
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
+        // An achievement is a banner that leaves on its own; it has no
+        // close button.
+        const isBanner = props.variant === 'achievement';
         return (
           <Toast key={id} {...props}>
-            <div className="grid gap-1">
+            <div
+              className={isBanner ? 'grid gap-0.5 text-center' : 'grid gap-1'}
+            >
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
                 <ToastDescription>{description}</ToastDescription>
               )}
             </div>
             {action}
-            <ToastClose />
+            {isBanner ? null : <ToastClose />}
           </Toast>
         );
       })}

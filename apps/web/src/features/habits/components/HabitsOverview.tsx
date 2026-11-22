@@ -8,23 +8,16 @@ import {
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { motion } from 'framer-motion';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@shared/components/ui/alert-dialog';
-import { Tabs, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
+import { Tabs } from '@shared/components/ui/tabs';
+import { SegmentedTabsList } from '@shared/components/ui/segmented-control';
 import { Input } from '@shared/components/ui/input';
 import { Button } from '@shared/components/ui/button';
 import { Archive, ListChecks, SearchX, type LucideIcon } from 'lucide-react';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import HabitActions from '@/features/habits/components/HabitActions';
+import HabitListRow from '@/features/habits/components/HabitListRow';
+import DeleteHabitConfirmation from '@/features/habits/components/DeleteHabitConfirmation';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import {
   isArchived,
@@ -43,6 +36,13 @@ function frequencyText(habit: Habit) {
     ? frequencyLabel(habit.frequency)
     : habit.frequency.map((day) => day.substring(0, 3)).join(' · ');
 }
+
+/** The choices of the segmented control above the list. */
+const TAB_OPTIONS: { value: OverviewTab; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Archived' },
+];
 
 /** An empty list's explanation: an icon, what happened, and what to do next. */
 function EmptyResult({
@@ -95,8 +95,22 @@ const HabitsOverview = memo(function HabitsOverview() {
   // revalidates this list on window focus.
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // The phone list's row swiped open to show Delete: one at a time, as iOS.
+  const [swipedId, setSwipedId] = useState<string | null>(null);
+
   const handleDeleteHabit = useCallback((habit: Habit) => {
     setDeletingId(habit.id);
+  }, []);
+
+  const handleSwipe = useCallback((habit: Habit, open: boolean) => {
+    setSwipedId((current) =>
+      open ? habit.id : current === habit.id ? null : current,
+    );
+  }, []);
+
+  const cancelDelete = useCallback(() => {
+    setDeletingId(null);
+    setSwipedId(null);
   }, []);
 
   const habitToDelete = habits.find((habit) => habit.id === deletingId);
@@ -105,6 +119,7 @@ const HabitsOverview = memo(function HabitsOverview() {
     if (!habitToDelete) return;
     void deleteHabit(habitToDelete.id, habitToDelete.name);
     setDeletingId(null);
+    setSwipedId(null);
   }, [habitToDelete, deleteHabit]);
 
   // Filter habits based on search term and selected tab
@@ -175,26 +190,11 @@ const HabitsOverview = memo(function HabitsOverview() {
                 onValueChange={(value) => setSelectedTab(value as OverviewTab)}
                 className="w-full sm:max-w-[300px]"
               >
-                <TabsList className="grid w-full grid-cols-3 bg-(--color-muted)">
-                  <TabsTrigger
-                    className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-                    value="all"
-                  >
-                    All
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-                    value="active"
-                  >
-                    Active
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className="data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-text-inverse)"
-                    value="archived"
-                  >
-                    Archived
-                  </TabsTrigger>
-                </TabsList>
+                <SegmentedTabsList
+                  value={selectedTab}
+                  options={TAB_OPTIONS}
+                  aria-label="Show habits"
+                />
               </Tabs>
             </div>
 
@@ -259,48 +259,24 @@ const HabitsOverview = memo(function HabitsOverview() {
               </motion.div>
             ) : (
               <div key="habits">
-                {/* Phones: one card per habit, with 44px actions. */}
-                <ul aria-label="Habits" className="space-y-3 sm:hidden">
-                  {filteredHabits.map((habit) => {
-                    const Icon = HabitsIcons[habit.icon];
-                    return (
-                      <li
-                        key={habit.id}
-                        className="rounded-2xl bg-(--color-surface)/70 p-4 ring-1 ring-(--color-border-primary)/60 ring-inset dark:bg-(--color-surface-secondary)/60"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
-                            <Icon
-                              aria-hidden="true"
-                              className="size-5 text-(--color-brand-primary)"
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="truncate font-semibold text-(--color-foreground)">
-                                {habit.name}
-                              </p>
-                              <StatusBadge habit={habit} />
-                            </div>
-                            <p className="mt-0.5 text-sm text-(--color-text-secondary)">
-                              {frequencyText(habit)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex items-center justify-between gap-2 border-t border-(--color-border-primary)/60 pt-2">
-                          <span className="text-xs text-(--color-text-secondary)">
-                            Since {formatStartDate(habit)}
-                          </span>
-                          <HabitActions
-                            habit={habit}
-                            onEdit={openEditDialog}
-                            onDelete={handleDeleteHabit}
-                            size="touch"
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
+                {/* Phones: an iOS grouped list. Tap a row to edit its habit,
+                    swipe it left to reveal Delete. */}
+                <ul
+                  aria-label="Habits"
+                  className="divide-y divide-(--color-border-primary)/60 overflow-hidden rounded-2xl bg-(--color-card) ring-1 ring-(--color-border-primary)/60 ring-inset sm:hidden"
+                >
+                  {filteredHabits.map((habit) => (
+                    <HabitListRow
+                      key={habit.id}
+                      habit={habit}
+                      detail={`${frequencyText(habit)} · Since ${formatStartDate(habit)}`}
+                      status={isArchived(habit) ? 'Archived' : 'Active'}
+                      isOpen={swipedId === habit.id}
+                      onOpenChange={handleSwipe}
+                      onEdit={openEditDialog}
+                      onDelete={handleDeleteHabit}
+                    />
+                  ))}
                 </ul>
 
                 <div className="hidden overflow-hidden rounded-lg border border-(--color-border-primary) sm:block">
@@ -390,33 +366,11 @@ const HabitsOverview = memo(function HabitsOverview() {
         </Card>
       </div>
 
-      <AlertDialog
-        open={habitToDelete !== undefined}
-        onOpenChange={(open) => !open && setDeletingId(null)}
-      >
-        <AlertDialogContent className="bg-(--color-card) text-(--color-card-foreground)">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-(--color-foreground)">
-              Delete Habit
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-(--color-text-secondary)">
-              Are you sure you want to delete &quot;
-              {habitToDelete?.name}&quot;? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-(--color-muted) text-(--color-foreground) hover:bg-(--color-hover-surface)">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring)"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteHabitConfirmation
+        habit={habitToDelete}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 });

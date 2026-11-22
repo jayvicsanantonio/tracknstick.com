@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router-dom';
 import HabitsOverview from '../HabitsOverview';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
+import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import type { Habit } from '@/features/habits/types/Habit';
 import { isEnteringOnScreen } from '@testing/utils';
 
@@ -26,6 +27,16 @@ const habit = (overrides: Partial<Habit>): Habit =>
     ...overrides,
   }) as Habit;
 
+/** The habit the edit dialog would show, as the context reports it. */
+function EditingProbe() {
+  const { editingHabit, showEditHabitDialog } = useHabitsContext();
+  return (
+    <output role="status" aria-label="Editing">
+      {showEditHabitDialog ? editingHabit?.name : ''}
+    </output>
+  );
+}
+
 function renderOverview(habits: Habit[]) {
   vi.mocked(useAllHabits).mockReturnValue({
     habits,
@@ -37,6 +48,7 @@ function renderOverview(habits: Habit[]) {
     <MemoryRouter>
       <HabitsStateProvider>
         <HabitsOverview />
+        <EditingProbe />
       </HabitsStateProvider>
     </MemoryRouter>,
   );
@@ -94,49 +106,53 @@ describe('HabitsOverview', () => {
     expect(within(swim).queryByText('Daily')).not.toBeInTheDocument();
   });
 
-  describe('on phones, as a card list', () => {
-    it('shows each habit as a card with its frequency, status and start', () => {
+  describe('on phones, as an iOS grouped list', () => {
+    it('shows each habit as a row with its frequency, status and start', () => {
       renderOverview([
         habit({ id: '1', name: 'Read' }),
         habit({ id: '2', name: 'Swim', frequency: ['Mon', 'Wed', 'Fri'] }),
       ]);
 
       const list = screen.getByRole('list', { name: 'Habits' });
-      const cards = within(list).getAllByRole('listitem');
-      expect(cards).toHaveLength(2);
+      const rows = within(list).getAllByRole('listitem');
+      expect(rows).toHaveLength(2);
 
-      expect(cards[0]).toHaveTextContent('Read');
-      expect(cards[0]).toHaveTextContent('Daily');
-      expect(cards[0]).toHaveTextContent('Active');
-      expect(within(cards[0]).getByText(/^Since /)).toBeInTheDocument();
+      expect(rows[0]).toHaveTextContent('Read');
+      expect(rows[0]).toHaveTextContent('Daily');
+      expect(rows[0]).toHaveTextContent('Active');
+      expect(within(rows[0]).getByText(/Since /)).toBeInTheDocument();
 
-      expect(cards[1]).toHaveTextContent('Mon · Wed · Fri');
+      expect(rows[1]).toHaveTextContent('Mon · Wed · Fri');
     });
 
-    it('asks to confirm before deleting from a card', async () => {
+    it('opens a habit to edit when its row is tapped', async () => {
       renderOverview([habit({ id: '1', name: 'Read' })]);
 
-      const card = within(
+      const row = within(
         screen.getByRole('list', { name: 'Habits' }),
       ).getByRole('listitem');
       await userEvent.click(
-        within(card).getByRole('button', { name: 'Delete Read' }),
+        within(row).getByRole('button', { name: 'Edit Read' }),
+      );
+
+      expect(screen.getByRole('status', { name: 'Editing' })).toHaveTextContent(
+        'Read',
+      );
+    });
+
+    it('keeps a Delete button on each row, for a swipe, VoiceOver or a keyboard', async () => {
+      renderOverview([habit({ id: '1', name: 'Read' })]);
+
+      const row = within(
+        screen.getByRole('list', { name: 'Habits' }),
+      ).getByRole('listitem');
+      await userEvent.click(
+        within(row).getByRole('button', { name: 'Delete Read' }),
       );
 
       expect(
         screen.getByRole('alertdialog', { name: 'Delete Habit' }),
       ).toHaveTextContent('Read');
-    });
-
-    it('offers an edit button on each card', () => {
-      renderOverview([habit({ id: '1', name: 'Read' })]);
-
-      const card = within(
-        screen.getByRole('list', { name: 'Habits' }),
-      ).getByRole('listitem');
-      expect(
-        within(card).getByRole('button', { name: 'Edit Read' }),
-      ).toBeInTheDocument();
     });
   });
 

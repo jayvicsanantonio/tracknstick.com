@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, useMemo } from 'react';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { useDate } from '@app/providers/useDate';
 
@@ -42,6 +42,7 @@ export function useHabits(): UseHabitsReturn {
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
   const { date, setDate, timeZone } = useDate();
   const { isSignedIn } = useAuth();
+  const { cache, mutate } = useSWRConfig();
 
   // Check for new achievements
   const checkAchievements = useCallback(async () => {
@@ -51,7 +52,8 @@ export function useHabits(): UseHabitsReturn {
         // Show toast for new achievements
         result.newAchievements.forEach((achievement) => {
           toast({
-            title: '🏆 Achievement Earned!',
+            variant: 'achievement',
+            title: 'Achievement earned',
             description: `${achievement.name}: ${achievement.description}`,
             duration: 5000,
           });
@@ -96,14 +98,13 @@ export function useHabits(): UseHabitsReturn {
   const addHabit = useCallback(
     async (habitData: HabitPayload) => {
       try {
+        // No message on success: the new habit appearing says it, as in a
+        // native app. Failures still say so below.
         await apiAddHabit(habitData);
-        toast({
-          description: `Habit "${habitData.name}" added successfully.`,
-        });
         setDate(new Date());
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
-        void mutateHabitLists();
+        void mutateHabitLists({ cache, mutate });
         // Check for achievements after adding a habit
         void checkAchievements();
       } catch (err) {
@@ -114,7 +115,7 @@ export function useHabits(): UseHabitsReturn {
         });
       }
     },
-    [mutateHabits, toast, setDate, checkAchievements],
+    [cache, mutate, mutateHabits, toast, setDate, checkAchievements],
   );
 
   const habits = useMemo(() => fetchedHabits ?? [], [fetchedHabits]);
@@ -146,12 +147,9 @@ export function useHabits(): UseHabitsReturn {
 
       try {
         await apiUpdateHabit(habitId, habitData);
-        toast({
-          description: `Habit "${habitData.name ?? 'habit'}" updated.`,
-        });
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
-        void mutateHabitLists();
+        void mutateHabitLists({ cache, mutate });
       } catch (err) {
         console.error('Failed to update habit:', err);
         toast({
@@ -161,10 +159,10 @@ export function useHabits(): UseHabitsReturn {
           }". Reverting changes.`,
         });
         void mutateHabits();
-        void mutateHabitLists();
+        void mutateHabitLists({ cache, mutate });
       }
     },
-    [mutateHabits, toast],
+    [cache, mutate, mutateHabits, toast],
   );
 
   const deleteHabit = useCallback(
@@ -176,10 +174,9 @@ export function useHabits(): UseHabitsReturn {
 
       try {
         await apiDeleteHabit(habitId);
-        toast({ description: `Habit "${habitName}" deleted.` });
         // Invalidate both date-specific and all-habits caches
         void mutateHabits();
-        void mutateHabitLists();
+        void mutateHabitLists({ cache, mutate });
       } catch (err) {
         console.error('Failed to delete habit:', err);
         toast({
@@ -187,10 +184,10 @@ export function useHabits(): UseHabitsReturn {
           description: `Failed to delete habit "${habitName}". Restoring habit.`,
         });
         void mutateHabits();
-        void mutateHabitLists();
+        void mutateHabitLists({ cache, mutate });
       }
     },
-    [mutateHabits, toast],
+    [cache, mutate, mutateHabits, toast],
   );
 
   const internalToggleHabitCompletion = useCallback(
