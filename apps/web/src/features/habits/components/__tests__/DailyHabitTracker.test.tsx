@@ -143,6 +143,7 @@ describe('DailyHabitTracker', () => {
         habit({ id: '1', name: 'Read', completed: true }),
         habit({ id: '2', name: 'Walk', completed: true }),
       ],
+      completionRate: 100,
     });
 
     renderTracker();
@@ -150,6 +151,23 @@ describe('DailyHabitTracker', () => {
     expect(
       screen.getByRole('status', { name: 'Day summary' }),
     ).toHaveTextContent('All 2 done');
+    expect(screen.getByText('All caught up!')).toBeInTheDocument();
+  });
+
+  it('shows contextual progress copy and renders each habit name once', () => {
+    mockHabits({
+      habits: [
+        habit({ id: '1', name: 'Workout', completed: false }),
+        habit({ id: '2', name: 'Meditate', completed: false }),
+      ],
+      completionRate: 0,
+    });
+
+    renderTracker();
+
+    expect(screen.getByText('Ready for today')).toBeInTheDocument();
+    expect(screen.getAllByText('Workout')).toHaveLength(1);
+    expect(screen.getAllByText('Meditate')).toHaveLength(1);
   });
 
   it('shows the first-habit prompt only when there are no habits at all', () => {

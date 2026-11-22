@@ -334,6 +334,82 @@
     border: 0.5px solid
       color-mix(in oklab, var(--color-border-primary) 65%, transparent);
   }
+
+  /* Brand-harmonized elevated surfaces for the mobile (< sm) Tracker cards.
+     Scoped strictly below sm so desktop glass-card & orb styles stay untouched. */
+  @media (max-width: 639px) {
+    .ios-tracker-card {
+      background-color: color-mix(
+        in oklab,
+        var(--color-card) 92%,
+        rgba(255, 255, 255, 0.85)
+      );
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        0 6px 20px
+          color-mix(
+            in oklab,
+            var(--color-brand-primary) 6%,
+            rgba(0, 0, 0, 0.04)
+          ),
+        0 1px 2px rgba(0, 0, 0, 0.03);
+      border: 0.5px solid
+        color-mix(
+          in oklab,
+          var(--color-brand-primary) 16%,
+          var(--color-border-primary)
+        );
+    }
+
+    .dark .ios-tracker-card {
+      background-color: color-mix(
+        in oklab,
+        var(--color-brand-light) 32%,
+        var(--color-surface-secondary) 68%
+      );
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 10px 28px rgba(0, 0, 0, 0.34);
+      border: 0.5px solid
+        color-mix(
+          in oklab,
+          var(--color-brand-primary) 20%,
+          rgba(255, 255, 255, 0.08)
+        );
+    }
+
+    .ios-tracker-card-done {
+      background-color: color-mix(
+        in oklab,
+        var(--color-brand-primary) 10%,
+        var(--color-card) 90%
+      );
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 6px 20px
+          color-mix(in oklab, var(--color-brand-primary) 12%, transparent);
+      border: 0.5px solid
+        color-mix(in oklab, var(--color-brand-primary) 34%, transparent);
+    }
+
+    .dark .ios-tracker-card-done {
+      background-color: color-mix(
+        in oklab,
+        var(--color-brand-primary) 14%,
+        var(--color-brand-light) 44%
+      );
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 8px 24px
+          color-mix(
+            in oklab,
+            var(--color-brand-primary) 14%,
+            rgba(0, 0, 0, 0.4)
+          );
+      border: 0.5px solid
+        color-mix(in oklab, var(--color-brand-primary) 36%, transparent);
+    }
+  }
 }
 
 @media (min-width: theme(--breakpoint-xs)) {

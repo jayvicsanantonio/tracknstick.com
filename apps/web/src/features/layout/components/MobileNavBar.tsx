@@ -112,7 +112,7 @@ const MobileNavBar = memo(function MobileNavBar({
 
       {/* Collapsing 34px iOS Large Title */}
       {!compact ? (
-        <div className="px-4 pt-1 pb-2 sm:hidden">
+        <div className="px-4 pt-0 pb-1.5 sm:hidden">
           <div
             className={cn(
               'transition-opacity duration-150',

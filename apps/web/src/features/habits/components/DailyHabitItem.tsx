@@ -20,6 +20,7 @@ import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { IOS_SPRING_TAP } from '@shared/utils/motion';
+import { cn } from '@shared/utils/utils';
 
 const { Check } = MiscellaneousIcons;
 
@@ -96,72 +97,125 @@ const DailyHabitItem = memo(function DailyHabitItem({
     <div
       key={habit.id}
       data-habit-item
-      className="group flex flex-col items-center"
+      className="group relative flex w-full flex-col items-center"
     >
-      <div className="relative mb-2.5 sm:mb-3">
-        <button
-          type="button"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerEnd}
-          onPointerCancel={handlePointerEnd}
-          onContextMenu={(event) => {
-            // Suppress browser context menu on mobile long-press so the iOS menu takes over cleanly.
-            if (window.matchMedia?.('(pointer: coarse)').matches) {
-              event.preventDefault();
-            }
-          }}
-          className={`relative flex h-17 w-17 cursor-pointer items-center justify-center overflow-hidden rounded-full p-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] ring-1 outline-none ring-inset focus-visible:ring-[3px] focus-visible:ring-(--color-ring) sm:h-24 sm:w-24 sm:backdrop-blur-xl sm:backdrop-saturate-150 md:h-28 md:w-28 ${
-            habit.completed
-              ? 'bg-(--color-brand-primary) ring-(--color-brand-primary)'
-              : 'bg-(--color-card) ring-(--color-border-primary)/60 sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/40 dark:bg-(--color-surface-secondary) dark:sm:bg-(--color-surface-secondary)/40'
-          } transition-[transform,background-color] duration-150 hover:-translate-y-1 hover:scale-105 active:scale-92 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100`}
-          onClick={handleToggle}
-          aria-pressed={habit.completed}
-          aria-label={
-            habit.completed
-              ? `Mark ${habit.name} as incomplete`
-              : `Mark ${habit.name} as complete`
+      <button
+        type="button"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onContextMenu={(event) => {
+          // Suppress browser context menu on mobile long-press so the iOS menu takes over cleanly.
+          if (window.matchMedia?.('(pointer: coarse)').matches) {
+            event.preventDefault();
           }
-        >
-          <Icon
-            aria-hidden="true"
-            className={`relative z-10 h-8 w-8 transition-transform duration-150 sm:h-12 sm:w-12 md:h-14 md:w-14 ${
+        }}
+        className={cn(
+          'group/habit-btn relative flex w-full cursor-pointer items-center gap-3.5 rounded-[20px] px-3.5 py-3 text-left transition-[transform,background-color,border-color,box-shadow] duration-150 outline-none motion-reduce:transition-none max-sm:focus-visible:ring-[3px] max-sm:focus-visible:ring-(--color-ring) max-sm:active:scale-[0.985] sm:flex-col sm:gap-0 sm:rounded-none sm:p-0 sm:text-center',
+          habit.completed ? 'ios-tracker-card-done' : 'ios-tracker-card',
+        )}
+        onClick={handleToggle}
+        aria-pressed={habit.completed}
+        aria-label={
+          habit.completed
+            ? `Mark ${habit.name} as incomplete`
+            : `Mark ${habit.name} as complete`
+        }
+      >
+        {/* Icon container: tactile rounded-2xl badge on mobile, circular glass orb on sm+ */}
+        <span className="relative shrink-0 sm:mb-3">
+          <span
+            className={cn(
+              'relative flex size-12 items-center justify-center overflow-hidden rounded-[15px] transition-[transform,background-color,box-shadow] duration-150 motion-reduce:transition-none sm:h-24 sm:w-24 sm:rounded-full sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] sm:ring-1 sm:backdrop-blur-xl sm:backdrop-saturate-150 sm:ring-inset sm:group-hover/habit-btn:-translate-y-1 sm:group-hover/habit-btn:scale-105 sm:group-focus-visible/habit-btn:ring-[3px] sm:group-focus-visible/habit-btn:ring-(--color-ring) sm:group-active/habit-btn:scale-92 sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:h-28 md:w-28',
               habit.completed
-                ? 'scale-105 text-(--color-primary-foreground)'
-                : 'text-(--color-brand-primary)'
-            }`}
-          />
-        </button>
-
-        {/* Rendered outside the overflow-hidden button so the celebration burst flies freely. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        >
-          <StarAnimation isVisible={animatingHabitId === habit.id} />
-        </div>
-
-        {/* Outside the button, whose clipping would cut the badge off. */}
-        {habit.completed ? (
-          <motion.span
-            aria-hidden="true"
-            data-completed-badge
-            initial={{ scale: 0.4, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={IOS_SPRING_TAP}
-            className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:h-7 sm:w-7"
+                ? 'bg-(--color-brand-primary) max-sm:shadow-[0_4px_14px_color-mix(in_oklab,var(--color-brand-primary)_38%,transparent)] sm:ring-(--color-brand-primary)'
+                : 'bg-(--color-brand-primary)/14 ring-1 ring-(--color-brand-primary)/24 ring-inset sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/40 dark:sm:bg-(--color-surface-secondary)/40',
+            )}
           >
-            <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={3} />
-          </motion.span>
-        ) : null}
+            <Icon
+              aria-hidden="true"
+              className={cn(
+                'relative z-10 size-6 transition-transform duration-150 sm:h-12 sm:w-12 md:h-14 md:w-14',
+                habit.completed
+                  ? 'scale-105 text-(--color-primary-foreground)'
+                  : 'text-(--color-brand-primary)',
+              )}
+            />
+          </span>
+
+          {/* Desktop completed corner badge (sits outside overflow-hidden orb) */}
+          {habit.completed ? (
+            <motion.span
+              aria-hidden="true"
+              data-completed-badge
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={IOS_SPRING_TAP}
+              className="pointer-events-none absolute -top-0.5 -right-0.5 hidden h-7 w-7 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:flex"
+            >
+              <Check className="h-4 w-4" strokeWidth={3} />
+            </motion.span>
+          ) : null}
+        </span>
+
+        {/* Habit title & schedule (inline on mobile, centered beneath orb on sm+) */}
+        <span className="flex min-w-0 flex-1 flex-col sm:w-full sm:flex-none sm:items-center">
+          <span
+            className={cn(
+              'truncate text-[16px] leading-snug font-semibold tracking-[-0.01em] transition-colors duration-150 sm:line-clamp-2 sm:max-w-full sm:px-1 sm:text-center sm:text-sm sm:whitespace-normal sm:text-(--color-brand-tertiary) dark:sm:text-(--color-brand-text-light)',
+              habit.completed
+                ? 'text-(--color-foreground)/78'
+                : 'text-(--color-foreground)',
+            )}
+          >
+            {habit.name}
+          </span>
+          <span className="mt-0.5 flex items-center gap-1.5 text-[13px] leading-tight text-(--color-text-secondary) sm:justify-center sm:text-xs sm:text-(--color-brand-text) dark:sm:text-(--color-brand-text-light)">
+            <span>{frequencyLabel(habit.frequency)}</span>
+            {habit.completed ? (
+              <span className="inline-flex items-center gap-1.5 sm:hidden">
+                <span aria-hidden="true" className="opacity-50">
+                  ·
+                </span>
+                <span className="font-semibold text-(--color-brand-primary)">
+                  Done
+                </span>
+              </span>
+            ) : null}
+          </span>
+        </span>
+
+        {/* Mobile trailing circular check control */}
+        <span
+          aria-hidden="true"
+          className={cn(
+            'relative flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-200 sm:hidden',
+            habit.completed
+              ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_45%,transparent)]'
+              : 'border-2 border-(--color-brand-primary)/42 bg-(--color-brand-primary)/6',
+          )}
+        >
+          {habit.completed ? (
+            <motion.span
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={IOS_SPRING_TAP}
+              className="flex items-center justify-center"
+            >
+              <Check className="size-4" strokeWidth={3} />
+            </motion.span>
+          ) : null}
+        </span>
+      </button>
+
+      {/* Unclipped celebration star burst centered over the icon tile on mobile and orb on sm+ */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-3.5 flex w-12 items-center justify-center sm:inset-x-0 sm:top-0 sm:bottom-auto sm:h-24 sm:w-auto md:h-28"
+      >
+        <StarAnimation isVisible={animatingHabitId === habit.id} />
       </div>
-      <span className="line-clamp-2 max-w-full px-1 text-center text-[13px] leading-snug font-semibold text-(--color-brand-tertiary) sm:text-sm dark:text-(--color-brand-text-light)">
-        {habit.name}
-      </span>
-      <span className="mt-0.5 text-[11px] text-(--color-brand-text) sm:text-xs dark:text-(--color-brand-text-light)">
-        {frequencyLabel(habit.frequency)}
-      </span>
 
       {/* Native iOS Quick Action Sheet triggered by long-pressing a habit circle */}
       {menuOpen ? (
