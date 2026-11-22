@@ -34,9 +34,9 @@ export function ChatInput({
   return (
     <form
       onSubmit={onSubmit}
-      className="shrink-0 px-3 pt-1.5 pb-2.5 sm:px-6 sm:pt-2 sm:pb-6"
+      className="shrink-0 px-4 pt-1.5 pb-2 sm:px-6 sm:pt-2 sm:pb-6"
     >
-      <div className="ios-liquid-glass mx-auto flex max-w-3xl items-end gap-2 rounded-[26px] p-1.5 pl-3.5 transition-shadow focus-within:ring-2 focus-within:ring-(--color-ring) sm:rounded-2xl sm:border-0 sm:bg-(--color-background) sm:pl-1.5 sm:shadow-sm sm:ring-1 sm:ring-(--color-border-primary)/60 sm:backdrop-blur-none sm:ring-inset">
+      <div className="ios-tracker-card mx-auto flex max-w-3xl items-end gap-2 rounded-[26px] py-1.5 pr-1.5 pl-4 transition-shadow focus-within:ring-2 focus-within:ring-(--color-ring) sm:rounded-2xl sm:border-0 sm:bg-(--color-background) sm:p-1.5 sm:shadow-sm sm:ring-1 sm:ring-(--color-border-primary)/60 sm:ring-inset">
         <textarea
           ref={textareaRef}
           value={input}
@@ -50,7 +50,7 @@ export function ChatInput({
           aria-label="Ask the habit coach"
           placeholder="Ask the coach anything…"
           rows={1}
-          className="max-h-36 min-h-[38px] flex-1 resize-none overflow-y-auto bg-transparent py-2 text-base leading-6 outline-none placeholder:text-(--color-text-secondary) sm:min-h-[44px] sm:px-3 sm:py-2.5 sm:text-sm"
+          className="max-h-36 min-h-[38px] flex-1 resize-none overflow-y-auto bg-transparent py-2 text-[16px] leading-6 text-(--color-foreground) outline-none placeholder:text-(--color-text-secondary)/75 sm:min-h-[44px] sm:px-3 sm:py-2.5 sm:text-sm"
         />
         <Button
           type="submit"
@@ -58,14 +58,16 @@ export function ChatInput({
           aria-label="Send message"
           disabled={!canSend}
           className={cn(
-            'size-9 shrink-0 rounded-full transition-transform active:scale-90 sm:h-11 sm:w-11 sm:rounded-xl',
-            !canSend && 'opacity-45',
+            'size-9 shrink-0 rounded-full transition-[transform,background-color,color,box-shadow] duration-150 active:scale-90 sm:h-11 sm:w-11 sm:rounded-xl',
+            canSend
+              ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_3px_12px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)] hover:bg-(--color-brand-secondary)'
+              : 'bg-(--color-brand-primary)/14 text-(--color-brand-primary)/50 shadow-none disabled:opacity-100',
           )}
         >
           {isLoading ? (
             <Loader2
               aria-hidden="true"
-              className="size-4 animate-spin sm:size-5"
+              className="size-4 animate-spin text-(--color-brand-primary) sm:size-5"
             />
           ) : (
             <ArrowUp aria-hidden="true" className="size-5" strokeWidth={2.5} />

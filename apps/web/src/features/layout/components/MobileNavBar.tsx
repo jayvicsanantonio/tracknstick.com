@@ -13,8 +13,10 @@ interface MobileNavBarProps {
   title: string;
   /** Optional secondary line shown under the title (e.g. "Atomic Habits" on Coach). */
   subtitle?: string;
-  /** Compact mode skips the 34px Large Title and shows the centered inline header immediately (used on Coach). */
+  /** Compact mode skips the 34px Large Title and shows the centered inline header immediately. */
   compact?: boolean;
+  /** External scroll-collapse override for pages whose scroll container is not window (e.g. Coach). */
+  collapsed?: boolean;
   /** Optional leading action rendered on the left of the compact top bar. */
   leading?: ReactNode;
   /** Optional trailing action rendered beside the top-right avatar button. */
@@ -27,6 +29,7 @@ const MobileNavBar = memo(function MobileNavBar({
   title,
   subtitle,
   compact = false,
+  collapsed = false,
   leading,
   trailing,
 }: MobileNavBarProps) {
@@ -43,7 +46,8 @@ const MobileNavBar = memo(function MobileNavBar({
     return () => window.removeEventListener('scroll', onScroll);
   }, [compact]);
 
-  const showInlineTitle = compact || scrolled;
+  const isCollapsed = scrolled || collapsed;
+  const showInlineTitle = compact || isCollapsed;
 
   return (
     <>
@@ -75,7 +79,7 @@ const MobileNavBar = memo(function MobileNavBar({
             <span className="max-w-full truncate text-[17px] leading-tight font-semibold tracking-[-0.015em] text-(--color-foreground)">
               {title}
             </span>
-            {compact && subtitle ? (
+            {showInlineTitle && subtitle ? (
               <span className="max-w-full truncate text-[11px] leading-tight text-(--color-text-secondary)">
                 {subtitle}
               </span>
@@ -112,24 +116,33 @@ const MobileNavBar = memo(function MobileNavBar({
 
       {/* Collapsing 34px iOS Large Title */}
       {!compact ? (
-        <div className="px-4 pt-0 pb-1.5 sm:hidden">
-          <div
-            className={cn(
-              'transition-opacity duration-150',
-              scrolled ? 'opacity-0' : 'opacity-100',
-            )}
-          >
-            <p
-              aria-hidden="true"
-              className="text-[34px] leading-[1.12] font-bold tracking-[-0.025em] text-(--color-foreground)"
-            >
-              {title}
-            </p>
-            {subtitle ? (
-              <p className="mt-0.5 text-[14px] text-(--color-text-secondary)">
-                {subtitle}
-              </p>
-            ) : null}
+        <div
+          className={cn(
+            'grid transition-[grid-template-rows,opacity] duration-200 sm:hidden',
+            collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr]',
+          )}
+        >
+          <div className="overflow-hidden">
+            <div className="px-4 pt-0 pb-1.5">
+              <div
+                className={cn(
+                  'transition-opacity duration-150',
+                  isCollapsed ? 'opacity-0' : 'opacity-100',
+                )}
+              >
+                <p
+                  aria-hidden="true"
+                  className="text-[34px] leading-[1.12] font-bold tracking-[-0.025em] text-(--color-foreground)"
+                >
+                  {title}
+                </p>
+                {subtitle ? (
+                  <p className="mt-0.5 text-[14px] text-(--color-text-secondary)">
+                    {subtitle}
+                  </p>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
