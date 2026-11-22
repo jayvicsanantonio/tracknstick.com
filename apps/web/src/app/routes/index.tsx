@@ -1,18 +1,16 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 
 import RootLayout from '@shared/components/layouts/RootLayout';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
 import RouteErrorBoundary from '@shared/components/feedback/RouteErrorBoundary';
-
-// Each page loads with its route, so the first page does not download the
-// others: the progress charts, for one, load only on /progress.
-const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
-const HabitsPage = lazy(() => import('@/pages/HabitsPage'));
-const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
-// The coach's chat and its markdown renderer load only on /coach.
-const CoachPage = lazy(() => import('@/pages/CoachPage'));
-const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+import {
+  CoachPage,
+  DashboardPage,
+  HabitsPage,
+  NotFoundPage,
+  ProgressPage,
+} from '@app/routes/pages';
 
 /**
  * Route configuration with React Router v7.7 best practices

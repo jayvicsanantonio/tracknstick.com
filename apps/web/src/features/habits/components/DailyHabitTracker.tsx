@@ -11,7 +11,6 @@ import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import NothingScheduled from '@/features/habits/components/NothingScheduled';
 import { Button } from '@shared/components/ui/button';
 import LoadingFallback from '@shared/components/feedback/LoadingFallback';
-import { motion } from 'framer-motion';
 
 export default function DailyHabitTracker() {
   const { habits, isLoading, error, completionRate, mutateHabits } =
@@ -36,12 +35,7 @@ export default function DailyHabitTracker() {
 
   if (isLoading) {
     return (
-      <motion.div
-        className="flex h-full flex-1 flex-col"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className="flex h-full flex-1 flex-col">
         <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
           <Card
             variant="glass"
@@ -52,7 +46,7 @@ export default function DailyHabitTracker() {
             </CardContent>
           </Card>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
@@ -97,12 +91,7 @@ export default function DailyHabitTracker() {
   }
 
   return (
-    <motion.div
-      className="flex h-full flex-1 flex-col"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="flex h-full flex-1 flex-col">
       <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
@@ -177,6 +166,6 @@ export default function DailyHabitTracker() {
           </div>
         </Card>
       </div>
-    </motion.div>
+    </div>
   );
 }

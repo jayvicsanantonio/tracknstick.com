@@ -57,6 +57,13 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+// jsdom has no scrolling, and reports window.scrollTo as not implemented.
+// The layout restores each tab's scroll position with it on every route.
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: vi.fn(),
+});
+
 // Mock ResizeObserver. A class, because libraries construct it with `new`
 // (Radix radio groups inside a form, Recharts' ResponsiveContainer), which
 // an arrow-function mock does not support.

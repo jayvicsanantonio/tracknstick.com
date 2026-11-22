@@ -110,8 +110,14 @@ export const toggleHabitCompletion = async (
 
 export const allHabitsKey = '/api/v1/habits';
 
+/**
+ * One key per calendar day in the user's time zone, e.g. `date=2026-11-21`.
+ * The request itself still sends the moment (see fetchHabits); the key only
+ * names the list. Keyed by the moment, it changed on every launch, and the
+ * habits saved last time (see swrCache) were never found again.
+ */
 export const habitsForDateKey = (date: Date, timeZone: string) =>
-  `${allHabitsKey}?date=${date.toISOString()}&timeZone=${timeZone}`;
+  `${allHabitsKey}?date=${date.toLocaleDateString('en-CA', { timeZone })}&timeZone=${timeZone}`;
 
 export const habitStatsKey = (habitId: string, timeZone: string) =>
   `${allHabitsKey}/${habitId}/stats?timeZone=${timeZone}`;

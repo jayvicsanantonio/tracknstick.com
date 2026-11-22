@@ -1,7 +1,7 @@
 // Covers the phone-width bottom navigation: its four destinations and its Add button.
 // The bar marks the current route and opens the Add Habit dialog.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -81,5 +81,31 @@ describe('MobileTabBar', () => {
       'aria-current',
       'page',
     );
+  });
+});
+
+describe('MobileTabBar on a second tap', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('scrolls the current tab back to its top, as an iOS tab bar does', async () => {
+    const scrollTo = vi.fn();
+    vi.stubGlobal('scrollTo', scrollTo);
+    renderBar('/habits');
+
+    await userEvent.click(screen.getByRole('link', { name: 'Habits' }));
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+  });
+
+  it('leaves the scrolling to the new tab when moving to another', async () => {
+    const scrollTo = vi.fn();
+    vi.stubGlobal('scrollTo', scrollTo);
+    renderBar('/habits');
+
+    await userEvent.click(screen.getByRole('link', { name: 'Progress' }));
+
+    expect(scrollTo).not.toHaveBeenCalled();
   });
 });

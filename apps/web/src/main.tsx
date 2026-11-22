@@ -10,14 +10,16 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '@/styles/index.css';
 import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';
+import { SWRConfig } from 'swr';
 import { router } from '@app/routes';
+import { createPersistentCache } from '@shared/services/swrCache';
+import { applyUpdateWhenHidden } from '@shared/services/serviceWorkerUpdates';
 
-// Register service worker
+// Register service worker. A new version waits until the app is out of
+// sight, then reloads unseen, as a native app updates between uses.
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm('New content available. Reload?')) {
-      void updateSW(true);
-    }
+    applyUpdateWhenHidden(() => void updateSW(true));
   },
   onOfflineReady() {
     console.log('App ready to work offline');
@@ -52,12 +54,16 @@ createRoot(document.getElementById('root')!).render(
           },
         }}
       >
-        <DateProvider>
-          <App>
-            <RouterProvider router={router} />
-          </App>
-          <Toaster />
-        </DateProvider>
+        {/* The data cache is saved between launches, so the app opens to
+            what it showed last time while it asks the API for fresh data. */}
+        <SWRConfig value={{ provider: createPersistentCache }}>
+          <DateProvider>
+            <App>
+              <RouterProvider router={router} />
+            </App>
+            <Toaster />
+          </DateProvider>
+        </SWRConfig>
       </ClerkProvider>
     </ThemeProvider>
   </StrictMode>,

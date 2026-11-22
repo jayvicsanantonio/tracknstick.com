@@ -1,14 +1,32 @@
-import { lazy, memo, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { lazy, memo, Suspense, useEffect } from 'react';
+import { Outlet, ScrollRestoration, type Location } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
+import { preloadPages } from '@app/routes/pages';
 
 // Only signed-out visitors see the welcome page, so it loads on demand and
 // signed-in users never download it.
 const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
+
+/**
+ * Each tab keeps its own scroll position, as on a native tab bar: a tab
+ * opens where it was left, and at its top on a first visit. Keyed by path,
+ * so a tab's place survives leaving it however the user comes back.
+ */
+function scrollKeyOf(location: Location) {
+  return location.pathname;
+}
+
+/** Loads the tab pages in the background once a user is signed in. */
+function PreloadPages() {
+  useEffect(() => {
+    void preloadPages();
+  }, []);
+  return null;
+}
 
 /**
  * Root layout component that handles authentication-based rendering
@@ -21,6 +39,7 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
 const RootLayout = memo(function RootLayout() {
   return (
     <>
+      <ScrollRestoration getKey={scrollKeyOf} />
       <Header />
       {/* Pages fill the main column, so the footer sits at the foot of the
           screen however short a page is or while it loads. On phones the main
@@ -34,6 +53,7 @@ const RootLayout = memo(function RootLayout() {
           </Suspense>
         </SignedOut>
         <SignedIn>
+          <PreloadPages />
           {/* The coach conversation outlives each page, so it wraps them. */}
           <ChatConversationProvider>
             <Outlet />

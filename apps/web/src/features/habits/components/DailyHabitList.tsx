@@ -1,53 +1,24 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import DailyHabitItem from '@/features/habits/components/DailyHabitItem';
 import { useHabits } from '@/features/habits/hooks/useHabits';
-import { motion } from 'framer-motion';
 
 const DailyHabitList = memo(function DailyHabitList() {
   const { habits } = useHabits();
 
-  const container = useMemo(
-    () => ({
-      hidden: { opacity: 0 },
-      show: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.1,
-          delayChildren: 0.3,
-        },
-      },
-    }),
-    [],
-  );
-
-  const itemVariants = useMemo(
-    () => ({
-      hidden: { opacity: 0, y: 20 },
-      show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-    }),
-    [],
-  );
-
   return (
     // On phones a centred, wrapping row of fixed-width habits, so a short
-    // last row sits in the middle; a grid from sm up.
-    <motion.div
+    // last row sits in the middle; a grid from sm up. The habits show at
+    // once, as a native app's list does, rather than one after another.
+    <div
       className="flex flex-wrap justify-center gap-x-2 gap-y-5 sm:grid sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
       aria-label="List of daily habits"
-      variants={container}
-      initial="hidden"
-      animate="show"
     >
       {habits.map((habit) => (
-        <motion.div
-          key={habit.id}
-          variants={itemVariants}
-          className="w-24 sm:w-auto"
-        >
+        <div key={habit.id} className="w-24 sm:w-auto">
           <DailyHabitItem habit={habit} />
-        </motion.div>
+        </div>
       ))}
-    </motion.div>
+    </div>
   );
 });
 

@@ -38,3 +38,25 @@ export function renderWithRouter({
 }
 
 // Feature flag mocking utilities are no longer needed since feature flags have been removed
+
+/**
+ * Whether the element, or anything around it, is drawn faded or shifted: the
+ * first frame of an entrance animation. A screen that shows at once has
+ * neither.
+ */
+export function isEnteringOnScreen(element: HTMLElement): boolean {
+  for (
+    let node: HTMLElement | null = element;
+    node;
+    node = node.parentElement
+  ) {
+    const { opacity, transform } = node.style;
+    if (
+      (opacity !== '' && opacity !== '1') ||
+      transform.includes('translate')
+    ) {
+      return true;
+    }
+  }
+  return false;
+}

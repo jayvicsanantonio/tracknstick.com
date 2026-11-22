@@ -2,7 +2,7 @@
 // Puts the app's main actions within thumb reach; the header carries them on wider screens.
 
 import { memo, type ComponentType, type SVGProps } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
@@ -16,11 +16,25 @@ interface TabProps {
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
 
+/**
+ * A tap on the tab already open scrolls it back to its top, as an iOS tab
+ * bar does. Moving to another tab leaves its scroll position to the layout.
+ */
+function scrollToTop() {
+  const reduceMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  ).matches;
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+}
+
 function Tab({ to, label, Icon }: TabProps) {
+  const { pathname } = useLocation();
+
   return (
     <NavLink
       to={to}
       end
+      onClick={pathname === to ? scrollToTop : undefined}
       className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium text-(--color-text-secondary) outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) aria-[current=page]:font-bold aria-[current=page]:text-(--color-brand-tertiary) dark:aria-[current=page]:text-(--color-brand-primary)"
     >
       <span className="flex h-8 w-12 items-center justify-center rounded-full transition-colors group-aria-[current=page]:bg-(--color-brand-primary)/15">

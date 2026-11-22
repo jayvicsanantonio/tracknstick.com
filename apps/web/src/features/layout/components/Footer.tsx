@@ -1,11 +1,16 @@
-// Site footer shown on every page, below the routed content.
+// Site footer shown on every page in a browser, below the routed content; the installed app has none.
 // Holds the copyright line in the same glass pill style as the header.
 
 import { memo } from 'react';
+import { isInstalledApp } from '@shared/utils/isInstalledApp';
 // import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const Footer = memo(function Footer() {
   const year = new Date().getFullYear();
+
+  // A copyright line belongs to a website. Run from the home screen, the app
+  // is an app, and a native app has no footer.
+  if (isInstalledApp()) return null;
 
   return (
     <footer className="mt-auto py-6 sm:py-8">

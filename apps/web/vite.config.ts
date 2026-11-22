@@ -7,19 +7,32 @@ import {
   API_CACHE_NAME,
   apiCacheUrlPattern,
 } from './src/shared/constants/apiCache';
+import {
+  CLERK_SCRIPT_CACHE_NAME,
+  clerkScriptUrlPattern,
+} from './src/shared/constants/clerkCache';
 
 // The API host this build calls: from the .env files, or from the
 // environment, where Cloudflare Pages sets it. The service worker only exists
 // in production builds, so the production files are the ones read. Without a
 // host there is no API to cache, and the rule below is left out.
-const { VITE_API_HOST } = loadEnv('production', __dirname, 'VITE_');
+const { VITE_API_HOST, VITE_CLERK_PUBLISHABLE_KEY } = loadEnv(
+  'production',
+  __dirname,
+  'VITE_',
+);
+// Clerk's script, at the host the publishable key names. Without a key there
+// is no Clerk to load, and the rule below is left out.
+const clerkScriptPattern = clerkScriptUrlPattern(VITE_CLERK_PUBLISHABLE_KEY);
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // A new version waits for main.tsx to put it in place while the app
+      // is out of sight, rather than reloading the page in the user's hands.
+      registerType: 'prompt',
       includeAssets: ['favicon.ico', 'offline.html'],
       manifest: {
         name: "Track N' Stick",
@@ -54,7 +67,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // mp3: the feedback sounds, so a tap's sound plays offline too.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp3}'],
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit
@@ -73,6 +87,27 @@ export default defineConfig({
               },
             },
           },
+          // Clerk loads its script from its own host on every launch, and
+          // nothing signed-in shows until it runs. Kept here, a launch runs
+          // the copy it has at once and fetches any newer one for next time.
+          ...(clerkScriptPattern
+            ? [
+                {
+                  urlPattern: clerkScriptPattern,
+                  handler: 'StaleWhileRevalidate' as const,
+                  options: {
+                    cacheName: CLERK_SCRIPT_CACHE_NAME,
+                    expiration: {
+                      maxEntries: 30,
+                      maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                    },
+                    cacheableResponse: {
+                      statuses: [0, 200],
+                    },
+                  },
+                },
+              ]
+            : []),
           ...(VITE_API_HOST
             ? [
                 {

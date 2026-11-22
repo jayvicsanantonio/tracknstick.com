@@ -3,9 +3,12 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
+import { type ReactNode } from 'react';
+import { SWRConfig, type Cache } from 'swr';
 
 import { useClearApiCacheOnUserChange } from '@shared/hooks/useClearApiCacheOnUserChange';
 import { API_CACHE_NAME } from '@shared/constants/apiCache';
+import { SWR_CACHE_STORAGE_KEY } from '@shared/services/swrCache';
 
 const mockAuth: { isLoaded: boolean; userId: string | null } = {
   isLoaded: true,
@@ -75,5 +78,49 @@ describe('useClearApiCacheOnUserChange', () => {
     renderHook(() => useClearApiCacheOnUserChange());
 
     expect(deleteCache).not.toHaveBeenCalled();
+  });
+});
+
+describe('useClearApiCacheOnUserChange and the saved data cache', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.stubGlobal('caches', { delete: vi.fn().mockResolvedValue(true) });
+    mockAuth.isLoaded = true;
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function renderWithCache(cache: Map<string, unknown>) {
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <SWRConfig value={{ provider: () => cache as Cache }}>
+        {children}
+      </SWRConfig>
+    );
+    return renderHook(() => useClearApiCacheOnUserChange(), { wrapper });
+  }
+
+  it("forgets the last user's saved data when someone else signs in", () => {
+    mockAuth.userId = 'user_a';
+    renderWithCache(new Map()).unmount();
+    localStorage.setItem(SWR_CACHE_STORAGE_KEY, '{"owner":"user_a"}');
+    const cache = new Map([['/api/v1/habits', { data: ['Read'] }]]);
+
+    mockAuth.userId = 'user_b';
+    renderWithCache(cache);
+
+    expect(cache.size).toBe(0);
+    expect(localStorage.getItem(SWR_CACHE_STORAGE_KEY)).toBeNull();
+  });
+
+  it('keeps the saved data when the same user comes back', () => {
+    mockAuth.userId = 'user_a';
+    renderWithCache(new Map()).unmount();
+    const cache = new Map([['/api/v1/habits', { data: ['Read'] }]]);
+
+    renderWithCache(cache);
+
+    expect(cache.size).toBe(1);
   });
 });

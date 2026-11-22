@@ -6,6 +6,7 @@ import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
 import CoachPage from '@/pages/CoachPage';
+import { isEnteringOnScreen } from '@testing/utils';
 
 vi.mock('@clerk/clerk-react', () => ({
   useAuth: () => ({ getToken: vi.fn() }),
@@ -22,6 +23,16 @@ function renderPage() {
 }
 
 describe('CoachPage', () => {
+  it('shows at once, as a native tab does, without fading in', () => {
+    renderPage();
+
+    expect(
+      isEnteringOnScreen(
+        screen.getByRole('textbox', { name: 'Ask the habit coach' }),
+      ),
+    ).toBe(false);
+  });
+
   it('is titled Habit Coach', () => {
     renderPage();
 

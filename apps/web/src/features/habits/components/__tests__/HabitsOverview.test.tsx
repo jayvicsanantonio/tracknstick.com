@@ -9,6 +9,7 @@ import HabitsOverview from '../HabitsOverview';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import type { Habit } from '@/features/habits/types/Habit';
+import { isEnteringOnScreen } from '@testing/utils';
 
 vi.mock('@/features/habits/hooks/useAllHabits', () => ({
   useAllHabits: vi.fn(),
@@ -44,6 +45,14 @@ function renderOverview(habits: Habit[]) {
 describe('HabitsOverview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('shows the habits at once, as a native tab does, without fading them in', () => {
+    renderOverview([habit({ name: 'Read' })]);
+
+    expect(
+      isEnteringOnScreen(screen.getByRole('searchbox', { name: /search/i })),
+    ).toBe(false);
   });
 
   it('gives every button an accessible name', () => {

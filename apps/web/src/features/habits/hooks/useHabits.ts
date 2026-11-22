@@ -3,9 +3,8 @@ import useSWR from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { useDate } from '@app/providers/useDate';
 
-import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
-import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
-import completedAllHabits from '@/assets/audio/completed-all-habits.mp3';
+import { playSound, preloadSounds } from '@shared/utils/sound';
+import { hapticTick } from '@shared/utils/haptics';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import {
   fetchHabits,
@@ -80,6 +79,11 @@ export function useHabits(): UseHabitsReturn {
       keepPreviousData: true,
     },
   );
+
+  // Decoded ahead of the first tap, so that tap's sound plays at once.
+  useEffect(() => {
+    preloadSounds();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -238,21 +242,21 @@ export function useHabits(): UseHabitsReturn {
         setTimeoutId(newTimeoutId);
       }
 
-      await internalToggleHabitCompletion(id);
-
-      const allHabitsWereCompletedBeforeToggle =
+      const completesTheDay =
         habits.filter((h) => h.completed).length === habits.length - 1 &&
         !habit?.completed;
 
-      if (allHabitsWereCompletedBeforeToggle) {
-        const audio = new Audio(completedAllHabits);
-        await audio.play().catch((e) => console.error('Audio play failed:', e));
+      // The haptic and the sound answer the tap itself, as a native app's
+      // do, rather than the server's reply a network round trip later. The
+      // tick is drawn at once too: the toggle below updates the cache first.
+      hapticTick();
+      if (completesTheDay) {
+        playSound('all-done');
       } else if (habit) {
-        const audio = !habit.completed
-          ? new Audio(toggleOnSound)
-          : new Audio(toggleOffSound);
-        await audio.play().catch((e) => console.error('Audio play failed:', e));
+        playSound(habit.completed ? 'habit-off' : 'habit-on');
       }
+
+      await internalToggleHabitCompletion(id);
     },
     [habits, timeoutId, internalToggleHabitCompletion],
   );

@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router-dom';
 import ProgressOverview from '../ProgressOverview';
 import useProgressHistory from '../../hooks/useProgressHistory';
 import useProgressStreaks from '../../hooks/useProgressStreaks';
+import { isEnteringOnScreen } from '@testing/utils';
 
 vi.mock('../../hooks/useProgressHistory', () => ({ default: vi.fn() }));
 vi.mock('../../hooks/useProgressStreaks', () => ({ default: vi.fn() }));
@@ -72,6 +73,16 @@ describe('ProgressOverview', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('shows the progress at once, as a native tab does, without fading it in', () => {
+    renderOverview();
+
+    expect(
+      isEnteringOnScreen(
+        screen.getByRole('status', { name: 'Current streak: 2 days' }),
+      ),
+    ).toBe(false);
   });
 
   it('sums up the streaks and the month in four figures', () => {

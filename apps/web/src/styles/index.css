@@ -176,6 +176,38 @@
   }
 }
 
+/*
+  Touch behaviour of a native iOS app.
+
+  Safari greys out whatever is tapped, and the app's own pressed states make
+  that flash redundant. iOS also enlarges text when the phone turns sideways
+  unless told to keep the size it chose.
+
+  Controls and the app's bars answer a tap at once, rather than waiting to
+  see whether it is the start of a double-tap zoom, and a long press on them
+  opens neither the copy menu nor a text selection. Text in the page itself
+  stays selectable.
+*/
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  button,
+  a,
+  [role='button'],
+  [role='tab'],
+  nav,
+  header {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
 @media (min-width: theme(--breakpoint-xs)) {
   .xs\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));

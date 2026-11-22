@@ -9,6 +9,7 @@ import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContex
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import type { Habit } from '@/features/habits/types/Habit';
+import { isEnteringOnScreen } from '@testing/utils';
 
 vi.mock('@/features/habits/hooks/useHabits', () => ({ useHabits: vi.fn() }));
 vi.mock('@/features/habits/hooks/useAllHabits', () => ({
@@ -82,6 +83,32 @@ describe('DailyHabitTracker', () => {
     expect(
       screen.getByRole('region', { name: "Today's Habits" }),
     ).toBeInTheDocument();
+  });
+
+  it('shows the day and its habits at once, as a native tab does, without fading them in', () => {
+    mockHabits({
+      habits: [
+        habit({ id: '1', name: 'Read' }),
+        habit({ id: '2', name: 'Walk' }),
+      ],
+    });
+
+    renderTracker();
+
+    for (const name of ['Read', 'Walk']) {
+      const toggle = screen.getByRole('button', {
+        name: `Mark ${name} as complete`,
+      });
+      expect(isEnteringOnScreen(toggle)).toBe(false);
+    }
+  });
+
+  it('shows the loading state at once, without fading it in', () => {
+    mockHabits({ isLoading: true });
+
+    renderTracker();
+
+    expect(isEnteringOnScreen(screen.getByRole('status'))).toBe(false);
   });
 
   it('shows a check badge on completed habits only', () => {

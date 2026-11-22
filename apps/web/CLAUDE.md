@@ -87,8 +87,15 @@ Each feature module follows this pattern:
 4. **Components** — consume SWR hooks for data and context for UI state
 
 The `useHabits` hook in `features/habits/hooks/` is the canonical example: it
-calls the habit API functions, does optimistic updates via `mutate`, and plays
-audio feedback on toggle.
+calls the habit API functions, does optimistic updates via `mutate`, and plays a
+sound (`shared/utils/sound.ts`) and a haptic tick (`shared/utils/haptics.ts`) on
+the tap itself, before the request is sent.
+
+The SWR cache is saved to localStorage when the app is hidden and read back at
+launch (`shared/services/swrCache.ts`, the `provider` in `main.tsx`), so the app
+opens to the data it last showed. It belongs to the user
+`useClearApiCacheOnUserChange` last saw, and is cleared with the service
+worker's API cache when that user changes.
 
 ### Theming
 
@@ -127,9 +134,12 @@ content.
 
 ### PWA
 
-Vite PWA plugin with Workbox (`generateSW`, `autoUpdate`). The build is
-precached, and Google Fonts use CacheFirst. Requests under `/api/` at the
-build's `VITE_API_HOST` use NetworkFirst, in a cache that
+Vite PWA plugin with Workbox (`generateSW`, `prompt`). The build, its sounds
+included, is precached, and Google Fonts use CacheFirst. Clerk's script, at the
+host the publishable key names, uses StaleWhileRevalidate
+(`shared/constants/clerkCache.ts`). A new version waits until the app is hidden,
+then reloads unseen (`shared/services/serviceWorkerUpdates.ts`). Requests under
+`/api/` at the build's `VITE_API_HOST` use NetworkFirst, in a cache that
 `useClearApiCacheOnUserChange` empties when the signed-in user changes; a build
 without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
 

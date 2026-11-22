@@ -1,6 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import ProgressOverview from '@/features/progress/components/ProgressOverview';
-import { motion } from 'framer-motion';
 
 /**
  * Progress page component
@@ -14,15 +13,11 @@ function ProgressPage() {
   usePageTitle('Progress Overview');
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="flex flex-1 flex-col"
-    >
+    // Shown at once, as a native app's tab is: no entrance animation.
+    <section className="flex flex-1 flex-col">
       <h1 className="sr-only">Progress Overview</h1>
       <ProgressOverview />
-    </motion.section>
+    </section>
   );
 }
 

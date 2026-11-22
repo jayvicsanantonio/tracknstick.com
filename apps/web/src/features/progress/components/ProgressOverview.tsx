@@ -21,7 +21,6 @@ import {
   useAchievements,
 } from '../hooks/useAchievements';
 import { summarizeMonth } from '../utils/monthSummary';
-import { motion } from 'framer-motion';
 
 // The panels inside the page card: a tint and a hairline, no card frame.
 const PANEL =
@@ -65,12 +64,7 @@ const ProgressOverview = memo(function ProgressOverview() {
   );
 
   return (
-    <motion.div
-      className="flex h-full flex-1 flex-col"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="flex h-full flex-1 flex-col">
       <div className="mx-auto flex w-full max-w-7xl flex-1 px-2 sm:px-4 md:px-8 2xl:max-w-[90rem]">
         <Card
           variant="glass"
@@ -198,7 +192,7 @@ const ProgressOverview = memo(function ProgressOverview() {
           </CardContent>
         </Card>
       </div>
-    </motion.div>
+    </div>
   );
 });
 

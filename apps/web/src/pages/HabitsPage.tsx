@@ -1,6 +1,5 @@
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import HabitsOverview from '@/features/habits/components/HabitsOverview';
-import { motion } from 'framer-motion';
 
 /**
  * Habits page component
@@ -14,15 +13,11 @@ function HabitsPage() {
   usePageTitle('Habits Overview');
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="flex flex-1 flex-col"
-    >
+    // Shown at once, as a native app's tab is: no entrance animation.
+    <section className="flex flex-1 flex-col">
       <h1 className="sr-only">Habits Overview</h1>
       <HabitsOverview />
-    </motion.section>
+    </section>
   );
 }
 
