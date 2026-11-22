@@ -12,7 +12,8 @@ interface DailyHabitProgressIndicatorProps {
 const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
   completionRate,
 }: DailyHabitProgressIndicatorProps) {
-  const isDark = useTheme();
+  const { mode } = useTheme();
+  const isDark = mode === 'dark';
 
   const displayRate = useMemo(
     () => (Number.isNaN(completionRate) ? 0 : completionRate),
@@ -103,7 +104,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
               animate={{
                 strokeDashoffset,
               }}
-              transition={{ duration: 1, ease: 'easeOut' }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             />
           </svg>
 
@@ -148,7 +149,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-5xl font-extrabold tracking-tight text-(--color-foreground)">
+                <span className="text-5xl font-extrabold tracking-tight text-(--color-foreground) tabular-nums">
                   {displayRate}%
                 </span>
                 <span className="mt-1 text-sm text-(--color-text-secondary) max-sm:hidden">

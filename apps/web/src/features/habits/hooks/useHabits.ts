@@ -2,10 +2,8 @@ import { useCallback, useState, useEffect, useMemo } from 'react';
 import useSWR from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { useDate } from '@app/providers/useDate';
-
-import toggleOnSound from '@/assets/audio/habit-toggled-on.mp3';
-import toggleOffSound from '@/assets/audio/habit-toggled-off.mp3';
-import completedAllHabits from '@/assets/audio/completed-all-habits.mp3';
+import { triggerHaptic } from '@shared/utils/haptics';
+import { playHabitSound } from '@shared/utils/sound';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import {
   fetchHabits,
@@ -229,30 +227,35 @@ export function useHabits(): UseHabitsReturn {
     async (id: string) => {
       const habit = habits.find((h) => h.id === id);
 
+      // Fire haptic and sound synchronously inside the user tap gesture so iOS
+      // Safari never drops audio across the async network round-trip.
+      if (habit) {
+        const completingLastHabit =
+          !habit.completed &&
+          habits.filter((h) => h.completed).length === habits.length - 1;
+
+        if (completingLastHabit) {
+          triggerHaptic('success');
+          playHabitSound('allDone');
+        } else if (!habit.completed) {
+          triggerHaptic('medium');
+          playHabitSound('on');
+        } else {
+          triggerHaptic('light');
+          playHabitSound('off');
+        }
+      }
+
       if (habit && !habit.completed) {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
         setAnimatingHabitId(id);
-        const newTimeoutId = setTimeout(() => setAnimatingHabitId(null), 1000);
+        const newTimeoutId = setTimeout(() => setAnimatingHabitId(null), 900);
         setTimeoutId(newTimeoutId);
       }
 
       await internalToggleHabitCompletion(id);
-
-      const allHabitsWereCompletedBeforeToggle =
-        habits.filter((h) => h.completed).length === habits.length - 1 &&
-        !habit?.completed;
-
-      if (allHabitsWereCompletedBeforeToggle) {
-        const audio = new Audio(completedAllHabits);
-        await audio.play().catch((e) => console.error('Audio play failed:', e));
-      } else if (habit) {
-        const audio = !habit.completed
-          ? new Audio(toggleOnSound)
-          : new Audio(toggleOffSound);
-        await audio.play().catch((e) => console.error('Audio play failed:', e));
-      }
     },
     [habits, timeoutId, internalToggleHabitCompletion],
   );
