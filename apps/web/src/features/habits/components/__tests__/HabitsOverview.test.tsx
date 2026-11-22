@@ -172,4 +172,29 @@ describe('HabitsOverview', () => {
     expect(screen.getByText('No active habits')).toBeInTheDocument();
     expect(screen.queryByText('No habits yet')).not.toBeInTheDocument();
   });
+
+  it('offers to try again when habits fail to load', async () => {
+    const retry = vi.fn();
+    vi.mocked(useAllHabits).mockReturnValue({
+      habits: [],
+      isLoading: false,
+      error: new Error('Network error'),
+      deleteHabit: vi.fn(),
+      retry,
+    } as unknown as ReturnType<typeof useAllHabits>);
+
+    render(
+      <MemoryRouter>
+        <HabitsStateProvider>
+          <HabitsOverview />
+        </HabitsStateProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Your habits could not be loaded',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(retry).toHaveBeenCalledTimes(1);
+  });
 });

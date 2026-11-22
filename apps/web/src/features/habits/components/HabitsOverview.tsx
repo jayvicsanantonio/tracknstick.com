@@ -25,6 +25,7 @@ import {
   ListChecks,
   Search,
   SearchX,
+  WifiOff,
   X,
   type LucideIcon,
 } from 'lucide-react';
@@ -66,15 +67,19 @@ function EmptyResult({
   children?: ReactNode;
 }) {
   return (
-    <div className="mx-auto flex max-w-sm flex-col items-center text-center">
-      <span className="mb-4 flex size-12 items-center justify-center rounded-full bg-(--color-brand-primary)/10">
+    <div className="ios-tracker-card mx-auto flex w-full max-w-md flex-col items-center rounded-[26px] px-6 py-12 text-center sm:max-w-sm sm:rounded-none sm:px-0 sm:py-0">
+      <span className="mb-4 flex size-13 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 ring-1 ring-(--color-brand-primary)/24 ring-inset sm:size-12 sm:rounded-full sm:bg-(--color-brand-primary)/10 sm:ring-0">
         <Icon
           aria-hidden="true"
           className="h-6 w-6 text-(--color-brand-primary)"
         />
       </span>
-      <p className="text-lg font-semibold text-(--color-foreground)">{title}</p>
-      <p className="mt-1 text-sm text-(--color-text-secondary)">{detail}</p>
+      <p className="text-lg font-semibold tracking-tight text-(--color-foreground)">
+        {title}
+      </p>
+      <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
+        {detail}
+      </p>
       {children ? <div className="mt-5">{children}</div> : null}
     </div>
   );
@@ -99,26 +104,58 @@ function HabitsListSkeleton() {
     <div
       role="status"
       aria-label="Loading habits"
-      className="ios-grouped-card divide-y divide-(--color-border-primary)/40 overflow-hidden rounded-2xl"
+      className="flex w-full flex-col gap-3 pt-1"
     >
-      {Array.from({ length: 5 }).map((_, index) => (
-        <div key={index} className="flex items-center gap-3 px-4 py-3.5">
-          <div className="size-10 shrink-0 animate-pulse rounded-xl bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 w-36 animate-pulse rounded bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
-            <div className="h-3 w-24 animate-pulse rounded bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
-          </div>
+      {/* Mobile skeleton: search pill + segmented control + tactile habit cards */}
+      <div className="flex flex-col gap-2.5 sm:hidden">
+        <div className="ios-tracker-card h-11 w-full animate-pulse rounded-2xl motion-reduce:animate-none" />
+        <div className="ios-tracker-card h-11 w-full animate-pulse rounded-2xl motion-reduce:animate-none" />
+        <div className="mt-2.5 flex items-center justify-between px-1">
+          <div className="h-3 w-20 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
+          <div className="h-4 w-8 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
         </div>
-      ))}
+        <div className="flex flex-col gap-2.5">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="ios-tracker-card flex items-center gap-3.5 rounded-[20px] px-3.5 py-3"
+            >
+              <div className="size-12 shrink-0 animate-pulse rounded-[15px] bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-32 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+                <div className="h-3 w-24 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop skeleton */}
+      <div className="hidden divide-y divide-(--color-border-primary)/40 overflow-hidden rounded-xl border border-(--color-border-primary)/50 sm:block">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className="flex items-center gap-3 px-4 py-3.5">
+            <div className="size-10 shrink-0 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-36 animate-pulse rounded bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
+              <div className="h-3 w-24 animate-pulse rounded bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
+const SECTION_TITLE: Record<OverviewTab, string> = {
+  all: 'All Habits',
+  active: 'Active Habits',
+  archived: 'Archived Habits',
+};
+
 const HabitsOverview = memo(function HabitsOverview() {
-  const { habits, isLoading, error, deleteHabit } = useAllHabits();
+  const { habits, isLoading, error, deleteHabit, retry } = useAllHabits();
   const { openEditDialog, toggleShowAddHabitDialog } = useHabitsContext();
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchFocused, setSearchFocused] = useState(false);
   const [selectedTab, setSelectedTab] = useState<OverviewTab>('all');
   // Only the id is local state. The habit itself is derived from the list, so
   // the dialog cannot describe a habit that is no longer there -- SWR
@@ -168,10 +205,30 @@ const HabitsOverview = memo(function HabitsOverview() {
     return (
       <div className="flex h-full flex-1 flex-col">
         <MobileNavBar title="Habits" />
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-4 md:px-8">
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-600 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100">
-            Error loading habits. Please try again.
-          </div>
+        <div className="mx-auto flex w-full max-w-7xl flex-1 px-4 max-sm:pb-28 sm:px-4 md:px-8 2xl:max-w-[90rem]">
+          <Card
+            variant="glass"
+            className="flex w-full flex-1 items-center justify-center max-sm:rounded-none max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none max-sm:ring-0 max-sm:backdrop-blur-none dark:max-sm:bg-transparent"
+          >
+            <CardContent className="ios-tracker-card flex w-full max-w-sm flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:max-w-none sm:rounded-none sm:py-16">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/12 text-(--color-brand-primary) sm:hidden">
+                <WifiOff aria-hidden="true" className="size-5" />
+              </span>
+              <p role="alert" className="text-[15px] text-(--color-foreground)">
+                Your habits could not be loaded. Check your connection and try
+                again.
+              </p>
+              {retry ? (
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-full px-6 sm:h-9"
+                  onClick={() => void retry()}
+                >
+                  Try again
+                </Button>
+              ) : null}
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -187,99 +244,91 @@ const HabitsOverview = memo(function HabitsOverview() {
           className="flex w-full flex-1 flex-col overflow-hidden max-sm:rounded-none max-sm:bg-transparent max-sm:p-0 max-sm:shadow-none max-sm:ring-0 max-sm:backdrop-blur-none dark:max-sm:bg-transparent"
         >
           <CardHeader className="hidden px-3 pt-4 sm:grid sm:px-6 sm:pt-6">
-            <div>
-              <CardTitle className="mb-2 flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
-                Habits Overview
-              </CardTitle>
-              <p className="text-sm text-(--color-text-secondary)">
-                Manage all your habits in one place
-              </p>
+            <div className="flex items-center gap-3.5">
+              <span
+                aria-hidden="true"
+                className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset"
+              >
+                <ListChecks className="size-5" />
+              </span>
+              <div>
+                <CardTitle className="flex items-center gap-2 text-xl font-bold text-(--color-foreground) sm:text-2xl">
+                  Habits Overview
+                </CardTitle>
+                <p className="mt-0.5 text-sm text-(--color-text-secondary)">
+                  Manage all your habits in one place
+                </p>
+              </div>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 overflow-auto px-4 pb-6 sm:px-6 sm:pb-8">
-            <div className="mb-5 flex flex-col justify-between gap-3 sm:mb-6 sm:flex-row sm:gap-4">
-              {/* Native iOS UISearchBar on phones, classic Input on wider screens */}
-              <div className="flex w-full items-center gap-2 sm:max-w-[300px]">
-                <div className="relative flex-1">
-                  <Search
-                    aria-hidden="true"
-                    className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-(--color-text-secondary) sm:hidden"
-                  />
-                  <Input
-                    type="search"
-                    aria-label="Search habits"
-                    className="w-full max-sm:h-10 max-sm:rounded-xl max-sm:border-0 max-sm:bg-(--color-muted) max-sm:pr-9 max-sm:pl-9 max-sm:shadow-none max-sm:ring-1 max-sm:ring-(--color-border-primary)/40 max-sm:ring-inset"
-                    placeholder="Search habits..."
-                    value={searchTerm}
-                    onFocus={() => setSearchFocused(true)}
-                    onBlur={() => setSearchFocused(false)}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  {searchTerm ? (
-                    <button
-                      type="button"
-                      aria-label="Clear search text"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => {
-                        triggerHaptic('light');
-                        setSearchTerm('');
-                      }}
-                      className="absolute top-1/2 right-2.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-full bg-(--color-text-secondary)/25 text-(--color-foreground) sm:hidden"
-                    >
-                      <X aria-hidden="true" className="size-3" />
-                    </button>
-                  ) : null}
-                </div>
-                {searchFocused || searchTerm ? (
+          <CardContent className="flex-1 overflow-auto px-4 pt-1 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
+            <div className="mb-5 flex flex-col justify-between gap-2.5 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
+              {/* Brand-harmonized search capsule on phones (matches Tracker's Date pill); classic Input on sm+ */}
+              <div className="ios-tracker-card relative flex h-11 w-full items-center rounded-2xl transition-shadow max-sm:focus-within:ring-2 max-sm:focus-within:ring-(--color-ring) sm:h-auto sm:max-w-[300px] sm:rounded-none">
+                <Search
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-(--color-brand-primary)/80 sm:hidden"
+                />
+                <Input
+                  type="search"
+                  aria-label="Search habits"
+                  className="w-full max-sm:h-full max-sm:border-0 max-sm:bg-transparent max-sm:pr-10 max-sm:pl-10 max-sm:text-[16px] max-sm:shadow-none max-sm:placeholder:text-(--color-text-secondary)/70 max-sm:focus-visible:ring-0 max-sm:[&::-webkit-search-cancel-button]:hidden"
+                  placeholder="Search habits..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm ? (
                   <button
                     type="button"
+                    aria-label="Clear search text"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                       triggerHaptic('light');
                       setSearchTerm('');
-                      setSearchFocused(false);
-                      (document.activeElement as HTMLElement | null)?.blur();
                     }}
-                    className="shrink-0 text-[15px] font-medium text-(--color-brand-primary) active:opacity-60 sm:hidden"
+                    className="absolute top-1/2 right-2.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) transition-transform active:scale-90 sm:hidden"
                   >
-                    Cancel
+                    <X aria-hidden="true" className="size-3.5" />
                   </button>
                 ) : null}
               </div>
 
-              <Tabs
-                value={selectedTab}
-                onValueChange={(value) => {
-                  triggerHaptic('selection');
-                  setSelectedTab(value as OverviewTab);
-                }}
-                className="w-full sm:max-w-[300px]"
-              >
-                <TabsList className="grid w-full grid-cols-3 bg-(--color-muted)">
-                  <TabsTrigger
-                    className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
-                    value="all"
-                  >
-                    All
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
-                    value="active"
-                  >
-                    Active
-                  </TabsTrigger>
-                  <TabsTrigger
-                    className="max-sm:data-[state=active]:bg-(--color-surface) max-sm:data-[state=active]:text-(--color-foreground) sm:data-[state=active]:bg-(--color-brand-primary) sm:data-[state=active]:text-(--color-text-inverse) dark:max-sm:data-[state=active]:bg-(--color-surface-tertiary)"
-                    value="archived"
-                  >
-                    Archived
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              {/* Brand-harmonized Segmented Control on phones; classic Tabs on sm+ */}
+              <div className="ios-tracker-card w-full rounded-2xl p-1 sm:max-w-[300px] sm:rounded-none sm:p-0">
+                <Tabs
+                  value={selectedTab}
+                  onValueChange={(value) => {
+                    triggerHaptic('selection');
+                    setSelectedTab(value as OverviewTab);
+                  }}
+                  className="w-full"
+                >
+                  <TabsList className="grid h-9 w-full grid-cols-3 max-sm:bg-transparent max-sm:p-0 max-sm:ring-0 sm:bg-(--color-muted)">
+                    <TabsTrigger
+                      className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-md sm:text-sm sm:data-[state=active]:text-(--color-text-inverse) sm:data-[state=active]:shadow-none"
+                      value="all"
+                    >
+                      All
+                    </TabsTrigger>
+                    <TabsTrigger
+                      className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-md sm:text-sm sm:data-[state=active]:text-(--color-text-inverse) sm:data-[state=active]:shadow-none"
+                      value="active"
+                    >
+                      Active
+                    </TabsTrigger>
+                    <TabsTrigger
+                      className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-md sm:text-sm sm:data-[state=active]:text-(--color-text-inverse) sm:data-[state=active]:shadow-none"
+                      value="archived"
+                    >
+                      Archived
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
             </div>
 
             {filteredHabits.length === 0 ? (
-              <div className="py-8 sm:py-12">
+              <div className="py-2 sm:py-12">
                 {searchTerm ? (
                   <EmptyResult
                     Icon={SearchX}
@@ -330,12 +379,19 @@ const HabitsOverview = memo(function HabitsOverview() {
               </div>
             ) : (
               <div key="habits">
-                {/* Phones: native iOS Inset Grouped List — tap to edit, swipe left to delete. */}
+                {/* Phones: full-width tactile cards matching Tracker — tap to edit, swipe left to delete. */}
                 <div className="sm:hidden">
-                  <ul
-                    aria-label="Habits"
-                    className="ios-grouped-card divide-y divide-(--color-border-primary)/50 overflow-hidden rounded-2xl"
-                  >
+                  <div className="mb-2.5 flex items-center justify-between px-1">
+                    <span className="text-[12px] font-semibold tracking-[0.06em] text-(--color-text-secondary)/85 uppercase">
+                      {searchTerm
+                        ? 'Search Results'
+                        : SECTION_TITLE[selectedTab]}
+                    </span>
+                    <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-[11px] font-semibold text-(--color-brand-primary) tabular-nums">
+                      {filteredHabits.length}
+                    </span>
+                  </div>
+                  <ul aria-label="Habits" className="flex flex-col gap-2.5">
                     {filteredHabits.map((habit) => (
                       <SwipeableHabitRow
                         key={habit.id}
@@ -347,7 +403,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                       />
                     ))}
                   </ul>
-                  <p className="mt-2.5 px-2 text-center text-[12px] text-(--color-text-secondary)/75">
+                  <p className="mt-5 px-2 text-center text-[12px] text-(--color-text-secondary)/65">
                     Tap a habit to edit or view stats · Swipe left to delete
                   </p>
                 </div>
@@ -441,7 +497,7 @@ const HabitsOverview = memo(function HabitsOverview() {
         open={habitToDelete !== undefined}
         onOpenChange={(open) => !open && setDeletingId(null)}
       >
-        <AlertDialogContent className="bg-(--color-card) text-(--color-card-foreground)">
+        <AlertDialogContent className="text-(--color-card-foreground)">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-(--color-foreground)">
               Delete Habit
