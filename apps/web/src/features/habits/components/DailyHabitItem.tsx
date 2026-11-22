@@ -106,10 +106,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
             event.preventDefault();
           }
         }}
-        className={cn(
-          'group/habit-btn relative flex w-full cursor-pointer items-center gap-3.5 rounded-[20px] px-3.5 py-3 text-left transition-[transform,background-color,border-color,box-shadow] duration-150 outline-none motion-reduce:transition-none max-sm:focus-visible:ring-[3px] max-sm:focus-visible:ring-(--color-ring) max-sm:active:scale-[0.985] sm:flex-col sm:gap-0 sm:rounded-none sm:p-0 sm:text-center',
-          habit.completed ? 'ios-tracker-card-done' : 'ios-tracker-card',
-        )}
+        className="group/habit-btn relative flex w-full cursor-pointer flex-col items-center text-center outline-none"
         onClick={handleToggle}
         aria-pressed={habit.completed}
         aria-label={
@@ -118,20 +115,40 @@ const DailyHabitItem = memo(function DailyHabitItem({
             : `Mark ${habit.name} as complete`
         }
       >
-        {/* Icon container: tactile rounded-2xl badge on mobile, circular glass orb on sm+ */}
-        <span className="relative shrink-0 sm:mb-3">
+        {/* Circular medallion orb (sculpted watch-dial medallion on mobile; classic glass orb on sm+) */}
+        <span className="relative mb-2.5 shrink-0 sm:mb-3">
+          {/* Subtle ambient glow behind completed orb on mobile */}
+          <span
+            aria-hidden="true"
+            className={cn(
+              'pointer-events-none absolute -inset-2 rounded-full bg-(--color-brand-primary) blur-xl transition-opacity duration-300 sm:hidden',
+              habit.completed ? 'opacity-28' : 'opacity-0',
+            )}
+          />
+
           <span
             className={cn(
-              'relative flex size-12 items-center justify-center overflow-hidden rounded-[15px] transition-[transform,background-color,box-shadow] duration-150 motion-reduce:transition-none sm:h-24 sm:w-24 sm:rounded-full sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] sm:ring-1 sm:backdrop-blur-xl sm:backdrop-saturate-150 sm:ring-inset sm:group-hover/habit-btn:-translate-y-1 sm:group-hover/habit-btn:scale-105 sm:group-focus-visible/habit-btn:ring-[3px] sm:group-focus-visible/habit-btn:ring-(--color-ring) sm:group-active/habit-btn:scale-92 sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:h-28 md:w-28',
+              'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 motion-reduce:transition-none max-sm:group-focus-visible/habit-btn:ring-[3px] max-sm:group-focus-visible/habit-btn:ring-(--color-ring) max-sm:group-focus-visible/habit-btn:ring-offset-2 max-sm:group-focus-visible/habit-btn:ring-offset-(--color-background) max-sm:group-active/habit-btn:scale-92 sm:h-24 sm:w-24 sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_6px_18px_rgba(0,0,0,0.06)] sm:ring-1 sm:backdrop-blur-xl sm:backdrop-saturate-150 sm:ring-inset sm:group-hover/habit-btn:-translate-y-1 sm:group-hover/habit-btn:scale-105 sm:group-focus-visible/habit-btn:ring-[3px] sm:group-focus-visible/habit-btn:ring-(--color-ring) sm:group-active/habit-btn:scale-92 sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:h-28 md:w-28',
               habit.completed
-                ? 'bg-(--color-brand-primary) max-sm:shadow-[0_4px_14px_color-mix(in_oklab,var(--color-brand-primary)_38%,transparent)] sm:ring-(--color-brand-primary)'
-                : 'bg-(--color-brand-primary)/14 ring-1 ring-(--color-brand-primary)/24 ring-inset sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/40 dark:sm:bg-(--color-surface-secondary)/40',
+                ? 'ios-habit-orb-done sm:bg-(--color-brand-primary) sm:ring-(--color-brand-primary)'
+                : 'ios-habit-orb sm:bg-(--color-surface)/60 sm:ring-(--color-border-primary)/40 dark:sm:bg-(--color-surface-secondary)/40',
             )}
           >
+            {/* Inner concentric horological bezel ring on mobile */}
+            <span
+              aria-hidden="true"
+              className={cn(
+                'pointer-events-none absolute inset-[5px] rounded-full border transition-colors duration-200 sm:hidden',
+                habit.completed
+                  ? 'border-white/30'
+                  : 'border-dashed border-(--color-brand-primary)/25 dark:border-(--color-brand-primary)/28',
+              )}
+            />
+
             <Icon
               aria-hidden="true"
               className={cn(
-                'relative z-10 size-6 transition-transform duration-150 sm:h-12 sm:w-12 md:h-14 md:w-14',
+                'relative z-10 size-8 transition-transform duration-200 sm:h-12 sm:w-12 md:h-14 md:w-14',
                 habit.completed
                   ? 'scale-105 text-(--color-primary-foreground)'
                   : 'text-(--color-brand-primary)',
@@ -139,7 +156,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
             />
           </span>
 
-          {/* Desktop completed corner badge (sits outside overflow-hidden orb) */}
+          {/* Floating spring checkmark seal (outside overflow-hidden orb on mobile & desktop) */}
           {habit.completed ? (
             <motion.span
               aria-hidden="true"
@@ -147,67 +164,35 @@ const DailyHabitItem = memo(function DailyHabitItem({
               initial={{ scale: 0.4, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={IOS_SPRING_TAP}
-              className="pointer-events-none absolute -top-0.5 -right-0.5 hidden h-7 w-7 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:flex"
+              className="pointer-events-none absolute -top-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:h-7 sm:w-7"
             >
-              <Check className="h-4 w-4" strokeWidth={3} />
+              <Check className="size-3.5 sm:h-4 sm:w-4" strokeWidth={3.2} />
             </motion.span>
           ) : null}
         </span>
 
-        {/* Habit title & schedule (inline on mobile, centered beneath orb on sm+) */}
-        <span className="flex min-w-0 flex-1 flex-col sm:w-full sm:flex-none sm:items-center">
+        {/* Centered habit title & schedule beneath the orb */}
+        <span className="flex w-full min-w-0 flex-col items-center">
           <span
             className={cn(
-              'truncate text-[16px] leading-snug font-semibold tracking-[-0.01em] transition-colors duration-150 sm:line-clamp-2 sm:max-w-full sm:px-1 sm:text-center sm:text-sm sm:whitespace-normal sm:text-(--color-brand-tertiary) dark:sm:text-(--color-brand-text-light)',
+              'line-clamp-2 max-w-full px-0.5 text-center text-[13px] leading-[1.25] font-semibold tracking-[-0.01em] transition-colors duration-150 sm:px-1 sm:text-sm sm:text-(--color-brand-tertiary) dark:sm:text-(--color-brand-text-light)',
               habit.completed
-                ? 'text-(--color-foreground)/78'
-                : 'text-(--color-foreground)',
+                ? 'text-(--color-foreground)'
+                : 'text-(--color-foreground)/92',
             )}
           >
             {habit.name}
           </span>
-          <span className="mt-0.5 flex items-center gap-1.5 text-[13px] leading-tight text-(--color-text-secondary) sm:justify-center sm:text-xs sm:text-(--color-brand-text) dark:sm:text-(--color-brand-text-light)">
-            <span>{frequencyLabel(habit.frequency)}</span>
-            {habit.completed ? (
-              <span className="inline-flex items-center gap-1.5 sm:hidden">
-                <span aria-hidden="true" className="opacity-50">
-                  ·
-                </span>
-                <span className="font-semibold text-(--color-brand-primary)">
-                  Done
-                </span>
-              </span>
-            ) : null}
+          <span className="mt-0.5 truncate text-[11px] leading-tight font-medium text-(--color-text-secondary)/80 sm:text-xs sm:font-normal sm:text-(--color-brand-text) dark:sm:text-(--color-brand-text-light)">
+            {frequencyLabel(habit.frequency)}
           </span>
-        </span>
-
-        {/* Mobile trailing circular check control */}
-        <span
-          aria-hidden="true"
-          className={cn(
-            'relative flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-200 sm:hidden',
-            habit.completed
-              ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_45%,transparent)]'
-              : 'border-2 border-(--color-brand-primary)/42 bg-(--color-brand-primary)/6',
-          )}
-        >
-          {habit.completed ? (
-            <motion.span
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={IOS_SPRING_TAP}
-              className="flex items-center justify-center"
-            >
-              <Check className="size-4" strokeWidth={3} />
-            </motion.span>
-          ) : null}
         </span>
       </button>
 
-      {/* Unclipped celebration star burst centered over the icon tile on mobile and orb on sm+ */}
+      {/* Unclipped celebration star burst centered right over the circular orb */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-3.5 flex w-12 items-center justify-center sm:inset-x-0 sm:top-0 sm:bottom-auto sm:h-24 sm:w-auto md:h-28"
+        className="pointer-events-none absolute inset-x-0 top-0 flex h-20 items-center justify-center sm:h-24 md:h-28"
       >
         <StarAnimation isVisible={animatingHabitId === habit.id} />
       </div>
@@ -256,7 +241,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
                     <div className="flex items-center gap-3.5 border-b border-(--color-brand-primary)/12 px-4 pt-3 pb-3.5 sm:pt-4">
                       <span
                         className={cn(
-                          'flex size-12 shrink-0 items-center justify-center rounded-[15px] ring-1 ring-inset',
+                          'flex size-12 shrink-0 items-center justify-center rounded-full ring-1 ring-inset',
                           habit.completed
                             ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) ring-(--color-brand-primary)'
                             : 'bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-(--color-brand-primary)/24',
