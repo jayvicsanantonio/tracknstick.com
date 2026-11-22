@@ -54,7 +54,7 @@ const MobileNavBar = memo(function MobileNavBar({
       {/* Pinned translucent iOS navigation bar (direct child of page column so sticky holds all the way down) */}
       <div
         className={cn(
-          'sticky top-0 z-30 w-full pt-[env(safe-area-inset-top)] transition-[background-color,border-color] duration-200 sm:hidden',
+          'sticky top-0 z-30 w-full pt-[max(env(safe-area-inset-top),0.75rem)] transition-[background-color,border-color] duration-200 sm:hidden',
           showInlineTitle
             ? 'ios-nav-bar border-b border-(--color-border-primary)/50'
             : 'border-b border-transparent bg-transparent',
