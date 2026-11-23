@@ -3,7 +3,9 @@ import AddHabitDialog from '@features/habits/components/AddHabitDialog';
 import EditHabitDialog from '@features/habits/components/EditHabitDialog';
 import { PWAInstallPrompt } from '@shared/components/feedback/PWAInstallPrompt';
 import ErrorBoundary from '@shared/components/feedback/ErrorBoundary';
+import { APP_MAX_WIDTH } from '@shared/constants/layout';
 import { useClearApiCacheOnUserChange } from '@shared/hooks/useClearApiCacheOnUserChange';
+import { cn } from '@shared/utils/utils';
 import { ReactNode, memo } from 'react';
 
 interface AppProps {
@@ -26,10 +28,7 @@ function App({ children }: AppProps) {
 
   return (
     <ErrorBoundary>
-      <div
-        data-ios-shell=""
-        className="text-foreground min-h-dvh sm:px-4 md:px-8"
-      >
+      <div data-ios-shell="" className="text-foreground min-h-dvh">
         {/* Subtle ambient aurora accents on tablet & desktop harmonized with the
             calm open canvas used on phones. */}
         <div
@@ -40,7 +39,12 @@ function App({ children }: AppProps) {
           <div className="absolute top-[20%] right-[-15%] h-[36vmax] w-[36vmax] rounded-full bg-(--color-brand-primary)/22 opacity-18 blur-3xl" />
           <div className="absolute bottom-[-15%] left-[20%] h-[32vmax] w-[32vmax] rounded-full bg-(--color-accent) opacity-14 blur-3xl" />
         </div>
-        <div className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col 2xl:max-w-[90rem]">
+        <div
+          className={cn(
+            'mx-auto flex min-h-dvh w-full flex-col',
+            APP_MAX_WIDTH,
+          )}
+        >
           <HabitsStateProvider>
             <AppContent>{children}</AppContent>
           </HabitsStateProvider>

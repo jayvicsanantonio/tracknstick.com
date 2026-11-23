@@ -1,5 +1,5 @@
 // Checks the app icons: every icon a manifest or index.html names exists at its declared size,
-// the home-screen icons are opaque squares of the icon's emerald, and the favicon is the same icon.
+// the home-screen icons are opaque squares of the icon's dark emerald, and the favicon is the same icon.
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -79,11 +79,50 @@ function faviconSvg(): string {
   ).toLowerCase();
 }
 
-/** The icon's background gradient stops, top first, as `#rrggbb`. */
-function backgroundStops(): string[] {
-  return [...faviconSvg().matchAll(/stop-color="(#[0-9a-f]{6})"/g)].map(
-    (match) => match[1],
-  );
+/** The stops of the favicon's gradient with the given id, in order, as `#rrggbb`. */
+function gradientStops(id: string): string[] {
+  const gradient = new RegExp(
+    `<(linear|radial)gradient id="${id}"[^>]*>([\\s\\S]*?)</\\1gradient>`,
+  ).exec(faviconSvg());
+  expect(gradient, `gradient #${id}`).not.toBeNull();
+  return [
+    ...(gradient?.[2] ?? '').matchAll(/stop-color="(#[0-9a-f]{6})"/g),
+  ].map((match) => match[1]);
+}
+
+/** The icon's solid background colour, as `#rrggbb`. */
+function backgroundColour(): string {
+  const fill = /<rect [^>]*fill="(#[0-9a-f]{6})"/.exec(faviconSvg())?.[1];
+  expect(fill, 'background fill').toBeDefined();
+  return fill ?? '';
+}
+
+/** The `#rrggbb` of a light-theme colour token in src/styles/index.css. */
+function lightThemeColour(token: string): string {
+  const css = readFileSync(path.join(WEB_ROOT, 'src/styles/index.css'), 'utf8');
+  const match = new RegExp(
+    `--color-${token}: hsl\\((\\d+), (\\d+)%, (\\d+)%\\)`,
+  ).exec(css);
+  expect(match, token).not.toBeNull();
+  const [hue, saturation, lightness] = (match ?? [])
+    .slice(1)
+    .map(Number)
+    .map((value, i) => (i === 0 ? value : value / 100));
+  const chroma = saturation * Math.min(lightness, 1 - lightness);
+  const channel = (n: number) => {
+    const k = (n + hue / 30) % 12;
+    const value = lightness - chroma * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(value * 255)
+      .toString(16)
+      .padStart(2, '0');
+  };
+  return `#${channel(0)}${channel(8)}${channel(4)}`;
+}
+
+/** The lightness, from 0 to 1, of a `#rrggbb` colour. */
+function lightness(hex: string): number {
+  const channels = [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
+  return (Math.max(...channels) + Math.min(...channels)) / 2 / 255;
 }
 
 /** The WCAG contrast ratio between two `#rrggbb` colours. */
@@ -147,11 +186,22 @@ describe('home-screen icons', () => {
     'apple-touch-icon.png',
     'maskable-192x192.png',
     'maskable-512x512.png',
-  ])('%s fills its square with the top of the emerald gradient', (file) => {
+  ])('%s fills its square to the corners with the emerald glass', (file) => {
+    // The corner is lit by the glass's edge highlight, so it is the emerald
+    // made a little lighter rather than the plain fill.
     const [red, green, blue] = topLeftPixel(
       path.join(PUBLIC, 'icons', file),
     ).map((channel) => channel.toString(16).padStart(2, '0'));
-    expect(`#${red}${green}${blue}`).toBe(backgroundStops()[0]);
+    const corner = `#${red}${green}${blue}`;
+    const { hue, saturation } = hueAndSaturation(corner);
+    expect(hue, corner).toBeCloseTo(
+      hueAndSaturation(backgroundColour()).hue,
+      -1,
+    );
+    expect(saturation, corner).toBeGreaterThanOrEqual(0.5);
+    expect(lightness(corner), corner).toBeGreaterThanOrEqual(
+      lightness(backgroundColour()),
+    );
   });
 
   // iOS cuts its own rounded shape from the icon and fills any transparent
@@ -169,18 +219,23 @@ describe('favicon', () => {
     expect(svg).not.toContain('prefers-color-scheme');
   });
 
-  it('fills its background with an emerald gradient', () => {
-    const svg = faviconSvg();
-    expect(svg).toMatch(/<rect [^>]*fill="url\(#background\)"/);
+  it('fills its background with one dark emerald, not a gradient', () => {
+    expect(faviconSvg()).not.toContain('id="background"');
 
-    const stops = backgroundStops();
-    expect(stops).toHaveLength(2);
-    for (const stop of stops) {
-      const { hue, saturation } = hueAndSaturation(stop);
-      expect(hue, stop).toBeGreaterThanOrEqual(145);
-      expect(hue, stop).toBeLessThanOrEqual(170);
-      expect(saturation, stop).toBeGreaterThanOrEqual(0.8);
-    }
+    const fill = backgroundColour();
+    const { hue, saturation } = hueAndSaturation(fill);
+    expect(hue, fill).toBeGreaterThanOrEqual(145);
+    expect(hue, fill).toBeLessThanOrEqual(170);
+    expect(saturation, fill).toBeGreaterThanOrEqual(0.8);
+    expect(lightness(fill), fill).toBeLessThanOrEqual(0.22);
+  });
+
+  // Liquid glass: light catches the rounded edge of the glass, brightest
+  // at the top left and again at the bottom right.
+  it('lights the edge of the glass with a white specular rim', () => {
+    expect(faviconSvg()).toMatch(/<path [^>]*fill="url\(#glass-rim\)"/);
+    const stops = gradientStops('glass-rim');
+    expect(new Set(stops)).toEqual(new Set(['#ffffff']));
   });
 
   it('rounds its corners in the proportion iOS uses for app icons', () => {
@@ -188,20 +243,53 @@ describe('favicon', () => {
     expect(rx / 512).toBeCloseTo(0.2237, 2);
   });
 
-  // WCAG 1.4.11 asks 3:1 of graphical objects; every gradient stop is
-  // checked, so the ring and check meet it wherever they cross.
-  it('draws its ring and check at 3:1 contrast or more on every part of the gradient', () => {
-    const strokes = [...faviconSvg().matchAll(/stroke="(#[0-9a-f]{6})"/g)].map(
-      (match) => match[1],
-    );
-    expect(strokes).toHaveLength(2);
-    for (const stroke of strokes) {
-      for (const stop of backgroundStops()) {
-        expect(
-          contrastRatio(stroke, stop),
-          `${stroke} on ${stop}`,
-        ).toBeGreaterThanOrEqual(3);
-      }
+  // The ring and check are the Daily Tracker's completed progress ring in
+  // the light theme, so they share its gradients and brand colours.
+  it('draws the ring in the light theme brand gradient of the Daily Tracker', () => {
+    expect(faviconSvg()).toMatch(/<circle [^>]*stroke="url\(#ring\)"/);
+    expect(gradientStops('ring')).toEqual([
+      lightThemeColour('brand-text-light'),
+      lightThemeColour('brand-primary'),
+      lightThemeColour('brand-secondary'),
+    ]);
+  });
+
+  it('draws the check in the light theme brand gradient of the Daily Tracker', () => {
+    expect(faviconSvg()).toMatch(/<path [^>]*stroke="url\(#check\)"/);
+    expect(gradientStops('check')).toEqual([
+      lightThemeColour('brand-primary'),
+      lightThemeColour('brand-primary'),
+      lightThemeColour('brand-text-light'),
+    ]);
+  });
+
+  it('fills the dial inside the ring with the light theme pink background', () => {
+    expect(faviconSvg()).toMatch(/<circle [^>]*fill="url\(#dial\)"/);
+    for (const stop of gradientStops('dial')) {
+      const { hue } = hueAndSaturation(stop);
+      expect(hue, stop).toBeCloseTo(327, -1);
+      expect(lightness(stop), stop).toBeGreaterThanOrEqual(0.9);
+    }
+  });
+
+  // WCAG 1.4.11 asks 3:1 of graphical objects: the dial stands out from
+  // the emerald, and the check from every part of the dial.
+  it('sets the dial at 3:1 contrast or more on the emerald', () => {
+    for (const dial of gradientStops('dial')) {
+      expect(
+        contrastRatio(dial, backgroundColour()),
+        `${dial} on ${backgroundColour()}`,
+      ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('draws the body of the check at 3:1 contrast or more on the dial', () => {
+    const [body] = gradientStops('check');
+    for (const dial of gradientStops('dial')) {
+      expect(
+        contrastRatio(body, dial),
+        `${body} on ${dial}`,
+      ).toBeGreaterThanOrEqual(3);
     }
   });
 

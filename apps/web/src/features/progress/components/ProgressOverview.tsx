@@ -14,8 +14,10 @@ import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import IosSheet from '@shared/components/ui/ios-sheet';
 import { DialogDescription, DialogTitle } from '@shared/components/ui/dialog';
 import { DateContext } from '@app/providers/DateContext';
+import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { triggerHaptic } from '@shared/utils/haptics';
+import { cn } from '@shared/utils/utils';
 import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressSummary from '../hooks/useProgressSummary';
 import {
@@ -78,7 +80,12 @@ const ProgressOverview = memo(function ProgressOverview() {
     <div className="flex h-full flex-1 flex-col">
       <MobileNavBar title="Progress" />
 
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-1 max-sm:pb-28 sm:pb-8 md:px-8 2xl:max-w-[90rem]">
+      <div
+        className={cn(
+          PAGE_CONTAINER,
+          'flex flex-1 flex-col pt-1 max-sm:pb-28 sm:pb-8',
+        )}
+      >
         {/* Tablet & desktop page header matching phone Large Title hierarchy */}
         <div className="mb-5 hidden sm:block">
           <h2 className="text-[32px] leading-none font-extrabold tracking-[-0.025em] text-(--color-foreground)">

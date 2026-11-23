@@ -29,6 +29,7 @@ import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import SwipeableHabitRow from '@/features/habits/components/SwipeableHabitRow';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
+import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -280,7 +281,12 @@ const HabitsOverview = memo(function HabitsOverview() {
     return (
       <div className="flex h-full flex-1 flex-col">
         <MobileNavBar title="Habits" />
-        <div className="mx-auto flex w-full max-w-7xl flex-1 px-4 max-sm:pb-28 sm:pt-1 sm:pb-6 md:px-8 2xl:max-w-[90rem]">
+        <div
+          className={cn(
+            PAGE_CONTAINER,
+            'flex flex-1 max-sm:pb-28 sm:pt-1 sm:pb-6',
+          )}
+        >
           <HabitsListSkeleton />
         </div>
       </div>
@@ -291,7 +297,12 @@ const HabitsOverview = memo(function HabitsOverview() {
     return (
       <div className="flex h-full flex-1 flex-col">
         <MobileNavBar title="Habits" />
-        <div className="mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 max-sm:pb-28 md:px-8 2xl:max-w-[90rem]">
+        <div
+          className={cn(
+            PAGE_CONTAINER,
+            'flex flex-1 items-center justify-center max-sm:pb-28',
+          )}
+        >
           <div className="ios-tracker-card flex w-full max-w-md flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:px-8 sm:py-12">
             <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
               <WifiOff aria-hidden="true" className="size-5" />
@@ -319,7 +330,12 @@ const HabitsOverview = memo(function HabitsOverview() {
     <div className="flex h-full flex-1 flex-col">
       <MobileNavBar title="Habits" />
 
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-1 max-sm:pb-28 sm:pb-8 md:px-8 2xl:max-w-[90rem]">
+      <div
+        className={cn(
+          PAGE_CONTAINER,
+          'flex flex-1 flex-col pt-1 max-sm:pb-28 sm:pb-8',
+        )}
+      >
         {/* Tablet & desktop page header matching phone Large Title hierarchy */}
         <div className="mb-5 hidden sm:block">
           <h2 className="text-[32px] leading-none font-extrabold tracking-[-0.025em] text-(--color-foreground)">
