@@ -3,8 +3,10 @@
 // bold hero headline, elevated tactile feature cards, and a clean Clerk sign-in stage.
 
 import { SignIn } from '@clerk/clerk-react';
+import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { useTheme } from '@shared/hooks/useTheme';
 import { triggerHaptic } from '@shared/utils/haptics';
+import { cn } from '@shared/utils/utils';
 import { memo, useMemo } from 'react';
 import {
   BarChart3,
@@ -80,7 +82,12 @@ const Welcome = memo(function Welcome() {
       </div>
 
       <div className="relative flex w-full flex-1 overflow-hidden">
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 pt-2 pb-[max(env(safe-area-inset-bottom),2rem)] sm:py-6 md:px-8 lg:py-10 2xl:max-w-[90rem]">
+        <div
+          className={cn(
+            PAGE_CONTAINER,
+            'flex flex-1 flex-col justify-center pt-2 pb-[max(env(safe-area-inset-bottom),2rem)] sm:py-6 lg:py-10',
+          )}
+        >
           <div className="grid w-full items-center gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12 xl:gap-16">
             {/* Left Side - Hero Content & Tactile Feature Cards */}
             <div className="flex flex-col items-center px-1 pt-3 pb-2 text-center sm:px-0 sm:pt-0 lg:items-start lg:text-left">

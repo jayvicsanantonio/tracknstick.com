@@ -10,6 +10,7 @@ import { Button } from '@shared/components/ui/button';
 import IconNavLink from './IconNavLink';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { preloadChunk } from '@shared/utils/preloadRoutes';
 import { cn } from '@shared/utils/utils';
 
@@ -26,7 +27,9 @@ const Header = memo(function Header() {
 
   return (
     <header className="sticky top-0 z-40 hidden sm:block">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 md:px-8 2xl:max-w-[90rem]">
+      <div
+        className={cn(PAGE_CONTAINER, 'flex items-center justify-between py-5')}
+      >
         <Link
           to="/"
           aria-label="Track N' Stick"

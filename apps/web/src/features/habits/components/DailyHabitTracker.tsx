@@ -2,7 +2,7 @@
 // Shares one unified brand-harmonized visual language across phone, tablet, and desktop:
 // - Phones (< sm): full-bleed Collapsing Large Title, stationary date capsule, floating
 //   segmented ring, elevated Today's Habits medallion card, and horizontal day swipe.
-// - Tablet & Desktop (sm+ / lg+): balanced focused stage inside max-w-5xl with an anchored
+// - Tablet & Desktop (sm+ / lg+): balanced focused stage inside max-w-6xl with an anchored
 //   Progress Hero card (date, ring, recessed streak tray), equal-height Today's Habits card,
 //   and a full-width interactive 7-day "This Week" completion strip underneath.
 
@@ -44,6 +44,7 @@ import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
+import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { IOS_SPRING_TAP } from '@shared/utils/motion';
@@ -112,7 +113,7 @@ function TrackerSkeleton() {
         <div className="h-8 w-28 animate-pulse rounded-xl bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-stretch lg:gap-5">
+      <div className="grid gap-5 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch lg:gap-5">
         {/* Left column: Date capsule + centered segmented progress ring (+ streak tray on lg+) */}
         <div className="ios-tracker-card-lg flex flex-col lg:rounded-[26px] lg:p-4">
           <div className="pb-3.5 sm:pb-0">
@@ -496,7 +497,7 @@ export default function DailyHabitTracker() {
       >
         {navBar}
         {swipeEdgeIndicator}
-        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 md:px-8">
+        <div className={cn(PAGE_CONTAINER, 'flex flex-1 flex-col')}>
           <TrackerSkeleton />
         </div>
       </div>
@@ -507,7 +508,12 @@ export default function DailyHabitTracker() {
     return (
       <div className="flex h-full flex-1 flex-col">
         {navBar}
-        <div className="mx-auto flex w-full max-w-5xl flex-1 items-center justify-center px-4 max-sm:pb-28 md:px-8">
+        <div
+          className={cn(
+            PAGE_CONTAINER,
+            'flex flex-1 items-center justify-center max-sm:pb-28',
+          )}
+        >
           <div className="ios-tracker-card flex w-full max-w-md flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:px-8 sm:py-12">
             <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
               <WifiOff aria-hidden="true" className="size-5" />
@@ -535,7 +541,12 @@ export default function DailyHabitTracker() {
     return (
       <div className="flex h-full flex-1 flex-col">
         {navBar}
-        <div className="mx-auto flex w-full max-w-5xl flex-1 items-center justify-center px-4 max-sm:pb-28 md:px-8">
+        <div
+          className={cn(
+            PAGE_CONTAINER,
+            'flex flex-1 items-center justify-center max-sm:pb-28',
+          )}
+        >
           <NoHabits />
         </div>
       </div>
@@ -549,11 +560,16 @@ export default function DailyHabitTracker() {
     >
       {navBar}
       {swipeEdgeIndicator}
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 pt-1 max-sm:pb-28 sm:pb-2 md:px-8">
+      <div
+        className={cn(
+          PAGE_CONTAINER,
+          'flex flex-1 flex-col pt-1 max-sm:pb-28 sm:pb-2',
+        )}
+      >
         <div className="flex flex-1 flex-col lg:my-auto lg:flex-none">
           {desktopPageTitle}
 
-          <div className="grid gap-5 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-stretch lg:gap-5">
+          <div className="grid gap-5 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch lg:gap-5">
             {/* Left column: open canvas on phone/tablet; anchored Progress Hero card with recessed streak tray on lg+ desktop */}
             <div className="ios-tracker-card-lg relative flex flex-col lg:overflow-hidden lg:rounded-[26px] lg:p-4">
               {/* Subtle desktop ambient aura matching ProgressHeroSummary & Coach */}

@@ -9,6 +9,7 @@ import { usePageTitle } from '@shared/hooks/usePageTitle';
 import { ChatBox } from '@/features/chat/components/ChatBox';
 import { useChatConversationContext } from '@/features/chat/hooks/useChatConversationContext';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
+import { APP_MAX_WIDTH } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { useVisualViewport } from '@shared/hooks/useVisualViewport';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -62,7 +63,8 @@ function CoachPage() {
 
       <div
         className={cn(
-          'mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col sm:px-4 md:px-8 2xl:max-w-[90rem]',
+          'mx-auto flex min-h-0 w-full flex-1 flex-col sm:px-4 md:px-8',
+          APP_MAX_WIDTH,
           // Clear the floating iOS 26 Liquid Glass tab bar with balanced spacing
           // when keyboard is closed; dock cleanly above the keyboard once typing begins.
           !isKeyboardOpen &&
