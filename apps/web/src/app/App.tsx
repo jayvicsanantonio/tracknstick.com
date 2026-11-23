@@ -1,3 +1,4 @@
+import { SignedIn } from '@clerk/clerk-react';
 import { HabitsStateProvider } from '@features/habits/context/HabitsStateContext';
 import AddHabitDialog from '@features/habits/components/AddHabitDialog';
 import EditHabitDialog from '@features/habits/components/EditHabitDialog';
@@ -19,7 +20,11 @@ const AppContent = memo(function AppContent({ children }: AppProps) {
       {children}
       <AddHabitDialog />
       <EditHabitDialog />
-      <PWAInstallPrompt />
+      {/* Offered once signed in: on the welcome page it would cover a
+          first-time visitor's Get started button. */}
+      <SignedIn>
+        <PWAInstallPrompt />
+      </SignedIn>
     </>
   );
 });
