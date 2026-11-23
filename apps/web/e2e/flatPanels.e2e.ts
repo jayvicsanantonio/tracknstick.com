@@ -1,10 +1,27 @@
-// End-to-end check that panels on tablet and desktop are flat: no blurred glow or gradient inside them.
-// Phones keep their ambient glow, so the check runs only at tablet and desktop widths.
+// End-to-end check that panels are flat on every screen size: no blurred glow or gradient inside them.
+// It visits each page at phone, tablet and desktop widths with a completed habit on the Tracker.
 
 /// <reference lib="dom" />
 
 import { expect, test, type Page } from '@playwright/test';
 import { addHabit } from './addHabit';
+
+/**
+ * Deletes a habit from the Habits overview at desktop width, where each row
+ * shows its Delete button, so the later tests see the habits they expect.
+ */
+async function deleteHabit(page: Page, name: string) {
+  await page.setViewportSize({ width: 1280, height: 860 });
+  await page.goto('/habits');
+  const row = page
+    .getByRole('list', { name: 'Habits' })
+    .getByRole('listitem')
+    .filter({ hasText: name });
+  await row.getByRole('button', { name: `Delete ${name}` }).click();
+  const confirm = page.getByRole('alertdialog', { name: 'Delete Habit' });
+  await confirm.getByRole('button', { name: 'Delete' }).click();
+  await expect(row).toHaveCount(0);
+}
 
 /** Describes each visible element inside a panel that draws a glow or a gradient. */
 async function decoratedElements(page: Page) {
@@ -36,15 +53,23 @@ async function decoratedElements(page: Page) {
 }
 
 for (const viewport of [
+  { name: 'a phone', width: 390, height: 844 },
   { name: 'a tablet', width: 768, height: 1024 },
   { name: 'a desktop', width: 1280, height: 860 },
 ]) {
   test.describe(`on ${viewport.name}`, () => {
     test.use({ viewport: { width: viewport.width, height: viewport.height } });
 
+    let name = '';
+
+    test.afterEach(async ({ page }) => {
+      if (name) await deleteHabit(page, name);
+      name = '';
+    });
+
     test('draws no glow or gradient inside any panel', async ({ page }) => {
       await page.goto('/');
-      const name = `Flat ${Date.now()}`;
+      name = `Flat ${Date.now()}`;
       await addHabit(page, name);
       // A check-in gives the Progress consistency meter a fill to check.
       await page

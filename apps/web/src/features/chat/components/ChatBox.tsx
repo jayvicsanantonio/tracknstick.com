@@ -169,12 +169,6 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
             <div className="flex flex-col">
               {/* Elevated welcome hero card matching phone across all screen sizes */}
               <div className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:p-7">
-                {/* Ambient glow on phones only; tablet and desktop panels stay flat. */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:hidden"
-                />
-
                 <div className="relative min-w-0">
                   <div className="mb-1.5 flex items-center gap-1.5">
                     <span
