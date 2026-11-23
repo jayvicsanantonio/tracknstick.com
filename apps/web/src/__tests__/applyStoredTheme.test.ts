@@ -1,11 +1,15 @@
 // Runs public/applyStoredTheme.js, which index.html loads before first paint.
 // It applies an explicit stored theme, or resolves the OS colour scheme when set
-// to system / unset / invalid, and keeps <meta name="theme-color"> synced.
+// to system / unset / invalid, and keeps <meta name="theme-color"> and the favicon synced.
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, it, expect } from 'vitest';
-import { THEME_CHROME_COLOR, THEME_STORAGE_KEY } from '@shared/constants/theme';
+import {
+  THEME_CHROME_COLOR,
+  THEME_FAVICON,
+  THEME_STORAGE_KEY,
+} from '@shared/constants/theme';
 
 const script = readFileSync(
   path.resolve(__dirname, '../../public/applyStoredTheme.js'),
@@ -37,6 +41,7 @@ afterEach(() => {
   root.classList.remove('light', 'dark');
   root.style.colorScheme = '';
   document.querySelector('meta[name="theme-color"]')?.remove();
+  document.querySelector('link[rel="icon"]')?.remove();
   localStorage.clear();
   setScriptMatchMedia(undefined);
 });
@@ -55,6 +60,20 @@ describe('applyStoredTheme.js', () => {
       expect(root.classList.contains(mode)).toBe(true);
       expect(root.style.colorScheme).toBe(mode);
       expect(meta.content).toBe(THEME_CHROME_COLOR[mode]);
+    },
+  );
+
+  it.each(['light', 'dark'] as const)(
+    'shows the %s theme favicon before first paint',
+    (mode) => {
+      const icon = document.createElement('link');
+      icon.rel = 'icon';
+      document.head.append(icon);
+      localStorage.setItem(THEME_STORAGE_KEY, mode);
+
+      runScript();
+
+      expect(icon.getAttribute('href')).toBe(THEME_FAVICON[mode]);
     },
   );
 

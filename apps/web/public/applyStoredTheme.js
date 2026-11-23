@@ -1,9 +1,12 @@
 // Applies the stored theme before first paint; index.html loads it, blocking, in <head>.
 // Defaults to the device's system colour scheme when no explicit theme has been stored,
-// and syncs <meta name="theme-color"> and color-scheme so iOS status bars match seamlessly.
+// and syncs <meta name="theme-color"> and color-scheme so iOS status bars match seamlessly,
+// and the favicon so the browser tab shows the theme's icon.
 (function () {
   var LIGHT_BG = '#fdf2f8';
   var DARK_BG = '#00140b';
+  var LIGHT_FAVICON = '/icons/favicon-light.svg';
+  var DARK_FAVICON = '/icons/favicon-dark.svg';
 
   function resolveMode(stored) {
     if (stored === 'light' || stored === 'dark') return stored;
@@ -27,6 +30,13 @@
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
       meta.setAttribute('content', mode === 'dark' ? DARK_BG : LIGHT_BG);
+    }
+    var favicon = document.querySelector('link[rel="icon"]');
+    if (favicon) {
+      favicon.setAttribute(
+        'href',
+        mode === 'dark' ? DARK_FAVICON : LIGHT_FAVICON,
+      );
     }
   } catch (_err) {
     document.documentElement.classList.add('dark');

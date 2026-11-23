@@ -29,3 +29,22 @@ test('serves the Apple touch icon the page links as a 180 by 180 PNG', async ({
   const png = await response.body();
   expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([180, 180]);
 });
+
+for (const theme of ['light', 'dark'] as const) {
+  test(`shows the ${theme} theme favicon when the ${theme} theme is chosen`, async ({
+    page,
+    request,
+  }) => {
+    await page.addInitScript((chosen) => {
+      localStorage.setItem('track-n-stick-theme', chosen);
+    }, theme);
+    await page.goto('/');
+
+    const href = await page.locator('link[rel="icon"]').getAttribute('href');
+    expect(href).toBe(`/icons/favicon-${theme}.svg`);
+
+    const response = await request.get(href ?? '');
+    expect(response.ok()).toBe(true);
+    expect(response.headers()['content-type']).toContain('image/svg+xml');
+  });
+}
