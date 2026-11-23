@@ -151,7 +151,7 @@ const Welcome = memo(function Welcome() {
                       spacingUnit: '0.75rem',
                     },
                     elements: {
-                      card: 'bg-transparent border-0 !shadow-none p-0 w-full max-w-none !border-0 !outline-0',
+                      card: 'bg-transparent sm:!bg-transparent sm:!pt-0 border-0 !shadow-none p-0 w-full max-w-none !border-0 !outline-0',
                       cardBox:
                         'bg-transparent border-0 !shadow-none p-0 w-full max-w-none !rounded-none !border-0 !outline-0',
                       headerTitle: 'hidden',
@@ -159,17 +159,17 @@ const Welcome = memo(function Welcome() {
                       form: 'space-y-3 w-full',
                       formContainer: 'space-y-3 w-full',
                       formButtonPrimary:
-                        'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) rounded-2xl font-semibold shadow-none transition-all duration-150 w-full min-h-[50px] py-3 px-4 text-base touch-manipulation active:scale-[0.98]',
+                        'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) sm:!text-(--color-text-inverse) rounded-2xl font-semibold shadow-none transition-all duration-150 w-full min-h-[50px] py-3 px-4 text-base touch-manipulation active:scale-[0.98]',
                       formButtonSecondary:
                         'text-(--color-brand-primary) hover:text-(--color-brand-secondary) font-medium w-full min-h-[48px] py-3 px-4 text-base touch-manipulation',
                       socialButtonsBlockButton:
-                        'bg-(--color-card) border border-(--color-border-primary) dark:border-white/20 hover:bg-(--color-hover-surface) rounded-2xl transition-all duration-150 text-(--color-foreground) dark:text-white !text-(--color-foreground) dark:!text-white !border-1 !border-solid min-h-[50px] py-3 px-4 shadow-none active:scale-[0.98] touch-manipulation flex items-center justify-center gap-2.5',
+                        'bg-(--color-card) border border-(--color-border-primary) dark:border-white/20 sm:dark:!border-white/20 hover:bg-(--color-hover-surface) rounded-2xl transition-all duration-150 text-(--color-foreground) dark:text-white !text-(--color-foreground) dark:!text-white !border-1 !border-solid min-h-[50px] py-3 px-4 shadow-none active:scale-[0.98] touch-manipulation flex items-center justify-center gap-2.5',
                       socialButtonsBlockButtonText:
                         'text-(--color-foreground) dark:text-white font-medium text-base',
                       socialButtonsIconButton:
                         'text-(--color-foreground) dark:text-white w-5 h-5 flex-shrink-0',
                       formFieldInput:
-                        'bg-(--color-card) border border-(--color-border-primary) rounded-2xl focus:border-(--color-brand-primary) focus:ring-2 focus:ring-(--color-brand-primary)/20 text-(--color-foreground) dark:text-white placeholder:text-(--color-text-secondary) dark:placeholder:!text-gray-300 w-full min-h-[48px] py-3 px-4 text-base transition-all duration-150 touch-manipulation shadow-none',
+                        'bg-(--color-card) sm:!bg-(--color-card) border border-(--color-border-primary) rounded-2xl focus:border-(--color-brand-primary) focus:ring-2 focus:ring-(--color-brand-primary)/20 text-(--color-foreground) dark:text-white placeholder:text-(--color-text-secondary) dark:placeholder:!text-gray-300 w-full min-h-[48px] py-3 px-4 text-base transition-all duration-150 touch-manipulation shadow-none',
                       formFieldLabel:
                         'text-(--color-foreground) dark:text-white font-medium text-sm mb-1.5 block',
                       formField: 'w-full space-y-1',
@@ -186,7 +186,8 @@ const Welcome = memo(function Welcome() {
                         'text-xs sm:text-sm text-(--color-brand-primary) hover:text-(--color-brand-secondary)',
                       formResendCodeLink:
                         'text-xs sm:text-sm text-(--color-brand-primary) hover:text-(--color-brand-secondary) underline',
-                      dividerLine: 'bg-(--color-border-primary) my-3 sm:my-4',
+                      dividerLine:
+                        'bg-(--color-border-primary) sm:!bg-(--color-border-primary) my-3 sm:my-4',
                       dividerText: 'text-(--color-text-secondary) text-sm px-4',
                       otpCodeFieldInput:
                         'w-12 h-12 sm:w-14 sm:h-14 text-center text-base sm:text-lg font-semibold border border-(--color-border-primary) rounded-xl focus:border-(--color-brand-primary) focus:ring-2 focus:ring-(--color-brand-primary)/20 bg-(--color-card) touch-manipulation',
@@ -198,11 +199,12 @@ const Welcome = memo(function Welcome() {
                       identityPreviewEditButton:
                         'text-(--color-brand-primary) hover:text-(--color-brand-secondary) text-sm min-h-[44px] flex items-center justify-center touch-manipulation',
                       footer:
-                        'text-center mt-4 text-sm text-(--color-text-secondary)',
-                      footerAction: 'text-sm text-(--color-text-secondary)',
+                        'text-center mt-4 text-sm text-(--color-text-secondary) sm:![background:transparent]',
+                      footerAction:
+                        'text-sm text-(--color-text-secondary) sm:flex sm:items-center sm:justify-center sm:gap-1',
                       footerActionText: 'text-sm text-(--color-text-secondary)',
                       footerActionLink:
-                        'text-sm text-(--color-brand-primary) hover:text-(--color-brand-secondary) min-h-[44px] inline-flex items-center justify-center touch-manipulation',
+                        'text-sm text-(--color-brand-primary) hover:text-(--color-brand-secondary) min-h-[44px] inline-flex items-center justify-center touch-manipulation sm:min-h-0 sm:font-semibold',
                       spinner: 'w-5 h-5 sm:w-6 sm:h-6',
                       alternativeMethods: 'space-y-2 sm:space-y-3 mt-4',
                       alternativeMethodsBlockButton:
