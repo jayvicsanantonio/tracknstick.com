@@ -118,7 +118,7 @@ Responses are the payload itself, with no envelope; each endpoint's shape is its
 - **Timezone Handling**: All date calculations must consider user timezone using `getLocaleStartEnd()` utility
 - **Streak Calculations**: Different logic for daily vs non-daily habits in `streakUtils.ts`
 - **Soft Deletes**: Never hard delete habits/trackers - use `deleted_at` timestamp
-- **Tracker Toggle**: `POST /habits/:habitId/trackers` removes the day's tracker if there is one, otherwise adds one, then updates the habit's streak counters
+- **Tracker Toggle**: `POST /habits/:habitId/trackers` removes the day's tracker if there is one, otherwise adds one, then updates the habit's streak counters. A body with `completed` sets the day to that outcome instead and leaves a day that already has it unchanged
 - **Progress**: History and streaks are computed in SQL in `tracker.repository.ts` (a recursive CTE over the days, matched against each habit's frequency)
 - **Secrets**: Never commit them. Locally they live in `.dev.vars` (gitignored, from `.dev.vars.example`); in production they are Worker secrets set with `wrangler secret put`
 - **Error Handling**: Use custom error classes from `utils/errors.ts` with proper HTTP status codes

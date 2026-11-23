@@ -133,6 +133,29 @@ build's `VITE_API_HOST` use NetworkFirst, in a cache that
 `useClearApiCacheOnUserChange` empties when the signed-in user changes; a build
 without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
 
+Offline, Clerk cannot load its script or the session, so its `SignedIn` shows
+nothing. `useOfflineSession` is true while the device is offline, Clerk has not
+loaded, and the API cache's recorded owner says a user was signed in last time.
+Gate signed-in UI with `SignedInOrOffline` (`shared/components/layouts`) rather
+than Clerk's `SignedIn`, and let data hooks fetch when `useOfflineSession` is
+true: the requests go without a token and the service worker answers them from
+its cache. `RootLayout` reloads the page when the connection returns, so Clerk
+loads and takes over. Keep API request URLs stable across visits (the habits
+request sends the day's midnight, not the current moment), or the cache never
+matches them.
+
+`useOfflineSession` is also true once Clerk gives up loading (its `status` is
+`error`), which is how a connection that reports online but gets nowhere is
+found out; `RootLayout` then also reloads when the app returns to the foreground
+with a connection.
+
+A habit completion whose request reaches no server is kept on the device by
+`features/habits/api/pendingCompletions.ts` (localStorage, one change per user,
+habit and day), shown over the fetched list by `useHabits`, and sent by
+`useSendPendingCompletions` (mounted in `App`) once a signed-in user is online.
+Each change names its outcome (`completed` on the tracker POST), so sending it
+twice or late is safe.
+
 ## Testing
 
 - **Framework**: Vitest + React Testing Library (jsdom environment)

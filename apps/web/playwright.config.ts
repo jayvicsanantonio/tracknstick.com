@@ -18,6 +18,17 @@ for (const file of ['.env.e2e.local', '../api/.dev.vars']) {
 // 5174 is one of the origins the API accepts in development.
 const WEB_PORT = 5174;
 const API_PORT = 8787;
+// The production build, which alone has a service worker, served by
+// `vite preview` on a port of its own, so a run never reuses `pnpm preview`.
+// The API is told to accept it.
+const PREVIEW_PORT = 4174;
+const PREVIEW_OUT_DIR = 'e2e/.dist';
+
+// The web app's build settings, shared by the dev server and the build.
+const webEnv = {
+  VITE_API_HOST: `http://localhost:${API_PORT}`,
+  VITE_CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY ?? '',
+};
 
 export default defineConfig({
   testDir: './e2e',
@@ -41,8 +52,18 @@ export default defineConfig({
     {
       name: 'signed in',
       dependencies: ['setup'],
-      testIgnore: /signedOut\.e2e\.ts/,
+      testIgnore: [/signedOut\.e2e\.ts/, /offline\.e2e\.ts/],
       use: { ...devices['Desktop Chrome'], storageState: AUTH_FILE },
+    },
+    {
+      name: 'offline',
+      dependencies: ['setup'],
+      testMatch: /offline\.e2e\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+        baseURL: `http://localhost:${PREVIEW_PORT}`,
+      },
     },
     {
       name: 'signed out',
@@ -52,7 +73,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: `node e2e/serveApi.mjs ${API_PORT}`,
+      command: `node e2e/serveApi.mjs ${API_PORT} http://localhost:${PREVIEW_PORT}`,
       url: `http://localhost:${API_PORT}/health`,
       reuseExistingServer: false,
       timeout: 120_000,
@@ -62,10 +83,14 @@ export default defineConfig({
       url: `http://localhost:${WEB_PORT}`,
       reuseExistingServer: false,
       timeout: 120_000,
-      env: {
-        VITE_API_HOST: `http://localhost:${API_PORT}`,
-        VITE_CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY ?? '',
-      },
+      env: webEnv,
+    },
+    {
+      command: `pnpm exec vite build --outDir ${PREVIEW_OUT_DIR} && pnpm exec vite preview --outDir ${PREVIEW_OUT_DIR} --port ${PREVIEW_PORT} --strictPort`,
+      url: `http://localhost:${PREVIEW_PORT}`,
+      reuseExistingServer: false,
+      timeout: 120_000,
+      env: webEnv,
     },
   ],
 });

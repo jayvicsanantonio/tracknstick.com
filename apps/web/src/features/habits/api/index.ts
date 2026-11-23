@@ -10,8 +10,18 @@ import type {
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import { HabitStats } from '@/features/habits/types/HabitStats';
+import { getLocalStartofDayUTC } from '@shared/utils/date/formatDate';
 
 const FALLBACK_ICON: keyof typeof HabitsIcons = 'Activity';
+
+/**
+ * The `date` a request for one day's habits sends: the day's midnight in the
+ * user's time zone. The API reads only the day from it, and a value that is
+ * the same all day keeps the URL the same, so the service worker's cached
+ * response answers it offline.
+ */
+export const dayParam = (date: Date, timeZone: string) =>
+  getLocalStartofDayUTC(date, timeZone).toISOString();
 
 /**
  * The server types icon as an optional free string, while components index
@@ -29,7 +39,7 @@ export const fetchHabits = async (
   timeZone?: string,
 ): Promise<Habit[]> => {
   const params =
-    date && timeZone ? { date: date.toISOString(), timeZone } : undefined;
+    date && timeZone ? { date: dayParam(date, timeZone), timeZone } : undefined;
 
   const response = await axiosInstance.get<HabitListResponse>(
     '/api/v1/habits',
@@ -87,16 +97,22 @@ export const deleteHabit = async (
   return response.data;
 };
 
+/**
+ * Sets a habit's completion on the day of `date`. Naming the outcome, rather
+ * than toggling, keeps a request sent twice or late from flipping it back.
+ */
 export const toggleHabitCompletion = async (
   habitId: string,
   date: Date,
   timeZone: string,
+  completed: boolean,
 ): Promise<ToggleTrackerResponse> => {
   const response = await axiosInstance.post<ToggleTrackerResponse>(
     `/api/v1/habits/${habitId}/trackers`,
     {
       timestamp: date.toISOString(),
       timeZone,
+      completed,
     },
   );
 
@@ -111,7 +127,7 @@ export const toggleHabitCompletion = async (
 export const allHabitsKey = '/api/v1/habits';
 
 export const habitsForDateKey = (date: Date, timeZone: string) =>
-  `${allHabitsKey}?date=${date.toISOString()}&timeZone=${timeZone}`;
+  `${allHabitsKey}?date=${dayParam(date, timeZone)}&timeZone=${timeZone}`;
 
 export const habitStatsKey = (habitId: string, timeZone: string) =>
   `${allHabitsKey}/${habitId}/stats?timeZone=${timeZone}`;

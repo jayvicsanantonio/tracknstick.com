@@ -9,6 +9,9 @@ import { withMainFrom, withRaisedRateLimits } from './testApiConfig.mjs';
 const API_DIR = fileURLToPath(new URL('../../api/', import.meta.url));
 const STATE_DIR = '.wrangler/e2e-state';
 const port = process.argv[2] ?? '8787';
+// An origin to accept beside the development ones, such as the port the
+// production build is served on (see playwright.config.ts).
+const extraOrigin = process.argv[3];
 
 // Every run starts from an empty database brought to the current schema by
 // the same migration files production uses.
@@ -78,6 +81,7 @@ const api = spawn(
     `${API_DIR}${STATE_DIR}`,
     '--port',
     port,
+    ...(extraOrigin ? ['--var', `EXTRA_ALLOWED_ORIGINS:${extraOrigin}`] : []),
   ],
   { cwd: API_DIR, stdio: 'inherit' },
 );

@@ -16,6 +16,9 @@ as a Clerk test user from the **development** instance.
   are kept apart from those of a running `pnpm dev:api`, which a run can start
   beside safely.
 - Vite on port 5174, pointed at that API.
+- A production build in `e2e/.dist` (gitignored), served by `vite preview` on
+  port 4174, which the API is started to accept. Only a production build has a
+  service worker, so the "offline" project (`offline.e2e.ts`) runs against it.
 - `e2e/auth.setup.ts`: signs in once with `@clerk/testing` and saves the session
   to `e2e/.auth/user.json` (gitignored) for the other tests.
 

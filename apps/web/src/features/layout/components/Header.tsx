@@ -1,7 +1,7 @@
 // The tablet & desktop app header: the Track N' Stick logo linking to the Tracker,
 // and a Liquid Glass navigation & actions toolbar visually matching the phone tab bar.
 
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { SignedOut, UserButton } from '@clerk/clerk-react';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
@@ -10,6 +10,7 @@ import { Button } from '@shared/components/ui/button';
 import IconNavLink from './IconNavLink';
 import { useTheme } from '@shared/hooks/useTheme';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import SignedInOrOffline from '@shared/components/layouts/SignedInOrOffline';
 import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { preloadChunk } from '@shared/utils/preloadRoutes';
 import { cn } from '@shared/utils/utils';
@@ -60,7 +61,7 @@ const Header = memo(function Header() {
         </Link>
 
         <div className="flex items-center">
-          <SignedIn>
+          <SignedInOrOffline>
             <div
               role="toolbar"
               aria-label="User actions"
@@ -175,7 +176,7 @@ const Header = memo(function Header() {
                 />
               </span>
             </div>
-          </SignedIn>
+          </SignedInOrOffline>
           <SignedOut>
             <div
               role="toolbar"

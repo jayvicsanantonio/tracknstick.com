@@ -197,7 +197,8 @@ describe('Habit Controller', () => {
         requestData.timestamp,
         requestData.timeZone,
         requestData.notes,
-        mockDB
+        mockDB,
+        undefined
       );
 
       expect(mockContext.json).toHaveBeenCalledWith(
@@ -206,6 +207,36 @@ describe('Habit Controller', () => {
           message: 'Tracker added',
         },
         201
+      );
+    });
+
+    it('passes the outcome the body asks for to the service', async () => {
+      mockContext.jsonData = {
+        timestamp: '2023-06-15T10:00:00Z',
+        timeZone: 'UTC',
+        completed: false,
+      };
+      mockContext.paramData = { habitId: '1' };
+
+      vi.mocked(habitService.manageTracker).mockResolvedValue({
+        status: 'unchanged',
+        message: 'Habit already not completed',
+      });
+
+      await habitController.manageTracker(mockContext as Context);
+
+      expect(habitService.manageTracker).toHaveBeenCalledWith(
+        mockClerkUserId,
+        '1',
+        '2023-06-15T10:00:00Z',
+        'UTC',
+        undefined,
+        mockDB,
+        false
+      );
+      expect(mockContext.json).toHaveBeenCalledWith(
+        { message: 'Habit already not completed' },
+        200
       );
     });
   });

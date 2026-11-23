@@ -1,12 +1,26 @@
-import { lazy, memo, Suspense } from 'react';
+import { lazy, memo, Suspense, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { ClerkLoading, SignedIn, SignedOut } from '@clerk/clerk-react';
+import { ClerkLoading, SignedOut } from '@clerk/clerk-react';
 import { Check } from 'lucide-react';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { MobileShellProvider } from '@/features/layout/context/MobileShellContext';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
+import { useOfflineSession } from '@shared/hooks/useOfflineSession';
+import { reloadPage } from '@shared/utils/reloadPage';
+
+/**
+ * Reloads when the app comes back to the foreground with a connection, so
+ * that Clerk tries again after it gave up on one that got nowhere. Offline it
+ * stays put: the reconnect reloads it instead.
+ */
+function reloadIfShownOnline() {
+  if (document.visibilityState === 'visible' && navigator.onLine) {
+    reloadPage();
+  }
+}
+import SignedInOrOffline from './SignedInOrOffline';
 
 // Only signed-out visitors see the welcome page, so it loads on demand and
 // signed-in users never download it.
@@ -19,45 +33,72 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
  *   Collapsing Large Title nav bar, the iOS 26 Liquid Glass tab bar floats at
  *   the bottom, and website Header/Footer chrome stay hidden.
  * - On wider screens (sm+): classic glass Header, routed content, and Footer.
+ *
+ * Offline, Clerk cannot load, so the last visit's user sees the pages from
+ * the service worker's cache, and the page reloads when the connection
+ * returns, or when the app comes back to the foreground with one, so that
+ * Clerk loads and takes over.
  */
 const RootLayout = memo(function RootLayout() {
+  const offline = useOfflineSession();
+  // Stays true once set: React re-renders between the 'online' event's
+  // listeners, so the offline session can end before the reload's listener
+  // runs, and a listener tied to it would be removed unrun.
+  const [reloadWhenOnline, setReloadWhenOnline] = useState(false);
+
+  useEffect(() => {
+    if (offline) setReloadWhenOnline(true);
+  }, [offline]);
+
+  useEffect(() => {
+    if (!reloadWhenOnline) return;
+    window.addEventListener('online', reloadPage);
+    document.addEventListener('visibilitychange', reloadIfShownOnline);
+    return () => {
+      window.removeEventListener('online', reloadPage);
+      document.removeEventListener('visibilitychange', reloadIfShownOnline);
+    };
+  }, [reloadWhenOnline]);
+
   return (
     <>
       <Header />
       <main className="relative flex min-h-0 flex-1 flex-col">
-        <ClerkLoading>
-          <div
-            role="status"
-            aria-label="Loading Track N' Stick"
-            className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-24"
-          >
-            <span
-              aria-hidden="true"
-              className="flex size-16 animate-pulse items-center justify-center rounded-[20px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-lg motion-reduce:animate-none"
+        {offline ? null : (
+          <ClerkLoading>
+            <div
+              role="status"
+              aria-label="Loading Track N' Stick"
+              className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-24"
             >
-              <Check className="size-8" strokeWidth={3} />
-            </span>
-          </div>
-        </ClerkLoading>
+              <span
+                aria-hidden="true"
+                className="flex size-16 animate-pulse items-center justify-center rounded-[20px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-lg motion-reduce:animate-none"
+              >
+                <Check className="size-8" strokeWidth={3} />
+              </span>
+            </div>
+          </ClerkLoading>
+        )}
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Suspense fallback={null}>
             <Welcome />
           </Suspense>
         </SignedOut>
-        <SignedIn>
+        <SignedInOrOffline>
           <MobileShellProvider>
             {/* The coach conversation outlives each page, so it wraps them. */}
             <ChatConversationProvider>
               <Outlet />
             </ChatConversationProvider>
           </MobileShellProvider>
-        </SignedIn>
+        </SignedInOrOffline>
       </main>
       <Footer />
-      <SignedIn>
+      <SignedInOrOffline>
         <MobileTabBar />
-      </SignedIn>
+      </SignedInOrOffline>
     </>
   );
 });

@@ -137,4 +137,82 @@ describe('Habits API Integration', () => {
       expect(await remaining.json()).toEqual([]);
     });
   });
+
+  describe('POST /habits/:habitId/trackers', () => {
+    const timestamp = '2026-11-23T16:00:00.000Z';
+
+    async function createHabit(userId: string) {
+      mockAuthentication(userId);
+      const created = await send('POST', '/habits', habitData);
+      const { habitId } = await created.json();
+      return habitId as string;
+    }
+
+    async function completionsOf(habitId: string) {
+      const row = await env.DB.prepare(
+        'SELECT COUNT(*) AS count FROM trackers WHERE habit_id = ?'
+      )
+        .bind(Number(habitId))
+        .first();
+      return row.count;
+    }
+
+    it('toggles the day when the body says nothing of the outcome', async () => {
+      const habitId = await createHabit('user_toggle');
+      const body = { timestamp, timeZone: 'UTC' };
+
+      const added = await send('POST', `/habits/${habitId}/trackers`, body);
+      expect(added.status).toBe(201);
+      expect(await completionsOf(habitId)).toBe(1);
+
+      const removed = await send('POST', `/habits/${habitId}/trackers`, body);
+      expect(removed.status).toBe(200);
+      expect(await completionsOf(habitId)).toBe(0);
+    });
+
+    it('completes the day once however often it is asked to', async () => {
+      const habitId = await createHabit('user_complete_twice');
+      const body = { timestamp, timeZone: 'UTC', completed: true };
+
+      const first = await send('POST', `/habits/${habitId}/trackers`, body);
+      expect(first.status).toBe(201);
+      expect((await first.json()).trackerId).toEqual(expect.any(String));
+
+      const second = await send('POST', `/habits/${habitId}/trackers`, body);
+      expect(second.status).toBe(200);
+      expect(await second.json()).not.toHaveProperty('trackerId');
+      expect(await completionsOf(habitId)).toBe(1);
+    });
+
+    it('leaves a day not completed when asked to mark it not completed', async () => {
+      const habitId = await createHabit('user_incomplete');
+
+      const res = await send('POST', `/habits/${habitId}/trackers`, {
+        timestamp,
+        timeZone: 'UTC',
+        completed: false,
+      });
+
+      expect(res.status).toBe(200);
+      expect(await completionsOf(habitId)).toBe(0);
+    });
+
+    it('removes the completion when asked to mark a completed day not completed', async () => {
+      const habitId = await createHabit('user_uncomplete');
+      await send('POST', `/habits/${habitId}/trackers`, {
+        timestamp,
+        timeZone: 'UTC',
+        completed: true,
+      });
+
+      const res = await send('POST', `/habits/${habitId}/trackers`, {
+        timestamp,
+        timeZone: 'UTC',
+        completed: false,
+      });
+
+      expect(res.status).toBe(200);
+      expect(await completionsOf(habitId)).toBe(0);
+    });
+  });
 });
