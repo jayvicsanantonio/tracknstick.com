@@ -162,20 +162,17 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
         onScroll={handleLogScroll}
         onTouchMove={dismissMobileKeyboard}
         onClick={dismissMobileKeyboard}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-1 sm:px-0 sm:pt-0"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-1 sm:-mx-4 sm:px-4 sm:pt-0"
       >
         <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-3.5 pb-6 sm:gap-4">
           {messages.length === 0 && (
             <div className="flex flex-col">
               {/* Elevated welcome hero card matching phone across all screen sizes */}
               <div className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:p-7">
+                {/* Ambient glow on phones only; tablet and desktop panels stay flat. */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:size-56"
-                />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -right-12 -bottom-12 hidden size-48 rounded-full bg-(--color-brand-primary)/10 blur-3xl sm:block"
+                  className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-(--color-brand-primary)/18 blur-3xl sm:hidden"
                 />
 
                 <div className="relative min-w-0">

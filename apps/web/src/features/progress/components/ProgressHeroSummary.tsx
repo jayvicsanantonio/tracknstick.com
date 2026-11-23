@@ -151,16 +151,17 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
       aria-label="All-time progress summary"
       className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:p-6"
     >
-      {/* Layered ambient aura tuned to overall lifetime consistency */}
+      {/* Layered ambient aura tuned to overall lifetime consistency, on phones
+          only; tablet and desktop panels stay flat. */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute -top-16 -right-12 size-48 rounded-full bg-(--color-brand-primary) blur-3xl transition-opacity duration-500 sm:size-64 ${
+        className={`pointer-events-none absolute -top-16 -right-12 size-48 rounded-full bg-(--color-brand-primary) blur-3xl transition-opacity duration-500 sm:hidden ${
           numericRate >= 80 ? 'opacity-24' : 'opacity-14'
         }`}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-14 -left-14 size-40 rounded-full bg-(--color-brand-primary)/10 blur-3xl sm:size-56"
+        className="pointer-events-none absolute -bottom-14 -left-14 size-40 rounded-full bg-(--color-brand-primary)/10 blur-3xl sm:hidden"
       />
 
       {/* Row 1: All-Time eyebrow + Since journey pill */}
@@ -248,7 +249,7 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
         className="relative z-10 mt-3.5 h-2.5 w-full overflow-hidden rounded-full bg-(--color-brand-primary)/12 ring-1 ring-(--color-brand-primary)/16 ring-inset sm:mt-4 dark:bg-(--color-brand-primary)/16"
       >
         <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-(--color-brand-primary) to-(--color-brand-secondary) shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] dark:to-(--color-brand-text-light)"
+          className="h-full rounded-full bg-gradient-to-r from-(--color-brand-primary) to-(--color-brand-secondary) shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] sm:bg-(--color-brand-primary) sm:bg-none dark:to-(--color-brand-text-light)"
           style={{
             boxShadow:
               numericRate > 0

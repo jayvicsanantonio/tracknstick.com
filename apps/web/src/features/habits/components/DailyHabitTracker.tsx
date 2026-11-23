@@ -587,12 +587,6 @@ export default function DailyHabitTracker() {
           <div className="grid gap-5 sm:gap-6 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch">
             {/* Left column: open canvas on phone/tablet; anchored Progress Hero card with recessed streak tray on lg+ desktop */}
             <div className="ios-tracker-card-lg relative flex flex-col lg:overflow-clip lg:rounded-[26px] lg:p-4">
-              {/* Subtle desktop ambient aura matching ProgressHeroSummary & Coach */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-14 -right-14 hidden size-44 rounded-full bg-(--color-brand-primary)/16 blur-3xl lg:block"
-              />
-
               <div className="relative z-10 pb-3.5 sm:pb-0">
                 <DailyHabitDate
                   transitionDirection={navDirection}
