@@ -1,36 +1,11 @@
 // End-to-end checks of the habit flows a signed-in user relies on, through the real API and D1.
 // Each test creates a habit with a name of its own, so no test depends on another's data.
 
-import { expect, test, type Page } from '@playwright/test';
-
-const EVERY_DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+import { expect, test } from '@playwright/test';
+import { addHabit } from './addHabit';
 
 /** A habit name no other test or run uses. */
 const uniqueName = (label: string) => `${label} ${Date.now()}`;
-
-/**
- * Adds a habit due every day, starting today (the form's default), through
- * the Add Habit dialog.
- */
-async function addHabit(page: Page, name: string) {
-  // The header's button. exact: the empty state has an "Add habit" button
-  // too while the user has no habits.
-  await page.getByRole('button', { name: 'Add Habit', exact: true }).click();
-
-  const dialog = page.getByRole('dialog', { name: 'Add New Habit' });
-  await dialog.getByLabel('Name').fill(name);
-  // The radio is visually hidden under its icon, so click the choice that
-  // holds it, as a user would.
-  const activity = page.getByRole('radio', { name: 'Activity' });
-  await dialog.locator('label', { has: activity }).click();
-  await expect(dialog.getByRole('radio', { name: 'Activity' })).toBeChecked();
-  for (const day of EVERY_DAY) {
-    await dialog.getByRole('button', { name: day, exact: true }).click();
-  }
-  await dialog.getByRole('button', { name: 'Add habit' }).click();
-
-  await expect(dialog).toBeHidden();
-}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -138,4 +113,27 @@ test('opens the Coach page from the header navigation', async ({ page }) => {
   await expect(
     page.getByRole('textbox', { name: 'Ask the habit coach' }),
   ).toBeInViewport();
+});
+
+test('keeps the day arrows in place when a day is picked right after closing a dialog', async ({
+  page,
+}) => {
+  await addHabit(page, uniqueName('Stretch'));
+  const previous = page.getByRole('button', { name: 'Previous Date' });
+  const before = await previous.boundingBox();
+
+  // Closing the dialog hands focus back to the page while the click lands,
+  // which once scrolled the clipped Tracker card sideways.
+  await page.getByRole('button', { name: 'Add Habit', exact: true }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Add New Habit' }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await previous.click();
+  await expect(
+    page.getByRole('button', { name: 'Back to Today' }),
+  ).toBeVisible();
+
+  const after = await previous.boundingBox();
+  expect(after?.x).toBe(before?.x);
 });

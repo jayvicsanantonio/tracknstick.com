@@ -104,7 +104,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
 
   return (
     <div
-      className="mx-auto w-full max-w-lg"
+      className="mx-auto w-full max-w-lg sm:max-w-none lg:flex lg:flex-1 lg:flex-col"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -149,7 +149,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
       </div>
 
       <div
-        className="mt-3.5 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5"
+        className="mt-3.5 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5 lg:flex-1"
         role="grid"
       >
         <div

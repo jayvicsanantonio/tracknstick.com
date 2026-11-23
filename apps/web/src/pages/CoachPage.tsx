@@ -9,7 +9,8 @@ import { usePageTitle } from '@shared/hooks/usePageTitle';
 import { ChatBox } from '@/features/chat/components/ChatBox';
 import { useChatConversationContext } from '@/features/chat/hooks/useChatConversationContext';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
-import { APP_MAX_WIDTH } from '@shared/constants/layout';
+import PageHeader from '@/features/layout/components/PageHeader';
+import { APP_MAX_WIDTH, PAGE_HEADER_ACTION } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { useVisualViewport } from '@shared/hooks/useVisualViewport';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -63,7 +64,7 @@ function CoachPage() {
 
       <div
         className={cn(
-          'mx-auto flex min-h-0 w-full flex-1 flex-col sm:px-4 md:px-8',
+          'mx-auto flex min-h-0 w-full flex-1 flex-col sm:px-4 sm:pt-1 md:px-8',
           APP_MAX_WIDTH,
           // Clear the floating iOS 26 Liquid Glass tab bar with balanced spacing
           // when keyboard is closed; dock cleanly above the keyboard once typing begins.
@@ -73,29 +74,25 @@ function CoachPage() {
         )}
       >
         {/* Tablet & desktop page header matching Tracker, Habits, and Progress */}
-        <div className="mb-3 hidden shrink-0 items-center justify-between gap-4 pt-1 sm:flex">
-          <div>
-            <h2 className="text-[32px] leading-none font-extrabold tracking-[-0.025em] text-(--color-foreground)">
-              Habit Coach
-            </h2>
-            <p className="mt-1.5 text-sm text-(--color-text-secondary)">
-              Advice grounded in Atomic Habits by James Clear
-            </p>
-          </div>
-          {conversation.messages.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => {
-                setIsLogScrolled(false);
-                conversation.clear();
-              }}
-              className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full bg-(--color-brand-primary)/12 px-3.5 text-xs font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/20 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/20 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
-            >
-              <SquarePen aria-hidden="true" className="size-3.5" />
-              New chat
-            </button>
-          ) : null}
-        </div>
+        <PageHeader
+          title="Habit Coach"
+          description="Advice grounded in Atomic Habits by James Clear"
+          action={
+            conversation.messages.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLogScrolled(false);
+                  conversation.clear();
+                }}
+                className={PAGE_HEADER_ACTION}
+              >
+                <SquarePen aria-hidden="true" className="size-3.5" />
+                New chat
+              </button>
+            ) : undefined
+          }
+        />
 
         <ChatBox
           conversation={conversation}

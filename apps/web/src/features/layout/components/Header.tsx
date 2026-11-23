@@ -27,6 +27,12 @@ const Header = memo(function Header() {
 
   return (
     <header className="sticky top-0 z-40 hidden sm:block">
+      {/* Frosted fade behind the pills so content scrolling underneath
+          blurs away instead of showing through between them. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-28 bg-(--color-background)/55 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] backdrop-blur-xl"
+      />
       <div
         className={cn(PAGE_CONTAINER, 'flex items-center justify-between py-5')}
       >

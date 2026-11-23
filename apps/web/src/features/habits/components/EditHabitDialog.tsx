@@ -161,7 +161,7 @@ function EditHabitTabs({
         <TabsContent
           value="edit"
           forceMount
-          className="col-start-1 row-start-1 flex min-h-0 flex-col pt-1 data-[state=inactive]:invisible sm:pt-2"
+          className="col-start-1 row-start-1 flex min-h-0 flex-col pt-1 data-[state=inactive]:invisible sm:pt-0"
         >
           <HabitForm
             formId={FORM_ID}
@@ -172,7 +172,7 @@ function EditHabitTabs({
         <TabsContent
           value="stats"
           forceMount
-          className="col-start-1 row-start-1 min-h-0 overflow-y-auto overscroll-contain pt-1 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] data-[state=inactive]:invisible max-sm:px-4 max-sm:pb-[max(env(safe-area-inset-bottom),1.5rem)] sm:pt-2"
+          className="col-start-1 row-start-1 min-h-0 overflow-y-auto overscroll-contain pt-1 [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] data-[state=inactive]:invisible max-sm:px-4 max-sm:pb-[max(env(safe-area-inset-bottom),1.5rem)] sm:pt-0"
         >
           {statsOpened ? <HabitStats habit={habit} /> : null}
         </TabsContent>

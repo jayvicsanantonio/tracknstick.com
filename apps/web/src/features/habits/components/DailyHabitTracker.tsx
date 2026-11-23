@@ -41,10 +41,11 @@ import {
 } from '@/features/habits/hooks/useDaySwipe';
 import NothingScheduled from '@/features/habits/components/NothingScheduled';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
+import PageHeader from '@/features/layout/components/PageHeader';
 import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
-import { PAGE_CONTAINER } from '@shared/constants/layout';
+import { PAGE_CONTAINER, PAGE_HEADER_ACTION } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { IOS_SPRING_TAP } from '@shared/utils/motion';
@@ -106,14 +107,15 @@ function TrackerSkeleton() {
     <div
       role="status"
       aria-label="Loading habits"
-      className="flex w-full flex-1 flex-col pt-1 pb-28 sm:pb-2 lg:my-auto lg:flex-none"
+      className="flex w-full flex-1 flex-col pt-1 pb-28 sm:pb-2"
     >
       {/* Tablet & desktop page title placeholder */}
-      <div className="mb-3.5 hidden h-9 items-center sm:flex">
+      <div className="mb-6 hidden min-h-14 flex-col justify-end gap-2 sm:flex">
         <div className="h-8 w-28 animate-pulse rounded-xl bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
+        <div className="h-4 w-64 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch lg:gap-5">
+      <div className="grid gap-5 sm:gap-6 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch">
         {/* Left column: Date capsule + centered segmented progress ring (+ streak tray on lg+) */}
         <div className="ios-tracker-card-lg flex flex-col lg:rounded-[26px] lg:p-4">
           <div className="pb-3.5 sm:pb-0">
@@ -147,7 +149,7 @@ function TrackerSkeleton() {
       </div>
 
       {/* Tablet & desktop Weekly Overview placeholder */}
-      <div className="ios-tracker-card mt-4 hidden rounded-[26px] px-6 py-4 sm:block">
+      <div className="ios-tracker-card mt-6 hidden rounded-[26px] px-6 py-4 sm:block">
         <div className="mb-2.5 flex items-center justify-between">
           <div className="h-3 w-36 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
           <div className="h-4 w-28 animate-pulse rounded-full bg-(--color-brand-primary)/10 motion-reduce:animate-none" />
@@ -441,52 +443,59 @@ export default function DailyHabitTracker() {
     : { x: swipeX, opacity: swipeOpacity };
 
   const desktopPageTitle = (
-    <div className="mb-3.5 hidden h-9 items-center justify-between gap-4 sm:flex">
-      <motion.p
-        key={mobileNavTitle}
-        aria-hidden="true"
-        initial={
-          prefersReducedMotion || !navDirection
-            ? false
-            : {
-                opacity: 0.3,
-                x: navDirection === 'next' ? 10 : -10,
+    <PageHeader
+      decorativeTitle
+      title={
+        <motion.span
+          key={mobileNavTitle}
+          initial={
+            prefersReducedMotion || !navDirection
+              ? false
+              : {
+                  opacity: 0.3,
+                  x: navDirection === 'next' ? 10 : -10,
+                }
+          }
+          animate={{ opacity: 1, x: 0 }}
+          transition={
+            prefersReducedMotion
+              ? { duration: 0 }
+              : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+          }
+          className="inline-block"
+        >
+          {mobileNavTitle}
+        </motion.span>
+      }
+      description="Check off the habits scheduled for this day"
+      action={
+        <AnimatePresence initial={false}>
+          {!isToday && dateContext ? (
+            <motion.button
+              key="desktop-today-pill"
+              type="button"
+              initial={
+                prefersReducedMotion ? false : { opacity: 0, scale: 0.88 }
               }
-        }
-        animate={{ opacity: 1, x: 0 }}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
-        }
-        className="text-[32px] leading-none font-extrabold tracking-[-0.025em] text-(--color-foreground)"
-      >
-        {mobileNavTitle}
-      </motion.p>
-      <AnimatePresence initial={false}>
-        {!isToday && dateContext ? (
-          <motion.button
-            key="desktop-today-pill"
-            type="button"
-            initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.88 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={
-              prefersReducedMotion
-                ? { opacity: 0, transition: { duration: 0 } }
-                : { opacity: 0, scale: 0.88, transition: { duration: 0.14 } }
-            }
-            transition={IOS_SPRING_TAP}
-            onClick={() => {
-              triggerHaptic('selection');
-              dateContext.setDate(new Date());
-            }}
-            className="cursor-pointer rounded-full bg-(--color-brand-primary)/14 px-3.5 py-1.5 text-xs font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/22 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/20 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
-          >
-            Back to Today
-          </motion.button>
-        ) : null}
-      </AnimatePresence>
-    </div>
+              animate={{ opacity: 1, scale: 1 }}
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0, transition: { duration: 0 } }
+                  : { opacity: 0, scale: 0.88, transition: { duration: 0.14 } }
+              }
+              transition={IOS_SPRING_TAP}
+              onClick={() => {
+                triggerHaptic('selection');
+                dateContext.setDate(new Date());
+              }}
+              className={PAGE_HEADER_ACTION}
+            >
+              Back to Today
+            </motion.button>
+          ) : null}
+        </AnimatePresence>
+      }
+    />
   );
 
   if (isInitialLoading) {
@@ -511,24 +520,27 @@ export default function DailyHabitTracker() {
         <div
           className={cn(
             PAGE_CONTAINER,
-            'flex flex-1 items-center justify-center max-sm:pb-28',
+            'flex flex-1 flex-col max-sm:pb-28 sm:pt-1',
           )}
         >
-          <div className="ios-tracker-card flex w-full max-w-md flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:px-8 sm:py-12">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
-              <WifiOff aria-hidden="true" className="size-5" />
-            </span>
-            <p role="alert" className="text-[15px] text-(--color-foreground)">
-              Your habits could not be loaded. Check your connection and try
-              again.
-            </p>
-            <Button
-              variant="outline"
-              className="h-11 rounded-full px-6"
-              onClick={() => void mutateHabits()}
-            >
-              Try again
-            </Button>
+          {desktopPageTitle}
+          <div className="flex flex-1 items-center justify-center">
+            <div className="ios-tracker-card flex w-full max-w-md flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:px-8 sm:py-12">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
+                <WifiOff aria-hidden="true" className="size-5" />
+              </span>
+              <p role="alert" className="text-[15px] text-(--color-foreground)">
+                Your habits could not be loaded. Check your connection and try
+                again.
+              </p>
+              <Button
+                variant="outline"
+                className="h-11 rounded-full px-6"
+                onClick={() => void mutateHabits()}
+              >
+                Try again
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -544,10 +556,13 @@ export default function DailyHabitTracker() {
         <div
           className={cn(
             PAGE_CONTAINER,
-            'flex flex-1 items-center justify-center max-sm:pb-28',
+            'flex flex-1 flex-col max-sm:pb-28 sm:pt-1',
           )}
         >
-          <NoHabits />
+          {desktopPageTitle}
+          <div className="flex flex-1 items-center justify-center">
+            <NoHabits />
+          </div>
         </div>
       </div>
     );
@@ -566,18 +581,12 @@ export default function DailyHabitTracker() {
           'flex flex-1 flex-col pt-1 max-sm:pb-28 sm:pb-2',
         )}
       >
-        <div className="flex flex-1 flex-col lg:my-auto lg:flex-none">
+        <div className="flex flex-1 flex-col">
           {desktopPageTitle}
 
-          <div className="grid gap-5 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch lg:gap-5">
+          <div className="grid gap-5 sm:gap-6 lg:grid-cols-[24rem_minmax(0,1fr)] lg:items-stretch">
             {/* Left column: open canvas on phone/tablet; anchored Progress Hero card with recessed streak tray on lg+ desktop */}
-            <div className="ios-tracker-card-lg relative flex flex-col lg:overflow-hidden lg:rounded-[26px] lg:p-4">
-              {/* Subtle desktop ambient aura matching ProgressHeroSummary & Coach */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-14 -right-14 hidden size-44 rounded-full bg-(--color-brand-primary)/16 blur-3xl lg:block"
-              />
-
+            <div className="ios-tracker-card-lg relative flex flex-col lg:overflow-clip lg:rounded-[26px] lg:p-4">
               <div className="relative z-10 pb-3.5 sm:pb-0">
                 <DailyHabitDate
                   transitionDirection={navDirection}
@@ -706,7 +715,7 @@ export default function DailyHabitTracker() {
                           <DailyHabitList />
                         </div>
 
-                        <p className="mt-3 hidden border-t border-(--color-brand-primary)/10 pt-2.5 text-center text-xs text-(--color-text-secondary)/65 lg:block">
+                        <p className="mt-3 hidden border-t border-(--color-brand-primary)/10 pt-2.5 text-center text-xs text-(--color-text-secondary)/65 sm:block">
                           Click a circle to check off · Hold for options · Use ←
                           → keys to switch days
                         </p>
@@ -717,10 +726,6 @@ export default function DailyHabitTracker() {
                         </p>
                         {swipeDayHint}
                       </div>
-                      <p className="mt-3.5 hidden text-center text-xs text-(--color-text-secondary)/65 sm:block lg:hidden">
-                        Click a circle to check off · Hold for options · Use ← →
-                        keys to switch days
-                      </p>
                     </section>
                   )}
                 </div>
@@ -729,7 +734,7 @@ export default function DailyHabitTracker() {
           </div>
 
           {/* Interactive 7-day "This Week" strip spanning full width on tablet & desktop */}
-          <div className="mt-4 hidden sm:block">
+          <div className="mt-6 hidden sm:block">
             <TrackerWeekStrip
               selectedDayRate={habits.length > 0 ? completionRate : null}
               isSelectedDayLoading={isDayLoading}

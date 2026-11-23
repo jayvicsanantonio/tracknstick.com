@@ -11,6 +11,7 @@ import ProgressChart from '@/features/progress/components/ProgressChart';
 import AchievementsSummary from '@/features/progress/components/AchievementsSummary';
 import ProgressAchievements from '@/features/progress/components/ProgressAchievements';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
+import PageHeader from '@/features/layout/components/PageHeader';
 import IosSheet from '@shared/components/ui/ios-sheet';
 import { DialogDescription, DialogTitle } from '@shared/components/ui/dialog';
 import { DateContext } from '@app/providers/DateContext';
@@ -87,14 +88,10 @@ const ProgressOverview = memo(function ProgressOverview() {
         )}
       >
         {/* Tablet & desktop page header matching phone Large Title hierarchy */}
-        <div className="mb-5 hidden sm:block">
-          <h2 className="text-[32px] leading-none font-extrabold tracking-[-0.025em] text-(--color-foreground)">
-            Progress
-          </h2>
-          <p className="mt-1.5 text-sm text-(--color-text-secondary)">
-            View your progress in one place
-          </p>
-        </div>
+        <PageHeader
+          title="Progress"
+          description="View your progress in one place"
+        />
 
         {loadFailed ? (
           <div className="flex flex-1 items-center justify-center py-8">
@@ -124,7 +121,10 @@ const ProgressOverview = memo(function ProgressOverview() {
             />
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-              <section aria-label="Calendar" className={PANEL}>
+              <section
+                aria-label="Calendar"
+                className={cn(PANEL, 'lg:flex lg:flex-col')}
+              >
                 <ProgressCalendar
                   insightData={historyData}
                   loading={isHistoryLoading}

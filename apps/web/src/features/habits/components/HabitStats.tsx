@@ -26,7 +26,7 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
 
   return (
     <div
-      className="grid gap-3 py-2 sm:gap-4 sm:py-2"
+      className="grid gap-3 py-2 sm:gap-4 sm:pt-1 sm:pb-2"
       aria-label="Habit Statistics"
     >
       {/* Streak Cards Grid */}
