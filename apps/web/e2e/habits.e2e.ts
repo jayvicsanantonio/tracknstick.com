@@ -139,3 +139,26 @@ test('opens the Coach page from the header navigation', async ({ page }) => {
     page.getByRole('textbox', { name: 'Ask the habit coach' }),
   ).toBeInViewport();
 });
+
+test('keeps the day arrows in place when a day is picked right after closing a dialog', async ({
+  page,
+}) => {
+  await addHabit(page, uniqueName('Stretch'));
+  const previous = page.getByRole('button', { name: 'Previous Date' });
+  const before = await previous.boundingBox();
+
+  // Closing the dialog hands focus back to the page while the click lands,
+  // which once scrolled the clipped Tracker card sideways.
+  await page.getByRole('button', { name: 'Add Habit', exact: true }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Add New Habit' }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await previous.click();
+  await expect(
+    page.getByRole('button', { name: 'Back to Today' }),
+  ).toBeVisible();
+
+  const after = await previous.boundingBox();
+  expect(after?.x).toBe(before?.x);
+});
