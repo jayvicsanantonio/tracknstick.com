@@ -29,6 +29,7 @@ import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import SwipeableHabitRow from '@/features/habits/components/SwipeableHabitRow';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
+import PageHeader from '@/features/layout/components/PageHeader';
 import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
@@ -198,14 +199,8 @@ function HabitsListSkeleton() {
     <div
       role="status"
       aria-label="Loading habits"
-      className="flex w-full flex-col gap-3 pt-1"
+      className="flex w-full flex-col gap-3 pt-1 sm:pt-0"
     >
-      {/* Tablet & desktop page title placeholder */}
-      <div className="mb-2 hidden flex-col gap-2 sm:flex">
-        <div className="h-8 w-28 animate-pulse rounded-xl bg-(--color-brand-primary)/12 motion-reduce:animate-none" />
-        <div className="h-4 w-56 animate-pulse rounded-full bg-(--color-brand-primary)/8 motion-reduce:animate-none" />
-      </div>
-
       {/* Controls row: search capsule + segmented filter */}
       <div className="mb-2 flex flex-col justify-between gap-2.5 sm:mb-3 sm:flex-row sm:items-center sm:gap-4">
         <div className="ios-tracker-card h-11 w-full animate-pulse rounded-2xl motion-reduce:animate-none sm:max-w-sm" />
@@ -277,6 +272,13 @@ const HabitsOverview = memo(function HabitsOverview() {
     );
   }, [habits, searchTerm, selectedTab]);
 
+  const pageHeader = (
+    <PageHeader
+      title="Habits"
+      description="Manage all your habits in one place"
+    />
+  );
+
   if (isLoading) {
     return (
       <div className="flex h-full flex-1 flex-col">
@@ -284,9 +286,10 @@ const HabitsOverview = memo(function HabitsOverview() {
         <div
           className={cn(
             PAGE_CONTAINER,
-            'flex flex-1 max-sm:pb-28 sm:pt-1 sm:pb-6',
+            'flex flex-1 flex-col max-sm:pb-28 sm:pt-1 sm:pb-6',
           )}
         >
+          {pageHeader}
           <HabitsListSkeleton />
         </div>
       </div>
@@ -300,26 +303,29 @@ const HabitsOverview = memo(function HabitsOverview() {
         <div
           className={cn(
             PAGE_CONTAINER,
-            'flex flex-1 items-center justify-center max-sm:pb-28',
+            'flex flex-1 flex-col max-sm:pb-28 sm:pt-1',
           )}
         >
-          <div className="ios-tracker-card flex w-full max-w-md flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:px-8 sm:py-12">
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
-              <WifiOff aria-hidden="true" className="size-5" />
-            </span>
-            <p role="alert" className="text-[15px] text-(--color-foreground)">
-              Your habits could not be loaded. Check your connection and try
-              again.
-            </p>
-            {retry ? (
-              <Button
-                variant="outline"
-                className="h-11 rounded-full px-6"
-                onClick={() => void retry()}
-              >
-                Try again
-              </Button>
-            ) : null}
+          {pageHeader}
+          <div className="flex flex-1 items-center justify-center">
+            <div className="ios-tracker-card flex w-full max-w-md flex-col items-center gap-4 rounded-[26px] px-6 py-10 text-center sm:px-8 sm:py-12">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
+                <WifiOff aria-hidden="true" className="size-5" />
+              </span>
+              <p role="alert" className="text-[15px] text-(--color-foreground)">
+                Your habits could not be loaded. Check your connection and try
+                again.
+              </p>
+              {retry ? (
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-full px-6"
+                  onClick={() => void retry()}
+                >
+                  Try again
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -337,14 +343,7 @@ const HabitsOverview = memo(function HabitsOverview() {
         )}
       >
         {/* Tablet & desktop page header matching phone Large Title hierarchy */}
-        <div className="mb-5 hidden sm:block">
-          <h2 className="text-[32px] leading-none font-extrabold tracking-[-0.025em] text-(--color-foreground)">
-            Habits
-          </h2>
-          <p className="mt-1.5 text-sm text-(--color-text-secondary)">
-            Manage all your habits in one place
-          </p>
-        </div>
+        {pageHeader}
 
         {/* Search capsule + segmented filter matching phone across all viewports */}
         <div className="mb-5 flex flex-col justify-between gap-2.5 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
