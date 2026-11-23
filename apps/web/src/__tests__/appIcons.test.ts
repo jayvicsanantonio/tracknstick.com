@@ -186,22 +186,11 @@ describe('home-screen icons', () => {
     'apple-touch-icon.png',
     'maskable-192x192.png',
     'maskable-512x512.png',
-  ])('%s fills its square to the corners with the emerald glass', (file) => {
-    // The corner is lit by the glass's edge highlight, so it is the emerald
-    // made a little lighter rather than the plain fill.
+  ])('%s fills its square to the corners with the plain emerald', (file) => {
     const [red, green, blue] = topLeftPixel(
       path.join(PUBLIC, 'icons', file),
     ).map((channel) => channel.toString(16).padStart(2, '0'));
-    const corner = `#${red}${green}${blue}`;
-    const { hue, saturation } = hueAndSaturation(corner);
-    expect(hue, corner).toBeCloseTo(
-      hueAndSaturation(backgroundColour()).hue,
-      -1,
-    );
-    expect(saturation, corner).toBeGreaterThanOrEqual(0.5);
-    expect(lightness(corner), corner).toBeGreaterThanOrEqual(
-      lightness(backgroundColour()),
-    );
+    expect(`#${red}${green}${blue}`).toBe(backgroundColour());
   });
 
   // iOS cuts its own rounded shape from the icon and fills any transparent
@@ -230,12 +219,8 @@ describe('favicon', () => {
     expect(lightness(fill), fill).toBeLessThanOrEqual(0.22);
   });
 
-  // Liquid glass: light catches the rounded edge of the glass, brightest
-  // at the top left and again at the bottom right.
-  it('lights the edge of the glass with a white specular rim', () => {
-    expect(faviconSvg()).toMatch(/<path [^>]*fill="url\(#glass-rim\)"/);
-    const stops = gradientStops('glass-rim');
-    expect(new Set(stops)).toEqual(new Set(['#ffffff']));
+  it('lays no highlight or blur over the emerald', () => {
+    expect(faviconSvg()).not.toMatch(/glass|<filter|#ffffff/);
   });
 
   it('rounds its corners in the proportion iOS uses for app icons', () => {
