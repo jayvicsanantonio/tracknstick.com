@@ -1,11 +1,12 @@
 // Theme utility functions for CSS class toggling, system appearance resolution,
-// persistence, and syncing iOS status-bar chrome (<meta name="theme-color"> & color-scheme).
+// persistence, and syncing iOS status-bar chrome (<meta name="theme-color"> & color-scheme) and the favicon.
 
 import { ThemeMode, ThemePreference } from '@shared/types/theme';
 import {
   THEME_STORAGE_KEY,
   DEFAULT_THEME_PREFERENCE,
   THEME_CHROME_COLOR,
+  THEME_FAVICON,
 } from '@shared/constants/theme';
 
 export function getSystemTheme(): ThemeMode {
@@ -30,6 +31,11 @@ export function updateThemeClass(mode: ThemeMode): void {
   );
   if (meta) {
     meta.content = THEME_CHROME_COLOR[mode];
+  }
+
+  const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+  if (favicon) {
+    favicon.setAttribute('href', THEME_FAVICON[mode]);
   }
 }
 

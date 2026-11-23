@@ -7,7 +7,7 @@ import { ReactNode } from 'react';
 
 import ThemeProvider from '@app/providers/ThemeProvider';
 import { useTheme } from '@shared/hooks/useTheme';
-import { THEME_CHROME_COLOR } from '@shared/constants/theme';
+import { THEME_CHROME_COLOR, THEME_FAVICON } from '@shared/constants/theme';
 
 interface WrapperProps {
   children: ReactNode;
@@ -38,6 +38,7 @@ describe('useTheme', () => {
 
   afterEach(() => {
     document.querySelector('meta[name="theme-color"]')?.remove();
+    document.querySelector('link[rel="icon"]')?.remove();
     vi.restoreAllMocks();
   });
 
@@ -114,5 +115,22 @@ describe('useTheme', () => {
     expect(document.documentElement.classList.contains('light')).toBe(true);
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(meta.content).toBe(THEME_CHROME_COLOR.light);
+  });
+
+  it('swaps the browser tab favicon to match the theme', () => {
+    const icon = document.createElement('link');
+    icon.rel = 'icon';
+    document.head.append(icon);
+    mockSystemDark(true);
+
+    const { result } = renderHook(() => useTheme(), { wrapper });
+
+    expect(icon.getAttribute('href')).toBe(THEME_FAVICON.dark);
+
+    act(() => {
+      result.current.setMode('light');
+    });
+
+    expect(icon.getAttribute('href')).toBe(THEME_FAVICON.light);
   });
 });

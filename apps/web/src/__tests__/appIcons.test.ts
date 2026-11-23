@@ -1,10 +1,11 @@
 // Checks the app icons: every icon a manifest or index.html names exists at its declared size,
-// the home-screen icons are opaque squares of the icon's dark emerald, and the favicon is the same icon.
+// the home-screen icons are opaque squares of dark emerald, and each theme has a favicon in its own colours.
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { inflateSync } from 'node:zlib';
 import { describe, it, expect } from 'vitest';
+import { THEME_FAVICON } from '@shared/constants/theme';
 
 const WEB_ROOT = path.resolve(__dirname, '../..');
 const PUBLIC = path.join(WEB_ROOT, 'public');
@@ -71,35 +72,48 @@ function hueAndSaturation(hex: string): { hue: number; saturation: number } {
   return { hue: (hue * 60 + 360) % 360, saturation };
 }
 
-/** The favicon's source, lower-cased. */
-function faviconSvg(): string {
-  return readFileSync(
-    path.join(PUBLIC, 'icons/favicon.svg'),
-    'utf8',
-  ).toLowerCase();
+/** An SVG icon's source, lower-cased; the app icon's own SVG unless named. */
+function faviconSvg(file = 'icons/favicon.svg'): string {
+  return readFileSync(path.join(PUBLIC, file), 'utf8').toLowerCase();
 }
 
-/** The stops of the favicon's gradient with the given id, in order, as `#rrggbb`. */
-function gradientStops(id: string): string[] {
+/** The stops of an SVG icon's gradient with the given id, in order, as `#rrggbb`. */
+function gradientStops(id: string, file?: string): string[] {
   const gradient = new RegExp(
     `<(linear|radial)gradient id="${id}"[^>]*>([\\s\\S]*?)</\\1gradient>`,
-  ).exec(faviconSvg());
+  ).exec(faviconSvg(file));
   expect(gradient, `gradient #${id}`).not.toBeNull();
   return [
     ...(gradient?.[2] ?? '').matchAll(/stop-color="(#[0-9a-f]{6})"/g),
   ].map((match) => match[1]);
 }
 
-/** The icon's solid background colour, as `#rrggbb`. */
-function backgroundColour(): string {
-  const fill = /<rect [^>]*fill="(#[0-9a-f]{6})"/.exec(faviconSvg())?.[1];
+/** An SVG icon's solid background colour, as `#rrggbb`. */
+function backgroundColour(file?: string): string {
+  const fill = /<rect [^>]*fill="(#[0-9a-f]{6})"/.exec(faviconSvg(file))?.[1];
   expect(fill, 'background fill').toBeDefined();
   return fill ?? '';
 }
 
 /** The `#rrggbb` of a light-theme colour token in src/styles/index.css. */
 function lightThemeColour(token: string): string {
-  const css = readFileSync(path.join(WEB_ROOT, 'src/styles/index.css'), 'utf8');
+  return themeColour('light', token);
+}
+
+/**
+ * The `#rrggbb` of a colour token in src/styles/index.css, from the light
+ * theme's `:root` block or the dark theme's `.dark` block that follows it.
+ */
+function themeColour(theme: 'light' | 'dark', token: string): string {
+  const stylesheet = readFileSync(
+    path.join(WEB_ROOT, 'src/styles/index.css'),
+    'utf8',
+  );
+  const darkBlock = stylesheet.indexOf('.dark {');
+  const css =
+    theme === 'light'
+      ? stylesheet.slice(0, darkBlock)
+      : stylesheet.slice(darkBlock);
   const match = new RegExp(
     `--color-${token}: hsl\\((\\d+), (\\d+)%, (\\d+)%\\)`,
   ).exec(css);
@@ -174,10 +188,12 @@ describe('index.html', () => {
     expect(pngSize(path.join(PUBLIC, href ?? ''))).toBe('180x180');
   });
 
-  it('links an SVG favicon that exists', () => {
+  it('links one of the themed SVG favicons, which all exist', () => {
     const href = /rel="icon" href="([^"]+\.svg)"/.exec(html)?.[1];
-    expect(href).toBeDefined();
-    expect(existsSync(path.join(PUBLIC, href ?? ''))).toBe(true);
+    expect(Object.values(THEME_FAVICON)).toContain(href);
+    for (const favicon of Object.values(THEME_FAVICON)) {
+      expect(existsSync(path.join(PUBLIC, favicon)), favicon).toBe(true);
+    }
   });
 });
 
@@ -282,5 +298,57 @@ describe('favicon', () => {
     expect(icoSizes(path.join(PUBLIC, 'icons/favicon.ico')).sort()).toEqual([
       16, 32, 48,
     ]);
+  });
+});
+
+// The browser tab's favicon is the Daily Tracker's completed progress ring
+// as each theme draws it, on that theme's background: all pink in the light
+// theme, emerald on near black in the dark one.
+describe.each([
+  {
+    theme: 'light' as const,
+    ring: ['brand-text-light', 'brand-primary', 'brand-secondary'],
+    check: ['brand-primary', 'brand-primary', 'brand-text-light'],
+  },
+  {
+    theme: 'dark' as const,
+    ring: ['brand-text', 'brand-primary', 'brand-tertiary'],
+    check: ['brand-primary', 'brand-primary', 'brand-text'],
+  },
+])('the $theme theme favicon', ({ theme, ring, check }) => {
+  const file = THEME_FAVICON[theme];
+
+  it("fills its rounded square with the theme's background", () => {
+    expect(backgroundColour(file)).toBe(themeColour(theme, 'background'));
+    const rx = Number(/<rect [^>]*rx="([\d.]+)"/.exec(faviconSvg(file))?.[1]);
+    expect(rx / 512).toBeCloseTo(0.2237, 2);
+  });
+
+  it("draws the ring in the theme's brand gradient", () => {
+    expect(gradientStops('ring', file)).toEqual(
+      ring.map((token) => themeColour(theme, token)),
+    );
+  });
+
+  it("draws the check in the theme's brand gradient", () => {
+    expect(gradientStops('check', file)).toEqual(
+      check.map((token) => themeColour(theme, token)),
+    );
+  });
+
+  it('draws the body of the check at 3:1 contrast or more on the dial', () => {
+    const [body] = gradientStops('check', file);
+    for (const dial of gradientStops('dial', file)) {
+      expect(
+        contrastRatio(body, dial),
+        `${body} on ${dial}`,
+      ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('sets the dial apart from the background', () => {
+    for (const dial of gradientStops('dial', file)) {
+      expect(dial).not.toBe(backgroundColour(file));
+    }
   });
 });
