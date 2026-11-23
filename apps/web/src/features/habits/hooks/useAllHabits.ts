@@ -11,6 +11,7 @@ import {
   mutateHabitLists,
 } from '@/features/habits/api';
 import { useAuth } from '@clerk/clerk-react';
+import { useOfflineSession } from '@shared/hooks/useOfflineSession';
 
 interface UseAllHabitsReturn {
   habits: Habit[];
@@ -30,7 +31,11 @@ export function useAllHabits({
   enabled = true,
 }: UseAllHabitsOptions = {}): UseAllHabitsReturn {
   const { toast } = useToast();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn: clerkSignedIn } = useAuth();
+  // Offline, Clerk cannot load; the last visit's user is answered from the
+  // service worker's cache.
+  const offline = useOfflineSession();
+  const isSignedIn = clerkSignedIn === true || offline;
 
   const {
     data: fetchedHabits,

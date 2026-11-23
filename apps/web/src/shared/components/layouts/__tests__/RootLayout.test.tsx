@@ -3,12 +3,41 @@
 // test made the gate look covered while RootLayout itself was mocked away in
 // every suite.
 
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { act, render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import RootLayout from '../RootLayout';
 
 const mockAuth = vi.hoisted(() => ({ isSignedIn: false }));
+// The offline session as a store, so a test can change it after render the
+// way a dropped or returning connection does.
+const mockOffline = vi.hoisted(() => {
+  const listeners = new Set<() => void>();
+  const store = {
+    value: false,
+    set: (value: boolean) => {
+      store.value = value;
+      listeners.forEach((listener) => listener());
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+  return store;
+});
+const mockReloadPage = vi.hoisted(() => vi.fn());
+
+vi.mock('@shared/hooks/useOfflineSession', async () => {
+  const { useSyncExternalStore } = await import('react');
+  return {
+    useOfflineSession: () =>
+      useSyncExternalStore(mockOffline.subscribe, () => mockOffline.value),
+  };
+});
+vi.mock('@shared/utils/reloadPage', () => ({
+  reloadPage: mockReloadPage,
+}));
 
 vi.mock('@clerk/clerk-react', () => ({
   ClerkLoading: () => null,
@@ -100,5 +129,59 @@ describe('RootLayout auth gate', () => {
     renderLayout();
     expect(await screen.findByTestId('welcome')).toBeInTheDocument();
     expect(screen.queryByTestId('mobile-tab-bar')).not.toBeInTheDocument();
+  });
+
+  describe('offline, before Clerk can load', () => {
+    afterEach(() => {
+      mockOffline.value = false;
+      mockReloadPage.mockClear();
+    });
+
+    it("shows the last visit's user the routed content and tab bar", () => {
+      mockAuth.isSignedIn = false;
+      mockOffline.value = true;
+      renderLayout();
+
+      expect(screen.getByTestId('outlet')).toBeInTheDocument();
+      expect(screen.getByTestId('mobile-tab-bar')).toBeInTheDocument();
+    });
+
+    it('reloads when the connection returns, so Clerk can load', () => {
+      mockOffline.value = true;
+      renderLayout();
+      expect(mockReloadPage).not.toHaveBeenCalled();
+
+      act(() => {
+        window.dispatchEvent(new Event('online'));
+      });
+
+      expect(mockReloadPage).toHaveBeenCalledTimes(1);
+    });
+
+    it('still reloads when the page has seen the connection return first', () => {
+      mockOffline.value = true;
+      renderLayout();
+
+      // In a browser, React re-renders between the 'online' event's
+      // listeners, so the offline session can end before the reload's
+      // listener runs.
+      act(() => mockOffline.set(false));
+      act(() => {
+        window.dispatchEvent(new Event('online'));
+      });
+
+      expect(mockReloadPage).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not reload on a reconnect while Clerk is in charge', () => {
+      mockAuth.isSignedIn = true;
+      renderLayout();
+
+      act(() => {
+        window.dispatchEvent(new Event('online'));
+      });
+
+      expect(mockReloadPage).not.toHaveBeenCalled();
+    });
   });
 });

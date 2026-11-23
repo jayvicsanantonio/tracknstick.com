@@ -16,6 +16,7 @@ import {
 } from '@/features/habits/api';
 import { achievementApi } from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
+import { useOfflineSession } from '@shared/hooks/useOfflineSession';
 
 /** Revalidates cached progress summary and history panels after habit mutations. */
 const mutateProgressCaches = () =>
@@ -48,7 +49,11 @@ export function useHabits(): UseHabitsReturn {
   > | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
   const { date, setDate, timeZone } = useDate();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn: clerkSignedIn } = useAuth();
+  // Offline, Clerk cannot load; the last visit's user is answered from the
+  // service worker's cache.
+  const offline = useOfflineSession();
+  const isSignedIn = clerkSignedIn === true || offline;
 
   // Check for new achievements
   const checkAchievements = useCallback(async () => {
