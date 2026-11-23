@@ -127,11 +127,14 @@ content.
 
 ### PWA
 
-Vite PWA plugin with Workbox (`generateSW`, `autoUpdate`). The build is
-precached, and Google Fonts use CacheFirst. Requests under `/api/` at the
-build's `VITE_API_HOST` use NetworkFirst, in a cache that
-`useClearApiCacheOnUserChange` empties when the signed-in user changes; a build
-without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
+Vite PWA plugin with Workbox (`generateSW`, `prompt`): a new version waits until
+the user chooses Reload in the update toast that `src/main.tsx` shows. The build
+is precached, the habit sounds included. Requests under `/api/` at the build's
+`VITE_API_HOST` use NetworkFirst with a 3-second network timeout, in a cache
+that `useClearApiCacheOnUserChange` empties when the signed-in user changes; a
+build without `VITE_API_HOST` has no API cache. SW filename is `sw.js`.
+`public/_headers` lets browsers keep `/assets/*` for a year and has them check
+`sw.js` and `manifest.json` with the server on every load.
 
 Offline, Clerk cannot load its script or the session, so its `SignedIn` shows
 nothing. `useOfflineSession` is true while the device is offline, Clerk has not

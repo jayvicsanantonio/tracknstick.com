@@ -52,13 +52,17 @@ export default defineConfig({
     {
       name: 'signed in',
       dependencies: ['setup'],
-      testIgnore: [/signedOut\.e2e\.ts/, /offline\.e2e\.ts/],
+      testIgnore: [
+        /signedOut\.e2e\.ts/,
+        /offline\.e2e\.ts/,
+        /serviceWorker\.e2e\.ts/,
+      ],
       use: { ...devices['Desktop Chrome'], storageState: AUTH_FILE },
     },
     {
-      name: 'offline',
+      name: 'production build',
       dependencies: ['setup'],
-      testMatch: /offline\.e2e\.ts/,
+      testMatch: [/offline\.e2e\.ts/, /serviceWorker\.e2e\.ts/],
       use: {
         ...devices['Desktop Chrome'],
         storageState: AUTH_FILE,
