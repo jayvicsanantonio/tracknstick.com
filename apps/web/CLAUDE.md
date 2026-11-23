@@ -107,10 +107,10 @@ medallion again, small and in the theme's brand colour.
 ### Theming
 
 Both palettes are declared in `src/styles/index.css` (`:root` for light, `.dark`
-for dark). `public/applyStoredTheme.js`, loaded from `index.html`, applies the
-stored class before first paint; `ThemeProvider` only selects the mode and
-persists it. There is no JavaScript token map — adding a colour means adding it
-to both CSS blocks.
+for dark). `public/applyStoredTheme.js`, loaded from `index.html` after the
+launch splash, applies the stored class before the app renders; `ThemeProvider`
+only selects the mode and persists it. There is no JavaScript token map — adding
+a colour means adding it to both CSS blocks.
 
 ### Security Headers
 

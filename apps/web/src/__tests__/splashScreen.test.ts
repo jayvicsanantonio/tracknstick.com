@@ -46,6 +46,16 @@ describe('the launch splash in index.html', () => {
     expect(splash).toBeLessThan(html.indexOf('<div id="root">'));
   });
 
+  // A script in <head> stops the parser until it has loaded, so the splash
+  // comes first. It looks the same in every theme; only the app behind it,
+  // which renders after the theme script has run, needs the theme.
+  it('paints before the theme script, which runs before the app renders', () => {
+    const splash = html.indexOf('<div id="splash"');
+    const themeScript = html.indexOf('<script src="/applyStoredTheme.js">');
+    expect(themeScript).toBeGreaterThan(splash);
+    expect(themeScript).toBeLessThan(html.indexOf('<div id="root">'));
+  });
+
   it('tells assistive technology the app is loading', () => {
     expect(html).toMatch(
       /<div id="splash"[^>]*role="status"[^>]*aria-label="Loading Track N(&apos;|')? Stick"/,

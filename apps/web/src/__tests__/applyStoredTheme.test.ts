@@ -1,4 +1,4 @@
-// Runs public/applyStoredTheme.js, which index.html loads before first paint.
+// Runs public/applyStoredTheme.js, which index.html loads before the app renders.
 // It applies an explicit stored theme, or resolves the OS colour scheme when set
 // to system / unset / invalid, and keeps <meta name="theme-color"> and the favicon synced.
 
@@ -64,7 +64,7 @@ describe('applyStoredTheme.js', () => {
   );
 
   it.each(['light', 'dark'] as const)(
-    'shows the %s theme favicon before first paint',
+    'shows the %s theme favicon before the app renders',
     (mode) => {
       const icon = document.createElement('link');
       icon.rel = 'icon';

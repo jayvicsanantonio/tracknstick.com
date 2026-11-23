@@ -1,4 +1,4 @@
-// Applies the stored theme before first paint; index.html loads it, blocking, in <head>.
+// Applies the stored theme before the app renders; index.html loads it, blocking, after the launch splash.
 // Defaults to the device's system colour scheme when no explicit theme has been stored,
 // and syncs <meta name="theme-color"> and color-scheme so iOS status bars match seamlessly,
 // and the favicon so the browser tab shows the theme's icon.

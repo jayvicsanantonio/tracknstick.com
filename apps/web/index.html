@@ -22,9 +22,6 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>Track N' Stick</title>
-    <!-- Applies the stored theme before first paint. A file of its own, not
-         an inline script, because the Content-Security-Policy blocks those. -->
-    <script src="/applyStoredTheme.js"></script>
     <!-- iOS shows one of these while an installed app opens: the splash's
          emerald and dial, where the splash below draws them. Written by
          scripts/generateIcons.mjs (pnpm icons); edit the script, not these. -->
@@ -353,6 +350,12 @@
       </svg>
       <p class="splash-wordmark" aria-hidden="true">Track N' Stick</p>
     </div>
+    <!-- Applies the stored theme before the app renders. It comes after the
+         splash, which looks the same in every theme, so that the parser,
+         which stops here until the script has loaded, paints the splash
+         first. A file of its own, not an inline script, because the
+         Content-Security-Policy blocks those. -->
+    <script src="/applyStoredTheme.js"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,6 +1,8 @@
 // Shared fallback UI for both error surfaces
 // Rendered by the class boundary and by the router's error element
 
+import { useHideSplash } from '@shared/hooks/useHideSplash';
+
 interface ErrorFallbackProps {
   title?: string;
   description?: string;
@@ -10,6 +12,10 @@ export function ErrorFallback({
   title = 'Something went wrong',
   description = 'Please try refreshing the page.',
 }: ErrorFallbackProps) {
+  // An error during the first render skips RootLayout's hand-off, which would
+  // leave the launch splash over this screen.
+  useHideSplash(true);
+
   return (
     <div className="flex flex-col items-center justify-center py-16">
       <h1 className="text-2xl font-bold text-(--color-destructive)">{title}</h1>
