@@ -61,9 +61,11 @@ describe('Header Component', () => {
     const habitsLink = screen.getByRole('link', { name: /habits overview/i });
     const dailyLink = screen.getByRole('link', { name: /daily tracker/i });
 
-    // Active link should have specific active classes
-    expect(habitsLink).toHaveClass('bg-(--color-brand-secondary)');
-    expect(dailyLink).not.toHaveClass('bg-(--color-brand-secondary)');
+    // Active link carries aria-current="page" and renders the Liquid Glass active lens
+    expect(habitsLink).toHaveAttribute('aria-current', 'page');
+    expect(habitsLink.querySelector('.ios-liquid-lens')).toBeInTheDocument();
+    expect(dailyLink).not.toHaveAttribute('aria-current', 'page');
+    expect(dailyLink.querySelector('.ios-liquid-lens')).not.toBeInTheDocument();
   });
 
   it('shows a text label on each navigation link', () => {
@@ -111,9 +113,9 @@ describe('Header Component', () => {
       </ThemeProvider>,
     );
 
-    expect(screen.getByRole('link', { name: 'Habit Coach' })).toHaveClass(
-      'bg-(--color-brand-secondary)',
-    );
+    const coachLink = screen.getByRole('link', { name: 'Habit Coach' });
+    expect(coachLink).toHaveAttribute('aria-current', 'page');
+    expect(coachLink.querySelector('.ios-liquid-lens')).toBeInTheDocument();
   });
 
   it('has no separate coach button', () => {

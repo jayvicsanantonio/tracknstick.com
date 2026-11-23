@@ -44,9 +44,8 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Content
         data-slot="alert-dialog-content"
         className={cn(
-          // Desktop: centered dialog. Mobile (< sm): native iOS Action Sheet anchored
-          // above the home indicator with rounded-3xl frosted card and smooth slide-up.
-          'fixed z-50 grid w-full gap-4 border border-(--color-border-primary) bg-(--color-card) text-(--color-card-foreground) shadow-2xl duration-200 max-sm:inset-x-3 max-sm:bottom-[max(env(safe-area-inset-bottom),0.75rem)] max-sm:w-auto max-sm:rounded-3xl max-sm:bg-(--color-surface)/95 max-sm:p-5 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-150 max-sm:data-[state=closed]:animate-out max-sm:data-[state=closed]:fade-out-0 max-sm:data-[state=closed]:slide-out-to-bottom-8 max-sm:data-[state=open]:animate-in max-sm:data-[state=open]:fade-in-0 max-sm:data-[state=open]:slide-in-from-bottom-8 sm:top-[50%] sm:left-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl sm:p-6 sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:animate-in sm:data-[state=open]:fade-in-0 sm:data-[state=open]:zoom-in-95 dark:max-sm:bg-(--color-surface-secondary)/95',
+          // Unified brand-harmonized frosted surface: centered modal on sm+, bottom Action Sheet on phones.
+          'ios-action-sheet-surface fixed z-50 grid w-full gap-4 text-(--color-card-foreground) duration-200 max-sm:inset-x-3 max-sm:bottom-[max(env(safe-area-inset-bottom),0.75rem)] max-sm:w-auto max-sm:rounded-3xl max-sm:p-5 max-sm:data-[state=closed]:animate-out max-sm:data-[state=closed]:fade-out-0 max-sm:data-[state=closed]:slide-out-to-bottom-8 max-sm:data-[state=open]:animate-in max-sm:data-[state=open]:fade-in-0 max-sm:data-[state=open]:slide-in-from-bottom-8 sm:top-[50%] sm:left-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-[26px] sm:p-6 sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:animate-in sm:data-[state=open]:fade-in-0 sm:data-[state=open]:zoom-in-95',
           className,
         )}
         {...props}
@@ -76,7 +75,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        'flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end sm:gap-2 max-sm:[&>button]:h-13 max-sm:[&>button]:rounded-2xl max-sm:[&>button]:text-base max-sm:[&>button]:font-semibold',
+        'flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end sm:gap-2 max-sm:[&>button]:h-13 max-sm:[&>button]:rounded-2xl max-sm:[&>button]:text-base max-sm:[&>button]:font-semibold sm:[&>button]:h-10 sm:[&>button]:rounded-full sm:[&>button]:px-5 sm:[&>button]:font-semibold',
         className,
       )}
       {...props}

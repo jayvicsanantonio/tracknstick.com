@@ -343,7 +343,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
           : `${displayRate}%`
       }
       data-connected={isConnected ? 'true' : 'false'}
-      className="flex shrink-0 flex-col items-center justify-center sm:mt-4 sm:mb-6 lg:mt-6 lg:mb-6"
+      className="flex shrink-0 flex-col items-center justify-center"
     >
       <motion.div
         animate={
@@ -356,7 +356,7 @@ const DailyHabitProgressIndicator = memo(function DailyHabitProgressIndicator({
             ? { duration: 0 }
             : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
         }
-        className="relative size-56 min-[390px]:size-64 sm:size-68 md:size-72"
+        className="relative size-56 min-[390px]:size-64 sm:size-68 md:size-72 lg:size-52"
       >
         <svg
           className="h-full w-full overflow-visible"

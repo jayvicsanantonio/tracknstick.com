@@ -51,8 +51,8 @@ export default function AddHabitDialog() {
       mobileHeader={mobileHeader}
     >
       {/* Keep a single accessible DialogTitle for both mobile and desktop */}
-      <DialogHeader className="max-sm:sr-only">
-        <DialogTitle className="text-2xl font-bold text-(--color-brand-tertiary) dark:text-(--color-brand-text-light)">
+      <DialogHeader className="max-sm:sr-only sm:pb-2">
+        <DialogTitle className="text-2xl font-extrabold tracking-[-0.02em] text-(--color-foreground)">
           Add New Habit
         </DialogTitle>
         <DialogDescription className="sr-only">

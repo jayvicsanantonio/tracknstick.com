@@ -31,19 +31,14 @@ describe('CoachPage', () => {
     expect(document.title).toContain('Habit Coach');
   });
 
-  it('shows its title and subtitle in a card header, as Habits and Progress do', () => {
-    const { container } = renderPage();
+  it('shows its title and subtitle in the page header, as Habits and Progress do', () => {
+    renderPage();
 
-    const header = container.querySelector<HTMLElement>(
-      '[data-slot="card-header"]',
-    );
-    expect(header).not.toBeNull();
-    const title = header?.querySelector('[data-slot="card-title"]');
-    expect(title).toHaveTextContent('Habit Coach');
     expect(
-      within(header!).getByText(
-        'Advice grounded in Atomic Habits by James Clear',
-      ),
+      screen.getByRole('heading', { level: 2, name: 'Habit Coach' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Advice grounded in Atomic Habits by James Clear'),
     ).toBeInTheDocument();
   });
 

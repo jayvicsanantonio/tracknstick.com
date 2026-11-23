@@ -24,7 +24,7 @@ const MonthNavButton = memo(function MonthNavButton({
       size="icon"
       aria-label={ariaLabel}
       disabled={disabled}
-      className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-transform hover:bg-(--color-brand-primary)/18 active:scale-92 disabled:opacity-35 sm:rounded-full"
+      className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 disabled:opacity-35"
     >
       {children}
     </Button>

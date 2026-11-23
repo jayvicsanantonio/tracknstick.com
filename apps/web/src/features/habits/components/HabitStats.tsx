@@ -26,32 +26,32 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
 
   return (
     <div
-      className="grid gap-3 py-2 sm:gap-4 sm:py-4"
+      className="grid gap-3 py-2 sm:gap-4 sm:py-2"
       aria-label="Habit Statistics"
     >
       {/* Streak Cards Grid */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {/* Current Streak Card */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-(--color-border-primary) bg-(--color-card) p-4 text-center shadow-md sm:p-6"
+          className="ios-tracker-card flex flex-col items-center justify-center space-y-2 rounded-[20px] p-4 text-center sm:p-5"
         >
           <div
             aria-hidden="true"
-            className="rounded-full bg-(--color-brand-light) p-2 sm:p-3"
+            className="flex size-12 items-center justify-center rounded-[14px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset"
           >
-            <Trophy className="h-8 w-8 text-(--color-brand-primary) sm:h-10 sm:w-10" />
+            <Trophy className="size-6" />
           </div>
-          <h3 className="text-sm font-medium text-(--color-brand-text) sm:text-base">
+          <h3 className="text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
             Current Streak
           </h3>
           <div className="flex items-baseline justify-center">
-            <span className="text-3xl font-bold text-(--color-brand-text) sm:text-4xl">
+            <span className="text-3xl font-extrabold tracking-[-0.03em] text-(--color-foreground) tabular-nums sm:text-4xl">
               {habitStats.streak}
             </span>
-            <span className="ml-1 text-xs text-(--color-text-secondary) sm:text-sm">
+            <span className="ml-1 text-xs font-medium text-(--color-text-secondary) sm:text-sm">
               {plural(habitStats.streak, 'day')}
             </span>
           </div>
@@ -61,23 +61,23 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-(--color-border-primary) bg-(--color-card) p-4 text-center shadow-md sm:p-6"
+          transition={{ duration: 0.3, delay: 0.08 }}
+          className="ios-tracker-card flex flex-col items-center justify-center space-y-2 rounded-[20px] p-4 text-center sm:p-5"
         >
           <div
             aria-hidden="true"
-            className="rounded-full bg-(--color-brand-light) p-2 sm:p-3"
+            className="flex size-12 items-center justify-center rounded-[14px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset"
           >
-            <Award className="h-8 w-8 text-(--color-brand-primary) sm:h-10 sm:w-10" />
+            <Award className="size-6" />
           </div>
-          <h3 className="text-sm font-medium text-(--color-brand-text) sm:text-base">
+          <h3 className="text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
             Longest Streak
           </h3>
           <div className="flex items-baseline justify-center">
-            <span className="text-3xl font-bold text-(--color-brand-text) sm:text-4xl">
+            <span className="text-3xl font-extrabold tracking-[-0.03em] text-(--color-foreground) tabular-nums sm:text-4xl">
               {habitStats.longestStreak}
             </span>
-            <span className="ml-1 text-xs text-(--color-text-secondary) sm:text-sm">
+            <span className="ml-1 text-xs font-medium text-(--color-text-secondary) sm:text-sm">
               {plural(habitStats.longestStreak, 'day')}
             </span>
           </div>
@@ -85,62 +85,60 @@ const HabitStats = memo(function HabitStats({ habit }: HabitStatsProps) {
       </div>
 
       {/* Additional Stats */}
-      <div className="mt-2">
-        <div className="space-y-4 rounded-lg border border-(--color-border-primary) bg-(--color-card) p-4 shadow-md sm:p-5">
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-            className="flex items-center justify-between"
-          >
-            <div className="flex items-center space-x-3">
-              <div
-                aria-hidden="true"
-                className="rounded-full bg-(--color-brand-light) p-1.5"
-              >
-                <CheckCircle2 className="h-5 w-5 text-(--color-brand-primary)" />
-              </div>
-              <span className="text-sm text-(--color-brand-text) sm:text-base">
-                Total Completions
-              </span>
+      <div className="ios-tracker-card divide-y divide-(--color-brand-primary)/12 overflow-hidden rounded-[20px]">
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.16 }}
+          className="flex items-center justify-between px-4 py-3.5 sm:px-5"
+        >
+          <div className="flex items-center gap-3">
+            <div
+              aria-hidden="true"
+              className="flex size-9 items-center justify-center rounded-[11px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset"
+            >
+              <CheckCircle2 className="size-4" />
             </div>
-            <span className="text-xl font-semibold text-(--color-brand-text) sm:text-2xl">
-              {habitStats.totalCompletions}
+            <span className="text-sm font-medium text-(--color-foreground) sm:text-[15px]">
+              Total Completions
             </span>
-          </motion.div>
+          </div>
+          <span className="text-xl font-bold text-(--color-foreground) tabular-nums sm:text-2xl">
+            {habitStats.totalCompletions}
+          </span>
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-            className="flex items-center justify-between"
-          >
-            <div className="flex items-center space-x-3">
-              <div
-                aria-hidden="true"
-                className="rounded-full bg-(--color-brand-light) p-1.5"
-              >
-                <Calendar className="h-5 w-5 text-(--color-brand-primary)" />
-              </div>
-              <span className="text-sm text-(--color-brand-text) sm:text-base">
-                Last Completed
-              </span>
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.24 }}
+          className="flex items-center justify-between px-4 py-3.5 sm:px-5"
+        >
+          <div className="flex items-center gap-3">
+            <div
+              aria-hidden="true"
+              className="flex size-9 items-center justify-center rounded-[11px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset"
+            >
+              <Calendar className="size-4" />
             </div>
-            <span className="text-sm font-medium text-(--color-brand-text) sm:text-base">
-              {formatDate(habitStats?.lastCompleted)}
+            <span className="text-sm font-medium text-(--color-foreground) sm:text-[15px]">
+              Last Completed
             </span>
-          </motion.div>
-        </div>
+          </div>
+          <span className="text-sm font-semibold text-(--color-foreground) tabular-nums sm:text-[15px]">
+            {formatDate(habitStats?.lastCompleted)}
+          </span>
+        </motion.div>
       </div>
 
       {/* Consistency message */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.4 }}
-        className="mt-2 rounded-lg border border-(--color-border-primary) bg-(--color-surface-secondary) p-4 text-center"
+        transition={{ duration: 0.3, delay: 0.3 }}
+        className="rounded-2xl bg-(--color-brand-primary)/[0.06] px-4 py-3.5 text-center ring-1 ring-(--color-brand-primary)/14 ring-inset"
       >
-        <p className="text-xs text-(--color-text-secondary) sm:text-sm">
+        <p className="text-xs font-medium text-(--color-text-secondary) sm:text-sm">
           {motivationalMessage}
         </p>
       </motion.div>

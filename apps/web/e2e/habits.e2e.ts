@@ -100,7 +100,10 @@ test('deletes a habit from the habits overview', async ({ page }) => {
   await addHabit(page, name);
 
   await page.getByRole('link', { name: 'Habits Overview' }).click();
-  const row = page.getByRole('row').filter({ hasText: name });
+  const row = page
+    .getByRole('list', { name: 'Habits' })
+    .getByRole('listitem')
+    .filter({ hasText: name });
   await expect(row).toBeVisible();
 
   await row.getByRole('button', { name: `Delete ${name}` }).click();
