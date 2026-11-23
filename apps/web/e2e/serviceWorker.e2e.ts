@@ -45,6 +45,25 @@ test('keeps the habit sounds, so they play at once and offline', async ({
   );
 });
 
+test('leaves the iOS launch images, one for every device, out of its cache', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await controlledByServiceWorker(page);
+
+  const cached = await page.evaluate(async () => {
+    const urls: string[] = [];
+    for (const name of await caches.keys()) {
+      const cache = await caches.open(name);
+      for (const request of await cache.keys()) urls.push(request.url);
+    }
+    return urls;
+  });
+
+  expect(cached.length).toBeGreaterThan(0);
+  expect(cached.filter((url) => url.includes('/splash/'))).toEqual([]);
+});
+
 test('shows the last answer within seconds when the API is slow to reply', async ({
   page,
   context,

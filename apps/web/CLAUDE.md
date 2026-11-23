@@ -90,13 +90,27 @@ The `useHabits` hook in `features/habits/hooks/` is the canonical example: it
 calls the habit API functions, does optimistic updates via `mutate`, and plays
 audio feedback on toggle.
 
+### Launch Splash
+
+`index.html` draws the launch splash, `#splash`, outside the React root with its
+own inline styles, so it paints before the app's stylesheet or script and React
+never re-renders it. It is the app icon come to life in every theme: the icon's
+emerald, the pink ring sweeping closed around the dial, the check, and the name.
+`RootLayout` calls `useHideSplash` to fade it out and remove it once Clerk has
+answered or an offline session begins. The iOS launch images in `public/splash`
+(and their links in `index.html`) and the manifest's `background_color` draw the
+same emerald and dial, so the OS splash leads straight into it; `pnpm icons`
+regenerates the images and links. The service worker leaves the launch images
+out of its precache. `LoadingFallback`, shown while a page's code loads, is the
+medallion again, small and in the theme's brand colour.
+
 ### Theming
 
 Both palettes are declared in `src/styles/index.css` (`:root` for light, `.dark`
-for dark). `public/applyStoredTheme.js`, loaded from `index.html`, applies the
-stored class before first paint; `ThemeProvider` only selects the mode and
-persists it. There is no JavaScript token map — adding a colour means adding it
-to both CSS blocks.
+for dark). `public/applyStoredTheme.js`, loaded from `index.html` after the
+launch splash, applies the stored class before the app renders; `ThemeProvider`
+only selects the mode and persists it. There is no JavaScript token map — adding
+a colour means adding it to both CSS blocks.
 
 ### Security Headers
 

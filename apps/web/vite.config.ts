@@ -61,6 +61,9 @@ export default defineConfig({
       workbox: {
         // mp3: the habit sounds, so the first one plays at once, and offline.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp3}'],
+        // iOS fetches its launch images when the app is added to the home
+        // screen; precaching them would download every device's to everyone.
+        globIgnores: ['**/splash/**'],
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit

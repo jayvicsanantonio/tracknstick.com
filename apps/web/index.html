@@ -22,12 +22,340 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>Track N' Stick</title>
-    <!-- Applies the stored theme before first paint. A file of its own, not
-         an inline script, because the Content-Security-Policy blocks those. -->
-    <script src="/applyStoredTheme.js"></script>
+    <!-- iOS shows one of these while an installed app opens: the splash's
+         emerald and dial, where the splash below draws them. Written by
+         scripts/generateIcons.mjs (pnpm icons); edit the script, not these. -->
+    <!-- launch-images:start -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1320-2868.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1290-2796.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1206-2622.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1179-2556.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1284-2778.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1170-2532.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1242-2688.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-828-1792.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1125-2436.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1242-2208.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-750-1334.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-640-1136.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-2064-2752.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2752-2064.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-2048-2732.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2732-2048.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1210px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1668-2420.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1210px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2420-1668.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1668-2388.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2388-1668.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1640-2360.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2360-1640.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1668-2224.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2224-1668.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1620-2160.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2160-1620.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1536-2048.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2048-1536.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1488-2266.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+      href="/splash/apple-splash-2266-1488.png"
+    />
+    <!-- launch-images:end -->
+    <!-- The launch splash, in the app icon's colours in every theme. Styled
+         here so it paints before the app's stylesheet or script arrive;
+         useHideSplash fades it out once the app has something to show. -->
+    <style>
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-items: center;
+        background: #064d34;
+        transition:
+          opacity 0.3s ease-out,
+          visibility 0.3s;
+      }
+      #splash.splash-done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      /* 176 pixels for the medallion's 200 units, the size the iOS launch
+         images draw its dial at, at the centre of the screen. */
+      .splash-medallion {
+        width: 176px;
+        height: 176px;
+        overflow: visible;
+        transform-origin: center;
+        animation: splash-breathe 2.4s ease-in-out 1.6s infinite;
+      }
+      .splash-ring,
+      .splash-check {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .splash-ring {
+        animation: splash-draw 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.15s
+          forwards;
+      }
+      .splash-check {
+        animation: splash-draw 0.35s ease-out 0.85s forwards;
+      }
+      .splash-wordmark {
+        position: absolute;
+        top: calc(50% + 108px);
+        left: 0;
+        right: 0;
+        margin: 0;
+        text-align: center;
+        color: #fbe4f0;
+        font-family:
+          'Plus Jakarta Sans Variable',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        opacity: 0;
+        animation: splash-rise 0.5s ease-out 0.9s forwards;
+      }
+      @keyframes splash-draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes splash-rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes splash-breathe {
+        50% {
+          transform: scale(1.04);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash-medallion,
+        .splash-ring,
+        .splash-check,
+        .splash-wordmark {
+          animation: none;
+        }
+        .splash-ring,
+        .splash-check {
+          stroke-dashoffset: 0;
+        }
+        .splash-wordmark {
+          opacity: 1;
+        }
+      }
+    </style>
   </head>
 
   <body>
+    <div id="splash" role="status" aria-label="Loading Track N' Stick">
+      <!-- The app icon's medallion: the Daily Tracker's completed ring and
+           check around a dial, in the same 200 unit space. The ring sweeps
+           closed from the top and the check draws in. -->
+      <svg
+        class="splash-medallion"
+        viewBox="0 0 200 200"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient
+            id="splash-ring"
+            gradientUnits="userSpaceOnUse"
+            x1="18"
+            y1="18"
+            x2="182"
+            y2="182"
+          >
+            <stop offset="0" stop-color="#e869af" />
+            <stop offset="0.48" stop-color="#e13d97" />
+            <stop offset="1" stop-color="#d8137f" />
+          </linearGradient>
+          <radialGradient id="splash-dial" cx="0.5" cy="0.42" r="0.6">
+            <stop offset="0" stop-color="#fbe4f0" />
+            <stop offset="1" stop-color="#fadded" />
+          </radialGradient>
+          <linearGradient
+            id="splash-check"
+            gradientUnits="userSpaceOnUse"
+            x1="10"
+            y1="49"
+            x2="54"
+            y2="17"
+          >
+            <stop offset="0" stop-color="#e13d97" />
+            <stop offset="0.65" stop-color="#e13d97" />
+            <stop offset="1" stop-color="#e869af" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="67" fill="url(#splash-dial)" />
+        <circle
+          cx="100"
+          cy="100"
+          r="67"
+          fill="none"
+          stroke="#f4b7d8"
+          stroke-width="0.85"
+        />
+        <path
+          class="splash-ring"
+          d="M100 17a83 83 0 1 1 0 166a83 83 0 1 1 0-166"
+          pathLength="1"
+          fill="none"
+          stroke="url(#splash-ring)"
+          stroke-width="14.5"
+        />
+        <g transform="translate(50 50) scale(1.5625)">
+          <path
+            class="splash-check"
+            d="M10 34L25 49L54 17"
+            pathLength="1"
+            fill="none"
+            stroke="url(#splash-check)"
+            stroke-width="8.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </g>
+      </svg>
+      <p class="splash-wordmark" aria-hidden="true">Track N' Stick</p>
+    </div>
+    <!-- Applies the stored theme before the app renders. It comes after the
+         splash, which looks the same in every theme, so that the parser,
+         which stops here until the script has loaded, paints the splash
+         first. A file of its own, not an inline script, because the
+         Content-Security-Policy blocks those. -->
+    <script src="/applyStoredTheme.js"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
