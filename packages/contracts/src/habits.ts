@@ -76,6 +76,11 @@ export const manageTrackerSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(.\d{3})?Z$/),
   timeZone: z.string().default('UTC'),
   notes: z.string().max(500).optional(),
+  /**
+   * The outcome to leave the day at: true completes it, false leaves it not
+   * completed, whatever it was before. Left out, the request toggles the day.
+   */
+  completed: z.boolean().optional(),
 });
 
 export const getHabitStatsSchema = z.object({
@@ -130,7 +135,8 @@ export const trackersResponseSchema = z.object({
 
 /**
  * Toggling a completion answers 201 with the new tracker's id when it adds
- * one, and 200 without an id when it removes one.
+ * one, and 200 without an id when it removes one or, asked for an outcome the
+ * day already has, changes nothing.
  */
 export const toggleTrackerResponseSchema = z.object({
   message: z.string(),

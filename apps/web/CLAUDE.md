@@ -144,6 +144,18 @@ loads and takes over. Keep API request URLs stable across visits (the habits
 request sends the day's midnight, not the current moment), or the cache never
 matches them.
 
+`useOfflineSession` is also true once Clerk gives up loading (its `status` is
+`error`), which is how a connection that reports online but gets nowhere is
+found out; `RootLayout` then also reloads when the app returns to the foreground
+with a connection.
+
+A habit completion whose request reaches no server is kept on the device by
+`features/habits/api/pendingCompletions.ts` (localStorage, one change per user,
+habit and day), shown over the fetched list by `useHabits`, and sent by
+`useSendPendingCompletions` (mounted in `App`) once a signed-in user is online.
+Each change names its outcome (`completed` on the tracker POST), so sending it
+twice or late is safe.
+
 ## Testing
 
 - **Framework**: Vitest + React Testing Library (jsdom environment)

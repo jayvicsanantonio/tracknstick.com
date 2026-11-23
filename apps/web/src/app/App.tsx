@@ -5,6 +5,7 @@ import { PWAInstallPrompt } from '@shared/components/feedback/PWAInstallPrompt';
 import ErrorBoundary from '@shared/components/feedback/ErrorBoundary';
 import { APP_MAX_WIDTH } from '@shared/constants/layout';
 import { useClearApiCacheOnUserChange } from '@shared/hooks/useClearApiCacheOnUserChange';
+import { useSendPendingCompletions } from '@features/habits/hooks/useSendPendingCompletions';
 import { cn } from '@shared/utils/utils';
 import { ReactNode, memo } from 'react';
 
@@ -25,6 +26,7 @@ const AppContent = memo(function AppContent({ children }: AppProps) {
 
 function App({ children }: AppProps) {
   useClearApiCacheOnUserChange();
+  useSendPendingCompletions();
 
   return (
     <ErrorBoundary>

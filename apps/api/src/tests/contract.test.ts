@@ -193,6 +193,18 @@ describe('API responses match the contracts package', () => {
       expect(res.body.trackerId).toEqual(expect.any(String));
     });
 
+    it('POST /habits/:id/trackers when the day already has the outcome asked for', async () => {
+      const res = await call('POST', `/api/v1/habits/${habitId}/trackers`, {
+        timestamp: now.toISOString(),
+        timeZone: 'UTC',
+        completed: true,
+      });
+
+      expect(res.status).toBe(200);
+      expectToMatchContract(toggleTrackerResponseSchema, res.body);
+      expect(res.body).not.toHaveProperty('trackerId');
+    });
+
     it('GET /habits/:id/trackers', async () => {
       const res = await call(
         'GET',

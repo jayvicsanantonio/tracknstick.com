@@ -17,6 +17,7 @@ vi.mock('@clerk/clerk-react', () => ({
   SignIn: () => <div>Sign In Component</div>,
   useUser: mockUseUser,
   useAuth: mockUseAuth,
+  useClerk: () => ({ status: 'ready' }),
 }));
 
 // Mock useToggle hook

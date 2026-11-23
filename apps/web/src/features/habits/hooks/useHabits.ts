@@ -1,4 +1,10 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import {
+  useCallback,
+  useState,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from 'react';
 import useSWR, { mutate } from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
 import { useDate } from '@app/providers/useDate';
@@ -11,12 +17,23 @@ import {
   updateHabit as apiUpdateHabit,
   deleteHabit as apiDeleteHabit,
   toggleHabitCompletion as apiToggleHabitCompletion,
+  dayParam,
   habitsForDateKey,
   mutateHabitLists,
 } from '@/features/habits/api';
+import {
+  isUnreachable,
+  pendingCompletions,
+  queueCompletion,
+  removeCompletion,
+  subscribeToPendingCompletions,
+} from '@/features/habits/api/pendingCompletions';
 import { achievementApi } from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
-import { useOfflineSession } from '@shared/hooks/useOfflineSession';
+import {
+  lastSignedInUserId,
+  useOfflineSession,
+} from '@shared/hooks/useOfflineSession';
 
 /** Revalidates cached progress summary and history panels after habit mutations. */
 const mutateProgressCaches = () =>
@@ -49,7 +66,7 @@ export function useHabits(): UseHabitsReturn {
   > | null>(null);
   const [animatingHabitId, setAnimatingHabitId] = useState<string | null>(null);
   const { date, setDate, timeZone } = useDate();
-  const { isSignedIn: clerkSignedIn } = useAuth();
+  const { isSignedIn: clerkSignedIn, userId } = useAuth();
   // Offline, Clerk cannot load; the last visit's user is answered from the
   // service worker's cache.
   const offline = useOfflineSession();
@@ -125,7 +142,24 @@ export function useHabits(): UseHabitsReturn {
     [mutateHabits, toast, setDate, checkAchievements],
   );
 
-  const habits = useMemo(() => fetchedHabits ?? [], [fetchedHabits]);
+  // Changes kept on the device until the API can take them, shown over the
+  // fetched list, which offline comes from the service worker's cache.
+  const pending = useSyncExternalStore(
+    subscribeToPendingCompletions,
+    pendingCompletions,
+  );
+  const day = date ? dayParam(date, timeZone) : null;
+
+  const habits = useMemo(
+    () =>
+      (fetchedHabits ?? []).map((habit) => {
+        const change = pending.find(
+          (c) => c.habitId === habit.id && c.day === day,
+        );
+        return change ? { ...habit, completed: change.completed } : habit;
+      }),
+    [fetchedHabits, pending, day],
+  );
 
   const updateHabit = useCallback(
     async (habitId: string, habitData: Partial<HabitPayload>) => {
@@ -204,23 +238,47 @@ export function useHabits(): UseHabitsReturn {
   );
 
   const internalToggleHabitCompletion = useCallback(
-    async (habitId: string) => {
+    async (habitId: string, completed: boolean) => {
       void mutateHabits(
         (currentHabits = []) =>
           currentHabits.map((h) =>
-            h.id === habitId ? { ...h, completed: !h.completed } : h,
+            h.id === habitId ? { ...h, completed } : h,
           ),
         false,
       );
 
+      // Offline, before Clerk loads, the last visit's user makes the change.
+      const changedBy = userId ?? lastSignedInUserId();
+      const change =
+        date && day && changedBy
+          ? {
+              userId: changedBy,
+              habitId,
+              day,
+              timestamp: date.toISOString(),
+              timeZone,
+              completed,
+            }
+          : null;
+
       try {
         if (!date) throw new Error('Date context is not available');
-        await apiToggleHabitCompletion(habitId, date, timeZone);
+        await apiToggleHabitCompletion(habitId, date, timeZone, completed);
+        // Saved: an earlier change to this day, kept offline, is outdated.
+        if (change) removeCompletion(change);
         void mutateHabits();
         void mutateProgressCaches();
         // Check for achievements after toggling habit completion
         void checkAchievements();
       } catch (err) {
+        if (change && isUnreachable(err)) {
+          queueCompletion(change);
+          toast({
+            description:
+              "Saved on this device. It's sent when you're back online.",
+          });
+          return;
+        }
         console.error('Failed to toggle habit completion:', err);
         toast({
           variant: 'destructive',
@@ -229,7 +287,7 @@ export function useHabits(): UseHabitsReturn {
         void mutateHabits();
       }
     },
-    [date, timeZone, mutateHabits, toast, checkAchievements],
+    [date, day, timeZone, userId, mutateHabits, toast, checkAchievements],
   );
 
   const completionRate = useMemo(() => {
@@ -272,7 +330,7 @@ export function useHabits(): UseHabitsReturn {
         setTimeoutId(newTimeoutId);
       }
 
-      await internalToggleHabitCompletion(id);
+      if (habit) await internalToggleHabitCompletion(id, !habit.completed);
     },
     [habits, timeoutId, internalToggleHabitCompletion],
   );

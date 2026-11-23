@@ -245,7 +245,8 @@ export const manageTracker = async (
   timestamp: string,
   timeZone: string,
   notes?: string,
-  db?: D1Database
+  db?: D1Database,
+  completed?: boolean
 ): Promise<TrackerResult> => {
   if (!db) {
     throw new Error('Database instance is required');
@@ -281,7 +282,15 @@ export const manageTracker = async (
 
     let result: TrackerResult;
 
-    if (existing) {
+    // Asked for the outcome the day already has: nothing to change.
+    if (completed !== undefined && completed === Boolean(existing)) {
+      result = {
+        status: 'unchanged',
+        message: completed
+          ? 'Habit already completed'
+          : 'Habit already not completed',
+      };
+    } else if (existing) {
       await habitRepository.deleteTrackerById(db, existing.id);
       result = {
         status: 'removed',

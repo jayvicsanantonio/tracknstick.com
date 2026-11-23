@@ -173,6 +173,47 @@ describe('RootLayout auth gate', () => {
       expect(mockReloadPage).toHaveBeenCalledTimes(1);
     });
 
+    describe('when the app comes back to the foreground', () => {
+      const showPage = (online: boolean) => {
+        vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(online);
+        vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+        act(() => {
+          document.dispatchEvent(new Event('visibilitychange'));
+        });
+      };
+
+      afterEach(() => {
+        vi.restoreAllMocks();
+      });
+
+      it('reloads with a connection, so Clerk can try again', () => {
+        mockOffline.value = true;
+        renderLayout();
+
+        showPage(true);
+
+        expect(mockReloadPage).toHaveBeenCalledTimes(1);
+      });
+
+      it('stays put while still offline', () => {
+        mockOffline.value = true;
+        renderLayout();
+
+        showPage(false);
+
+        expect(mockReloadPage).not.toHaveBeenCalled();
+      });
+
+      it('stays put while Clerk is in charge', () => {
+        mockAuth.isSignedIn = true;
+        renderLayout();
+
+        showPage(true);
+
+        expect(mockReloadPage).not.toHaveBeenCalled();
+      });
+    });
+
     it('does not reload on a reconnect while Clerk is in charge', () => {
       mockAuth.isSignedIn = true;
       renderLayout();

@@ -37,7 +37,9 @@ ever sees and changes their own data. The `/health` endpoints need no token.
   that day, with `completed` for that day in the given `timeZone`.
 - `DELETE` is a soft delete; `restore` brings the habit back.
 - `POST /:habitId/trackers` toggles: it adds a completion for the day, or
-  removes the one already there.
+  removes the one already there. With `completed` in the body it sets the day
+  to that outcome instead, and changes nothing when the day already has it, so
+  sending it again is safe; the web app sends it for changes made offline.
 
 ## Progress: `/api/v1/progress`
 

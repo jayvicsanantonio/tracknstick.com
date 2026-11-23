@@ -20,7 +20,7 @@ const FALLBACK_ICON: keyof typeof HabitsIcons = 'Activity';
  * the same all day keeps the URL the same, so the service worker's cached
  * response answers it offline.
  */
-const dayParam = (date: Date, timeZone: string) =>
+export const dayParam = (date: Date, timeZone: string) =>
   getLocalStartofDayUTC(date, timeZone).toISOString();
 
 /**
@@ -97,16 +97,22 @@ export const deleteHabit = async (
   return response.data;
 };
 
+/**
+ * Sets a habit's completion on the day of `date`. Naming the outcome, rather
+ * than toggling, keeps a request sent twice or late from flipping it back.
+ */
 export const toggleHabitCompletion = async (
   habitId: string,
   date: Date,
   timeZone: string,
+  completed: boolean,
 ): Promise<ToggleTrackerResponse> => {
   const response = await axiosInstance.post<ToggleTrackerResponse>(
     `/api/v1/habits/${habitId}/trackers`,
     {
       timestamp: date.toISOString(),
       timeZone,
+      completed,
     },
   );
 

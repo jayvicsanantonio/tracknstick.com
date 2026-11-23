@@ -24,7 +24,8 @@ export interface HabitData {
 // 'removed' never does, so the pair cannot disagree.
 export type TrackerResult =
   | { status: 'added'; message: string; trackerId: string }
-  | { status: 'removed'; message: string };
+  | { status: 'removed'; message: string }
+  | { status: 'unchanged'; message: string };
 
 /**
  * Get habits for a specific date or all habits if no date provided.
@@ -168,7 +169,7 @@ export const getTrackers = async (c: Context<AppEnv>) => {
 export const manageTracker = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
   const { habitId } = getValidated(c, 'param', habitIdParamSchema);
-  const { timestamp, timeZone, notes } = getValidated(
+  const { timestamp, timeZone, notes, completed } = getValidated(
     c,
     'json',
     manageTrackerSchema
@@ -181,7 +182,8 @@ export const manageTracker = async (c: Context<AppEnv>) => {
       timestamp,
       timeZone,
       notes,
-      c.env.DB
+      c.env.DB,
+      completed
     );
 
     if (result.status === 'added') {

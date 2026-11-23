@@ -9,6 +9,17 @@ import { MobileShellProvider } from '@/features/layout/context/MobileShellContex
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
 import { useOfflineSession } from '@shared/hooks/useOfflineSession';
 import { reloadPage } from '@shared/utils/reloadPage';
+
+/**
+ * Reloads when the app comes back to the foreground with a connection, so
+ * that Clerk tries again after it gave up on one that got nowhere. Offline it
+ * stays put: the reconnect reloads it instead.
+ */
+function reloadIfShownOnline() {
+  if (document.visibilityState === 'visible' && navigator.onLine) {
+    reloadPage();
+  }
+}
 import SignedInOrOffline from './SignedInOrOffline';
 
 // Only signed-out visitors see the welcome page, so it loads on demand and
@@ -25,7 +36,8 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
  *
  * Offline, Clerk cannot load, so the last visit's user sees the pages from
  * the service worker's cache, and the page reloads when the connection
- * returns so that Clerk loads and takes over.
+ * returns, or when the app comes back to the foreground with one, so that
+ * Clerk loads and takes over.
  */
 const RootLayout = memo(function RootLayout() {
   const offline = useOfflineSession();
@@ -41,7 +53,11 @@ const RootLayout = memo(function RootLayout() {
   useEffect(() => {
     if (!reloadWhenOnline) return;
     window.addEventListener('online', reloadPage);
-    return () => window.removeEventListener('online', reloadPage);
+    document.addEventListener('visibilitychange', reloadIfShownOnline);
+    return () => {
+      window.removeEventListener('online', reloadPage);
+      document.removeEventListener('visibilitychange', reloadIfShownOnline);
+    };
   }, [reloadWhenOnline]);
 
   return (

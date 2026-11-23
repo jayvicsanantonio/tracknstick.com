@@ -1,42 +1,38 @@
-// Tells whether to treat the last visit's user as signed in: offline, Clerk cannot load to say.
+// Tells whether to treat the last visit's user as signed in: offline, or once Clerk failed to load.
 // The service worker then answers the app's API requests from that user's cached responses.
 
-import { useSyncExternalStore } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useClerk } from '@clerk/clerk-react';
 import { API_CACHE_OWNER_KEY } from '@shared/constants/apiCache';
-
-function subscribeToConnection(onChange: () => void) {
-  window.addEventListener('online', onChange);
-  window.addEventListener('offline', onChange);
-  return () => {
-    window.removeEventListener('online', onChange);
-    window.removeEventListener('offline', onChange);
-  };
-}
-
-const isOnline = () => navigator.onLine;
+import { useIsOnline } from '@shared/hooks/useIsOnline';
 
 /**
- * Whether a user was signed in on the last visit. useClearApiCacheOnUserChange
- * records the user the cached API responses belong to, and an empty string
- * when no one was signed in.
+ * The user signed in on the last visit, or null when no one was.
+ * useClearApiCacheOnUserChange records the user the cached API responses
+ * belong to, and an empty string when no one was signed in.
  */
-function wasSignedInLastVisit(): boolean {
+export function lastSignedInUserId(): string | null {
   try {
-    return Boolean(localStorage.getItem(API_CACHE_OWNER_KEY));
+    // An empty string records that no one was signed in.
+    const userId = localStorage.getItem(API_CACHE_OWNER_KEY);
+    return userId === '' ? null : userId;
   } catch {
-    return false;
+    return null;
   }
 }
 
 /**
- * True while the device is offline, Clerk has not loaded, and a user was
- * signed in on the last visit. Clerk loads its script and the session from
- * its own servers, so offline it never loads, and its SignedIn shows nothing.
+ * True when Clerk has not loaded, a user was signed in on the last visit, and
+ * either the device is offline or Clerk has given up loading. Clerk loads its
+ * script and the session from its own servers, so without a connection it
+ * never loads, and its SignedIn shows nothing. A connection that the browser
+ * reports as online but that gets nowhere (Wi-Fi without internet) is only
+ * found out when Clerk gives up, after its script load timeout.
  */
 export function useOfflineSession(): boolean {
   const { isLoaded } = useAuth();
-  const online = useSyncExternalStore(subscribeToConnection, isOnline);
+  const { status } = useClerk();
+  const online = useIsOnline();
 
-  return !isLoaded && !online && wasSignedInLastVisit();
+  if (isLoaded || !lastSignedInUserId()) return false;
+  return !online || status === 'error';
 }
