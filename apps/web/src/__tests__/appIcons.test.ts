@@ -3,9 +3,9 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { inflateSync } from 'node:zlib';
 import { describe, it, expect } from 'vitest';
 import { THEME_FAVICON } from '@shared/constants/theme';
+import { pngColourType, pngSize, topLeftPixel } from '@testing/pngImage';
 
 const WEB_ROOT = path.resolve(__dirname, '../..');
 const PUBLIC = path.join(WEB_ROOT, 'public');
@@ -15,36 +15,6 @@ interface ManifestIcon {
   sizes: string;
   type: string;
   purpose?: string;
-}
-
-/** The "WIDTHxHEIGHT" of a PNG file, read from its IHDR chunk. */
-function pngSize(file: string): string {
-  const bytes = readFileSync(file);
-  expect(bytes.subarray(1, 4).toString('ascii')).toBe('PNG');
-  return `${bytes.readUInt32BE(16)}x${bytes.readUInt32BE(20)}`;
-}
-
-/** A PNG's colour type from its IHDR chunk; 2 is RGB, 6 is RGB with alpha. */
-function pngColourType(file: string): number {
-  return readFileSync(file)[25];
-}
-
-/**
- * The red, green and blue of a PNG's top-left pixel. Every PNG row filter
- * leaves the first pixel of the first row unchanged, so it can be read
- * straight from the inflated image data, after the row's filter byte.
- */
-function topLeftPixel(file: string): number[] {
-  const bytes = readFileSync(file);
-  const idat: Buffer[] = [];
-  for (let at = 8; at < bytes.length; ) {
-    const length = bytes.readUInt32BE(at);
-    if (bytes.toString('ascii', at + 4, at + 8) === 'IDAT') {
-      idat.push(bytes.subarray(at + 8, at + 8 + length));
-    }
-    at += length + 12;
-  }
-  return [...inflateSync(Buffer.concat(idat)).subarray(1, 4)];
 }
 
 /** The pixel sizes of the images in an .ico file, from its directory. */

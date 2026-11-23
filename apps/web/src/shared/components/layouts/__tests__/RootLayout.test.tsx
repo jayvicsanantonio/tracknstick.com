@@ -3,12 +3,15 @@
 // test made the gate look covered while RootLayout itself was mocked away in
 // every suite.
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { act, render, screen, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import RootLayout from '../RootLayout';
 
-const mockAuth = vi.hoisted(() => ({ isSignedIn: false }));
+const mockAuth = vi.hoisted(() => ({
+  isSignedIn: false,
+  status: 'ready' as 'loading' | 'ready' | 'error' | 'degraded',
+}));
 // The offline session as a store, so a test can change it after render the
 // way a dropped or returning connection does.
 const mockOffline = vi.hoisted(() => {
@@ -47,7 +50,11 @@ vi.mock('@clerk/clerk-react', () => ({
     mockAuth.isSignedIn ? null : <>{children}</>,
   useAuth: () => ({ isSignedIn: mockAuth.isSignedIn, getToken: vi.fn() }),
   useUser: () => ({ user: null }),
-  useClerk: () => ({ openUserProfile: vi.fn(), signOut: vi.fn() }),
+  useClerk: () => ({
+    openUserProfile: vi.fn(),
+    signOut: vi.fn(),
+    status: mockAuth.status,
+  }),
   UserButton: () => <div />,
   SignInButton: ({ children }: { children?: React.ReactNode }) => (
     <>{children}</>
@@ -223,6 +230,44 @@ describe('RootLayout auth gate', () => {
       });
 
       expect(mockReloadPage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('the launch splash', () => {
+    let splash: HTMLElement;
+
+    beforeEach(() => {
+      splash = document.createElement('div');
+      splash.id = 'splash';
+      document.body.append(splash);
+    });
+
+    afterEach(() => {
+      splash.remove();
+      mockAuth.status = 'ready';
+      mockOffline.value = false;
+    });
+
+    it('stays up while Clerk is loading', () => {
+      mockAuth.status = 'loading';
+      renderLayout();
+
+      expect(splash).not.toHaveClass('splash-done');
+    });
+
+    it('fades out once Clerk is ready', () => {
+      mockAuth.status = 'ready';
+      renderLayout();
+
+      expect(splash).toHaveClass('splash-done');
+    });
+
+    it("fades out offline, where the last visit's user is shown without Clerk", () => {
+      mockAuth.status = 'loading';
+      mockOffline.value = true;
+      renderLayout();
+
+      expect(splash).toHaveClass('splash-done');
     });
   });
 });

@@ -1,12 +1,14 @@
-// Draws the app icon, the Daily Tracker's completed pink progress ring and check on a flat dark emerald, and a favicon for each theme,
-// and writes every size the app ships.
+// Draws the app icon, the Daily Tracker's completed pink progress ring and check on a flat dark emerald, a favicon for each theme,
+// and the iOS launch images, and writes every size the app ships.
 // Run with `pnpm icons`; needs `rsvg-convert` (Homebrew: `brew install librsvg`) to rasterise the SVG.
 
 import { execFileSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const ICONS = path.resolve(import.meta.dirname, '../public/icons');
+const SPLASH = path.resolve(import.meta.dirname, '../public/splash');
+const INDEX_HTML = path.resolve(import.meta.dirname, '../index.html');
 
 // The completed ring in each theme's brand colours from
 // src/styles/index.css, as hex. The Daily Tracker's dial washes
@@ -150,3 +152,110 @@ for (const [name, contents] of Object.entries(files)) {
   writeFileSync(path.join(ICONS, name), contents);
   console.log(`wrote public/icons/${name}`);
 }
+
+// The launch splash in index.html draws the medallion's 200 units at 176
+// CSS pixels, centred on the screen. Each launch image draws the emerald and
+// the dial there, so the in-app splash takes over with the ring and check
+// sweeping in around a dial that does not move.
+const SPLASH_MEDALLION_POINTS = 176;
+
+// Screens in points and their pixel ratio: every iPhone since the SE of
+// 2016, and the iPads, which also open in landscape.
+const IPHONES = [
+  [440, 956, 3], // 16 Pro Max
+  [430, 932, 3], // 14 Pro Max, 15 Plus and Pro Max, 16 Plus
+  [402, 874, 3], // 16 Pro
+  [393, 852, 3], // 14 Pro, 15, 15 Pro, 16
+  [428, 926, 3], // 12 and 13 Pro Max, 14 Plus
+  [390, 844, 3], // 12, 13, 14, 12 and 13 Pro
+  [414, 896, 3], // XS Max, 11 Pro Max
+  [414, 896, 2], // XR, 11
+  [375, 812, 3], // X, XS, 11 Pro, 12 and 13 mini
+  [414, 736, 3], // 8 Plus
+  [375, 667, 2], // 8, SE 2nd and 3rd generation
+  [320, 568, 2], // SE 1st generation
+];
+const IPADS = [
+  [1032, 1376, 2], // Pro 13-inch (M4)
+  [1024, 1366, 2], // Pro 12.9-inch
+  [834, 1210, 2], // Pro 11-inch (M4)
+  [834, 1194, 2], // Pro 11-inch
+  [820, 1180, 2], // Air 10.9-inch, 10th generation
+  [834, 1112, 2], // Air 3rd generation, Pro 10.5-inch
+  [810, 1080, 2], // 10.2-inch
+  [768, 1024, 2], // mini 5th generation, 9.7-inch
+  [744, 1133, 2], // mini 6th generation
+];
+
+/** A launch image of `width` by `height` pixels at `ratio` pixels a point. */
+function launchImageSvg(width, height, ratio) {
+  const { dial, hairline } = APP_ICON;
+  const scale = (SPLASH_MEDALLION_POINTS * ratio) / 200;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <defs>
+    <radialGradient id="dial" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="${dial[0]}"/>
+      <stop offset="1" stop-color="${dial[1]}"/>
+    </radialGradient>
+  </defs>
+  <rect width="${width}" height="${height}" fill="${APP_ICON.background}"/>
+  <g transform="translate(${width / 2} ${height / 2}) scale(${scale}) translate(-100 -100)">
+    <circle cx="100" cy="100" r="67" fill="url(#dial)"/>
+    <circle cx="100" cy="100" r="67" fill="none" stroke="${hairline}" stroke-width="0.85"/>
+  </g>
+</svg>
+`;
+}
+
+/** An opaque PNG of an SVG at its own size; iOS shows launch images as they are. */
+function opaquePng(svg) {
+  return execFileSync(
+    'rsvg-convert',
+    ['--background-color', APP_ICON.background],
+    {
+      input: svg,
+    },
+  );
+}
+
+const launchImages = [
+  ...IPHONES.map((screen) => [...screen, 'portrait']),
+  ...IPADS.flatMap((screen) => [
+    [...screen, 'portrait'],
+    [...screen, 'landscape'],
+  ]),
+].map(([pointsWide, pointsHigh, ratio, orientation]) => {
+  const [width, height] =
+    orientation === 'portrait'
+      ? [pointsWide * ratio, pointsHigh * ratio]
+      : [pointsHigh * ratio, pointsWide * ratio];
+  return {
+    file: `apple-splash-${width}-${height}.png`,
+    media: `screen and (device-width: ${pointsWide}px) and (device-height: ${pointsHigh}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: ${orientation})`,
+    svg: launchImageSvg(width, height, ratio),
+  };
+});
+
+mkdirSync(SPLASH, { recursive: true });
+for (const { file, svg } of launchImages) {
+  writeFileSync(path.join(SPLASH, file), opaquePng(svg));
+  console.log(`wrote public/splash/${file}`);
+}
+
+const START = '<!-- launch-images:start -->';
+const END = '<!-- launch-images:end -->';
+const html = readFileSync(INDEX_HTML, 'utf8');
+const links = launchImages
+  .map(
+    ({ file, media }) =>
+      `    <link\n      rel="apple-touch-startup-image"\n      media="${media}"\n      href="/splash/${file}"\n    />`,
+  )
+  .join('\n');
+writeFileSync(
+  INDEX_HTML,
+  html.replace(
+    new RegExp(`${START}[\\s\\S]*?${END}`),
+    `${START}\n${links}\n    ${END}`,
+  ),
+);
+console.log('wrote the launch image links in index.html');

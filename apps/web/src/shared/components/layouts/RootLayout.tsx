@@ -1,12 +1,12 @@
 import { lazy, memo, Suspense, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { ClerkLoading, SignedOut } from '@clerk/clerk-react';
-import { Check } from 'lucide-react';
+import { SignedOut, useClerk } from '@clerk/clerk-react';
 import Header from '@/features/layout/components/Header';
 import Footer from '@/features/layout/components/Footer';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { MobileShellProvider } from '@/features/layout/context/MobileShellContext';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
+import { useHideSplash } from '@shared/hooks/useHideSplash';
 import { useOfflineSession } from '@shared/hooks/useOfflineSession';
 import { reloadPage } from '@shared/utils/reloadPage';
 
@@ -41,6 +41,10 @@ const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
  */
 const RootLayout = memo(function RootLayout() {
   const offline = useOfflineSession();
+  const { status } = useClerk();
+  // The launch splash in index.html covers the page until there is
+  // something to show: Clerk's answer, or the last visit's user offline.
+  useHideSplash(offline || status !== 'loading');
   // Stays true once set: React re-renders between the 'online' event's
   // listeners, so the offline session can end before the reload's listener
   // runs, and a listener tied to it would be removed unrun.
@@ -64,22 +68,6 @@ const RootLayout = memo(function RootLayout() {
     <>
       <Header />
       <main className="relative flex min-h-0 flex-1 flex-col">
-        {offline ? null : (
-          <ClerkLoading>
-            <div
-              role="status"
-              aria-label="Loading Track N' Stick"
-              className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-24"
-            >
-              <span
-                aria-hidden="true"
-                className="flex size-16 animate-pulse items-center justify-center rounded-[20px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-lg motion-reduce:animate-none"
-              >
-                <Check className="size-8" strokeWidth={3} />
-              </span>
-            </div>
-          </ClerkLoading>
-        )}
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
           <Suspense fallback={null}>
