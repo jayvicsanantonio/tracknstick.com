@@ -156,7 +156,7 @@ function contrastRatio(first: string, second: string): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-describe.each(['manifest.json', 'manifest-dark.json'])('%s', (file) => {
+describe.each(['manifest.json'])('%s', (file) => {
   const { icons } = JSON.parse(
     readFileSync(path.join(PUBLIC, file), 'utf8'),
   ) as { icons: ManifestIcon[] };

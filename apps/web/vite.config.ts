@@ -50,37 +50,30 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'offline.html'],
+      // A new version waits for the user to choose Reload in the update
+      // toast (src/main.tsx), so it never reloads the page in the middle of
+      // what they are doing.
+      registerType: 'prompt',
+      includeAssets: ['favicon.ico'],
       // public/manifest.json is the single canonical manifest linked in index.html;
       // disabling injection here avoids shipping a conflicting second manifest.webmanifest.
       manifest: false,
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // mp3: the habit sounds, so the first one plays at once, and offline.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp3}'],
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB limit
         runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
           ...(VITE_API_HOST
             ? [
                 {
                   urlPattern: apiCacheUrlPattern(VITE_API_HOST),
                   handler: 'NetworkFirst' as const,
                   options: {
+                    // On a weak signal, the last answer after three seconds
+                    // rather than a wait for the network to give up.
+                    networkTimeoutSeconds: 3,
                     // Holds signed-in users' responses, keyed by URL alone.
                     // useClearApiCacheOnUserChange empties it when the user
                     // changes.

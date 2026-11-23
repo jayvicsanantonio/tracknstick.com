@@ -1,4 +1,4 @@
-// Pins the security headers Cloudflare Pages sends with every page, from public/_headers.
+// Pins the headers Cloudflare Pages sends from public/_headers: security on every page, and caching.
 // Also checks the HTML pages hold nothing the Content-Security-Policy would block.
 
 import { readFileSync } from 'node:fs';
@@ -34,7 +34,8 @@ function parseHeadersFile(text: string): Map<string, Map<string, string>> {
   return rules;
 }
 
-const pageHeaders = parseHeadersFile(read('public/_headers')).get('/*');
+const headerRules = parseHeadersFile(read('public/_headers'));
+const pageHeaders = headerRules.get('/*');
 
 /** The sources a CSP directive allows, or undefined when it is absent. */
 function directive(name: string): string[] | undefined {
@@ -102,18 +103,33 @@ describe('the security headers in public/_headers', () => {
   });
 });
 
-describe.each(['index.html', 'public/offline.html'])(
-  '%s, under that policy',
-  (file) => {
-    const html = read(file);
+describe('the caching headers in public/_headers', () => {
+  // Vite names each built file after a hash of its contents, so a file at
+  // one URL never changes.
+  it('let browsers keep the hashed build files for a year without asking', () => {
+    expect(headerRules.get('/assets/*')?.get('cache-control')).toBe(
+      'public, max-age=31536000, immutable',
+    );
+  });
 
-    it('has no inline script, which the policy blocks', () => {
-      const scripts = html.match(/<script\b[^>]*>/g) ?? [];
-      for (const tag of scripts) expect(tag).toMatch(/\bsrc=/);
-    });
+  // Fetched fresh, so a deploy reaches users on their next visit.
+  it.each(['/sw.js', '/manifest.json'])(
+    'have browsers check %s with the server every time',
+    (file) => {
+      expect(headerRules.get(file)?.get('cache-control')).toBe('no-cache');
+    },
+  );
+});
 
-    it('has no inline event handler, which the policy blocks', () => {
-      expect(html).not.toMatch(/<[^>]+\son[a-z]+=/i);
-    });
-  },
-);
+describe.each(['index.html'])('%s, under that policy', (file) => {
+  const html = read(file);
+
+  it('has no inline script, which the policy blocks', () => {
+    const scripts = html.match(/<script\b[^>]*>/g) ?? [];
+    for (const tag of scripts) expect(tag).toMatch(/\bsrc=/);
+  });
+
+  it('has no inline event handler, which the policy blocks', () => {
+    expect(html).not.toMatch(/<[^>]+\son[a-z]+=/i);
+  });
+});

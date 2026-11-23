@@ -1,5 +1,5 @@
 // End-to-end check that the app opens with the signed-in user's habits when the device is offline.
-// Runs in the "offline" project of playwright.config.ts, against a production build with its service worker.
+// Runs in the "production build" project of playwright.config.ts, against a production build with its service worker.
 
 import { expect, test } from '@playwright/test';
 import { addHabit } from './addHabit';

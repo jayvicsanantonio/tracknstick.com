@@ -9,3 +9,14 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Vite names each built file after a hash of its contents, so browsers keep them.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Checked with the server on every load, so a deploy reaches users on their next visit.
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.json
+  Cache-Control: no-cache
