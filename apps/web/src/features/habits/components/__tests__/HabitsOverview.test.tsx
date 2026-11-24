@@ -165,6 +165,26 @@ describe('HabitsOverview', () => {
     });
   });
 
+  describe('with no habits at all', () => {
+    it('leaves out the search and filters, which would have nothing to act on', () => {
+      renderOverview([]);
+
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    });
+
+    it('shows the same first-habit prompt as the Tracker, starter habits included', () => {
+      renderOverview([]);
+
+      expect(
+        screen.getByRole('heading', { name: 'No habits yet' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('list', { name: 'Starter habits' }),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('says there are no active habits, not no habits, when every habit is archived', async () => {
     renderOverview([
       habit({ id: '1', name: 'Read', endDate: '2026-11-10T00:00:00Z' }),

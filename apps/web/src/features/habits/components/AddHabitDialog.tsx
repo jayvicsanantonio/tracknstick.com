@@ -13,7 +13,8 @@ const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
 const FORM_ID = 'add-habit-form';
 
 export default function AddHabitDialog() {
-  const { showAddHabitDialog, toggleShowAddHabitDialog } = useHabitsContext();
+  const { showAddHabitDialog, toggleShowAddHabitDialog, addHabitDraft } =
+    useHabitsContext();
 
   const mobileHeader = (
     <div className="flex items-center justify-between border-b border-(--color-border-primary)/50 px-4 pb-3 sm:hidden">
@@ -59,7 +60,11 @@ export default function AddHabitDialog() {
           Add a new habit to your list.
         </DialogDescription>
       </DialogHeader>
-      <HabitForm formId={FORM_ID} toggleDialog={toggleShowAddHabitDialog} />
+      <HabitForm
+        formId={FORM_ID}
+        draft={addHabitDraft}
+        toggleDialog={toggleShowAddHabitDialog}
+      />
     </HabitDialog>
   );
 }

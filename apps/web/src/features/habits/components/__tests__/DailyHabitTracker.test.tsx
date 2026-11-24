@@ -4,6 +4,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import DailyHabitTracker from '../DailyHabitTracker';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useHabits } from '@/features/habits/hooks/useHabits';
@@ -89,9 +90,11 @@ function mockAllHabits(habits: Habit[], error?: unknown) {
 
 function renderTracker() {
   render(
-    <HabitsStateProvider>
-      <DailyHabitTracker />
-    </HabitsStateProvider>,
+    <MemoryRouter>
+      <HabitsStateProvider>
+        <DailyHabitTracker />
+      </HabitsStateProvider>
+    </MemoryRouter>,
   );
 }
 
@@ -107,19 +110,23 @@ describe('DailyHabitTracker under the launch splash', () => {
   /** The tracker as the first page, with the app ready around it. */
   function renderFirstPage() {
     return render(
-      <HabitsStateProvider>
-        <AppReady />
-        <DailyHabitTracker />
-      </HabitsStateProvider>,
+      <MemoryRouter>
+        <HabitsStateProvider>
+          <AppReady />
+          <DailyHabitTracker />
+        </HabitsStateProvider>
+      </MemoryRouter>,
     );
   }
 
   async function rerenderFirstPage(rerender: (ui: React.ReactNode) => void) {
     rerender(
-      <HabitsStateProvider>
-        <AppReady />
-        <DailyHabitTracker />
-      </HabitsStateProvider>,
+      <MemoryRouter>
+        <HabitsStateProvider>
+          <AppReady />
+          <DailyHabitTracker />
+        </HabitsStateProvider>
+      </MemoryRouter>,
     );
     await act(() => Promise.resolve());
   }
@@ -310,6 +317,76 @@ describe('DailyHabitTracker', () => {
     ).toBeInTheDocument();
   });
 
+  describe('on a day with nothing due', () => {
+    // Tuesday, November 24, 2026, at noon in Los Angeles.
+    const tuesday = new Date('2026-11-24T20:00:00.000Z');
+    const setDate = vi.fn();
+
+    function renderTuesday() {
+      render(
+        <DateContext.Provider
+          value={{
+            date: tuesday,
+            currentDate: tuesday,
+            setDate,
+            handlePreviousDate: vi.fn(),
+            handleNextDate: vi.fn(),
+            timeZone: 'America/Los_Angeles',
+          }}
+        >
+          <MemoryRouter>
+            <HabitsStateProvider>
+              <DailyHabitTracker />
+            </HabitsStateProvider>
+          </MemoryRouter>
+        </DateContext.Provider>,
+      );
+    }
+
+    beforeEach(() => {
+      mockHabits({ habits: [] });
+      mockAllHabits([
+        habit({
+          id: '9',
+          name: 'Swim',
+          frequency: ['Thu'],
+          startDate: '2026-11-01T07:00:00.000Z',
+        }),
+      ]);
+    });
+
+    it('names the next day a habit is due and goes there', async () => {
+      renderTuesday();
+
+      expect(screen.getByText('Next up: Thursday, Nov 26')).toBeInTheDocument();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Go to Thursday' }),
+      );
+
+      expect(setDate).toHaveBeenCalledTimes(1);
+      const target = setDate.mock.calls[0][0] as Date;
+      expect([target.getMonth(), target.getDate()]).toEqual([10, 26]);
+    });
+
+    it('tells a keyboard how to change days, and leaves swiping to the hint below', () => {
+      renderTuesday();
+
+      const card = screen
+        .getByRole('heading', { name: 'Nothing scheduled' })
+        .closest('div') as HTMLElement;
+      expect(card).toHaveTextContent('← → keys');
+      expect(card).not.toHaveTextContent(/swipe/i);
+    });
+
+    it('marks it a rest day where the progress ring would be', () => {
+      renderTuesday();
+
+      expect(
+        screen.getByRole('img', { name: 'Rest day: nothing to check off' }),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('only asks for every habit when the day shown has none due', () => {
     mockHabits({ habits: [habit({})] });
     renderTracker();
@@ -357,9 +434,11 @@ describe('DailyHabitTracker', () => {
           timeZone: 'America/Los_Angeles',
         }}
       >
-        <HabitsStateProvider>
-          <DailyHabitTracker />
-        </HabitsStateProvider>
+        <MemoryRouter>
+          <HabitsStateProvider>
+            <DailyHabitTracker />
+          </HabitsStateProvider>
+        </MemoryRouter>
       </DateContext.Provider>,
     );
 
@@ -376,9 +455,11 @@ describe('DailyHabitTracker', () => {
     });
 
     const { rerender } = render(
-      <HabitsStateProvider>
-        <DailyHabitTracker />
-      </HabitsStateProvider>,
+      <MemoryRouter>
+        <HabitsStateProvider>
+          <DailyHabitTracker />
+        </HabitsStateProvider>
+      </MemoryRouter>,
     );
 
     expect(
@@ -393,9 +474,11 @@ describe('DailyHabitTracker', () => {
     });
 
     rerender(
-      <HabitsStateProvider>
-        <DailyHabitTracker />
-      </HabitsStateProvider>,
+      <MemoryRouter>
+        <HabitsStateProvider>
+          <DailyHabitTracker />
+        </HabitsStateProvider>
+      </MemoryRouter>,
     );
 
     expect(

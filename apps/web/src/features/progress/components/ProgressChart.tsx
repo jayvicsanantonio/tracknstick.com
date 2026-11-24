@@ -17,6 +17,9 @@ import {
 import { parseDateKey } from '@shared/utils/date/formatDate';
 import { triggerHaptic } from '@shared/utils/haptics';
 
+/** Heights, in percent, of the faint bars an empty month shows. */
+const EMPTY_BAR_HEIGHTS = [30, 55, 40, 70, 45, 60, 35, 75, 50, 65];
+
 interface ProgressChartProps {
   data: { date: string; completionRate: number }[];
 }
@@ -72,9 +75,32 @@ const ProgressChart = memo(function ProgressChart({
 
   if (data.length === 0) {
     return (
-      <p className="flex h-62 items-center justify-center rounded-2xl border border-dashed border-(--color-brand-primary)/25 bg-(--color-brand-primary)/5 px-4 text-center text-sm text-(--color-text-secondary)">
-        Nothing to chart for this month yet.
-      </p>
+      // Keyed so React builds the drawn chart afresh rather than reusing
+      // these nodes, which the browser would report as a layout shift.
+      <div
+        key="empty-chart"
+        className="relative flex h-62 flex-col items-center justify-end overflow-hidden rounded-2xl bg-(--color-brand-primary)/[0.04] px-4 pb-4"
+      >
+        {/* Faint bars hint at the chart a month of check-ins draws. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-4 top-6 bottom-20 flex items-end gap-2"
+        >
+          {EMPTY_BAR_HEIGHTS.map((height, index) => (
+            <span
+              key={index}
+              style={{ height: `${height}%` }}
+              className="flex-1 rounded-t-md bg-(--color-brand-primary)/10"
+            />
+          ))}
+        </div>
+        <p className="relative text-[15px] font-semibold text-(--color-foreground)">
+          No check-ins this month yet
+        </p>
+        <p className="relative mt-1 text-center text-[13px] text-(--color-text-secondary)">
+          Check off a habit and each day&apos;s completion shows here.
+        </p>
+      </div>
     );
   }
 

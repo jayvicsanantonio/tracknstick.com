@@ -215,8 +215,8 @@ const ProgressHeroSummary = memo(function ProgressHeroSummary({
             {isLoading ? (
               <span className="h-7 w-14 animate-pulse rounded-lg bg-(--color-brand-primary)/14 motion-reduce:animate-none sm:h-9 sm:w-16" />
             ) : overallCompletionRate === null ? (
-              <span className="text-[24px] leading-none font-bold text-(--color-text-secondary) sm:text-[28px]">
-                —
+              <span className="text-[15px] leading-none font-semibold text-(--color-text-secondary) sm:text-[17px]">
+                No data yet
               </span>
             ) : (
               <span className="text-[28px] leading-none font-bold tracking-[-0.03em] text-(--color-brand-primary) tabular-nums sm:text-[34px]">

@@ -14,6 +14,8 @@ interface CalendarDayCellProps {
   dayData?: InsightData;
   /** The month's history is still on its way: a past day shows a plain ring. */
   loading?: boolean;
+  /** The day came before the user started: nothing could have been due. */
+  isBeforeStart?: boolean;
   /** Invoked when a past or today cell is tapped. */
   onSelect?: (dayOfMonth: number) => void;
 }
@@ -109,18 +111,23 @@ const CalendarDayCell = memo(function CalendarDayCell({
   isToday,
   dayData,
   loading = false,
+  isBeforeStart = false,
   onSelect,
 }: CalendarDayCellProps) {
-  const hasHappened = isPast || isToday;
+  // A day before the user started draws like a day still to come: it has no
+  // result, and nothing on the Tracker to open.
+  const hasHappened = (isPast || isToday) && !isBeforeStart;
   const rate = dayData ? Math.round(dayData.completionRate) : null;
 
-  const label = !hasHappened
-    ? `Day ${dayOfMonth}`
-    : loading
-      ? `Day ${dayOfMonth}: loading`
-      : rate === null
-        ? `Day ${dayOfMonth}: nothing scheduled`
-        : `Day ${dayOfMonth}: ${rate}% completed`;
+  const label = isBeforeStart
+    ? `Day ${dayOfMonth}: before you started`
+    : !hasHappened
+      ? `Day ${dayOfMonth}`
+      : loading
+        ? `Day ${dayOfMonth}: loading`
+        : rate === null
+          ? `Day ${dayOfMonth}: nothing scheduled`
+          : `Day ${dayOfMonth}: ${rate}% completed`;
 
   const interactive = hasHappened && Boolean(onSelect);
 

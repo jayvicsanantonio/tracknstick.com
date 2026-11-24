@@ -9,7 +9,7 @@ import { CalendarDay } from '@/features/progress/types/CalendarDay';
  * first, shifting every cell by the offset and blanking the calendar for
  * western timezones.
  */
-function toLocalDateKey(date: Date): string {
+export function toLocalDateKey(date: Date): string {
   const month = `${date.getMonth() + 1}`.padStart(2, '0');
   const day = `${date.getDate()}`.padStart(2, '0');
   return `${date.getFullYear()}-${month}-${day}`;

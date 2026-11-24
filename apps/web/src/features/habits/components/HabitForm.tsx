@@ -14,6 +14,7 @@ import {
 } from '@shared/components/ui/alert-dialog';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
+import type { HabitDraft } from '@/features/habits/context/HabitsStateContextDefinition';
 import { Frequency } from '@/features/habits/types/Frequency';
 import HabitsIcons from '@/icons/habits';
 import { useHabits } from '@/features/habits/hooks/useHabits';
@@ -31,24 +32,27 @@ import {
 interface HabitFormProps {
   formId?: string;
   habit?: Habit | null;
+  /** A new habit's starting values, as from a starter habit. */
+  draft?: HabitDraft | null;
   toggleDialog: () => void;
 }
 
 const HabitForm = memo(function HabitForm({
   formId,
   habit,
+  draft,
   toggleDialog,
 }: HabitFormProps) {
   const { timeZone } = useDate();
   const { addHabit, updateHabit, deleteHabit } = useHabits();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [name, setName] = useState<string>(habit?.name ?? '');
+  const [name, setName] = useState<string>(habit?.name ?? draft?.name ?? '');
   const [frequency, setFrequency] = useState<Frequency[]>(
-    habit?.frequency ?? [],
+    habit?.frequency ?? draft?.frequency ?? [],
   );
   const [icon, setIcon] = useState<keyof typeof HabitsIcons | undefined>(
-    habit?.icon,
+    habit?.icon ?? draft?.icon,
   );
   const [startDate, setStartDate] = useState<Date | null>(
     habit?.startDate

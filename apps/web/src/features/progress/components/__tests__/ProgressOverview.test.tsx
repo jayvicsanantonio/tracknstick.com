@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ProgressOverview from '../ProgressOverview';
+import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import useProgressHistory from '../../hooks/useProgressHistory';
 import useProgressSummary from '../../hooks/useProgressSummary';
 
@@ -63,7 +64,9 @@ const loaded = {
 function renderOverview() {
   render(
     <MemoryRouter>
-      <ProgressOverview />
+      <HabitsStateProvider>
+        <ProgressOverview />
+      </HabitsStateProvider>
     </MemoryRouter>,
   );
 }
@@ -113,6 +116,86 @@ describe('ProgressOverview', () => {
 
     expect(
       screen.getByRole('status', { name: 'All-time consistency: no data yet' }),
+    ).toBeInTheDocument();
+  });
+
+  describe('before the first check-in', () => {
+    const fresh = {
+      ...loaded.summary,
+      currentStreak: 0,
+      longestStreak: 0,
+      totalCompletions: 0,
+      activeDays: 0,
+      perfectDays: 0,
+      overallCompletionRate: null,
+    };
+
+    it('invites a user with no habits to add one, in place of a summary of zeros', () => {
+      vi.mocked(useProgressSummary).mockReturnValue({
+        ...fresh,
+        activeHabitsCount: 0,
+      });
+
+      renderOverview();
+
+      expect(
+        screen.getByRole('heading', { name: 'Your progress shows up here' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Add habit' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('region', { name: 'All-time progress summary' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('points a user with habits to the Tracker for their first check-in', () => {
+      vi.mocked(useProgressSummary).mockReturnValue({
+        ...fresh,
+        activeHabitsCount: 2,
+      });
+
+      renderOverview();
+
+      expect(
+        screen.getByRole('heading', { name: 'Check off your first habit' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: 'Go to Tracker' }),
+      ).toHaveAttribute('href', '/');
+    });
+
+    it('keeps the summary while it loads, so the prompt never flashes', () => {
+      vi.mocked(useProgressSummary).mockReturnValue({
+        ...fresh,
+        activeHabitsCount: 0,
+        isLoading: true,
+      });
+
+      renderOverview();
+
+      expect(
+        screen.queryByRole('heading', { name: 'Your progress shows up here' }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('region', { name: 'All-time progress summary' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('tells the calendar which days came before the user started', () => {
+    vi.mocked(useProgressSummary).mockReturnValue({
+      ...loaded.summary,
+      memberSince: '2026-11-10',
+    });
+
+    renderOverview();
+
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 9: before you started' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 10: nothing scheduled' }),
     ).toBeInTheDocument();
   });
 

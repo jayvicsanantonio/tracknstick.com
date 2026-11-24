@@ -91,6 +91,33 @@ describe('AchievementsSummary', () => {
     expect(within(nextUp).getByText('90 / 100')).toBeInTheDocument();
   });
 
+  it('puts the easy first wins first when nothing has progress yet', () => {
+    renderSummary({
+      achievements: [
+        achievement('2', 'Perfect Month', progress(0, 30)),
+        achievement('3', 'Perfect Week', progress(0, 7)),
+        achievement('4', 'Building Momentum', {
+          category: 'getting_started',
+          ...progress(0, 3),
+        }),
+        achievement('5', 'Getting Started', {
+          category: 'getting_started',
+          ...progress(0, 1),
+        }),
+      ],
+    });
+
+    const nextUp = screen.getByRole('list', { name: 'Next up' });
+    const names = within(nextUp)
+      .getAllByRole('listitem')
+      .map((item) => item.querySelector('p')?.textContent);
+    expect(names).toEqual([
+      'Getting Started',
+      'Building Momentum',
+      'Perfect Week',
+    ]);
+  });
+
   it('says so when every achievement is earned', () => {
     renderSummary({
       achievements: [achievements[0]],

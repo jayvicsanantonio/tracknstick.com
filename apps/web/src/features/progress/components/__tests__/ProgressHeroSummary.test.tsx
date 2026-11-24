@@ -70,7 +70,7 @@ describe('ProgressHeroSummary', () => {
     expect(screen.getByText('Tracking 1 active habit')).toBeInTheDocument();
     expect(
       screen.getByRole('status', { name: 'All-time consistency: no data yet' }),
-    ).toHaveTextContent('—');
+    ).toHaveTextContent('No data yet');
     expect(
       screen.getByRole('status', { name: 'Current streak: 1 day, best yet' }),
     ).toHaveTextContent('Best yet');

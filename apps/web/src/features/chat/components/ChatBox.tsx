@@ -36,6 +36,12 @@ const SUGGESTED_QUESTIONS: {
   { question: 'How do I break a bad habit?', Icon: Ban },
 ];
 
+/** Leads the suggestions for a user with no habits, in place of the first. */
+const FIRST_HABIT_QUESTION = {
+  question: 'Help me pick my first habit',
+  Icon: Sprout,
+};
+
 const PIN_THRESHOLD_PX = 80;
 const JUMP_BUTTON_THRESHOLD_PX = 120;
 const NAV_COLLAPSE_SCROLL_PX = 48;
@@ -47,9 +53,15 @@ interface ChatBoxProps {
   conversation: ChatConversation;
   /** Reports whether the internal chat log has scrolled past the top so the mobile nav bar can collapse. */
   onScrollStateChange?: (scrolled: boolean) => void;
+  /** The user has no habits yet: the first suggestion helps choose one. */
+  hasNoHabits?: boolean;
 }
 
-export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
+export function ChatBox({
+  conversation,
+  onScrollStateChange,
+  hasNoHabits = false,
+}: ChatBoxProps) {
   const { messages, isLoading, error, sendMessage } = conversation;
   const logRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -215,7 +227,10 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
                 aria-label="Suggested questions"
                 className="grid w-full gap-2.5 sm:gap-3 md:grid-cols-3"
               >
-                {SUGGESTED_QUESTIONS.map(({ question, Icon }) => (
+                {(hasNoHabits
+                  ? [FIRST_HABIT_QUESTION, ...SUGGESTED_QUESTIONS.slice(1)]
+                  : SUGGESTED_QUESTIONS
+                ).map(({ question, Icon }) => (
                   <li key={question}>
                     <SuggestionCard
                       text={question}

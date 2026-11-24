@@ -9,6 +9,7 @@ import { SquarePen } from 'lucide-react';
 import { usePageTitle } from '@shared/hooks/usePageTitle';
 import { ChatBox } from '@/features/chat/components/ChatBox';
 import { useChatConversationContext } from '@/features/chat/hooks/useChatConversationContext';
+import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import PageHeader from '@/features/layout/components/PageHeader';
 import { APP_MAX_WIDTH, PAGE_HEADER_ACTION } from '@shared/constants/layout';
@@ -23,6 +24,11 @@ function CoachPage() {
   const isMobile = useIsMobile();
   const { height: viewportHeight, isKeyboardOpen } = useVisualViewport();
   const [isLogScrolled, setIsLogScrolled] = useState(false);
+  // A user with no habits is offered help choosing one; until the list has
+  // loaded, the usual questions show.
+  const allHabits = useAllHabits();
+  const hasNoHabits =
+    !allHabits.isLoading && !allHabits.error && allHabits.habits.length === 0;
 
   const mobileHeightStyle =
     isMobile && isKeyboardOpen && viewportHeight
@@ -98,6 +104,7 @@ function CoachPage() {
         <ChatBox
           conversation={conversation}
           onScrollStateChange={setIsLogScrolled}
+          hasNoHabits={hasNoHabits}
         />
       </div>
     </section>

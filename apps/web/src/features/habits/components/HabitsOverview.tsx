@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo, type ReactNode } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import {
@@ -18,13 +18,15 @@ import {
   Archive,
   ChevronRight,
   ListChecks,
+  Plus,
   Search,
   SearchX,
   Trash2,
   WifiOff,
   X,
-  type LucideIcon,
 } from 'lucide-react';
+import EmptyState from '@shared/components/feedback/EmptyState';
+import NoHabits from '@/features/habits/components/NoHabits';
 import { Habit } from '@/features/habits/types/Habit';
 import HabitsIcons from '@/icons/habits';
 import SwipeableHabitRow from '@/features/habits/components/SwipeableHabitRow';
@@ -51,37 +53,6 @@ function frequencyText(habit: Habit) {
   return habit.frequency.length === 7
     ? frequencyLabel(habit.frequency)
     : habit.frequency.map((day) => day.substring(0, 3)).join(' · ');
-}
-
-/** An empty list's explanation: an icon, what happened, and what to do next. */
-function EmptyResult({
-  Icon,
-  title,
-  detail,
-  children,
-}: {
-  Icon: LucideIcon;
-  title: string;
-  detail: string;
-  children?: ReactNode;
-}) {
-  return (
-    <div className="ios-tracker-card mx-auto flex w-full max-w-md flex-col items-center rounded-[26px] px-6 py-12 text-center sm:px-8 sm:py-14">
-      <span className="mb-4 flex size-13 items-center justify-center rounded-2xl bg-(--color-brand-primary)/14 ring-1 ring-(--color-brand-primary)/24 ring-inset">
-        <Icon
-          aria-hidden="true"
-          className="h-6 w-6 text-(--color-brand-primary)"
-        />
-      </span>
-      <p className="text-lg font-semibold tracking-tight text-(--color-foreground)">
-        {title}
-      </p>
-      <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
-        {detail}
-      </p>
-      {children ? <div className="mt-5">{children}</div> : null}
-    </div>
-  );
 }
 
 interface DesktopHabitCardProps {
@@ -332,6 +303,27 @@ const HabitsOverview = memo(function HabitsOverview() {
     );
   }
 
+  // With no habits there is nothing to search or filter, so the first-habit
+  // prompt the Tracker shows takes the page on its own.
+  if (habits.length === 0) {
+    return (
+      <div className="flex h-full flex-1 flex-col">
+        <MobileNavBar title="Habits" />
+        <div
+          className={cn(
+            PAGE_CONTAINER,
+            'flex flex-1 flex-col max-sm:pb-28 sm:pt-1',
+          )}
+        >
+          {pageHeader}
+          <div className="flex flex-1 items-center justify-center">
+            <NoHabits />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-1 flex-col">
       <MobileNavBar title="Habits" />
@@ -412,7 +404,7 @@ const HabitsOverview = memo(function HabitsOverview() {
         {filteredHabits.length === 0 ? (
           <div className="py-2 sm:py-8">
             {searchTerm ? (
-              <EmptyResult
+              <EmptyState
                 Icon={SearchX}
                 title={`No habits match “${searchTerm}”`}
                 detail="Check the spelling, or try fewer letters."
@@ -424,15 +416,15 @@ const HabitsOverview = memo(function HabitsOverview() {
                 >
                   Clear search
                 </Button>
-              </EmptyResult>
+              </EmptyState>
             ) : selectedTab === 'archived' ? (
-              <EmptyResult
+              <EmptyState
                 Icon={Archive}
                 title="No archived habits"
                 detail="Habits you give an end date appear here, with their history intact."
               />
-            ) : habits.length > 0 ? (
-              <EmptyResult
+            ) : (
+              <EmptyState
                 Icon={ListChecks}
                 title="No active habits"
                 detail="All your habits are archived. Add a new one, or find the others under Archived."
@@ -441,22 +433,10 @@ const HabitsOverview = memo(function HabitsOverview() {
                   className="h-11 rounded-full px-6"
                   onClick={toggleShowAddHabitDialog}
                 >
+                  <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
                   Add habit
                 </Button>
-              </EmptyResult>
-            ) : (
-              <EmptyResult
-                Icon={ListChecks}
-                title="No habits yet"
-                detail="Add your first habit to start tracking it every day."
-              >
-                <Button
-                  className="h-11 rounded-full px-6"
-                  onClick={toggleShowAddHabitDialog}
-                >
-                  Add habit
-                </Button>
-              </EmptyResult>
+              </EmptyState>
             )}
           </div>
         ) : (
