@@ -116,3 +116,27 @@ test('opens the Coach page from the tab bar with composer above it', async ({
   if (!textboxBox || !tabsBox) return;
   expect(textboxBox.y + textboxBox.height).toBeLessThanOrEqual(tabsBox.y);
 });
+
+test('puts the Coach suggestions in compact rows just above the composer', async ({
+  page,
+}) => {
+  await page
+    .getByRole('navigation', { name: 'Primary' })
+    .getByRole('link', { name: 'Coach' })
+    .click();
+
+  const suggestions = page
+    .getByRole('list', { name: 'Suggested questions' })
+    .getByRole('button');
+  const textbox = page.getByRole('textbox', { name: 'Ask the habit coach' });
+  await expect(suggestions).toHaveCount(3);
+  const [lastBox, textboxBox] = await Promise.all([
+    suggestions.last().boundingBox(),
+    textbox.boundingBox(),
+  ]);
+  if (!lastBox || !textboxBox) throw new Error('The Coach did not render');
+
+  // Within thumb reach, with no empty stretch between them and the composer.
+  expect(textboxBox.y - (lastBox.y + lastBox.height)).toBeLessThanOrEqual(60);
+  expect(lastBox.height).toBeLessThanOrEqual(60);
+});

@@ -2,7 +2,7 @@
 // fetch is stubbed with a streamed Response so each test controls when and what the coach replies.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChatBox } from '../ChatBox';
 import { useChatConversation } from '@features/chat/hooks/useChatConversation';
@@ -255,6 +255,33 @@ describe('ChatBox', () => {
         );
       }
     }
+  });
+
+  it('lists the suggested questions without a count beside them', () => {
+    renderChatBox();
+
+    expect(
+      screen.getByRole('list', { name: 'Suggested questions' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('3')).not.toBeInTheDocument();
+  });
+
+  it('labels each coach reply on phones, where the reply takes the full width', async () => {
+    const reply = controlledReply();
+    fetchMock.mockResolvedValue(reply.response);
+
+    renderChatBox();
+
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Ask the habit coach' }),
+      'Tips?{Enter}',
+    );
+    reply.send('Start small.');
+    reply.end();
+
+    const label = await within(screen.getByRole('log')).findByText('Coach');
+    // Wider screens keep the coach's emblem beside the reply instead.
+    expect(label).toHaveClass('sm:hidden');
   });
 
   it('renders styled markdown lists and offers Copy once a reply finishes', async () => {

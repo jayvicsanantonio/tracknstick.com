@@ -12,10 +12,11 @@ import {
 } from 'react';
 import {
   AlertCircle,
-  ArrowUpRight,
+  ArrowUp,
   Ban,
   CalendarCheck2,
   ChevronDown,
+  Sparkles,
   Sprout,
 } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
@@ -166,15 +167,23 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
       >
         <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-3.5 pb-6 sm:gap-4">
           {messages.length === 0 && (
-            <div className="flex flex-col">
-              {/* Elevated welcome hero card matching phone across all screen sizes */}
-              <div className="ios-tracker-card relative overflow-hidden rounded-[26px] p-5 sm:p-7">
+            // Phones seat the welcome and suggestions just above the message
+            // box, within thumb reach; wider screens start them at the top.
+            <div className="flex flex-col max-sm:mt-auto">
+              {/* Open welcome on phones; an elevated hero card on wider screens */}
+              <div className="ios-tracker-card-sm relative overflow-hidden px-1 sm:rounded-[26px] sm:p-7">
                 <div className="relative min-w-0">
-                  <div className="mb-1.5 flex items-center gap-1.5">
+                  <div className="mb-1.5 flex items-center gap-1.5 max-sm:mb-2.5 max-sm:gap-2">
                     <span
                       aria-hidden="true"
-                      className="size-1.5 rounded-full bg-(--color-brand-primary)"
+                      className="size-1.5 rounded-full bg-(--color-brand-primary) max-sm:hidden"
                     />
+                    <span
+                      aria-hidden="true"
+                      className="flex size-7 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/25 ring-inset sm:hidden"
+                    >
+                      <Sparkles className="size-3.5" />
+                    </span>
                     <span className="text-[11px] leading-none font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
                       Atomic Habits
                     </span>
@@ -190,7 +199,7 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
               </div>
 
               {/* Section header matching Tracker's TODAY'S HABITS & Habits' ALL HABITS */}
-              <div className="mt-5 mb-2.5 flex items-center justify-between px-1 sm:mt-6 sm:mb-3">
+              <div className="mt-5 mb-2.5 flex items-center px-1 sm:mt-6 sm:mb-3">
                 <div className="flex items-center gap-1.5">
                   <span
                     aria-hidden="true"
@@ -200,9 +209,6 @@ export function ChatBox({ conversation, onScrollStateChange }: ChatBoxProps) {
                     Suggested Prompts
                   </span>
                 </div>
-                <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-[11px] font-semibold text-(--color-brand-text) tabular-nums ring-1 ring-(--color-brand-primary)/20 ring-inset dark:text-(--color-brand-text-light)">
-                  {SUGGESTED_QUESTIONS.length}
-                </span>
               </div>
 
               <ul
@@ -304,21 +310,22 @@ function SuggestionCard({
     <button
       type="button"
       onClick={onClick}
-      className="ios-tracker-card group flex h-full min-h-[72px] w-full cursor-pointer items-center gap-3.5 rounded-[20px] px-3.5 py-3 text-left text-[15px] leading-snug font-semibold text-(--color-foreground) transition-[background-color,border-color,transform] hover:border-(--color-brand-primary)/35 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] md:min-h-0 md:flex-col md:items-start md:gap-4 md:p-4"
+      className="ios-tracker-card group flex h-full min-h-14 w-full cursor-pointer items-center gap-3 rounded-[18px] px-3 py-2.5 text-left text-[15px] leading-snug font-semibold text-(--color-foreground) transition-[background-color,border-color,transform] hover:border-(--color-brand-primary)/35 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] md:min-h-0 md:flex-col md:items-start md:gap-4 md:rounded-[20px] md:p-4"
     >
       <div className="flex shrink-0 items-center justify-between md:w-full">
-        <span className="flex size-12 items-center justify-center rounded-[15px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset md:size-11 md:rounded-[14px]">
-          <Icon aria-hidden={true} className="size-6 md:size-5" />
+        <span className="flex size-9 items-center justify-center rounded-[11px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset md:size-11 md:rounded-[14px]">
+          <Icon aria-hidden={true} className="size-[18px] md:size-5" />
         </span>
-        <ArrowUpRight
+        <ArrowUp
           aria-hidden="true"
-          className="hidden size-4 text-(--color-brand-primary)/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:block"
+          className="hidden size-4 text-(--color-brand-primary)/60 transition-transform group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:block"
         />
       </div>
       <span className="flex-1">{text}</span>
-      <ArrowUpRight
+      {/* Picking a suggestion sends it, like the message box's send arrow */}
+      <ArrowUp
         aria-hidden="true"
-        className="size-4 shrink-0 text-(--color-brand-primary)/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:hidden"
+        className="size-4 shrink-0 text-(--color-brand-primary)/60 transition-transform group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:hidden"
       />
     </button>
   );
