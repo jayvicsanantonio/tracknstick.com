@@ -23,7 +23,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>Track N' Stick</title>
     <!-- iOS shows one of these while an installed app opens: the splash's
-         emerald and dial, where the splash below draws them. Written by
+         emerald, for the splash below to draw its ring in. Written by
          scripts/generateIcons.mjs (pnpm icons); edit the script, not these. -->
     <!-- launch-images:start -->
     <link
@@ -205,8 +205,8 @@
         visibility: hidden;
         pointer-events: none;
       }
-      /* 176 pixels for the medallion's 200 units, the size the iOS launch
-         images draw its dial at, at the centre of the screen. */
+      /* 176 pixels for the medallion's 200 units, at the centre of the
+         screen. */
       .splash-medallion {
         width: 176px;
         height: 176px;
@@ -223,8 +223,9 @@
         animation: splash-draw 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.15s
           forwards;
       }
+      /* The check draws in once the ring has closed. */
       .splash-check {
-        animation: splash-draw 0.35s ease-out 0.85s forwards;
+        animation: splash-draw 0.35s ease-out 0.95s forwards;
       }
       .splash-wordmark {
         position: absolute;
@@ -288,8 +289,8 @@
   <body>
     <div id="splash" role="status" aria-label="Loading Track N' Stick">
       <!-- The app icon's medallion: the Daily Tracker's completed ring and
-           check around a dial, in the same 200 unit space. The ring sweeps
-           closed from the top and the check draws in. -->
+           its check, in the same 200 unit space. The ring sweeps closed
+           from the top, then the check draws in inside it. -->
       <svg
         class="splash-medallion"
         viewBox="0 0 200 200"
@@ -309,10 +310,6 @@
             <stop offset="0.48" stop-color="#e13d97" />
             <stop offset="1" stop-color="#d8137f" />
           </linearGradient>
-          <radialGradient id="splash-dial" cx="0.5" cy="0.42" r="0.6">
-            <stop offset="0" stop-color="#fbe4f0" />
-            <stop offset="1" stop-color="#fadded" />
-          </radialGradient>
           <linearGradient
             id="splash-check"
             gradientUnits="userSpaceOnUse"
@@ -326,15 +323,6 @@
             <stop offset="1" stop-color="#e869af" />
           </linearGradient>
         </defs>
-        <circle cx="100" cy="100" r="67" fill="url(#splash-dial)" />
-        <circle
-          cx="100"
-          cy="100"
-          r="67"
-          fill="none"
-          stroke="#f4b7d8"
-          stroke-width="0.85"
-        />
         <path
           class="splash-ring"
           d="M100 17a83 83 0 1 1 0 166a83 83 0 1 1 0-166"

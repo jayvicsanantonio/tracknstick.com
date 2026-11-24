@@ -1,12 +1,17 @@
-// The loading state shown while a page's code downloads: the launch splash's medallion, small.
+// The loading state shown while a page's code downloads: the app icon's medallion, small.
 // In the theme's brand colour, with an arc travelling round the ring; still for reduced motion.
 
 import { memo } from 'react';
+import { useHoldSplash } from '@shared/hooks/useHideSplash';
 
 // The ring, from its top and clockwise, as the launch splash draws it.
 const RING = 'M100 17a83 83 0 1 1 0 166a83 83 0 1 1 0-166';
 
 const LoadingFallback = memo(function LoadingFallback() {
+  // Under the launch splash, the first page's code is still on its way: the
+  // splash waits for the page, so it never fades onto this.
+  useHoldSplash(true);
+
   return (
     <div className="flex flex-1 items-center justify-center py-24">
       <div role="status" aria-label="Loading" className="flex">

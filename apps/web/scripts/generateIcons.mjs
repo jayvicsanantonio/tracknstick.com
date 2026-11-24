@@ -153,12 +153,6 @@ for (const [name, contents] of Object.entries(files)) {
   console.log(`wrote public/icons/${name}`);
 }
 
-// The launch splash in index.html draws the medallion's 200 units at 176
-// CSS pixels, centred on the screen. Each launch image draws the emerald and
-// the dial there, so the in-app splash takes over with the ring and check
-// sweeping in around a dial that does not move.
-const SPLASH_MEDALLION_POINTS = 176;
-
 // Screens in points and their pixel ratio: every iPhone since the SE of
 // 2016, and the iPads, which also open in landscape.
 const IPHONES = [
@@ -187,22 +181,14 @@ const IPADS = [
   [744, 1133, 2], // mini 6th generation
 ];
 
-/** A launch image of `width` by `height` pixels at `ratio` pixels a point. */
-function launchImageSvg(width, height, ratio) {
-  const { dial, hairline } = APP_ICON;
-  const scale = (SPLASH_MEDALLION_POINTS * ratio) / 200;
+/**
+ * A launch image of `width` by `height` pixels: the splash's emerald alone,
+ * so the launch splash in index.html takes over with its ring sweeping closed
+ * from nothing.
+ */
+function launchImageSvg(width, height) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <defs>
-    <radialGradient id="dial" cx="0.5" cy="0.42" r="0.6">
-      <stop offset="0" stop-color="${dial[0]}"/>
-      <stop offset="1" stop-color="${dial[1]}"/>
-    </radialGradient>
-  </defs>
   <rect width="${width}" height="${height}" fill="${APP_ICON.background}"/>
-  <g transform="translate(${width / 2} ${height / 2}) scale(${scale}) translate(-100 -100)">
-    <circle cx="100" cy="100" r="67" fill="url(#dial)"/>
-    <circle cx="100" cy="100" r="67" fill="none" stroke="${hairline}" stroke-width="0.85"/>
-  </g>
 </svg>
 `;
 }
@@ -232,7 +218,7 @@ const launchImages = [
   return {
     file: `apple-splash-${width}-${height}.png`,
     media: `screen and (device-width: ${pointsWide}px) and (device-height: ${pointsHigh}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: ${orientation})`,
-    svg: launchImageSvg(width, height, ratio),
+    svg: launchImageSvg(width, height),
   };
 });
 

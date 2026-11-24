@@ -4,7 +4,7 @@
 // every suite.
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import RootLayout from '../RootLayout';
 
@@ -64,9 +64,20 @@ vi.mock('@clerk/clerk-react', () => ({
   ),
 }));
 
-vi.mock('@/features/layout/components/Welcome', () => ({
-  default: () => <div data-testid="welcome" />,
+// While `loading` is set, the Welcome page suspends as its code still
+// downloading would.
+const mockWelcome = vi.hoisted(() => ({
+  loading: null as Promise<void> | null,
 }));
+vi.mock('@/features/layout/components/Welcome', async () => {
+  const { use } = await import('react');
+  return {
+    default: function Welcome() {
+      if (mockWelcome.loading) use(mockWelcome.loading);
+      return <div data-testid="welcome" />;
+    },
+  };
+});
 vi.mock('@/features/layout/components/Header', () => ({
   default: () => <header />,
 }));
@@ -246,28 +257,57 @@ describe('RootLayout auth gate', () => {
       splash.remove();
       mockAuth.status = 'ready';
       mockOffline.value = false;
+      mockWelcome.loading = null;
     });
 
-    it('stays up while Clerk is loading', () => {
+    it('stays up while Clerk is loading', async () => {
       mockAuth.status = 'loading';
       renderLayout();
+      await act(() => Promise.resolve());
 
       expect(splash).not.toHaveClass('splash-done');
     });
 
-    it('fades out once Clerk is ready', () => {
+    it('fades out once Clerk is ready', async () => {
+      mockAuth.isSignedIn = true;
       mockAuth.status = 'ready';
       renderLayout();
 
-      expect(splash).toHaveClass('splash-done');
+      await waitFor(() => expect(splash).toHaveClass('splash-done'));
     });
 
-    it("fades out offline, where the last visit's user is shown without Clerk", () => {
+    it("fades out offline, where the last visit's user is shown without Clerk", async () => {
+      mockAuth.isSignedIn = false;
       mockAuth.status = 'loading';
       mockOffline.value = true;
       renderLayout();
 
-      expect(splash).toHaveClass('splash-done');
+      await waitFor(() => expect(splash).toHaveClass('splash-done'));
+    });
+
+    it("stays up while the Welcome page's code downloads, then fades onto it", async () => {
+      mockAuth.isSignedIn = false;
+      mockAuth.status = 'ready';
+      let finishLoading = () => undefined as void;
+      mockWelcome.loading = new Promise<void>((resolve) => {
+        finishLoading = resolve;
+      });
+      await act(() => {
+        renderLayout();
+        return Promise.resolve();
+      });
+
+      expect(screen.queryByTestId('welcome')).not.toBeInTheDocument();
+      expect(splash).not.toHaveClass('splash-done');
+
+      mockWelcome.loading = null;
+      await act(() => {
+        finishLoading();
+        return Promise.resolve();
+      });
+
+      expect(await screen.findByTestId('welcome')).toBeInTheDocument();
+      await waitFor(() => expect(splash).toHaveClass('splash-done'));
     });
   });
 });
