@@ -1,10 +1,15 @@
-// Checks the launch splash: drawn in index.html before any script, in the app icon's colours and medallion,
+// Checks the launch splash: drawn in index.html before any script, the app icon's ring closing around its check,
 // with an iOS launch image for each device and the same emerald for Android's splash.
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { pngColourType, pngSize, topLeftPixel } from '@testing/pngImage';
+import {
+  pixelAt,
+  pngColourType,
+  pngSize,
+  topLeftPixel,
+} from '@testing/pngImage';
 
 const WEB_ROOT = path.resolve(__dirname, '../..');
 const PUBLIC = path.join(WEB_ROOT, 'public');
@@ -56,6 +61,22 @@ describe('the launch splash in index.html', () => {
     expect(themeScript).toBeLessThan(html.indexOf('<div id="root">'));
   });
 
+  it('stays hidden in a browser tab', () => {
+    expect(rule('#splash')).toMatch(/display:\s*none/);
+  });
+
+  // The home screen opens the app in its own window (display-mode:
+  // standalone). A touch screen tells a phone or tablet from a desktop,
+  // whose installed app opens straight to the page.
+  it("shows only in an app opened from a phone or tablet's home screen", () => {
+    const installed =
+      /@media \(display-mode: standalone\) and \(pointer: coarse\)\s*\{([\s\S]*?)\n {6}\}/.exec(
+        html,
+      );
+    expect(installed, 'home screen app block').not.toBeNull();
+    expect(installed?.[1]).toMatch(/#splash\s*\{\s*display:\s*grid;\s*\}/);
+  });
+
   it('tells assistive technology the app is loading', () => {
     expect(html).toMatch(
       /<div id="splash"[^>]*role="status"[^>]*aria-label="Loading Track N(&apos;|')? Stick"/,
@@ -70,12 +91,36 @@ describe('the launch splash in index.html', () => {
     );
   });
 
-  it("draws the app icon's ring, dial and check", () => {
-    for (const part of ['ring', 'dial', 'check']) {
+  it("draws one circle, the app icon's ring, closing around its check", () => {
+    const medallion =
+      /<svg\s+class="splash-medallion"[\s\S]*?<\/svg>/.exec(html)?.[0] ?? '';
+    expect(medallion, 'medallion').not.toBe('');
+    // The ring is a path, so that it can sweep closed; no filled dial.
+    expect(medallion).not.toMatch(/<circle/);
+    expect(medallion.match(/<path\b/g)).toHaveLength(2);
+    expect(medallion).toMatch(/<path\s+class="splash-ring"/);
+    expect(medallion).toMatch(/<path\s+class="splash-check"/);
+    for (const part of ['ring', 'check']) {
       expect(gradientStops(html, `splash-${part}`), part).toEqual(
         gradientStops(appIcon, part),
       );
     }
+  });
+
+  it('draws the check in once the ring has closed', () => {
+    /** The duration and delay, in seconds, of the part's draw animation. */
+    const draw = (part: string) => {
+      const match = new RegExp(
+        `\\.splash-${part}\\s*\\{[^}]*?animation:\\s*splash-draw\\s+([\\d.]+)s[^;]*?\\s([\\d.]+)s\\s+forwards`,
+      ).exec(html);
+      expect(match, part).not.toBeNull();
+      return { duration: Number(match?.[1]), delay: Number(match?.[2]) };
+    };
+    // In milliseconds, clear of floating point's rounding.
+    const ring = draw('ring');
+    expect(Math.round(draw('check').delay * 1000)).toBeGreaterThanOrEqual(
+      Math.round((ring.delay + ring.duration) * 1000),
+    );
   });
 
   it('writes the name beneath the medallion', () => {
@@ -179,6 +224,18 @@ describe('the iOS launch images', () => {
       const file = path.join(PUBLIC, image.href);
       expect(pngColourType(file), image.href).toBe(2);
       const hex = topLeftPixel(file)
+        .map((channel) => channel.toString(16).padStart(2, '0'))
+        .join('');
+      expect(`#${hex}`, image.href).toBe(ICON_EMERALD);
+    }
+  });
+
+  // The splash's ring sweeps closed there, from nothing.
+  it('leave the middle of the screen empty, for the splash to draw its ring in', () => {
+    for (const image of launchImages) {
+      const file = path.join(PUBLIC, image.href);
+      const [width, height] = pngSize(file).split('x').map(Number);
+      const hex = pixelAt(file, Math.floor(width / 2), Math.floor(height / 2))
         .map((channel) => channel.toString(16).padStart(2, '0'))
         .join('');
       expect(`#${hex}`, image.href).toBe(ICON_EMERALD);

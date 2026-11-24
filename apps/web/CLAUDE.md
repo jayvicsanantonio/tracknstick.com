@@ -94,15 +94,30 @@ audio feedback on toggle.
 
 `index.html` draws the launch splash, `#splash`, outside the React root with its
 own inline styles, so it paints before the app's stylesheet or script and React
-never re-renders it. It is the app icon come to life in every theme: the icon's
-emerald, the pink ring sweeping closed around the dial, the check, and the name.
-`RootLayout` calls `useHideSplash` to fade it out and remove it once Clerk has
-answered or an offline session begins. The iOS launch images in `public/splash`
-(and their links in `index.html`) and the manifest's `background_color` draw the
-same emerald and dial, so the OS splash leads straight into it; `pnpm icons`
+never re-renders it. It is the app icon come to life in every theme: on the
+icon's emerald, one pink ring sweeps closed, then the check draws in inside it,
+then the name. Only an app opened from a phone or tablet's home screen shows it
+(`display-mode: standalone` and `pointer: coarse`); a browser tab, or an app
+installed on a desktop, keeps it hidden. Chromium cannot emulate the display
+mode, so `e2e/splash.e2e.ts` launches it with Blink's `displayModeOverride`
+setting.
+
+`RootLayout` calls `useHideSplash` once Clerk has answered or an offline session
+begins. The splash then fades out and leaves once it has finished drawing in and
+nothing beneath holds it up, so it fades straight onto the finished first page.
+A loading state that could show beneath it calls `useHoldSplash` while it shows:
+`LoadingFallback`, the welcome page's while its code downloads, and the
+tracker's until its first habits (and, on a day with none due, the check for any
+habits at all) have loaded. A new first-screen loading state needs the same. The
+splash waits at most four seconds on them, then fades onto whatever is still
+loading.
+
+The iOS launch images in `public/splash` (and their links in `index.html`) and
+the manifest's `background_color` are the same emerald, with nothing drawn on
+it, so the OS splash leads straight into the ring sweeping in; `pnpm icons`
 regenerates the images and links. The service worker leaves the launch images
 out of its precache. `LoadingFallback`, shown while a page's code loads, is the
-medallion again, small and in the theme's brand colour.
+app icon's medallion, small and in the theme's brand colour.
 
 ### Theming
 

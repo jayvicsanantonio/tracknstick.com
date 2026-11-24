@@ -46,6 +46,7 @@ import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
 import { PAGE_CONTAINER, PAGE_HEADER_ACTION } from '@shared/constants/layout';
+import { useHoldSplash } from '@shared/hooks/useHideSplash';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { IOS_SPRING_TAP } from '@shared/utils/motion';
@@ -197,6 +198,11 @@ export default function DailyHabitTracker() {
   } = useAllHabits({
     enabled: !isLoading && !error && habits.length === 0,
   });
+
+  // The launch splash fades straight onto the settled tracker: past the
+  // skeleton, and past the check for any habits at all, whose answer may
+  // swap in the first-habit prompt.
+  useHoldSplash(isInitialLoading || (habits.length === 0 && allHabitsLoading));
 
   // Lifetime streak summary for the desktop Progress Hero card's recessed tray.
   // Skipped on phones and when DateContext is not mounted (e.g., isolated unit tests).

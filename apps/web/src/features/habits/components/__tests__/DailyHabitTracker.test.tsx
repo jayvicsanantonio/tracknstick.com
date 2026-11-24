@@ -1,13 +1,14 @@
-// Covers what the daily tracker shows: which habits are done, and what a failed load offers.
-// A completed habit carries a visible check, and a load error offers a way to try again.
+// Covers what the daily tracker shows: which habits are done, what a failed load offers, and when the splash goes.
+// A completed habit carries a visible check, a load error offers a way to try again, and the first load holds the splash.
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DailyHabitTracker from '../DailyHabitTracker';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
+import { useHideSplash } from '@shared/hooks/useHideSplash';
 import type { Habit } from '@/features/habits/types/Habit';
 
 vi.mock('@/features/habits/hooks/useHabits', () => ({ useHabits: vi.fn() }));
@@ -86,6 +87,80 @@ function renderTracker() {
     </HabitsStateProvider>,
   );
 }
+
+/** The app, ready: it would take the launch splash down now. */
+function AppReady() {
+  useHideSplash(true);
+  return null;
+}
+
+describe('DailyHabitTracker under the launch splash', () => {
+  let splash: HTMLElement;
+
+  /** The tracker as the first page, with the app ready around it. */
+  function renderFirstPage() {
+    return render(
+      <HabitsStateProvider>
+        <AppReady />
+        <DailyHabitTracker />
+      </HabitsStateProvider>,
+    );
+  }
+
+  async function rerenderFirstPage(rerender: (ui: React.ReactNode) => void) {
+    rerender(
+      <HabitsStateProvider>
+        <AppReady />
+        <DailyHabitTracker />
+      </HabitsStateProvider>,
+    );
+    await act(() => Promise.resolve());
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockAllHabits([]);
+    splash = document.createElement('div');
+    splash.id = 'splash';
+    document.body.append(splash);
+  });
+
+  afterEach(() => {
+    splash.remove();
+  });
+
+  it("keeps it up while the day's habits load, then lets it fade onto them", async () => {
+    mockHabits({ isLoading: true });
+    const { rerender } = renderFirstPage();
+    await act(() => Promise.resolve());
+    expect(splash).not.toHaveClass('splash-done');
+
+    mockHabits({ habits: [habit({})] });
+    await rerenderFirstPage(rerender);
+    expect(splash).toHaveClass('splash-done');
+  });
+
+  // A day with nothing due waits on every habit to choose between the
+  // first-habit prompt and "nothing today", which lay the page out apart.
+  it('keeps it up while a day with nothing due checks for any habits at all', async () => {
+    mockHabits({ habits: [] });
+    vi.mocked(useAllHabits).mockReturnValue({
+      habits: [],
+      isLoading: true,
+      error: undefined,
+      deleteHabit: vi.fn(),
+      retry: retryAllHabits,
+    } as unknown as ReturnType<typeof useAllHabits>);
+    const { rerender } = renderFirstPage();
+    await act(() => Promise.resolve());
+    expect(splash).not.toHaveClass('splash-done');
+
+    mockAllHabits([]);
+    await rerenderFirstPage(rerender);
+    expect(screen.getByText('No habits yet')).toBeInTheDocument();
+    expect(splash).toHaveClass('splash-done');
+  });
+});
 
 describe('DailyHabitTracker', () => {
   beforeEach(() => {

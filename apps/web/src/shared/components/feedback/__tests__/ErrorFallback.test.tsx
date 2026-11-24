@@ -2,7 +2,7 @@
 // An error during the first render skips the layout's splash hand-off, so the error screen takes it down.
 
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ErrorFallback } from '../ErrorFallback';
 
 describe('ErrorFallback', () => {
@@ -21,13 +21,13 @@ describe('ErrorFallback', () => {
     ).toBeInTheDocument();
   });
 
-  it('takes down the launch splash, which would otherwise hide it', () => {
+  it('takes down the launch splash, which would otherwise hide it', async () => {
     const splash = document.createElement('div');
     splash.id = 'splash';
     document.body.append(splash);
 
     render(<ErrorFallback />);
 
-    expect(splash).toHaveClass('splash-done');
+    await waitFor(() => expect(splash).toHaveClass('splash-done'));
   });
 });

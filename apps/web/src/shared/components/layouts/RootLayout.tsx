@@ -6,7 +6,7 @@ import Footer from '@/features/layout/components/Footer';
 import MobileTabBar from '@/features/layout/components/MobileTabBar';
 import { MobileShellProvider } from '@/features/layout/context/MobileShellContext';
 import { ChatConversationProvider } from '@features/chat/context/ChatConversationContext';
-import { useHideSplash } from '@shared/hooks/useHideSplash';
+import { useHideSplash, useHoldSplash } from '@shared/hooks/useHideSplash';
 import { useOfflineSession } from '@shared/hooks/useOfflineSession';
 import { reloadPage } from '@shared/utils/reloadPage';
 
@@ -27,6 +27,15 @@ import SignedInOrOffline from './SignedInOrOffline';
 const Welcome = lazy(() => import('@/features/layout/components/Welcome'));
 
 /**
+ * The welcome page while its code downloads: nothing, and the launch splash
+ * held up over it, so the splash fades straight onto the welcome page.
+ */
+function WelcomeLoading() {
+  useHoldSplash(true);
+  return null;
+}
+
+/**
  * Root layout component that handles authentication-based rendering
  *
  * - On phones (< sm): full-bleed native iOS shell — each page renders its own
@@ -44,6 +53,7 @@ const RootLayout = memo(function RootLayout() {
   const { status } = useClerk();
   // The launch splash in index.html covers the page until there is
   // something to show: Clerk's answer, or the last visit's user offline.
+  // The page beneath holds it up while it loads (useHoldSplash).
   useHideSplash(offline || status !== 'loading');
   // Stays true once set: React re-renders between the 'online' event's
   // listeners, so the offline session can end before the reload's listener
@@ -70,7 +80,7 @@ const RootLayout = memo(function RootLayout() {
       <main className="relative flex min-h-0 flex-1 flex-col">
         <SignedOut>
           <h1 className="sr-only">Welcome</h1>
-          <Suspense fallback={null}>
+          <Suspense fallback={<WelcomeLoading />}>
             <Welcome />
           </Suspense>
         </SignedOut>
