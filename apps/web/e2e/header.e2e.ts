@@ -112,7 +112,8 @@ test.describe('on a phone', () => {
     page,
   }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Previous Date' }).click();
+    const previous = page.getByRole('button', { name: 'Previous Date' });
+    await previous.click();
 
     // No visible button: the gesture, and its hint, take you back.
     await expect(
@@ -122,9 +123,34 @@ test.describe('on a phone', () => {
       page.getByText('Swipe to switch days · Double-tap the date for today'),
     ).toBeVisible();
 
-    await page.getByText(/^[A-Z][a-z]{2} \d{1,2}/).dblclick();
+    // The date in the capsule between the arrows, not the week strip's range.
+    await previous
+      .locator('..')
+      .getByText(/^[A-Z][a-z]{2} \d{1,2}/)
+      .dblclick();
 
-    await expect(page.getByRole('heading', { name: 'Today' })).toBeAttached();
+    await expect(
+      page.getByRole('heading', { name: 'Today', exact: true }),
+    ).toBeAttached();
     await expect(page.getByText('Swipe to switch days')).toBeVisible();
+  });
+  test('on another day, a keyboard user can see and use Go to today', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const previous = page.getByRole('button', { name: 'Previous Date' });
+    await previous.click();
+    await page.keyboard.press('Tab');
+
+    const goToToday = page.getByRole('button', { name: 'Go to today' });
+    await expect(goToToday).toBeFocused();
+    // Shown over the date while focused, not a 1px screen-reader box.
+    const box = await goToToday.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThan(40);
+
+    await page.keyboard.press('Enter');
+    await expect(
+      page.getByRole('heading', { name: 'Today', exact: true }),
+    ).toBeAttached();
   });
 });

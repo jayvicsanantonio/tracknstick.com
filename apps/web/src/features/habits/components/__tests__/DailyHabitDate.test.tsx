@@ -106,6 +106,20 @@ describe('DailyHabitDate', () => {
     expect(screen.getByRole('heading', { name: 'Today' })).toBeInTheDocument();
   });
 
+  it('shows Go to today to a keyboard user who tabs to it', async () => {
+    renderDate();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Previous Date' }),
+    );
+    // Previous Date has focus; the next stop is Go to today.
+    await userEvent.tab();
+
+    const goToToday = screen.getByRole('button', { name: 'Go to today' });
+    expect(goToToday).toHaveFocus();
+    expect(goToToday).toHaveClass('focus:not-sr-only');
+  });
+
   it("shows the year once midnight makes the day shown last year's", () => {
     vi.useFakeTimers({ toFake: ['Date', 'setTimeout'] });
     vi.setSystemTime(new Date(2026, 11, 31, 23, 59, 59));

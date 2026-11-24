@@ -93,7 +93,7 @@ const DailyHabitDate = memo(function DailyHabitDate({
     <div className="flex flex-col">
       <div
         className={cn(
-          'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3',
+          'relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-2xl p-1.5 sm:gap-3',
           embeddedOnDesktop
             ? 'ios-tracker-card-until-lg lg:bg-(--color-brand-primary)/[0.055] lg:ring-1 lg:ring-(--color-brand-primary)/14 lg:ring-inset dark:lg:bg-(--color-brand-primary)/[0.07]'
             : 'ios-tracker-card',
@@ -120,7 +120,7 @@ const DailyHabitDate = memo(function DailyHabitDate({
           onClick={handleDateTap}
           className="flex min-w-0 items-center justify-center self-stretch text-center select-none"
         >
-          <div className="relative flex items-center justify-center gap-1.5 overflow-hidden">
+          <div className="relative flex w-full items-center justify-center gap-1.5 overflow-hidden">
             <CalendarDays
               aria-hidden="true"
               className="size-3.5 shrink-0 text-(--color-brand-primary) sm:size-4"
@@ -176,13 +176,14 @@ const DailyHabitDate = memo(function DailyHabitDate({
           </div>
         </div>
 
-        {/* Screen readers cannot double-tap the date, so phones give them a
-            button; tablets and desktops have Back to Today in the page header. */}
+        {/* Screen readers and keyboards cannot double-tap the date, so phones
+            give them a button, shown over the date while it has focus; tablets
+            and desktops have Back to Today in the page header. */}
         {isToday ? null : (
           <button
             type="button"
             onClick={goToToday}
-            className="sr-only sm:hidden"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-1/2 focus:left-1/2 focus:z-10 focus:-translate-x-1/2 focus:-translate-y-1/2 focus:rounded-full focus:bg-(--color-brand-primary) focus:px-3 focus:py-1.5 focus:text-[13px] focus:font-semibold focus:whitespace-nowrap focus:text-(--color-primary-foreground) focus:ring-2 focus:ring-(--color-ring) focus:outline-none sm:hidden"
           >
             Go to today
           </button>
