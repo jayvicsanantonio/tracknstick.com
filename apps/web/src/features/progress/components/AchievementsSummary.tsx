@@ -19,14 +19,27 @@ interface AchievementsSummaryProps {
   onToggleList: () => void;
 }
 
-/** The unearned achievements furthest along, furthest first. */
+/** How much is left to do: the target, or the requirement when there is no progress yet. */
+function target(achievement: Achievement): number {
+  return achievement.progress?.targetValue ?? achievement.requirementValue;
+}
+
+/**
+ * The unearned achievements furthest along, furthest first. Among those
+ * equally far along, as when nothing is started, the Getting Started ones
+ * and then the smallest targets come first, so a new user sees wins within
+ * reach rather than a perfect month.
+ */
 function nextUp(achievements: Achievement[]): Achievement[] {
   return achievements
     .filter((achievement) => !achievement.isEarned)
     .sort(
       (a, b) =>
         (b.progress?.progressPercentage ?? 0) -
-        (a.progress?.progressPercentage ?? 0),
+          (a.progress?.progressPercentage ?? 0) ||
+        Number(b.category === 'getting_started') -
+          Number(a.category === 'getting_started') ||
+        target(a) - target(b),
     )
     .slice(0, NEXT_UP_COUNT);
 }

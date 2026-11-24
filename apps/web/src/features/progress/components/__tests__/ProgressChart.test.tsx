@@ -47,11 +47,14 @@ describe('ProgressChart', () => {
     expect(screen.getByText('Avg 75%')).toBeInTheDocument();
   });
 
-  it('says there is nothing to chart instead of drawing empty axes', () => {
+  it('says there is nothing to chart, and how to fill it, instead of drawing empty axes', () => {
     render(<ProgressChart data={[]} />);
 
+    expect(screen.getByText('No check-ins this month yet')).toBeInTheDocument();
     expect(
-      screen.getByText('Nothing to chart for this month yet.'),
+      screen.getByText(
+        "Check off a habit and each day's completion shows here.",
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });

@@ -11,6 +11,15 @@ import CoachPage from '@/pages/CoachPage';
 vi.mock('@clerk/clerk-react', () => ({
   useAuth: () => ({ getToken: () => Promise.resolve('token') }),
 }));
+// The Coach page asks whether the user has habits; these tests are about
+// the conversation, so the user has some.
+vi.mock('@/features/habits/hooks/useAllHabits', () => ({
+  useAllHabits: () => ({
+    habits: [{ id: '1' }],
+    isLoading: false,
+    error: undefined,
+  }),
+}));
 
 const TEN_MINUTES = 10 * 60 * 1000;
 

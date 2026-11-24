@@ -6,9 +6,13 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ProgressCalendar from '../ProgressCalendar';
 
-function renderCalendar(setSelectedMonth = vi.fn()) {
+function renderCalendar(
+  setSelectedMonth = vi.fn(),
+  extra: { startedOn?: string | null; onSelectDate?: (d: Date) => void } = {},
+) {
   render(
     <ProgressCalendar
+      {...extra}
       insightData={[
         { date: '2026-11-17', completionRate: 33 },
         { date: '2026-11-05', completionRate: 0 },
@@ -63,6 +67,18 @@ describe('ProgressCalendar', () => {
     expect(
       screen.getByRole('gridcell', { name: 'Day 6: nothing scheduled' }),
     ).toBeInTheDocument();
+  });
+
+  it('reads days from before the user started as such, with no ring and no link to the Tracker', () => {
+    renderCalendar(vi.fn(), { startedOn: '2026-11-04', onSelectDate: vi.fn() });
+
+    const before = screen.getByRole('gridcell', {
+      name: 'Day 3: before you started',
+    });
+    expect(before).not.toHaveAttribute('tabindex');
+    expect(
+      screen.getByRole('gridcell', { name: 'Day 4: 100% completed' }),
+    ).toHaveAttribute('tabindex', '0');
   });
 
   it('gives a future day no rate', () => {

@@ -25,6 +25,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Flame,
+  Moon,
   Trophy,
   WifiOff,
 } from 'lucide-react';
@@ -40,6 +41,7 @@ import {
   type DaySwipeDirection,
 } from '@/features/habits/hooks/useDaySwipe';
 import NothingScheduled from '@/features/habits/components/NothingScheduled';
+import { findNextDueDate } from '@/features/habits/utils/nextDueDate';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import PageHeader from '@/features/layout/components/PageHeader';
 import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
@@ -224,6 +226,21 @@ export default function DailyHabitTracker() {
   const isToday = dateContext
     ? dateContext.date.toDateString() === dateContext.currentDate.toDateString()
     : true;
+
+  // On a day with nothing due, the next day that has something.
+  const nextDueDate = useMemo(
+    () =>
+      dateContext && habits.length === 0 && allHabits.length > 0
+        ? findNextDueDate(allHabits, dateContext.date, dateContext.timeZone)
+        : null,
+    [dateContext, habits.length, allHabits],
+  );
+
+  const goToNextDue = useCallback(() => {
+    if (!dateContext || !nextDueDate) return;
+    triggerHaptic('selection');
+    dateContext.setDate(nextDueDate);
+  }, [dateContext, nextDueDate]);
 
   const dayKey = useMemo(() => {
     if (!dateContext) return 'today';
@@ -599,7 +616,23 @@ export default function DailyHabitTracker() {
                   </div>
                 </motion.section>
               ) : (
-                <div className="hidden flex-1 lg:block" />
+                // A quiet ring where the progress ring sits, so the desktop
+                // card does not open onto an empty hole.
+                <div
+                  role="img"
+                  aria-label="Rest day: nothing to check off"
+                  className="relative z-10 hidden flex-1 flex-col items-center justify-center gap-3 py-3 lg:flex"
+                >
+                  <span className="flex size-40 items-center justify-center rounded-full border-[10px] border-dashed border-(--color-brand-primary)/16">
+                    <Moon
+                      aria-hidden="true"
+                      className="size-9 text-(--color-brand-primary)/60"
+                    />
+                  </span>
+                  <span className="text-[13px] font-semibold text-(--color-text-secondary)">
+                    Rest day
+                  </span>
+                </div>
               )}
 
               {/* Recessed dual-streak tray grounding the desktop Progress Hero card */}
@@ -657,7 +690,11 @@ export default function DailyHabitTracker() {
                       </div>
                     ) : (
                       <div className="flex flex-1 flex-col justify-center">
-                        <NothingScheduled />
+                        <NothingScheduled
+                          nextDueDate={nextDueDate}
+                          shownDate={dateContext?.date}
+                          onGoToNextDue={goToNextDue}
+                        />
                         <div className="mt-4 flex justify-center sm:hidden">
                           {swipeDayHint}
                         </div>

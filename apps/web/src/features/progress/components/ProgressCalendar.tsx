@@ -2,7 +2,10 @@
 // Supports horizontal touch swipes between months and tapping a past day to jump to it on Tracker.
 
 import { memo, useCallback, useRef, Dispatch, SetStateAction } from 'react';
-import { useProgressCalendar } from '@/features/progress/hooks/useProgressCalendar';
+import {
+  toLocalDateKey,
+  useProgressCalendar,
+} from '@/features/progress/hooks/useProgressCalendar';
 import MonthNavButton from '@/features/progress/components/MonthNavButton';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { InsightData } from '@/features/progress/types/InsightData';
@@ -23,6 +26,8 @@ interface ProgressCalendarProps {
   loading?: boolean;
   /** Called when the user taps a past or current day in the calendar. */
   onSelectDate?: (date: Date) => void;
+  /** The user's first day, YYYY-MM-DD; days before it show no result. */
+  startedOn?: string | null;
 }
 
 const ProgressCalendar = memo(function ProgressCalendar({
@@ -31,6 +36,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
   setSelectedMonth,
   loading = false,
   onSelectDate,
+  startedOn = null,
 }: ProgressCalendarProps) {
   const { changeMonth, firstDayOfMonth, calendarDays } = useProgressCalendar(
     insightData,
@@ -175,8 +181,11 @@ const ProgressCalendar = memo(function ProgressCalendar({
             aria-label="Empty day"
           ></div>
         ))}
-        {calendarDays.map(({ dayOfMonth, isPast, isToday, dayData }) => (
+        {calendarDays.map(({ dayOfMonth, isPast, isToday, date, dayData }) => (
           <CalendarDayCell
+            isBeforeStart={
+              startedOn !== null && toLocalDateKey(date) < startedOn
+            }
             key={`${selectedMonth.getFullYear()}-${selectedMonth.getMonth()}-${dayOfMonth}`}
             dayOfMonth={dayOfMonth}
             isPast={isPast}

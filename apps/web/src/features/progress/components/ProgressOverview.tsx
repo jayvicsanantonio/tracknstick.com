@@ -6,6 +6,7 @@ import { useState, useCallback, useContext, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WifiOff } from 'lucide-react';
 import ProgressHeroSummary from '@/features/progress/components/ProgressHeroSummary';
+import ProgressGettingStarted from '@/features/progress/components/ProgressGettingStarted';
 import ProgressCalendar from '@/features/progress/components/ProgressCalendar';
 import ProgressChart from '@/features/progress/components/ProgressChart';
 import AchievementsSummary from '@/features/progress/components/AchievementsSummary';
@@ -62,6 +63,9 @@ const ProgressOverview = memo(function ProgressOverview() {
   const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
   const loadFailed = Boolean(historyError ?? summaryError);
+  // Before a first check-in, every all-time figure is zero; the page opens on
+  // what to do next instead. Not while the summary loads, so it never flashes.
+  const hasNoCheckIns = !isSummaryLoading && totalCompletions === 0;
   const isBestStreak = currentStreak > 0 && currentStreak >= longestStreak;
 
   const handleSelectCalendarDate = useCallback(
@@ -107,18 +111,22 @@ const ProgressOverview = memo(function ProgressOverview() {
           </div>
         ) : (
           <div className="space-y-4 sm:space-y-6">
-            <ProgressHeroSummary
-              totalCompletions={totalCompletions}
-              overallCompletionRate={overallCompletionRate}
-              activeDays={activeDays}
-              perfectDays={lifetimePerfectDays}
-              currentStreak={currentStreak}
-              longestStreak={longestStreak}
-              activeHabitsCount={activeHabitsCount}
-              memberSince={memberSince}
-              isBestStreak={isBestStreak}
-              isLoading={isSummaryLoading}
-            />
+            {hasNoCheckIns ? (
+              <ProgressGettingStarted activeHabitsCount={activeHabitsCount} />
+            ) : (
+              <ProgressHeroSummary
+                totalCompletions={totalCompletions}
+                overallCompletionRate={overallCompletionRate}
+                activeDays={activeDays}
+                perfectDays={lifetimePerfectDays}
+                currentStreak={currentStreak}
+                longestStreak={longestStreak}
+                activeHabitsCount={activeHabitsCount}
+                memberSince={memberSince}
+                isBestStreak={isBestStreak}
+                isLoading={isSummaryLoading}
+              />
+            )}
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <section
@@ -131,6 +139,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                   selectedMonth={selectedMonth}
                   setSelectedMonth={setSelectedMonth}
                   onSelectDate={handleSelectCalendarDate}
+                  startedOn={memberSince}
                 />
               </section>
 
