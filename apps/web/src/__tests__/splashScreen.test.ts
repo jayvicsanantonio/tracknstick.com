@@ -56,6 +56,22 @@ describe('the launch splash in index.html', () => {
     expect(themeScript).toBeLessThan(html.indexOf('<div id="root">'));
   });
 
+  it('stays hidden in a browser tab', () => {
+    expect(rule('#splash')).toMatch(/display:\s*none/);
+  });
+
+  // The home screen opens the app in its own window (display-mode:
+  // standalone). A touch screen tells a phone or tablet from a desktop,
+  // whose installed app opens straight to the page.
+  it("shows only in an app opened from a phone or tablet's home screen", () => {
+    const installed =
+      /@media \(display-mode: standalone\) and \(pointer: coarse\)\s*\{([\s\S]*?)\n {6}\}/.exec(
+        html,
+      );
+    expect(installed, 'home screen app block').not.toBeNull();
+    expect(installed?.[1]).toMatch(/#splash\s*\{\s*display:\s*grid;\s*\}/);
+  });
+
   it('tells assistive technology the app is loading', () => {
     expect(html).toMatch(
       /<div id="splash"[^>]*role="status"[^>]*aria-label="Loading Track N(&apos;|')? Stick"/,

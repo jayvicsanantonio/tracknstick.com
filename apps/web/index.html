@@ -185,12 +185,20 @@
         position: fixed;
         inset: 0;
         z-index: 1000;
-        display: grid;
+        display: none;
         place-items: center;
         background: #064d34;
         transition:
           opacity 0.3s ease-out,
           visibility 0.3s;
+      }
+      /* Only an app opened from a phone or tablet's home screen shows the
+         splash, after the OS's own launch screen. A browser tab, or an app
+         installed on a desktop, opens straight to the page. */
+      @media (display-mode: standalone) and (pointer: coarse) {
+        #splash {
+          display: grid;
+        }
       }
       #splash.splash-done {
         opacity: 0;
