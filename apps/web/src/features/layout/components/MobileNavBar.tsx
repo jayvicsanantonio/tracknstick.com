@@ -133,7 +133,7 @@ const MobileNavBar = memo(function MobileNavBar({
           )}
         >
           <div className="overflow-hidden">
-            <div className="px-4 pt-0 pb-1.5">
+            <div className="px-4 pt-0 pb-3.5">
               <div
                 className={cn(
                   'transition-opacity duration-150',

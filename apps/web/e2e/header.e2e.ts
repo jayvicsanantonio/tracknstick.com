@@ -86,6 +86,28 @@ test.describe('on a phone', () => {
     expect(profileBox.y).toBeLessThanOrEqual(16);
   });
 
+  test('leaves a margin between the title row and the page below it', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    const profileBtn = page.getByRole('button', {
+      name: 'Open profile and settings',
+    });
+    // The date capsule's arrows sit 6px inside its edge.
+    const previous = page.getByRole('button', { name: 'Previous Date' });
+    const [profileBox, previousBox] = await Promise.all([
+      profileBtn.boundingBox(),
+      previous.boundingBox(),
+    ]);
+    if (!profileBox || !previousBox) throw new Error('The page did not render');
+
+    const capsuleTop = previousBox.y - 6;
+    expect(
+      capsuleTop - (profileBox.y + profileBox.height),
+    ).toBeGreaterThanOrEqual(16);
+  });
+
   test('on another day, double-tapping the date goes back to today', async ({
     page,
   }) => {
