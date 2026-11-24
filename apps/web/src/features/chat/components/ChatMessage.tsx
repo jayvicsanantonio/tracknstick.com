@@ -146,23 +146,36 @@ export function ChatMessage({
         'flex items-start gap-2.5',
         isUser
           ? 'ml-auto max-w-[85%] justify-end'
-          : 'mr-auto max-w-[94%] sm:max-w-[88%]',
+          : 'mr-auto max-w-full sm:max-w-[88%]',
       )}
     >
-      {/* Top-aligned coach emblem beside the first line of advice */}
+      {/* Top-aligned coach emblem beside the first line of advice on wider
+          screens; phones label the reply above it and give it the full width */}
       {!isUser && (
-        <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/25 ring-inset">
+        <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/25 ring-inset max-sm:hidden">
           <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
         </div>
       )}
 
       <div className="flex min-w-0 flex-col items-start">
+        {!isUser && (
+          <div className="mb-1.5 ml-1 flex items-center gap-1.5 text-[12px] font-semibold text-(--color-text-secondary) sm:hidden">
+            <span
+              aria-hidden="true"
+              className="flex size-5 items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/25 ring-inset"
+            >
+              <Sparkles className="size-3" />
+            </span>
+            Coach
+          </div>
+        )}
+
         {/* Message bubble */}
         <div
           className={cn(
             'rounded-[22px] px-4 py-2.5 select-text',
             isUser
-              ? 'rounded-br-[6px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_4px_14px_color-mix(in_oklab,var(--color-brand-primary)_26%,transparent)]'
+              ? 'rounded-br-[6px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_2px_8px_rgba(0,0,0,0.12)]'
               : 'coach-bubble rounded-tl-[6px] py-3 text-(--color-foreground)',
           )}
         >
@@ -199,19 +212,19 @@ export function ChatMessage({
             type="button"
             onClick={() => void handleCopy()}
             aria-label={copied ? 'Copied response' : 'Copy response'}
-            className="mt-1 ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium text-(--color-text-secondary)/75 transition-colors hover:bg-(--color-brand-primary)/10 hover:text-(--color-foreground) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95"
+            className="mt-1 ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium text-(--color-text-secondary)/75 transition-colors hover:bg-(--color-brand-primary)/10 hover:text-(--color-foreground) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 max-sm:mt-0.5 max-sm:min-h-8 max-sm:gap-1.5 max-sm:px-2.5 max-sm:text-[12px] max-sm:text-(--color-text-secondary)"
           >
             {copied ? (
               <>
                 <Check
                   aria-hidden="true"
-                  className="size-3 text-(--color-brand-primary)"
+                  className="size-3 text-(--color-brand-primary) max-sm:size-3.5"
                 />
                 <span className="text-(--color-brand-primary)">Copied</span>
               </>
             ) : (
               <>
-                <Copy aria-hidden="true" className="size-3" />
+                <Copy aria-hidden="true" className="size-3 max-sm:size-3.5" />
                 <span>Copy</span>
               </>
             )}

@@ -60,7 +60,7 @@ export function ChatInput({
           className={cn(
             'size-9 shrink-0 rounded-full transition-[transform,background-color,color,box-shadow] duration-150 active:scale-90 sm:size-10',
             canSend
-              ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_3px_12px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)] hover:bg-(--color-brand-secondary)'
+              ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_2px_8px_rgba(0,0,0,0.14)] hover:bg-(--color-brand-secondary)'
               : 'bg-(--color-brand-primary)/14 text-(--color-brand-primary)/50 shadow-none disabled:opacity-100',
           )}
         >

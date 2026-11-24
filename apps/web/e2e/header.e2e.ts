@@ -60,4 +60,97 @@ test.describe('on a phone', () => {
     await profileBtn.click();
     await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
   });
+
+  test('puts the Large Title beside the profile button, with no row above it', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // The Large Title is decorative (the page heading is for screen
+    // readers), so it is found by its text.
+    const title = page.locator('p:visible', { hasText: /^Today$/ });
+    const profileBtn = page.getByRole('button', {
+      name: 'Open profile and settings',
+    });
+    const [titleBox, profileBox] = await Promise.all([
+      title.boundingBox(),
+      profileBtn.boundingBox(),
+    ]);
+    if (!titleBox || !profileBox) throw new Error('The nav bar did not render');
+
+    const centre = (box: { y: number; height: number }) =>
+      box.y + box.height / 2;
+    expect(Math.abs(centre(titleBox) - centre(profileBox))).toBeLessThanOrEqual(
+      4,
+    );
+    expect(profileBox.y).toBeLessThanOrEqual(16);
+  });
+
+  test('leaves a margin between the title row and the page below it', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    const profileBtn = page.getByRole('button', {
+      name: 'Open profile and settings',
+    });
+    // The date capsule's arrows sit 6px inside its edge.
+    const previous = page.getByRole('button', { name: 'Previous Date' });
+    const [profileBox, previousBox] = await Promise.all([
+      profileBtn.boundingBox(),
+      previous.boundingBox(),
+    ]);
+    if (!profileBox || !previousBox) throw new Error('The page did not render');
+
+    const capsuleTop = previousBox.y - 6;
+    expect(
+      capsuleTop - (profileBox.y + profileBox.height),
+    ).toBeGreaterThanOrEqual(16);
+  });
+
+  test('on another day, double-tapping the date goes back to today', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const previous = page.getByRole('button', { name: 'Previous Date' });
+    await previous.click();
+
+    // No visible button: the gesture, and its hint, take you back.
+    await expect(
+      page.getByRole('button', { name: 'Today', exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText('Swipe to switch days · Double-tap the date for today'),
+    ).toBeVisible();
+
+    // The date in the capsule between the arrows, not the week strip's range.
+    await previous
+      .locator('..')
+      .getByText(/^[A-Z][a-z]{2} \d{1,2}/)
+      .dblclick();
+
+    await expect(
+      page.getByRole('heading', { name: 'Today', exact: true }),
+    ).toBeAttached();
+    await expect(page.getByText('Swipe to switch days')).toBeVisible();
+  });
+  test('on another day, a keyboard user can see and use Go to today', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const previous = page.getByRole('button', { name: 'Previous Date' });
+    await previous.click();
+    await page.keyboard.press('Tab');
+
+    const goToToday = page.getByRole('button', { name: 'Go to today' });
+    await expect(goToToday).toBeFocused();
+    // Shown over the date while focused, not a 1px screen-reader box.
+    const box = await goToToday.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThan(40);
+
+    await page.keyboard.press('Enter');
+    await expect(
+      page.getByRole('heading', { name: 'Today', exact: true }),
+    ).toBeAttached();
+  });
 });

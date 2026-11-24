@@ -385,37 +385,7 @@ export default function DailyHabitTracker() {
   );
 
   const navBar = (
-    <MobileNavBar
-      title={mobileNavTitle}
-      titleDirection={navDirection}
-      leading={
-        <AnimatePresence initial={false}>
-          {!isToday && dateContext ? (
-            <motion.button
-              key="today-pill"
-              type="button"
-              initial={
-                prefersReducedMotion ? false : { opacity: 0, scale: 0.86 }
-              }
-              animate={{ opacity: 1, scale: 1 }}
-              exit={
-                prefersReducedMotion
-                  ? { opacity: 0, transition: { duration: 0 } }
-                  : { opacity: 0, scale: 0.86, transition: { duration: 0.14 } }
-              }
-              transition={IOS_SPRING_TAP}
-              onClick={() => {
-                triggerHaptic('selection');
-                dateContext.setDate(new Date());
-              }}
-              className="rounded-full bg-(--color-brand-primary)/15 px-3 py-1 text-[13px] font-semibold text-(--color-brand-text) active:scale-95 dark:text-(--color-brand-text-light)"
-            >
-              Today
-            </motion.button>
-          ) : null}
-        </AnimatePresence>
-      }
-    />
+    <MobileNavBar title={mobileNavTitle} titleDirection={navDirection} />
   );
 
   const swipeDayHint = (
@@ -430,7 +400,11 @@ export default function DailyHabitTracker() {
             : 'text-(--color-brand-primary)/65',
         )}
       />
-      <span>Swipe to switch days</span>
+      <span>
+        {isToday
+          ? 'Swipe to switch days'
+          : 'Swipe to switch days · Double-tap the date for today'}
+      </span>
       <ChevronRight
         aria-hidden="true"
         strokeWidth={2.25}

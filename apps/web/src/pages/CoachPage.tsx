@@ -1,7 +1,8 @@
 // The Coach page: the habit coach's chat as a page of its own, at /coach.
 // Shares one unified open-canvas layout across phone, tablet, and desktop:
 // Collapsing Large Title on phones, matching Large Title header on wider screens,
-// elevated hero & suggestion cards, and a floating rounded pill composer.
+// an open welcome on phones (a hero card on wider screens), suggestion cards, and a
+// floating rounded pill composer.
 
 import { useState } from 'react';
 import { SquarePen } from 'lucide-react';
