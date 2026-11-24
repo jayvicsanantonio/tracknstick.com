@@ -60,4 +60,49 @@ test.describe('on a phone', () => {
     await profileBtn.click();
     await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
   });
+
+  test('puts the Large Title beside the profile button, with no row above it', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // The Large Title is decorative (the page heading is for screen
+    // readers), so it is found by its text.
+    const title = page.locator('p:visible', { hasText: /^Today$/ });
+    const profileBtn = page.getByRole('button', {
+      name: 'Open profile and settings',
+    });
+    const [titleBox, profileBox] = await Promise.all([
+      title.boundingBox(),
+      profileBtn.boundingBox(),
+    ]);
+    if (!titleBox || !profileBox) throw new Error('The nav bar did not render');
+
+    const centre = (box: { y: number; height: number }) =>
+      box.y + box.height / 2;
+    expect(Math.abs(centre(titleBox) - centre(profileBox))).toBeLessThanOrEqual(
+      4,
+    );
+    expect(profileBox.y).toBeLessThanOrEqual(16);
+  });
+
+  test('on another day, double-tapping the date goes back to today', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Previous Date' }).click();
+
+    // No visible button: the gesture, and its hint, take you back.
+    await expect(
+      page.getByRole('button', { name: 'Today', exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText('Swipe to switch days · Double-tap the date for today'),
+    ).toBeVisible();
+
+    await page.getByText(/^[A-Z][a-z]{2} \d{1,2}/).dblclick();
+
+    await expect(page.getByRole('heading', { name: 'Today' })).toBeAttached();
+    await expect(page.getByText('Swipe to switch days')).toBeVisible();
+  });
 });

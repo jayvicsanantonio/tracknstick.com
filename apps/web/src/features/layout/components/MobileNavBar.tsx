@@ -20,7 +20,10 @@ interface MobileNavBarProps {
   compact?: boolean;
   /** External scroll-collapse override for pages whose scroll container is not window (e.g. Coach). */
   collapsed?: boolean;
-  /** Optional leading action rendered on the left of the compact top bar. */
+  /**
+   * Optional leading action: beside the avatar while the Large Title shows,
+   * and on the left of the inline top bar once it collapses.
+   */
   leading?: ReactNode;
   /** Optional trailing action rendered beside the top-right avatar button. */
   trailing?: ReactNode;
@@ -59,16 +62,16 @@ const MobileNavBar = memo(function MobileNavBar({
       {/* Pinned translucent iOS navigation bar (direct child of page column so sticky holds all the way down) */}
       <div
         className={cn(
-          'sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top)+1.25rem)] transition-[background-color,border-color] duration-200 sm:hidden',
+          'sticky top-0 z-30 w-full pt-[calc(env(safe-area-inset-top)+0.5rem)] transition-[background-color,border-color] duration-200 sm:hidden',
           showInlineTitle
             ? 'ios-nav-bar border-b border-(--color-border-primary)/50'
             : 'border-b border-transparent bg-transparent',
         )}
       >
         <div className="relative flex h-11 items-center justify-between px-4">
-          {/* Leading slot */}
+          {/* Leading slot (the Large Title sits here until the bar collapses) */}
           <div className="z-10 flex min-w-11 items-center justify-start">
-            {leading}
+            {showInlineTitle ? leading : null}
           </div>
 
           {/* Centered compact inline title (fades in when Large Title collapses, or always shown in compact mode) */}
@@ -93,6 +96,7 @@ const MobileNavBar = memo(function MobileNavBar({
 
           {/* Trailing actions + profile avatar */}
           <div className="z-10 flex items-center gap-1.5">
+            {showInlineTitle ? null : leading}
             {trailing}
             <button
               type="button"
@@ -119,12 +123,13 @@ const MobileNavBar = memo(function MobileNavBar({
         </div>
       </div>
 
-      {/* Collapsing 34px iOS Large Title */}
+      {/* Collapsing 34px iOS Large Title, pulled up into the bar's row so it
+          shares one line with the avatar instead of sitting under an empty row */}
       {!compact ? (
         <div
           className={cn(
-            'grid transition-[grid-template-rows,opacity] duration-200 sm:hidden',
-            collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr]',
+            'grid transition-[grid-template-rows,opacity,margin] duration-200 sm:hidden',
+            collapsed ? 'grid-rows-[0fr] opacity-0' : '-mt-11 grid-rows-[1fr]',
           )}
         >
           <div className="overflow-hidden">

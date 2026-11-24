@@ -9,6 +9,7 @@ import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContex
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHideSplash } from '@shared/hooks/useHideSplash';
+import { DateContext } from '@app/providers/DateContext';
 import type { Habit } from '@/features/habits/types/Habit';
 
 vi.mock('@/features/habits/hooks/useHabits', () => ({ useHabits: vi.fn() }));
@@ -20,6 +21,12 @@ vi.mock('@/features/habits/hooks/useAllHabits', () => ({
 vi.mock('../DailyHabitDate', () => ({
   default: () => <nav aria-label="Day navigation" />,
 }));
+// The streak tray and the week strip ask the API once a date is set; they
+// are not what these tests are about.
+vi.mock('@/features/progress/hooks/useProgressSummary', () => ({
+  default: () => ({ currentStreak: 0, longestStreak: 0, isLoading: false }),
+}));
+vi.mock('../TrackerWeekStrip', () => ({ default: () => null }));
 vi.mock('../DailyHabitProgressIndicator', () => ({
   default: ({
     completionRate,
@@ -327,6 +334,38 @@ describe('DailyHabitTracker', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(retryAllHabits).toHaveBeenCalledTimes(1);
+  });
+
+  it('on today, the hint under the habits mentions swiping only', () => {
+    mockHabits({ habits: [habit({})] });
+    renderTracker();
+
+    expect(screen.getByText('Swipe to switch days')).toBeInTheDocument();
+  });
+
+  it('on another day, the hint under the habits says how to go back to today', () => {
+    mockHabits({ habits: [habit({})] });
+    const currentDate = new Date(2026, 10, 18, 12);
+    render(
+      <DateContext.Provider
+        value={{
+          date: new Date(2026, 10, 17, 12),
+          currentDate,
+          setDate: vi.fn(),
+          handlePreviousDate: vi.fn(),
+          handleNextDate: vi.fn(),
+          timeZone: 'America/Los_Angeles',
+        }}
+      >
+        <HabitsStateProvider>
+          <DailyHabitTracker />
+        </HabitsStateProvider>
+      </DateContext.Provider>,
+    );
+
+    expect(
+      screen.getByText('Swipe to switch days · Double-tap the date for today'),
+    ).toBeInTheDocument();
   });
 
   it('keeps the date navigation mounted instead of flashing a full-page skeleton while switching days', () => {

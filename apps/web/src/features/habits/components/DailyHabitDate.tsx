@@ -1,4 +1,7 @@
-import { useEffect, useMemo, memo } from 'react';
+// The tracker's date capsule: arrows to step through days around the date shown.
+// Double-tapping the date goes back to today; the arrow keys step days too.
+
+import { useEffect, useMemo, useRef, memo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CalendarDays } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
@@ -9,6 +12,9 @@ import { cn } from '@shared/utils/utils';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 
 const { ChevronLeft, ChevronRight } = MiscellaneousIcons;
+
+/** The longest gap between two taps on the date that still counts as a double-tap. */
+const DOUBLE_TAP_MS = 300;
 
 interface DailyHabitDateProps {
   /** Direction of the latest day navigation for subtle directional label glide. */
@@ -22,8 +28,14 @@ const DailyHabitDate = memo(function DailyHabitDate({
   embeddedOnDesktop = false,
 }: DailyHabitDateProps) {
   const prefersReducedMotion = useReducedMotion();
-  const { date, currentDate, handlePreviousDate, handleNextDate, timeZone } =
-    useDate();
+  const {
+    date,
+    currentDate,
+    setDate,
+    handlePreviousDate,
+    handleNextDate,
+    timeZone,
+  } = useDate();
 
   // The month and day, and the year apart from them: a phone leaves out
   // this year's year, so the date sits comfortably between the arrows.
@@ -50,6 +62,22 @@ const DailyHabitDate = memo(function DailyHabitDate({
     () => date.toDateString() === currentDate.toDateString(),
     [date, currentDate],
   );
+
+  const goToToday = () => {
+    triggerHaptic('selection');
+    setDate(new Date());
+  };
+
+  // Two taps on the date within DOUBLE_TAP_MS of each other.
+  const lastDateTapRef = useRef(Number.NEGATIVE_INFINITY);
+  const handleDateTap = () => {
+    const now = performance.now();
+    const isDoubleTap = now - lastDateTapRef.current < DOUBLE_TAP_MS;
+    lastDateTapRef.current = isDoubleTap ? Number.NEGATIVE_INFINITY : now;
+    if (isDoubleTap && !isToday) {
+      goToToday();
+    }
+  };
 
   const dayLabel = useMemo(() => {
     if (isToday) {
@@ -87,7 +115,11 @@ const DailyHabitDate = memo(function DailyHabitDate({
           <ChevronLeft aria-hidden="true" className="h-4 w-4" />
         </Button>
 
-        <div className="min-w-0 text-center">
+        {/* Double-tapping the date goes back to today. */}
+        <div
+          onClick={handleDateTap}
+          className="flex min-w-0 items-center justify-center self-stretch text-center select-none"
+        >
           <div className="relative flex items-center justify-center gap-1.5 overflow-hidden">
             <CalendarDays
               aria-hidden="true"
@@ -143,6 +175,18 @@ const DailyHabitDate = memo(function DailyHabitDate({
             </motion.span>
           </div>
         </div>
+
+        {/* Screen readers cannot double-tap the date, so phones give them a
+            button; tablets and desktops have Back to Today in the page header. */}
+        {isToday ? null : (
+          <button
+            type="button"
+            onClick={goToToday}
+            className="sr-only sm:hidden"
+          >
+            Go to today
+          </button>
+        )}
 
         <Button
           onClick={() => {
