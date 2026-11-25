@@ -3,6 +3,12 @@
 
 import { memo, useCallback, useRef, Dispatch, SetStateAction } from 'react';
 import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+} from 'framer-motion';
+import {
   toLocalDateKey,
   useProgressCalendar,
 } from '@/features/progress/hooks/useProgressCalendar';
@@ -44,6 +50,8 @@ const ProgressCalendar = memo(function ProgressCalendar({
     setSelectedMonth,
   );
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const gridX = useMotionValue(0);
+  const prefersReducedMotion = useReducedMotion();
 
   const handlePreviousMonth = useCallback(() => {
     triggerHaptic('selection');
@@ -104,6 +112,11 @@ const ProgressCalendar = memo(function ProgressCalendar({
         handlePreviousMonth();
       } else if (!isThisMonth) {
         handleNextMonth();
+      } else {
+        triggerHaptic('light');
+        if (!prefersReducedMotion) {
+          animate(gridX, [0, -12, 4, 0], { duration: 0.28, ease: 'easeOut' });
+        }
       }
     }
   };
@@ -154,7 +167,8 @@ const ProgressCalendar = memo(function ProgressCalendar({
         </div>
       </div>
 
-      <div
+      <motion.div
+        style={prefersReducedMotion ? undefined : { x: gridX }}
         className="mt-3.5 grid grid-cols-7 grid-rows-[auto_repeat(6,1fr)] gap-x-1 gap-y-1.5 lg:flex-1"
         role="grid"
       >
@@ -204,7 +218,7 @@ const ProgressCalendar = memo(function ProgressCalendar({
             aria-label="Empty day"
           ></div>
         ))}
-      </div>
+      </motion.div>
 
       <div
         aria-hidden="true"

@@ -77,7 +77,10 @@ const NoHabits = memo(function NoHabits() {
       }
     >
       <Button
-        onClick={() => openAddHabitDialog()}
+        onClick={() => {
+          triggerHaptic('medium');
+          openAddHabitDialog();
+        }}
         className="h-11 rounded-full px-6"
       >
         <Plus aria-hidden="true" className="mr-1 h-4 w-4" />

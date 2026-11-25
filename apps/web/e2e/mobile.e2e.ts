@@ -89,11 +89,18 @@ test('adds a habit in an iOS bottom sheet and deletes it via Action Sheet', asyn
   await page.mouse.up();
 
   await row.getByRole('button', { name: `Delete ${name}` }).click();
+  const deleted = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE' &&
+      /\/api\/v1\/habits\/[^/]+$/.test(new URL(response.url()).pathname) &&
+      response.ok(),
+  );
   await page
     .getByRole('alertdialog', { name: 'Delete Habit' })
     .getByRole('button', { name: 'Delete' })
     .click();
   await expect(row).toHaveCount(0);
+  await deleted;
 });
 
 test('opens the Coach page from the tab bar with composer above it', async ({

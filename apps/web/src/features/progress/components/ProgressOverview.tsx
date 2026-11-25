@@ -227,10 +227,7 @@ const ProgressOverview = memo(function ProgressOverview() {
               </DialogTitle>
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setShowAllAchievements(false);
-                }}
+                onClick={() => setShowAllAchievements(false)}
                 className="flex min-h-9 w-14 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
               >
                 Done

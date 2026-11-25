@@ -157,7 +157,7 @@ export function ChatBox({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    triggerHaptic('light');
+    triggerHaptic('medium');
     pinnedToBottomRef.current = true;
     void sendMessage(input);
     setInput('');
@@ -236,7 +236,7 @@ export function ChatBox({
                       text={question}
                       Icon={Icon}
                       onClick={() => {
-                        triggerHaptic('light');
+                        triggerHaptic('medium');
                         pinnedToBottomRef.current = true;
                         void sendMessage(question);
                         if (!window.matchMedia?.('(pointer: coarse)').matches) {

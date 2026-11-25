@@ -45,6 +45,7 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
   // horizontal drag so swiping left to reveal Delete never opens Edit.
   const draggedRef = useRef(false);
   const pointerStartXRef = useRef<number | null>(null);
+  const wouldRevealRef = useRef(false);
 
   const snapTo = useCallback(
     (revealed: boolean) => {
@@ -61,6 +62,7 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     draggedRef.current = false;
     pointerStartXRef.current = event.clientX;
+    wouldRevealRef.current = isRevealed;
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -84,6 +86,11 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
     if (Math.abs(info.offset.x) > 4) {
       draggedRef.current = true;
     }
+    const nextWouldReveal = x.get() < -REVEAL_WIDTH / 2;
+    if (nextWouldReveal !== wouldRevealRef.current) {
+      wouldRevealRef.current = nextWouldReveal;
+      triggerHaptic('selection');
+    }
   };
 
   const handleDragEnd = (
@@ -95,9 +102,10 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
       info.velocity.x < -300 ||
       (info.velocity.x <= 300 &&
         (nextX < -REVEAL_WIDTH / 2 || (!isRevealed && info.offset.x < -36)));
-    if (shouldReveal !== isRevealed) {
+    if (shouldReveal !== wouldRevealRef.current) {
       triggerHaptic('selection');
     }
+    wouldRevealRef.current = shouldReveal;
     snapTo(shouldReveal);
   };
 

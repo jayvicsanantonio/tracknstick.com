@@ -74,9 +74,16 @@ test('guides a new account from an empty Tracker to its first habit', async ({
     .getByRole('listitem')
     .filter({ hasText: STARTER });
   await row.getByRole('button', { name: `Delete ${STARTER}` }).click();
+  const deleted = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE' &&
+      /\/api\/v1\/habits\/[^/]+$/.test(new URL(response.url()).pathname) &&
+      response.ok(),
+  );
   await page
     .getByRole('alertdialog', { name: 'Delete Habit' })
     .getByRole('button', { name: 'Delete' })
     .click();
   await expect(row).toHaveCount(0);
+  await deleted;
 });

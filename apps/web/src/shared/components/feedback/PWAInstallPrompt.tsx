@@ -80,12 +80,10 @@ export const PWAInstallPrompt = memo(function PWAInstallPrompt() {
   }, [deferredPrompt]);
 
   const handleDismiss = useCallback(() => {
-    triggerHaptic('light');
     setIsVisible(false);
   }, []);
 
   const handleDismissIos = useCallback(() => {
-    triggerHaptic('light');
     setShowIosGuide(false);
     try {
       localStorage.setItem(IOS_DISMISS_KEY, '1');

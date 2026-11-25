@@ -44,10 +44,7 @@ export default function EditHabitDialog() {
     <div className="flex items-center justify-between border-b border-(--color-border-primary)/50 px-4 pb-3 sm:hidden">
       <button
         type="button"
-        onClick={() => {
-          triggerHaptic('light');
-          toggleShowEditHabitDialog();
-        }}
+        onClick={toggleShowEditHabitDialog}
         className="flex min-h-9 min-w-16 items-center justify-start text-[16px] font-normal text-(--color-brand-primary) active:opacity-60"
       >
         {activeTab === 'edit' ? 'Cancel' : 'Done'}

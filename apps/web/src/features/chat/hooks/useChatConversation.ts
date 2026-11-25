@@ -4,6 +4,7 @@
 import { useCallback, useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { getConfig } from '@shared/utils/getConfig';
+import { triggerHaptic } from '@shared/utils/haptics';
 import type { Message } from '@features/chat/components/ChatMessage';
 
 export interface ChatConversation {
@@ -106,6 +107,7 @@ export function useChatConversation(): ChatConversation {
           throw new Error("The coach didn't reply. Try again.");
         }
       } catch (err) {
+        triggerHaptic('error', { androidOnly: true });
         const message = err instanceof Error ? err.message : 'Unknown error';
         setError(message);
         // Drop the placeholder only if nothing streamed into it. Filtering on

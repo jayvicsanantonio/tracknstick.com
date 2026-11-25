@@ -40,6 +40,9 @@ const DailyHabitItem = memo(function DailyHabitItem({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
+  const prevCompletedRef = useRef(habit.completed);
+  const dismissArmedRef = useRef(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
   const startPoint = useRef<{ x: number; y: number } | null>(null);
@@ -53,6 +56,19 @@ const DailyHabitItem = memo(function DailyHabitItem({
 
   useEffect(() => clearTimer, [clearTimer]);
 
+  // Synchronized visual spring pop on incomplete -> complete to reinforce tactile feel.
+  useEffect(() => {
+    const wasCompleted = prevCompletedRef.current;
+    prevCompletedRef.current = habit.completed;
+    if (!wasCompleted && habit.completed && !prefersReducedMotion) {
+      setJustCompleted(true);
+      const timer = setTimeout(() => setJustCompleted(false), 360);
+      return () => clearTimeout(timer);
+    }
+    setJustCompleted(false);
+    return undefined;
+  }, [habit.completed, prefersReducedMotion]);
+
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLButtonElement>) => {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
@@ -63,7 +79,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
       longPressTimer.current = setTimeout(() => {
         longPressed.current = true;
         setIsPressing(false);
-        triggerHaptic('medium');
+        triggerHaptic('heavy', { androidOnly: true });
         setMenuOpen(true);
       }, LONG_PRESS_MS);
     },
@@ -129,9 +145,23 @@ const DailyHabitItem = memo(function DailyHabitItem({
         {/* Flat double-ring circular habit medallion across phone, tablet, and desktop */}
         <motion.span
           animate={
-            prefersReducedMotion ? undefined : { scale: isPressing ? 0.92 : 1 }
+            prefersReducedMotion
+              ? undefined
+              : isPressing
+                ? { scale: 0.9 }
+                : justCompleted
+                  ? { scale: [0.92, 1.07, 1] }
+                  : { scale: 1 }
           }
-          transition={IOS_SPRING_TAP}
+          transition={
+            justCompleted && !isPressing
+              ? {
+                  duration: 0.34,
+                  times: [0, 0.45, 1],
+                  ease: [0.22, 1, 0.36, 1],
+                }
+              : IOS_SPRING_TAP
+          }
           className="relative mb-2.5 shrink-0 sm:mb-3"
         >
           <span
@@ -230,12 +260,26 @@ const DailyHabitItem = memo(function DailyHabitItem({
                   drag="y"
                   dragConstraints={{ top: 0, bottom: 0 }}
                   dragElastic={{ top: 0.04, bottom: 0.45 }}
+                  onDrag={(
+                    _event: MouseEvent | TouchEvent | PointerEvent,
+                    info: PanInfo,
+                  ) => {
+                    const armed = info.offset.y > 80;
+                    if (armed !== dismissArmedRef.current) {
+                      dismissArmedRef.current = armed;
+                      triggerHaptic('selection');
+                    }
+                  }}
                   onDragEnd={(
                     _event: MouseEvent | TouchEvent | PointerEvent,
                     info: PanInfo,
                   ) => {
+                    const wasArmed = dismissArmedRef.current;
+                    dismissArmedRef.current = false;
                     if (info.offset.y > 80 || info.velocity.y > 420) {
-                      triggerHaptic('light');
+                      if (!wasArmed) {
+                        triggerHaptic('light');
+                      }
                       setMenuOpen(false);
                     }
                   }}
@@ -355,10 +399,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
 
                   <button
                     type="button"
-                    onClick={() => {
-                      triggerHaptic('light');
-                      setMenuOpen(false);
-                    }}
+                    onClick={() => setMenuOpen(false)}
                     className="ios-action-sheet-surface flex h-13 w-full cursor-pointer items-center justify-center rounded-[22px] text-[16px] font-semibold text-(--color-brand-primary) transition-transform outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.98]"
                   >
                     Cancel

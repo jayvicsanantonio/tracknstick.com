@@ -5,13 +5,17 @@ import { useCallback, useEffect, useState } from 'react';
 
 const PREFS_STORAGE_KEY = 'track-n-stick-preferences';
 
+export type HapticStrength = 'subtle' | 'prominent';
+
 export interface UserPreferences {
   hapticsEnabled: boolean;
+  hapticStrength: HapticStrength;
   soundEnabled: boolean;
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   hapticsEnabled: true,
+  hapticStrength: 'prominent',
   soundEnabled: true,
 };
 
@@ -28,6 +32,11 @@ function readStoredPreferences(): UserPreferences {
         typeof parsed.hapticsEnabled === 'boolean'
           ? parsed.hapticsEnabled
           : DEFAULT_PREFERENCES.hapticsEnabled,
+      hapticStrength:
+        parsed.hapticStrength === 'subtle' ||
+        parsed.hapticStrength === 'prominent'
+          ? parsed.hapticStrength
+          : DEFAULT_PREFERENCES.hapticStrength,
       soundEnabled:
         typeof parsed.soundEnabled === 'boolean'
           ? parsed.soundEnabled
@@ -71,6 +80,10 @@ export function usePreferences() {
     updatePreferences({ hapticsEnabled: enabled });
   }, []);
 
+  const setHapticStrength = useCallback((strength: HapticStrength) => {
+    updatePreferences({ hapticStrength: strength });
+  }, []);
+
   const setSoundEnabled = useCallback((enabled: boolean) => {
     updatePreferences({ soundEnabled: enabled });
   }, []);
@@ -78,6 +91,7 @@ export function usePreferences() {
   return {
     ...preferences,
     setHapticsEnabled,
+    setHapticStrength,
     setSoundEnabled,
   };
 }

@@ -16,7 +16,10 @@ import IosSheet from '@shared/components/ui/ios-sheet';
 import IosSegmentedControl from '@shared/components/ui/ios-segmented-control';
 import IosSwitch from '@shared/components/ui/ios-switch';
 import { useTheme } from '@shared/hooks/useTheme';
-import { usePreferences } from '@shared/hooks/usePreferences';
+import {
+  usePreferences,
+  type HapticStrength,
+} from '@shared/hooks/usePreferences';
 import { triggerHaptic } from '@shared/utils/haptics';
 import type { ThemePreference } from '@shared/types/theme';
 
@@ -31,13 +34,24 @@ const APPEARANCE_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'dark', label: 'Dark' },
 ];
 
+const HAPTIC_STRENGTH_OPTIONS: { value: HapticStrength; label: string }[] = [
+  { value: 'subtle', label: 'Subtle' },
+  { value: 'prominent', label: 'Prominent' },
+];
+
 const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
   open,
   onOpenChange,
 }: ProfileSettingsSheetProps) {
   const { preference, setMode } = useTheme();
-  const { hapticsEnabled, soundEnabled, setHapticsEnabled, setSoundEnabled } =
-    usePreferences();
+  const {
+    hapticsEnabled,
+    hapticStrength,
+    soundEnabled,
+    setHapticsEnabled,
+    setHapticStrength,
+    setSoundEnabled,
+  } = usePreferences();
   const { user } = useUser();
   const clerk = useClerk();
   const year = new Date().getFullYear();
@@ -57,7 +71,7 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
   };
 
   const handleSignOut = () => {
-    triggerHaptic('medium');
+    triggerHaptic('warning');
     onOpenChange(false);
     void clerk?.signOut?.({ redirectUrl: '/' });
   };
@@ -70,10 +84,7 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
       </DialogTitle>
       <button
         type="button"
-        onClick={() => {
-          triggerHaptic('light');
-          onOpenChange(false);
-        }}
+        onClick={() => onOpenChange(false)}
         className="flex min-h-9 w-14 items-center justify-end text-[17px] font-semibold text-(--color-brand-primary) active:opacity-60"
       >
         Done
@@ -173,8 +184,33 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
                 checked={hapticsEnabled}
                 onCheckedChange={setHapticsEnabled}
                 ariaLabel="Haptic Feedback"
+                hapticStyle="success"
               />
             </div>
+
+            {hapticsEnabled ? (
+              <>
+                <div className="ml-14 h-[0.5px] bg-(--color-border-primary)/60" />
+                <div className="space-y-2 px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-medium text-(--color-foreground)">
+                      Haptic Strength
+                    </span>
+                    <span className="text-[12px] text-(--color-text-secondary)">
+                      Tap to preview
+                    </span>
+                  </div>
+                  <IosSegmentedControl
+                    options={HAPTIC_STRENGTH_OPTIONS}
+                    value={hapticStrength}
+                    onChange={setHapticStrength}
+                    layoutId="settings-haptic-strength-segment"
+                    ariaLabel="Haptic strength"
+                    hapticStyle="heavy"
+                  />
+                </div>
+              </>
+            ) : null}
 
             <div className="ml-14 h-[0.5px] bg-(--color-border-primary)/60" />
 

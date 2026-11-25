@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo, memo } from 'react';
+import { useState, useCallback, useMemo, useRef, memo } from 'react';
+import { animate, useReducedMotion } from 'framer-motion';
 import { Trash2 } from 'lucide-react';
 import { Input } from '@shared/components/ui/input';
 import { Label } from '@shared/components/ui/label';
@@ -24,6 +25,7 @@ import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
 import { useDate } from '@app/providers/useDate';
 import { triggerHaptic } from '@shared/utils/haptics';
+import { cn } from '@shared/utils/utils';
 import {
   getLocalEndOfDayUTC,
   getLocalStartofDayUTC,
@@ -45,8 +47,10 @@ const HabitForm = memo(function HabitForm({
 }: HabitFormProps) {
   const { timeZone } = useDate();
   const { addHabit, updateHabit, deleteHabit } = useHabits();
+  const prefersReducedMotion = useReducedMotion();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
   const [name, setName] = useState<string>(habit?.name ?? draft?.name ?? '');
   const [frequency, setFrequency] = useState<Frequency[]>(
     habit?.frequency ?? draft?.frequency ?? [],
@@ -64,6 +68,16 @@ const HabitForm = memo(function HabitForm({
       ? getLocalEndOfDayUTC(new Date(habit.endDate), timeZone)
       : null,
   );
+  const nameSectionRef = useRef<HTMLDivElement>(null);
+  const iconSectionRef = useRef<HTMLDivElement>(null);
+  const datesSectionRef = useRef<HTMLDivElement>(null);
+  const frequencySectionRef = useRef<HTMLDivElement>(null);
+
+  const missingName = showValidation && !name.trim();
+  const missingIcon = showValidation && !icon;
+  const missingStartDate = showValidation && !startDate;
+  const missingFrequency = showValidation && frequency.length === 0;
+
   const isValid = useMemo(
     () => Boolean(name.trim() && icon && frequency.length > 0 && startDate),
     [name, icon, frequency, startDate],
@@ -72,7 +86,7 @@ const HabitForm = memo(function HabitForm({
   const executeDelete = useCallback(async (): Promise<void> => {
     if (!habit) return;
 
-    triggerHaptic('medium');
+    triggerHaptic('warning');
     setIsSubmitting(true);
     setConfirmDeleteOpen(false);
     try {
@@ -106,7 +120,6 @@ const HabitForm = memo(function HabitForm({
       } else {
         await addHabit(habitData);
       }
-      triggerHaptic('success');
     } catch (error) {
       console.error('Failed to save habit:', error);
     } finally {
@@ -131,12 +144,49 @@ const HabitForm = memo(function HabitForm({
       event.preventDefault();
       if (!isValid) {
         triggerHaptic('error');
+        setShowValidation(true);
+
+        const invalidElements = [
+          !name.trim() ? nameSectionRef.current : null,
+          !icon ? iconSectionRef.current : null,
+          !startDate ? datesSectionRef.current : null,
+          frequency.length === 0 ? frequencySectionRef.current : null,
+        ].filter((el): el is HTMLDivElement => el !== null);
+
+        invalidElements[0]?.scrollIntoView?.({
+          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+          block: 'nearest',
+        });
+
+        if (!prefersReducedMotion) {
+          invalidElements.forEach((el) => {
+            animate(
+              el,
+              { x: [0, -7, 7, -5, 5, -2, 2, 0] },
+              { duration: 0.36, ease: 'easeInOut' },
+            );
+          });
+        }
         return;
       }
+
+      setShowValidation(false);
+      // Trade-off: fire optimistically inside the submit gesture because iOS
+      // Safari ignores haptics after an await. On Android, a failed save plays
+      // this confirmation followed by the error haptic from useHabits.
+      triggerHaptic('success');
       setIsSubmitting(true);
       void handleAddOrEdit();
     },
-    [isValid, handleAddOrEdit],
+    [
+      isValid,
+      handleAddOrEdit,
+      name,
+      icon,
+      startDate,
+      frequency.length,
+      prefersReducedMotion,
+    ],
   );
 
   return (
@@ -150,7 +200,16 @@ const HabitForm = memo(function HabitForm({
         {/* Scrollable fields organised into clean inset grouped sections across all viewports */}
         <div className="min-h-0 flex-1 space-y-3.5 overflow-y-auto overscroll-contain px-4 pt-3 pb-[max(env(safe-area-inset-bottom),1.75rem)] [scrollbar-color:var(--color-border-brand)_transparent] [scrollbar-width:thin] sm:space-y-3 sm:px-0.5 sm:pt-1 sm:pb-1">
           {/* Name Section */}
-          <div className="space-y-1.5 rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 dark:bg-(--color-surface-tertiary)/35">
+          <div
+            ref={nameSectionRef}
+            data-invalid={missingName ? 'true' : undefined}
+            className={cn(
+              'space-y-1.5 rounded-2xl border bg-(--color-surface)/85 p-3.5 transition-colors dark:bg-(--color-surface-tertiary)/35',
+              missingName
+                ? 'border-(--color-destructive)/70'
+                : 'border-(--color-border-primary)/55',
+            )}
+          >
             <Label
               htmlFor="habit-name"
               className="text-sm font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)"
@@ -160,6 +219,8 @@ const HabitForm = memo(function HabitForm({
             </Label>
             <Input
               id="habit-name"
+              aria-invalid={missingName || undefined}
+              aria-describedby={missingName ? 'habit-name-error' : undefined}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -167,10 +228,28 @@ const HabitForm = memo(function HabitForm({
               placeholder="Enter habit name"
               className="h-11 rounded-xl sm:h-10 dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
             />
+            {missingName ? (
+              <p
+                id="habit-name-error"
+                role="alert"
+                className="text-xs font-medium text-(--color-destructive)"
+              >
+                Enter a habit name
+              </p>
+            ) : null}
           </div>
 
           {/* Icon Picker Section */}
-          <div className="rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 dark:bg-(--color-surface-tertiary)/35">
+          <div
+            ref={iconSectionRef}
+            data-invalid={missingIcon ? 'true' : undefined}
+            className={cn(
+              'rounded-2xl border bg-(--color-surface)/85 p-3.5 transition-colors dark:bg-(--color-surface-tertiary)/35',
+              missingIcon
+                ? 'border-(--color-destructive)/70'
+                : 'border-(--color-border-primary)/55',
+            )}
+          >
             <IconPicker
               selectedIcon={icon}
               onIconChange={(selectedIcon) => {
@@ -181,7 +260,16 @@ const HabitForm = memo(function HabitForm({
           </div>
 
           {/* Dates Section */}
-          <div className="grid grid-cols-1 gap-3 rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 sm:grid-cols-2 sm:gap-4 dark:bg-(--color-surface-tertiary)/35">
+          <div
+            ref={datesSectionRef}
+            data-invalid={missingStartDate ? 'true' : undefined}
+            className={cn(
+              'grid grid-cols-1 gap-3 rounded-2xl border bg-(--color-surface)/85 p-3.5 transition-colors sm:grid-cols-2 sm:gap-4 dark:bg-(--color-surface-tertiary)/35',
+              missingStartDate
+                ? 'border-(--color-destructive)/70'
+                : 'border-(--color-border-primary)/55',
+            )}
+          >
             <DatePickerField
               id="start-date"
               label="Start Date"
@@ -201,7 +289,16 @@ const HabitForm = memo(function HabitForm({
           </div>
 
           {/* Frequency Section */}
-          <div className="rounded-2xl border border-(--color-border-primary)/55 bg-(--color-surface)/85 p-3.5 dark:bg-(--color-surface-tertiary)/35">
+          <div
+            ref={frequencySectionRef}
+            data-invalid={missingFrequency ? 'true' : undefined}
+            className={cn(
+              'rounded-2xl border bg-(--color-surface)/85 p-3.5 transition-colors dark:bg-(--color-surface-tertiary)/35',
+              missingFrequency
+                ? 'border-(--color-destructive)/70'
+                : 'border-(--color-border-primary)/55',
+            )}
+          >
             <FrequencySelector
               selectedDays={frequency}
               onFrequencyChange={setFrequency}

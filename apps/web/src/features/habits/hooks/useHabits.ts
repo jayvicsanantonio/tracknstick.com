@@ -77,6 +77,7 @@ export function useHabits(): UseHabitsReturn {
     try {
       const result = await achievementApi.checkAchievements();
       if (result.count > 0) {
+        triggerHaptic('achievement', { androidOnly: true });
         // Show toast for new achievements
         result.newAchievements.forEach((achievement) => {
           toast({
@@ -133,6 +134,7 @@ export function useHabits(): UseHabitsReturn {
         void checkAchievements();
       } catch (err) {
         console.error('Failed to add habit:', err);
+        triggerHaptic('error', { androidOnly: true });
         toast({
           variant: 'destructive',
           description: `Failed to add habit "${habitData.name}". Please try again.`,
@@ -197,6 +199,7 @@ export function useHabits(): UseHabitsReturn {
         void mutateProgressCaches();
       } catch (err) {
         console.error('Failed to update habit:', err);
+        triggerHaptic('error', { androidOnly: true });
         toast({
           variant: 'destructive',
           description: `Failed to update habit "${
@@ -226,6 +229,7 @@ export function useHabits(): UseHabitsReturn {
         void mutateProgressCaches();
       } catch (err) {
         console.error('Failed to delete habit:', err);
+        triggerHaptic('error', { androidOnly: true });
         toast({
           variant: 'destructive',
           description: `Failed to delete habit "${habitName}". Restoring habit.`,
@@ -280,6 +284,7 @@ export function useHabits(): UseHabitsReturn {
           return;
         }
         console.error('Failed to toggle habit completion:', err);
+        triggerHaptic('error', { androidOnly: true });
         toast({
           variant: 'destructive',
           description: 'Failed to update habit status. Reverting change.',
@@ -310,10 +315,10 @@ export function useHabits(): UseHabitsReturn {
           habits.filter((h) => h.completed).length === habits.length - 1;
 
         if (completingLastHabit) {
-          triggerHaptic('success');
+          triggerHaptic(habits.length === 1 ? 'allDoneSingle' : 'allDone');
           playHabitSound('allDone');
         } else if (!habit.completed) {
-          triggerHaptic('medium');
+          triggerHaptic('heavy');
           playHabitSound('on');
         } else {
           triggerHaptic('light');

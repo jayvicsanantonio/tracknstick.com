@@ -238,7 +238,9 @@ const TrackerWeekStrip = memo(function TrackerWeekStrip({
               aria-pressed={day.isSelected}
               aria-current={day.isToday ? 'date' : undefined}
               onClick={() => {
-                triggerHaptic('selection');
+                if (!day.isSelected) {
+                  triggerHaptic('selection');
+                }
                 dateContext.setDate(day.date);
               }}
               className={cn(

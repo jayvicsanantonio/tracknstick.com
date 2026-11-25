@@ -6,7 +6,6 @@ import {
 } from '@shared/components/ui/dialog';
 import HabitDialog from '@/features/habits/components/HabitDialog';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
-import { triggerHaptic } from '@shared/utils/haptics';
 
 const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
 
@@ -20,10 +19,7 @@ export default function AddHabitDialog() {
     <div className="flex items-center justify-between border-b border-(--color-border-primary)/50 px-4 pb-3 sm:hidden">
       <button
         type="button"
-        onClick={() => {
-          triggerHaptic('light');
-          toggleShowAddHabitDialog();
-        }}
+        onClick={toggleShowAddHabitDialog}
         className="flex min-h-9 min-w-16 items-center justify-start text-[16px] font-normal text-(--color-brand-primary) active:opacity-60"
       >
         Cancel

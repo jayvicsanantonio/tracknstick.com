@@ -9,6 +9,8 @@ import { AxiosError, type AxiosResponse } from 'axios';
 import { useHabits } from '../useHabits';
 import * as habitsApi from '@/features/habits/api';
 import { achievementApi } from '@/features/progress/api';
+import { triggerHaptic } from '@shared/utils/haptics';
+import { usePreferences } from '@shared/hooks/usePreferences';
 import {
   pendingCompletions,
   queueCompletion,
@@ -33,7 +35,13 @@ vi.mock('@shared/hooks/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
 }));
 vi.mock('@shared/utils/sound', () => ({ playHabitSound: vi.fn() }));
-vi.mock('@shared/utils/haptics', () => ({ triggerHaptic: vi.fn() }));
+vi.mock('@shared/utils/haptics', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@shared/utils/haptics')>();
+  return {
+    ...actual,
+    triggerHaptic: vi.fn(actual.triggerHaptic),
+  };
+});
 
 const habit: Habit = {
   id: '7',
@@ -58,7 +66,18 @@ async function renderTracker() {
 }
 
 describe('useHabits', () => {
+  const originalVibrateDescriptor = Object.getOwnPropertyDescriptor(
+    navigator,
+    'vibrate',
+  );
+
   beforeEach(() => {
+    const { result } = renderHook(() => usePreferences());
+    act(() => {
+      result.current.setHapticsEnabled(true);
+      result.current.setHapticStrength('prominent');
+    });
+    vi.mocked(triggerHaptic).mockClear();
     vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([habit]);
     vi.spyOn(achievementApi, 'checkAchievements').mockResolvedValue({
       count: 0,
@@ -67,9 +86,15 @@ describe('useHabits', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     localStorage.clear();
     mockToast.mockReset();
     vi.restoreAllMocks();
+    if (originalVibrateDescriptor) {
+      Object.defineProperty(navigator, 'vibrate', originalVibrateDescriptor);
+    } else {
+      Reflect.deleteProperty(navigator, 'vibrate');
+    }
   });
 
   it('shows a habit at the outcome still waiting to be sent', async () => {
@@ -87,7 +112,7 @@ describe('useHabits', () => {
     expect(result.current.habits[0].completed).toBe(true);
   });
 
-  it('asks the API for the outcome the user chose', async () => {
+  it('asks the API for the outcome the user chose and uses single-habit allDone timing on a 1-habit day', async () => {
     const toggle = vi
       .spyOn(habitsApi, 'toggleHabitCompletion')
       .mockResolvedValue({ message: 'ok' });
@@ -96,6 +121,7 @@ describe('useHabits', () => {
     await act(() => result.current.toggleHabit('7'));
 
     expect(toggle).toHaveBeenCalledWith('7', DATE, 'UTC', true);
+    expect(triggerHaptic).toHaveBeenCalledWith('allDoneSingle');
   });
 
   it('keeps a change that reaches no server, to send it later', async () => {
@@ -120,9 +146,12 @@ describe('useHabits', () => {
     expect(mockToast).toHaveBeenCalledWith({
       description: "Saved on this device. It's sent when you're back online.",
     });
+    expect(triggerHaptic).not.toHaveBeenCalledWith('error', {
+      androidOnly: true,
+    });
   });
 
-  it('undoes a change the API refuses, and keeps nothing to send', async () => {
+  it('undoes a change the API refuses, fires an Android-only error haptic, and keeps nothing to send', async () => {
     vi.spyOn(habitsApi, 'toggleHabitCompletion').mockRejectedValue(
       new AxiosError('Bad', 'ERR_BAD_REQUEST', undefined, undefined, {
         status: 400,
@@ -135,6 +164,7 @@ describe('useHabits', () => {
 
     await waitFor(() => expect(result.current.habits[0].completed).toBe(false));
     expect(pendingCompletions()).toEqual([]);
+    expect(triggerHaptic).toHaveBeenCalledWith('error', { androidOnly: true });
     expect(mockToast).toHaveBeenCalledWith({
       variant: 'destructive',
       description: 'Failed to update habit status. Reverting change.',
@@ -143,5 +173,123 @@ describe('useHabits', () => {
       'Failed to toggle habit completion:',
       expect.any(AxiosError),
     );
+  });
+
+  it('triggers distinct heavy, allDone, light, and achievement haptics across toggle states', async () => {
+    const secondHabit: Habit = { ...habit, id: '8', name: 'Walk' };
+    vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([habit, secondHabit]);
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
+      message: 'ok',
+    });
+    vi.spyOn(achievementApi, 'checkAchievements')
+      .mockResolvedValueOnce({ count: 0, newAchievements: [] } as never)
+      .mockResolvedValueOnce({
+        count: 1,
+        newAchievements: [
+          { id: 'a1', name: 'Perfect Day', description: 'All habits done' },
+        ],
+      } as never);
+
+    const view = renderHook(() => useHabits(), { wrapper });
+    await waitFor(() => expect(view.result.current.habits).toHaveLength(2));
+
+    // Checking first of two habits -> heavy
+    await act(() => view.result.current.toggleHabit('7'));
+    expect(triggerHaptic).toHaveBeenCalledWith('heavy');
+
+    // Mock refetch keeping habit 7 done so habit 8 is the final incomplete habit
+    vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([
+      { ...habit, completed: true },
+      secondHabit,
+    ]);
+    await act(() => view.result.current.mutateHabits());
+
+    vi.mocked(triggerHaptic).mockClear();
+    await act(() => view.result.current.toggleHabit('8'));
+    expect(triggerHaptic).toHaveBeenCalledWith('allDone');
+    await waitFor(() =>
+      expect(triggerHaptic).toHaveBeenCalledWith('achievement', {
+        androidOnly: true,
+      }),
+    );
+
+    // Unchecking a completed habit -> light
+    vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([
+      { ...habit, completed: true },
+      { ...secondHabit, completed: true },
+    ]);
+    await act(() => view.result.current.mutateHabits());
+
+    vi.mocked(triggerHaptic).mockClear();
+    await act(() => view.result.current.toggleHabit('7'));
+    expect(triggerHaptic).toHaveBeenCalledWith('light');
+  });
+
+  it('lets the allDone pattern finish on Android when an achievement resolves within 830ms', async () => {
+    const vibrate = vi.fn();
+    Object.defineProperty(navigator, 'vibrate', {
+      configurable: true,
+      value: vibrate,
+    });
+
+    const firstDone: Habit = { ...habit, completed: true };
+    const secondHabit: Habit = { ...habit, id: '8', name: 'Walk' };
+    vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([
+      firstDone,
+      secondHabit,
+    ]);
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
+      message: 'ok',
+    });
+
+    let resolveAchievements!: (value: {
+      count: number;
+      newAchievements: { id: string; name: string; description: string }[];
+    }) => void;
+    vi.spyOn(achievementApi, 'checkAchievements').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveAchievements = resolve;
+        }) as never,
+    );
+
+    const view = renderHook(() => useHabits(), { wrapper });
+    await waitFor(() => expect(view.result.current.habits).toHaveLength(2));
+
+    vi.useFakeTimers();
+
+    await act(async () => {
+      await view.result.current.toggleHabit('8');
+    });
+
+    // allDone starts immediately on tap (770ms total duration).
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    expect(vibrate).toHaveBeenLastCalledWith([20, 320, 36, 264, 20, 55, 55]);
+
+    // Achievement check resolves 200ms later (well inside the 830ms window).
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(200);
+      resolveAchievements({
+        count: 1,
+        newAchievements: [
+          { id: 'a1', name: 'Perfect Day', description: 'All habits done' },
+        ],
+      });
+      await Promise.resolve();
+    });
+
+    // allDone is not cut off at t = 200ms or t = 750ms.
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(550);
+    });
+    expect(vibrate).toHaveBeenCalledTimes(1);
+
+    // After allDone completes (770ms) plus the 120ms gap, the achievement fanfare plays.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(200);
+    });
+    expect(vibrate).toHaveBeenCalledTimes(2);
+    expect(vibrate).toHaveBeenLastCalledWith([24, 50, 24, 50, 60]);
   });
 });

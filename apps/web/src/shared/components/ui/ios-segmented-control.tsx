@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@shared/utils/utils';
 import { IOS_SPRING_CONTROL } from '@shared/utils/motion';
-import { triggerHaptic } from '@shared/utils/haptics';
+import { triggerHaptic, type HapticStyle } from '@shared/utils/haptics';
 
 export interface SegmentedOption<T extends string> {
   value: T;
@@ -17,6 +17,8 @@ interface IosSegmentedControlProps<T extends string> {
   layoutId: string;
   ariaLabel: string;
   className?: string;
+  /** Haptic style fired after selecting a new option (pass false to silence). Defaults to 'selection'. */
+  hapticStyle?: HapticStyle | false;
 }
 
 export default function IosSegmentedControl<T extends string>({
@@ -26,6 +28,7 @@ export default function IosSegmentedControl<T extends string>({
   layoutId,
   ariaLabel,
   className,
+  hapticStyle = 'selection',
 }: IosSegmentedControlProps<T>) {
   return (
     <div
@@ -46,8 +49,10 @@ export default function IosSegmentedControl<T extends string>({
             aria-checked={isSelected}
             onClick={() => {
               if (!isSelected) {
-                triggerHaptic('selection');
                 onChange(option.value);
+                if (hapticStyle !== false) {
+                  triggerHaptic(hapticStyle);
+                }
               }
             }}
             className={cn(

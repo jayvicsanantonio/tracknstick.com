@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@shared/utils/utils';
 import { IOS_SPRING_CONTROL } from '@shared/utils/motion';
-import { triggerHaptic } from '@shared/utils/haptics';
+import { triggerHaptic, type HapticStyle } from '@shared/utils/haptics';
 
 interface IosSwitchProps {
   id?: string;
@@ -12,6 +12,8 @@ interface IosSwitchProps {
   onCheckedChange: (checked: boolean) => void;
   ariaLabel?: string;
   disabled?: boolean;
+  /** Haptic style fired after toggling (pass false to silence). Defaults to 'selection'. */
+  hapticStyle?: HapticStyle | false;
 }
 
 const IosSwitch = memo(function IosSwitch({
@@ -20,6 +22,7 @@ const IosSwitch = memo(function IosSwitch({
   onCheckedChange,
   ariaLabel,
   disabled = false,
+  hapticStyle = 'selection',
 }: IosSwitchProps) {
   return (
     <button
@@ -30,8 +33,10 @@ const IosSwitch = memo(function IosSwitch({
       aria-label={ariaLabel}
       disabled={disabled}
       onClick={() => {
-        triggerHaptic('selection');
         onCheckedChange(!checked);
+        if (hapticStyle !== false) {
+          triggerHaptic(hapticStyle);
+        }
       }}
       className={cn(
         'relative inline-flex h-[31px] w-[51px] shrink-0 cursor-pointer items-center rounded-full p-[2px] transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
