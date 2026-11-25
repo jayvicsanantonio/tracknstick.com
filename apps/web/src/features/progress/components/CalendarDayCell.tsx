@@ -1,8 +1,9 @@
 // One day in the progress calendar: its number above a ring that fills with the day's completion.
 // Past & today cells are tappable to jump straight to that day in the Tracker.
 
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { Check } from 'lucide-react';
+import { IosHapticOverlay } from '@shared/components/ui/ios-haptic-target';
 import { cn } from '@shared/utils/utils';
 import { InsightData } from '@/features/progress/types/InsightData';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -130,6 +131,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
           : `Day ${dayOfMonth}: ${rate}% completed`;
 
   const interactive = hasHappened && Boolean(onSelect);
+  const cellRef = useRef<HTMLDivElement>(null);
 
   const handleActivate = () => {
     if (!interactive || !onSelect) return;
@@ -139,6 +141,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
 
   return (
     <div
+      ref={cellRef}
       role="gridcell"
       aria-label={label}
       aria-current={isToday ? 'date' : undefined}
@@ -156,7 +159,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
           : undefined
       }
       className={cn(
-        'flex flex-col items-center gap-1 rounded-xl py-1 outline-none',
+        'relative flex flex-col items-center gap-1 rounded-xl py-1 outline-none',
         isToday &&
           'bg-(--color-brand-primary)/[0.09] ring-1 ring-(--color-brand-primary)/24 ring-inset',
         !hasHappened && 'opacity-65',
@@ -189,6 +192,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
           <span className="size-1 rounded-full bg-(--color-brand-primary)/25" />
         </div>
       )}
+      <IosHapticOverlay targetRef={cellRef} disabled={!interactive} />
     </div>
   );
 });

@@ -16,6 +16,7 @@ import HabitDialog from '@/features/habits/components/HabitDialog';
 import HabitStats from '@/features/habits/components/HabitStats';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { Habit } from '@/features/habits/types/Habit';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import type { EditHabitTab } from '@/features/habits/context/HabitsStateContextDefinition';
 
@@ -60,14 +61,16 @@ export default function EditHabitDialog() {
       </span>
       <div className="flex min-w-16 items-center justify-end">
         {activeTab === 'edit' ? (
-          <button
-            type="submit"
-            form={FORM_ID}
-            aria-label="Save Changes"
-            className="flex min-h-9 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
-          >
-            Save
-          </button>
+          <IosHapticTarget className="inline-flex">
+            <button
+              type="submit"
+              form={FORM_ID}
+              aria-label="Save Changes"
+              className="flex min-h-9 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
+            >
+              Save
+            </button>
+          </IosHapticTarget>
         ) : null}
       </div>
     </div>
@@ -139,18 +142,28 @@ function EditHabitTabs({
       <div className="shrink-0 max-sm:px-4 sm:mb-3">
         <div className="ios-tracker-card rounded-2xl p-1">
           <TabsList className="grid h-9 w-full shrink-0 grid-cols-2 bg-transparent p-0 ring-0">
-            <TabsTrigger
-              value="edit"
-              className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+            <IosHapticTarget
+              disabled={activeTab === 'edit'}
+              className="flex w-full rounded-xl"
             >
-              Edit
-            </TabsTrigger>
-            <TabsTrigger
-              value="stats"
-              className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+              <TabsTrigger
+                value="edit"
+                className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+              >
+                Edit
+              </TabsTrigger>
+            </IosHapticTarget>
+            <IosHapticTarget
+              disabled={activeTab === 'stats'}
+              className="flex w-full rounded-xl"
             >
-              Stats
-            </TabsTrigger>
+              <TabsTrigger
+                value="stats"
+                className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+              >
+                Stats
+              </TabsTrigger>
+            </IosHapticTarget>
           </TabsList>
         </div>
       </div>

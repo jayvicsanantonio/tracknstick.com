@@ -6,6 +6,7 @@ import {
 } from '@shared/components/ui/dialog';
 import HabitDialog from '@/features/habits/components/HabitDialog';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 
 const HabitForm = lazy(() => import('@/features/habits/components/HabitForm'));
 
@@ -30,14 +31,16 @@ export default function AddHabitDialog() {
       >
         New Habit
       </span>
-      <button
-        type="submit"
-        form={FORM_ID}
-        aria-label="Add habit"
-        className="flex min-h-9 min-w-16 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
-      >
-        Add
-      </button>
+      <IosHapticTarget className="inline-flex">
+        <button
+          type="submit"
+          form={FORM_ID}
+          aria-label="Add habit"
+          className="flex min-h-9 min-w-16 items-center justify-end text-[16px] font-semibold text-(--color-brand-primary) active:opacity-60"
+        >
+          Add
+        </button>
+      </IosHapticTarget>
     </div>
   );
 

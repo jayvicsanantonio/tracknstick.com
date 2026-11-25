@@ -36,6 +36,7 @@ import { PAGE_CONTAINER } from '@shared/constants/layout';
 import { useHoldSplash } from '@shared/hooks/useHideSplash';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { cn } from '@shared/utils/utils';
 import {
@@ -290,16 +291,18 @@ const HabitsOverview = memo(function HabitsOverview() {
                 again.
               </p>
               {retry ? (
-                <Button
-                  variant="outline"
-                  className="h-11 rounded-full px-6"
-                  onClick={() => {
-                    triggerHaptic('medium');
-                    void retry();
-                  }}
-                >
-                  Try again
-                </Button>
+                <IosHapticTarget className="inline-flex rounded-full">
+                  <Button
+                    variant="outline"
+                    className="h-11 rounded-full px-6"
+                    onClick={() => {
+                      triggerHaptic('medium');
+                      void retry();
+                    }}
+                  >
+                    Try again
+                  </Button>
+                </IosHapticTarget>
               ) : null}
             </div>
           </div>
@@ -380,24 +383,39 @@ const HabitsOverview = memo(function HabitsOverview() {
               className="w-full"
             >
               <TabsList className="grid h-9 w-full grid-cols-3 bg-transparent p-0 ring-0">
-                <TabsTrigger
-                  className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
-                  value="all"
+                <IosHapticTarget
+                  disabled={selectedTab === 'all'}
+                  className="flex w-full rounded-xl"
                 >
-                  All
-                </TabsTrigger>
-                <TabsTrigger
-                  className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
-                  value="active"
+                  <TabsTrigger
+                    className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+                    value="all"
+                  >
+                    All
+                  </TabsTrigger>
+                </IosHapticTarget>
+                <IosHapticTarget
+                  disabled={selectedTab === 'active'}
+                  className="flex w-full rounded-xl"
                 >
-                  Active
-                </TabsTrigger>
-                <TabsTrigger
-                  className="rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
-                  value="archived"
+                  <TabsTrigger
+                    className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+                    value="active"
+                  >
+                    Active
+                  </TabsTrigger>
+                </IosHapticTarget>
+                <IosHapticTarget
+                  disabled={selectedTab === 'archived'}
+                  className="flex w-full rounded-xl"
                 >
-                  Archived
-                </TabsTrigger>
+                  <TabsTrigger
+                    className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+                    value="archived"
+                  >
+                    Archived
+                  </TabsTrigger>
+                </IosHapticTarget>
               </TabsList>
             </Tabs>
           </div>
@@ -431,16 +449,18 @@ const HabitsOverview = memo(function HabitsOverview() {
                 title="No active habits"
                 detail="All your habits are archived. Add a new one, or find the others under Archived."
               >
-                <Button
-                  className="h-11 rounded-full px-6"
-                  onClick={() => {
-                    triggerHaptic('medium');
-                    toggleShowAddHabitDialog();
-                  }}
-                >
-                  <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
-                  Add habit
-                </Button>
+                <IosHapticTarget className="inline-flex rounded-full">
+                  <Button
+                    className="h-11 rounded-full px-6"
+                    onClick={() => {
+                      triggerHaptic('medium');
+                      toggleShowAddHabitDialog();
+                    }}
+                  >
+                    <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
+                    Add habit
+                  </Button>
+                </IosHapticTarget>
               </EmptyState>
             )}
           </div>
@@ -524,12 +544,14 @@ const HabitsOverview = memo(function HabitsOverview() {
             <AlertDialogCancel className="bg-(--color-muted) text-(--color-foreground) hover:bg-(--color-hover-surface)">
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring)"
-            >
-              Delete
-            </AlertDialogAction>
+            <IosHapticTarget className="inline-flex w-full sm:w-auto">
+              <AlertDialogAction
+                onClick={confirmDelete}
+                className="w-full bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring) sm:w-auto"
+              >
+                Delete
+              </AlertDialogAction>
+            </IosHapticTarget>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

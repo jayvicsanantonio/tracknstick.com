@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, memo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CalendarDays } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { useDate } from '@app/providers/useDate';
 import { triggerHaptic } from '@shared/utils/haptics';
 import type { DaySwipeDirection } from '@/features/habits/hooks/useDaySwipe';
@@ -102,18 +103,20 @@ const DailyHabitDate = memo(function DailyHabitDate({
         {/* Keyboard shortcuts for date navigation */}
         <DateHotkeys onPrev={handlePreviousDate} onNext={handleNextDate} />
 
-        <Button
-          onClick={() => {
-            triggerHaptic('selection');
-            handlePreviousDate();
-          }}
-          variant="ghost"
-          size="icon"
-          aria-label="Previous Date"
-          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 sm:size-10"
-        >
-          <ChevronLeft aria-hidden="true" className="h-4 w-4" />
-        </Button>
+        <IosHapticTarget className="inline-flex rounded-xl">
+          <Button
+            onClick={() => {
+              triggerHaptic('selection');
+              handlePreviousDate();
+            }}
+            variant="ghost"
+            size="icon"
+            aria-label="Previous Date"
+            className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 sm:size-10"
+          >
+            <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+          </Button>
+        </IosHapticTarget>
 
         {/* Double-tapping the date goes back to today. */}
         <div
@@ -189,18 +192,20 @@ const DailyHabitDate = memo(function DailyHabitDate({
           </button>
         )}
 
-        <Button
-          onClick={() => {
-            triggerHaptic('selection');
-            handleNextDate();
-          }}
-          variant="ghost"
-          size="icon"
-          aria-label="Next Date"
-          className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 sm:size-10"
-        >
-          <ChevronRight aria-hidden="true" className="h-4 w-4" />
-        </Button>
+        <IosHapticTarget className="inline-flex rounded-xl">
+          <Button
+            onClick={() => {
+              triggerHaptic('selection');
+              handleNextDate();
+            }}
+            variant="ghost"
+            size="icon"
+            aria-label="Next Date"
+            className="size-9 rounded-xl bg-(--color-brand-primary)/10 text-(--color-brand-primary) transition-[transform,background-color] hover:bg-(--color-brand-primary)/18 hover:text-(--color-brand-primary) active:scale-92 sm:size-10"
+          >
+            <ChevronRight aria-hidden="true" className="h-4 w-4" />
+          </Button>
+        </IosHapticTarget>
       </div>
     </div>
   );

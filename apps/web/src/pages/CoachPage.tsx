@@ -15,6 +15,7 @@ import PageHeader from '@/features/layout/components/PageHeader';
 import { APP_MAX_WIDTH, PAGE_HEADER_ACTION } from '@shared/constants/layout';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { useVisualViewport } from '@shared/hooks/useVisualViewport';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { cn } from '@shared/utils/utils';
 
@@ -53,18 +54,20 @@ function CoachPage() {
         collapsed={isLogScrolled}
         trailing={
           conversation.messages.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('light');
-                setIsLogScrolled(false);
-                conversation.clear();
-              }}
-              aria-label="New chat"
-              className="flex size-9 items-center justify-center rounded-full bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 transition-transform ring-inset focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-90"
-            >
-              <SquarePen aria-hidden="true" className="size-4" />
-            </button>
+            <IosHapticTarget className="inline-flex shrink-0 rounded-full">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setIsLogScrolled(false);
+                  conversation.clear();
+                }}
+                aria-label="New chat"
+                className="flex size-9 items-center justify-center rounded-full bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 transition-transform ring-inset focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-90"
+              >
+                <SquarePen aria-hidden="true" className="size-4" />
+              </button>
+            </IosHapticTarget>
           ) : undefined
         }
       />

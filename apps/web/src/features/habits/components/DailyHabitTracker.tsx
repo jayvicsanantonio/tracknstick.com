@@ -47,6 +47,7 @@ import PageHeader from '@/features/layout/components/PageHeader';
 import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { PAGE_CONTAINER, PAGE_HEADER_ACTION } from '@shared/constants/layout';
 import { useHoldSplash } from '@shared/hooks/useHideSplash';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
@@ -530,16 +531,18 @@ export default function DailyHabitTracker() {
                 Your habits could not be loaded. Check your connection and try
                 again.
               </p>
-              <Button
-                variant="outline"
-                className="h-11 rounded-full px-6"
-                onClick={() => {
-                  triggerHaptic('medium');
-                  void mutateHabits();
-                }}
-              >
-                Try again
-              </Button>
+              <IosHapticTarget className="inline-flex rounded-full">
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-full px-6"
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    void mutateHabits();
+                  }}
+                >
+                  Try again
+                </Button>
+              </IosHapticTarget>
             </div>
           </div>
         </div>
@@ -683,16 +686,18 @@ export default function DailyHabitTracker() {
                           Your habits could not be checked. Check your
                           connection and try again.
                         </p>
-                        <Button
-                          variant="outline"
-                          className="h-11 rounded-full px-6"
-                          onClick={() => {
-                            triggerHaptic('medium');
-                            void retryAllHabits();
-                          }}
-                        >
-                          Try again
-                        </Button>
+                        <IosHapticTarget className="inline-flex rounded-full">
+                          <Button
+                            variant="outline"
+                            className="h-11 rounded-full px-6"
+                            onClick={() => {
+                              triggerHaptic('medium');
+                              void retryAllHabits();
+                            }}
+                          >
+                            Try again
+                          </Button>
+                        </IosHapticTarget>
                       </div>
                     ) : (
                       <div className="flex flex-1 flex-col justify-center">

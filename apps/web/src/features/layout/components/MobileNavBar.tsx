@@ -6,6 +6,7 @@ import { memo, useEffect, useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { User } from 'lucide-react';
 import { cn } from '@shared/utils/utils';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { useMobileShell } from '@/features/layout/hooks/useMobileShell';
 
@@ -98,27 +99,29 @@ const MobileNavBar = memo(function MobileNavBar({
           <div className="z-10 flex items-center gap-1.5">
             {showInlineTitle ? null : leading}
             {trailing}
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('light');
-                openSettings();
-              }}
-              aria-label="Open profile and settings"
-              className="flex size-9 items-center justify-center overflow-hidden rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) ring-1 ring-(--color-border-primary)/60 transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-92"
-            >
-              {userImageUrl ? (
-                <img
-                  src={userImageUrl}
-                  alt=""
-                  className="size-full object-cover"
-                />
-              ) : userInitial ? (
-                <span className="text-sm font-bold">{userInitial}</span>
-              ) : (
-                <User aria-hidden="true" className="size-4" />
-              )}
-            </button>
+            <IosHapticTarget className="inline-flex shrink-0 rounded-full">
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  openSettings();
+                }}
+                aria-label="Open profile and settings"
+                className="flex size-9 items-center justify-center overflow-hidden rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) ring-1 ring-(--color-border-primary)/60 transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-92"
+              >
+                {userImageUrl ? (
+                  <img
+                    src={userImageUrl}
+                    alt=""
+                    className="size-full object-cover"
+                  />
+                ) : userInitial ? (
+                  <span className="text-sm font-bold">{userInitial}</span>
+                ) : (
+                  <User aria-hidden="true" className="size-4" />
+                )}
+              </button>
+            </IosHapticTarget>
           </div>
         </div>
       </div>

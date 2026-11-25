@@ -8,6 +8,7 @@ import {
   memo,
   useContext,
   useEffect,
+  useRef,
   type ComponentType,
   type SVGProps,
 } from 'react';
@@ -18,6 +19,10 @@ import { motion } from 'framer-motion';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import { DateContext } from '@app/providers/DateContext';
+import {
+  IosHapticOverlay,
+  IosHapticTarget,
+} from '@shared/components/ui/ios-haptic-target';
 import { cn } from '@shared/utils/utils';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { preloadChunk, type PreloadTarget } from '@shared/utils/preloadRoutes';
@@ -32,46 +37,60 @@ interface TabProps {
   preload: PreloadTarget;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
   isActive: boolean;
+  canRetap: boolean;
   onActiveRetap: () => void;
 }
 
-function Tab({ to, label, preload, Icon, isActive, onActiveRetap }: TabProps) {
+function Tab({
+  to,
+  label,
+  preload,
+  Icon,
+  isActive,
+  canRetap,
+  onActiveRetap,
+}: TabProps) {
   return (
-    <NavLink
-      to={to}
-      end
-      onTouchStart={() => preloadChunk(preload)}
-      onPointerEnter={() => preloadChunk(preload)}
-      onClick={(event) => {
-        if (isActive) {
-          event.preventDefault();
-          onActiveRetap();
-        } else {
-          triggerHaptic('selection');
-        }
-      }}
-      className={cn(
-        'relative z-10 flex h-13 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] leading-none tracking-[-0.01em] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-95',
-        isActive
-          ? 'font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-primary)'
-          : 'font-medium text-(--color-text-secondary)',
-      )}
+    <IosHapticTarget
+      disabled={isActive && !canRetap}
+      className="flex flex-1 rounded-full"
     >
-      {isActive ? (
-        <motion.span
-          layoutId="ios-liquid-tab-lens"
-          transition={IOS_SPRING_TAB}
+      <NavLink
+        to={to}
+        end
+        onTouchStart={() => preloadChunk(preload)}
+        onPointerEnter={() => preloadChunk(preload)}
+        onClick={(event) => {
+          if (isActive) {
+            event.preventDefault();
+            onActiveRetap();
+          } else {
+            triggerHaptic('selection');
+          }
+        }}
+        className={cn(
+          'relative z-10 flex h-13 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] leading-none tracking-[-0.01em] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-95',
+          isActive
+            ? 'font-semibold text-(--color-brand-tertiary) dark:text-(--color-brand-primary)'
+            : 'font-medium text-(--color-text-secondary)',
+        )}
+      >
+        {isActive ? (
+          <motion.span
+            layoutId="ios-liquid-tab-lens"
+            transition={IOS_SPRING_TAB}
+            aria-hidden="true"
+            className="ios-liquid-lens absolute inset-0 -z-10 rounded-full"
+          />
+        ) : null}
+        <Icon
           aria-hidden="true"
-          className="ios-liquid-lens absolute inset-0 -z-10 rounded-full"
+          className="size-[21px]"
+          strokeWidth={isActive ? 2.4 : 1.85}
         />
-      ) : null}
-      <Icon
-        aria-hidden="true"
-        className="size-[21px]"
-        strokeWidth={isActive ? 2.4 : 1.85}
-      />
-      <span>{label}</span>
-    </NavLink>
+        <span>{label}</span>
+      </NavLink>
+    </IosHapticTarget>
   );
 }
 
@@ -80,6 +99,11 @@ const MobileTabBar = memo(function MobileTabBar() {
   const dateContext = useContext(DateContext);
   const { pathname } = useLocation();
   const { isKeyboardOpen } = useVisualViewport();
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const trackerNeedsDateReset =
+    Boolean(dateContext) &&
+    dateContext!.date.toDateString() !==
+      dateContext!.currentDate.toDateString();
 
   // Reset window scroll when switching mobile tabs so each tab starts cleanly at its Large Title.
   useEffect(() => {
@@ -126,6 +150,7 @@ const MobileTabBar = memo(function MobileTabBar() {
             preload="dashboard"
             Icon={Calendar}
             isActive={pathname === '/'}
+            canRetap={trackerNeedsDateReset}
             onActiveRetap={() => handleRetap('/')}
           />
           <Tab
@@ -134,6 +159,7 @@ const MobileTabBar = memo(function MobileTabBar() {
             preload="habits"
             Icon={ListChecks}
             isActive={pathname === '/habits'}
+            canRetap={false}
             onActiveRetap={() => handleRetap('/habits')}
           />
           <Tab
@@ -142,6 +168,7 @@ const MobileTabBar = memo(function MobileTabBar() {
             preload="progress"
             Icon={BarChart2}
             isActive={pathname === '/progress'}
+            canRetap={false}
             onActiveRetap={() => handleRetap('/progress')}
           />
           <Tab
@@ -150,32 +177,39 @@ const MobileTabBar = memo(function MobileTabBar() {
             preload="coach"
             Icon={MessageCircle}
             isActive={pathname === '/coach'}
+            canRetap={false}
             onActiveRetap={() => handleRetap('/coach')}
           />
         </div>
 
         {/* Detached iOS 26 Liquid Glass circular "+" action orb */}
-        <motion.button
-          type="button"
+        <motion.div
           whileTap={{ scale: 0.9 }}
           transition={IOS_SPRING_TAP}
-          onTouchStart={() => preloadChunk('habitForm')}
-          onPointerEnter={() => preloadChunk('habitForm')}
-          onClick={() => {
-            triggerHaptic('medium');
-            toggleShowAddHabitDialog();
-          }}
-          aria-label="Add Habit"
-          className={cn(
-            'pointer-events-auto flex size-[60px] shrink-0 items-center justify-center rounded-full',
-            'bg-(--color-brand-primary) text-(--color-primary-foreground)',
-            'shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_8px_20px_rgba(0,0,0,0.16),0_2px_6px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_24px_rgba(0,0,0,0.45),0_2px_6px_rgba(0,0,0,0.25)]',
-            'ring-1 ring-white/20 outline-none ring-inset',
-            'focus-visible:ring-2 focus-visible:ring-(--color-ring)',
-          )}
+          className="pointer-events-auto relative shrink-0 rounded-full"
         >
-          <Plus aria-hidden="true" className="size-6" strokeWidth={2.6} />
-        </motion.button>
+          <button
+            ref={fabRef}
+            type="button"
+            onTouchStart={() => preloadChunk('habitForm')}
+            onPointerEnter={() => preloadChunk('habitForm')}
+            onClick={() => {
+              triggerHaptic('medium');
+              toggleShowAddHabitDialog();
+            }}
+            aria-label="Add Habit"
+            className={cn(
+              'flex size-[60px] items-center justify-center rounded-full',
+              'bg-(--color-brand-primary) text-(--color-primary-foreground)',
+              'shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_8px_20px_rgba(0,0,0,0.16),0_2px_6px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_24px_rgba(0,0,0,0.45),0_2px_6px_rgba(0,0,0,0.25)]',
+              'ring-1 ring-white/20 outline-none ring-inset',
+              'focus-visible:ring-2 focus-visible:ring-(--color-ring)',
+            )}
+          >
+            <Plus aria-hidden="true" className="size-6" strokeWidth={2.6} />
+          </button>
+          <IosHapticOverlay targetRef={fabRef} />
+        </motion.div>
       </div>
     </nav>
   );

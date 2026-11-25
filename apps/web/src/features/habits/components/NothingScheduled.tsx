@@ -4,6 +4,7 @@
 import { memo } from 'react';
 import { ArrowRight, CalendarCheck2 } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import EmptyState from '@shared/components/feedback/EmptyState';
 
 /** Within this many days, the next due day is named by its weekday alone. */
@@ -58,14 +59,16 @@ const NothingScheduled = memo(function NothingScheduled({
           <p className="text-[13px] font-semibold text-(--color-brand-text) dark:text-(--color-brand-text-light)">
             Next up: {weekday}, {monthDay}
           </p>
-          <Button
-            variant="outline"
-            className="h-11 rounded-full px-6"
-            onClick={onGoToNextDue}
-          >
-            Go to {isWithinWeek ? weekday : monthDay}
-            <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
-          </Button>
+          <IosHapticTarget className="inline-flex rounded-full">
+            <Button
+              variant="outline"
+              className="h-11 rounded-full px-6"
+              onClick={onGoToNextDue}
+            >
+              Go to {isWithinWeek ? weekday : monthDay}
+              <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
+            </Button>
+          </IosHapticTarget>
         </>
       ) : null}
     </EmptyState>

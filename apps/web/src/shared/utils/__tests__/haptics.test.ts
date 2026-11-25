@@ -1,15 +1,33 @@
-// Covers semantic Android vibrate waveforms (Prominent vs Subtle), viewport-anchored
-// iOS Safari 17.4+ switch haptics, async Android-only isolation, and allDone queuing.
+// Covers semantic Android vibrate waveforms (Prominent vs Subtle), unclipped
+// viewport-anchored iOS switch haptics, direct-tap activation, and allDone queuing.
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { triggerHaptic } from '@shared/utils/haptics';
+import {
+  IOS_HAPTIC_SWITCH_ID,
+  ensureIosHapticSwitch,
+  isIosDevice,
+  scheduleIosHapticActivation,
+  triggerHaptic,
+} from '@shared/utils/haptics';
 import { usePreferences } from '@shared/hooks/usePreferences';
 
 describe('triggerHaptic & usePreferences', () => {
   const originalVibrateDescriptor = Object.getOwnPropertyDescriptor(
     navigator,
     'vibrate',
+  );
+  const originalUserAgentDescriptor = Object.getOwnPropertyDescriptor(
+    navigator,
+    'userAgent',
+  );
+  const originalPlatformDescriptor = Object.getOwnPropertyDescriptor(
+    navigator,
+    'platform',
+  );
+  const originalMaxTouchPointsDescriptor = Object.getOwnPropertyDescriptor(
+    navigator,
+    'maxTouchPoints',
   );
 
   beforeEach(() => {
@@ -30,9 +48,26 @@ describe('triggerHaptic & usePreferences', () => {
     } else {
       Reflect.deleteProperty(navigator, 'vibrate');
     }
+    if (originalUserAgentDescriptor) {
+      Object.defineProperty(
+        navigator,
+        'userAgent',
+        originalUserAgentDescriptor,
+      );
+    }
+    if (originalPlatformDescriptor) {
+      Object.defineProperty(navigator, 'platform', originalPlatformDescriptor);
+    }
+    if (originalMaxTouchPointsDescriptor) {
+      Object.defineProperty(
+        navigator,
+        'maxTouchPoints',
+        originalMaxTouchPointsDescriptor,
+      );
+    }
   });
 
-  it('creates and triggers a viewport-anchored hidden iOS switch element when vibrate is absent', () => {
+  it('mounts an unclipped viewport-anchored native iOS switch in document.body', () => {
     Object.defineProperty(navigator, 'vibrate', {
       configurable: true,
       value: undefined,
@@ -40,14 +75,83 @@ describe('triggerHaptic & usePreferences', () => {
 
     triggerHaptic('selection');
 
-    const switchInput = document.querySelector<HTMLInputElement>(
-      'input[type="checkbox"][switch]',
-    );
+    const switchInput = document.getElementById(
+      IOS_HAPTIC_SWITCH_ID,
+    ) as HTMLInputElement | null;
     expect(switchInput).not.toBeNull();
+    expect(switchInput?.type).toBe('checkbox');
+    expect(switchInput?.hasAttribute('switch')).toBe(true);
     expect(switchInput?.getAttribute('aria-hidden')).toBe('true');
-    const label = switchInput?.closest('label');
-    expect(label?.style.bottom).toBe('0px');
-    expect(label?.style.left).toBe('0px');
+    expect(switchInput?.parentElement).toBe(document.body);
+    expect(switchInput?.style.position).toBe('fixed');
+    expect(switchInput?.style.top).toBe('0px');
+    expect(switchInput?.style.left).toBe('0px');
+    expect(switchInput?.style.opacity).toBe('0');
+    expect(switchInput?.style.pointerEvents).toBe('none');
+    expect(switchInput?.style.display).not.toBe('none');
+    expect(switchInput?.style.overflow).not.toBe('hidden');
+  });
+
+  it('detects iPhone and touch iPadOS devices without matching desktop browsers', () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 26_5 like Mac OS X) AppleWebKit/605.1.15',
+    });
+    expect(isIosDevice()).toBe(true);
+
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15',
+    });
+    Object.defineProperty(navigator, 'platform', {
+      configurable: true,
+      value: 'MacIntel',
+    });
+    Object.defineProperty(navigator, 'maxTouchPoints', {
+      configurable: true,
+      value: 5,
+    });
+    expect(isIosDevice()).toBe(true);
+
+    Object.defineProperty(navigator, 'maxTouchPoints', {
+      configurable: true,
+      value: 0,
+    });
+    expect(isIosDevice()).toBe(false);
+  });
+
+  it('forwards direct-tap switch activation synchronously without double-clicking the imperative label', () => {
+    Object.defineProperty(navigator, 'vibrate', {
+      configurable: true,
+      value: undefined,
+    });
+
+    // Ensure both the shared switch and imperative label exist first.
+    triggerHaptic('selection');
+    const switchInput = ensureIosHapticSwitch()!;
+    const imperativeLabel = document.querySelector<HTMLLabelElement>(
+      `label[for="${IOS_HAPTIC_SWITCH_ID}"]`,
+    )!;
+    const imperativeClickSpy = vi.spyOn(imperativeLabel, 'click');
+
+    const button = document.createElement('button');
+    const onButtonClick = vi.fn(() => {
+      triggerHaptic('selection');
+    });
+    button.addEventListener('click', onButtonClick);
+    document.body.appendChild(button);
+
+    scheduleIosHapticActivation(button);
+    // Simulate Safari's native `<label>` default action firing `change` on the switch.
+    switchInput.checked = !switchInput.checked;
+    switchInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(onButtonClick).toHaveBeenCalledTimes(1);
+    expect(imperativeClickSpy).not.toHaveBeenCalled();
+
+    button.remove();
   });
 
   it('uses distinct prominent and subtle Android vibration waveforms for multi- and single-habit days', () => {
@@ -64,6 +168,7 @@ describe('triggerHaptic & usePreferences', () => {
     triggerHaptic('allDoneSingle');
     triggerHaptic('warning');
     triggerHaptic('error', { androidOnly: true });
+    triggerHaptic('success', { iosNativeHandled: true });
 
     expect(vibrate).toHaveBeenNthCalledWith(1, 12);
     expect(vibrate).toHaveBeenNthCalledWith(2, [18, 28, 32]);
@@ -72,6 +177,7 @@ describe('triggerHaptic & usePreferences', () => {
     expect(vibrate).toHaveBeenNthCalledWith(5, [20, 400, 36, 44, 20, 55, 55]);
     expect(vibrate).toHaveBeenNthCalledWith(6, [36, 50, 42]);
     expect(vibrate).toHaveBeenNthCalledWith(7, [35, 35, 35, 35, 50]);
+    expect(vibrate).toHaveBeenNthCalledWith(8, [18, 45, 34]);
 
     vibrate.mockClear();
     const { result } = renderHook(() => usePreferences());
@@ -125,9 +231,9 @@ describe('triggerHaptic & usePreferences', () => {
     });
 
     triggerHaptic('selection');
-    const label = document
-      .querySelector('input[type="checkbox"][switch]')
-      ?.closest('label');
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${IOS_HAPTIC_SWITCH_ID}"]`,
+    );
     expect(label).not.toBeNull();
 
     const clickSpy = vi.spyOn(label!, 'click');
@@ -175,9 +281,9 @@ describe('triggerHaptic & usePreferences', () => {
     });
 
     triggerHaptic('selection');
-    const label = document
-      .querySelector('input[type="checkbox"][switch]')
-      ?.closest('label');
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${IOS_HAPTIC_SWITCH_ID}"]`,
+    );
     expect(label).not.toBeNull();
 
     const clickSpy = vi.spyOn(label!, 'click');
@@ -201,9 +307,9 @@ describe('triggerHaptic & usePreferences', () => {
     });
 
     triggerHaptic('selection');
-    const label = document
-      .querySelector('input[type="checkbox"][switch]')
-      ?.closest('label');
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${IOS_HAPTIC_SWITCH_ID}"]`,
+    );
     expect(label).not.toBeNull();
 
     const clickSpy = vi.spyOn(label!, 'click');
@@ -227,9 +333,9 @@ describe('triggerHaptic & usePreferences', () => {
     });
 
     triggerHaptic('selection');
-    const label = document
-      .querySelector('input[type="checkbox"][switch]')
-      ?.closest('label');
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${IOS_HAPTIC_SWITCH_ID}"]`,
+    );
     expect(label).not.toBeNull();
     const clickSpy = vi.spyOn(label!, 'click');
 

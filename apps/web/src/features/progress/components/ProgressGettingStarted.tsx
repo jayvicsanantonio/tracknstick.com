@@ -7,6 +7,7 @@ import { ArrowRight, ChartNoAxesColumn, Plus } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
 import EmptyState from '@shared/components/feedback/EmptyState';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 
 interface ProgressGettingStartedProps {
@@ -26,16 +27,18 @@ const ProgressGettingStarted = memo(function ProgressGettingStarted({
         detail="Add a habit and check it off on the Tracker. Your streaks, calendar and achievements fill in from there."
         className="max-w-none"
       >
-        <Button
-          onClick={() => {
-            triggerHaptic('medium');
-            openAddHabitDialog();
-          }}
-          className="h-11 rounded-full px-6"
-        >
-          <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
-          Add habit
-        </Button>
+        <IosHapticTarget className="inline-flex rounded-full">
+          <Button
+            onClick={() => {
+              triggerHaptic('medium');
+              openAddHabitDialog();
+            }}
+            className="h-11 rounded-full px-6"
+          >
+            <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
+            Add habit
+          </Button>
+        </IosHapticTarget>
       </EmptyState>
     );
   }
@@ -47,12 +50,14 @@ const ProgressGettingStarted = memo(function ProgressGettingStarted({
       detail="Your streaks, consistency and perfect days start counting from your first check-in."
       className="max-w-none"
     >
-      <Button asChild className="h-11 rounded-full px-6">
-        <Link to="/" onClick={() => triggerHaptic('medium')}>
-          Go to Tracker
-          <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
-        </Link>
-      </Button>
+      <IosHapticTarget className="inline-flex rounded-full">
+        <Button asChild className="h-11 rounded-full px-6">
+          <Link to="/" onClick={() => triggerHaptic('medium')}>
+            Go to Tracker
+            <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
+          </Link>
+        </Button>
+      </IosHapticTarget>
     </EmptyState>
   );
 });
