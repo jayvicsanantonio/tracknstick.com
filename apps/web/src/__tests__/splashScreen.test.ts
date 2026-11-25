@@ -175,13 +175,19 @@ describe('the launch splash in index.html', () => {
     expect(done).toMatch(/pointer-events:\s*none/);
   });
 
-  it('clears the medallion and wordmark before the emerald veil finishes parting', () => {
+  it('clears the medallion and wordmark in place before the emerald veil finishes parting', () => {
     expect(html).toMatch(/<div class="splash-mark">/);
     expect(html).toMatch(/<div class="splash-wordmark-wrap"/);
-    expect(rule('#splash.splash-done .splash-mark')).toMatch(/opacity:\s*0/);
-    expect(rule('#splash.splash-done .splash-wordmark-wrap')).toMatch(
-      /opacity:\s*0/,
-    );
+    const markDone = rule('#splash.splash-done .splash-mark');
+    const wordmarkDone = rule('#splash.splash-done .splash-wordmark-wrap');
+    expect(markDone).toMatch(/opacity:\s*0/);
+    expect(wordmarkDone).toMatch(/opacity:\s*0/);
+    // Pure opacity exit: no transform shift right before transitioning.
+    expect(markDone).not.toMatch(/transform:/);
+    expect(wordmarkDone).not.toMatch(/transform:/);
+    // Explicit box metrics so Tailwind's base stylesheet never shifts them.
+    expect(rule('.splash-medallion')).toMatch(/display:\s*block/);
+    expect(rule('.splash-wordmark')).toMatch(/line-height:\s*[\d.]+/);
     // The veil waits briefly before dissolving so the mark never ghosts over the page.
     expect(rule('#splash')).toMatch(
       /opacity\s+[\d.]+s\s+cubic-bezier\([^)]+\)\s+0\.\d+s/,
