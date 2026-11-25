@@ -56,6 +56,24 @@ describe('useHideSplash', () => {
     expect(splash).not.toBeInTheDocument();
   });
 
+  it("hands the system's chrome back to the theme as the splash fades", async () => {
+    addSplash();
+    const splashColour = document.createElement('meta');
+    splashColour.name = 'theme-color';
+    splashColour.id = 'splash-theme-color';
+    document.head.append(splashColour);
+    const { rerender } = renderHook(({ ready }) => useHideSplash(ready), {
+      initialProps: { ready: false },
+    });
+
+    await settle();
+    expect(splashColour).toBeInTheDocument();
+
+    rerender({ ready: true });
+    await settle();
+    expect(splashColour).not.toBeInTheDocument();
+  });
+
   it('stays up while a page beneath is loading, and fades once it has loaded', async () => {
     const splash = addSplash();
     const { rerender } = renderHook(

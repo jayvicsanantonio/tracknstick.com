@@ -98,9 +98,13 @@ never re-renders it. It is the app icon come to life in every theme: on the
 icon's emerald, one pink ring sweeps closed, then the check draws in inside it,
 then the name. Only an app opened from a phone or tablet's home screen shows it
 (`display-mode: standalone` and `pointer: coarse`); a browser tab, or an app
-installed on a desktop, keeps it hidden. Chromium cannot emulate the display
-mode, so `e2e/splash.e2e.ts` launches it with Blink's `displayModeOverride`
-setting.
+installed on a desktop, keeps it hidden. iOS paints the status bar and the home
+indicator's strip from the page's own background and theme-color, not from the
+fixed splash, so while it shows `index.html` turns `html` and `body` emerald and
+puts a splash `theme-color` (`#splash-theme-color`) ahead of the theme's;
+`useHideSplash` removes it as the fade begins, and the theme code leaves it
+alone. Chromium cannot emulate the display mode, so `e2e/splash.e2e.ts` launches
+it with Blink's `displayModeOverride` setting.
 
 `RootLayout` calls `useHideSplash` once Clerk has answered or an offline session
 begins. The splash then fades out and leaves once it has finished drawing in and

@@ -18,6 +18,16 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
+    <!-- The splash's emerald for the system's chrome in a home screen app.
+         It comes first, since the first theme-color that matches is the one
+         used; useHideSplash removes it as the splash fades, handing over to
+         the theme's colour below. -->
+    <meta
+      name="theme-color"
+      id="splash-theme-color"
+      content="#064d34"
+      media="(display-mode: standalone) and (pointer: coarse)"
+    />
     <meta name="theme-color" content="#fdf2f8" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -198,6 +208,12 @@
       @media (display-mode: standalone) and (pointer: coarse) {
         #splash {
           display: grid;
+        }
+        /* iOS paints the status bar and the home indicator's strip from the
+           page's own background, which the fixed splash does not cover. */
+        html:has(#splash:not(.splash-done)),
+        html:has(#splash:not(.splash-done)) body {
+          background: #064d34;
         }
       }
       #splash.splash-done {

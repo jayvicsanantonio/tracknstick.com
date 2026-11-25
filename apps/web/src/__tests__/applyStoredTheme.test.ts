@@ -63,6 +63,24 @@ describe('applyStoredTheme.js', () => {
     },
   );
 
+  it("leaves the launch splash's theme-color alone", () => {
+    const splashColour = document.createElement('meta');
+    splashColour.name = 'theme-color';
+    splashColour.id = 'splash-theme-color';
+    splashColour.media = '(display-mode: standalone) and (pointer: coarse)';
+    splashColour.content = '#064d34';
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.append(splashColour, meta);
+    localStorage.setItem(THEME_STORAGE_KEY, 'light');
+
+    runScript();
+
+    expect(splashColour.content).toBe('#064d34');
+    expect(meta.content).toBe(THEME_CHROME_COLOR.light);
+    splashColour.remove();
+  });
+
   it.each(['light', 'dark'] as const)(
     'shows the %s theme favicon before the app renders',
     (mode) => {

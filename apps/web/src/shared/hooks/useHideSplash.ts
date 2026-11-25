@@ -73,6 +73,9 @@ function settle() {
       // settles again.
       if (held() || splash.classList.contains('splash-done')) return;
       splash.classList.add('splash-done');
+      // The system's chrome takes the theme's colour again, as the page's
+      // edges do once the splash is done.
+      document.getElementById('splash-theme-color')?.remove();
       // A timer rather than transitionend, which never fires when reduced
       // motion or a hidden tab skips the fade.
       window.setTimeout(() => splash.remove(), FADE_MS);
