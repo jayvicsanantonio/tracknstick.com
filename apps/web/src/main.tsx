@@ -14,6 +14,7 @@ import { registerSW } from 'virtual:pwa-register';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@app/routes';
 import { preloadAllPrimaryChunksWhenIdle } from '@shared/utils/preloadRoutes';
+import { triggerHaptic } from '@shared/utils/haptics';
 
 // Register service worker with an in-app toast instead of a browser confirm() dialog.
 const updateSW = registerSW({
@@ -25,7 +26,10 @@ const updateSW = registerSW({
       action: (
         <ToastAction
           altText="Reload to update"
-          onClick={() => void updateSW(true)}
+          onClick={() => {
+            triggerHaptic('medium');
+            void updateSW(true);
+          }}
         >
           Reload
         </ToastAction>

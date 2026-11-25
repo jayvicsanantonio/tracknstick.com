@@ -206,10 +206,7 @@ const DatePickerField = memo(function DatePickerField({
             <button
               type="button"
               aria-label={`Clear ${label}`}
-              onClick={() => {
-                triggerHaptic('light');
-                onChange(null);
-              }}
+              onClick={() => onChange(null)}
               className="absolute right-2 flex size-7 items-center justify-center rounded-full bg-(--color-muted) text-(--color-text-secondary) active:scale-90"
             >
               <X aria-hidden="true" className="size-3.5" />

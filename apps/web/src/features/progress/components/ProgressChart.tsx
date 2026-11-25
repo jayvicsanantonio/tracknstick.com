@@ -37,6 +37,7 @@ const ProgressChart = memo(function ProgressChart({
   data,
 }: ProgressChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastScrubIndexRef = useRef<number | null>(null);
   const [scrubIndex, setScrubIndex] = useState<number | null>(null);
   const barGradientId = useId();
 
@@ -65,10 +66,11 @@ const ProgressChart = memo(function ProgressChart({
         chronological.length - 1,
         Math.floor(ratio * chronological.length),
       );
-      setScrubIndex((prev) => {
-        if (prev !== index) triggerHaptic('selection');
-        return index;
-      });
+      if (lastScrubIndexRef.current !== index) {
+        lastScrubIndexRef.current = index;
+        triggerHaptic('selection');
+      }
+      setScrubIndex(index);
     },
     [chronological.length],
   );
@@ -153,8 +155,14 @@ const ProgressChart = memo(function ProgressChart({
           const touch = event.touches[0];
           if (touch) updateScrubFromClientX(touch.clientX);
         }}
-        onTouchEnd={() => setScrubIndex(null)}
-        onTouchCancel={() => setScrubIndex(null)}
+        onTouchEnd={() => {
+          lastScrubIndexRef.current = null;
+          setScrubIndex(null);
+        }}
+        onTouchCancel={() => {
+          lastScrubIndexRef.current = null;
+          setScrubIndex(null);
+        }}
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

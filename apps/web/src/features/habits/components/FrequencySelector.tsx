@@ -66,7 +66,9 @@ const FrequencySelector = memo(function FrequencySelector({
                 type="button"
                 aria-pressed={active}
                 onClick={() => {
-                  triggerHaptic('selection');
+                  if (!active) {
+                    triggerHaptic('selection');
+                  }
                   onFrequencyChange(preset.days);
                 }}
                 className={cn(

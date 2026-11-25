@@ -32,6 +32,27 @@ test('keeps the Add Habit title and buttons on screen in a short window', async 
   await expect(submit).toBeInViewport({ ratio: 1 });
 });
 
+test('highlights missing required fields when submitting an incomplete habit', async ({
+  page,
+}) => {
+  await page.getByRole('button', { name: 'Add Habit', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Add New Habit' });
+
+  await dialog.getByRole('button', { name: 'Add habit' }).click();
+
+  // Submitting empty keeps the dialog open and highlights the missing sections.
+  await expect(dialog).toBeVisible();
+  const nameInput = dialog.getByLabel('Name');
+  await expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+  await expect(nameInput).toBeInViewport();
+  await expect(dialog.locator('[data-invalid="true"]')).toHaveCount(3);
+
+  // Filling the name clears its invalid state right away.
+  await nameInput.fill('Meditate');
+  await expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(dialog.locator('[data-invalid="true"]')).toHaveCount(2);
+});
+
 test("adds a habit and shows it on today's tracker", async ({ page }) => {
   const name = uniqueName('Read');
 

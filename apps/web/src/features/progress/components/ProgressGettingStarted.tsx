@@ -7,6 +7,7 @@ import { ArrowRight, ChartNoAxesColumn, Plus } from 'lucide-react';
 import { Button } from '@shared/components/ui/button';
 import EmptyState from '@shared/components/feedback/EmptyState';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import { triggerHaptic } from '@shared/utils/haptics';
 
 interface ProgressGettingStartedProps {
   activeHabitsCount: number;
@@ -26,7 +27,10 @@ const ProgressGettingStarted = memo(function ProgressGettingStarted({
         className="max-w-none"
       >
         <Button
-          onClick={() => openAddHabitDialog()}
+          onClick={() => {
+            triggerHaptic('medium');
+            openAddHabitDialog();
+          }}
           className="h-11 rounded-full px-6"
         >
           <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
@@ -44,7 +48,7 @@ const ProgressGettingStarted = memo(function ProgressGettingStarted({
       className="max-w-none"
     >
       <Button asChild className="h-11 rounded-full px-6">
-        <Link to="/">
+        <Link to="/" onClick={() => triggerHaptic('medium')}>
           Go to Tracker
           <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4" />
         </Link>

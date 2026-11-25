@@ -3,7 +3,7 @@
 // swipe-down-to-dismiss via the grabber/header handle, and scales the underlying
 // app shell back (iOS pageSheet effect). On wider screens: renders a centered dialog.
 
-import { memo, Suspense, type ReactNode } from 'react';
+import { memo, Suspense, useRef, type ReactNode } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { motion, useDragControls, type PanInfo } from 'framer-motion';
 import { XIcon } from 'lucide-react';
@@ -38,15 +38,31 @@ const IosSheet = memo(function IosSheet({
 }: IosSheetProps) {
   const isMobile = useIsMobile();
   const dragControls = useDragControls();
+  const dismissArmedRef = useRef(false);
 
   useIosSheetScale(open && isMobile);
+
+  const handleDrag = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+  ) => {
+    const armed = info.offset.y > DISMISS_OFFSET;
+    if (armed !== dismissArmedRef.current) {
+      dismissArmedRef.current = armed;
+      triggerHaptic('selection');
+    }
+  };
 
   const handleDragEnd = (
     _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
+    const wasArmed = dismissArmedRef.current;
+    dismissArmedRef.current = false;
     if (info.offset.y > DISMISS_OFFSET || info.velocity.y > DISMISS_VELOCITY) {
-      triggerHaptic('light');
+      if (!wasArmed) {
+        triggerHaptic('light');
+      }
       onOpenChange(false);
     }
   };
@@ -71,6 +87,7 @@ const IosSheet = memo(function IosSheet({
               dragListener={false}
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0.06, bottom: 0.55 }}
+              onDrag={handleDrag}
               onDragEnd={handleDragEnd}
               initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.96 }}
               animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}

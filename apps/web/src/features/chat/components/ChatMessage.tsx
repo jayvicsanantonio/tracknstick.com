@@ -126,9 +126,11 @@ export function ChatMessage({
   }, []);
 
   const handleCopy = async () => {
+    if (!navigator.clipboard?.writeText) return;
+    // Fire synchronously inside the click gesture before awaiting clipboard access.
+    triggerHaptic('light');
     try {
-      await navigator.clipboard?.writeText(message.content);
-      triggerHaptic('light');
+      await navigator.clipboard.writeText(message.content);
       setCopied(true);
       if (copyTimer.current) clearTimeout(copyTimer.current);
       copyTimer.current = setTimeout(() => setCopied(false), 2000);

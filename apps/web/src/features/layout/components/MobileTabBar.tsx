@@ -43,10 +43,11 @@ function Tab({ to, label, preload, Icon, isActive, onActiveRetap }: TabProps) {
       onTouchStart={() => preloadChunk(preload)}
       onPointerEnter={() => preloadChunk(preload)}
       onClick={(event) => {
-        triggerHaptic('selection');
         if (isActive) {
           event.preventDefault();
           onActiveRetap();
+        } else {
+          triggerHaptic('selection');
         }
       }}
       className={cn(
@@ -88,6 +89,19 @@ const MobileTabBar = memo(function MobileTabBar() {
   }, [pathname]);
 
   const handleRetap = (to: string) => {
+    const needsScroll = typeof window !== 'undefined' && window.scrollY > 0;
+    const needsDateReset =
+      to === '/' &&
+      Boolean(dateContext) &&
+      dateContext!.date.toDateString() !==
+        dateContext!.currentDate.toDateString();
+
+    if (needsDateReset) {
+      triggerHaptic('medium');
+    } else if (needsScroll) {
+      triggerHaptic('selection');
+    }
+
     window.scrollTo?.({ top: 0, behavior: 'smooth' });
     if (to === '/' && dateContext) {
       dateContext.setDate(new Date());

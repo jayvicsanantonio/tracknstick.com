@@ -64,7 +64,7 @@ const DailyHabitDate = memo(function DailyHabitDate({
   );
 
   const goToToday = () => {
-    triggerHaptic('selection');
+    triggerHaptic('medium');
     setDate(new Date());
   };
 

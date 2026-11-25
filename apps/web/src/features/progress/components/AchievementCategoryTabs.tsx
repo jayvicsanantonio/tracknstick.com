@@ -59,7 +59,9 @@ const AchievementCategoryTabs = memo(function AchievementCategoryTabs({
               type="button"
               aria-pressed={isSelected}
               onClick={() => {
-                triggerHaptic('selection');
+                if (!isSelected) {
+                  triggerHaptic('selection');
+                }
                 onCategoryChange?.(category.key);
               }}
               className={`flex min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold whitespace-nowrap ring-1 transition-[background-color,color,transform,box-shadow] ring-inset active:scale-95 sm:min-h-10 sm:text-sm ${

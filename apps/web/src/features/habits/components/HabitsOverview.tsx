@@ -230,7 +230,7 @@ const HabitsOverview = memo(function HabitsOverview() {
 
   const confirmDelete = useCallback(() => {
     if (!habitToDelete) return;
-    triggerHaptic('medium');
+    triggerHaptic('warning');
     void deleteHabit(habitToDelete.id, habitToDelete.name);
     setDeletingId(null);
   }, [habitToDelete, deleteHabit]);
@@ -293,7 +293,10 @@ const HabitsOverview = memo(function HabitsOverview() {
                 <Button
                   variant="outline"
                   className="h-11 rounded-full px-6"
-                  onClick={() => void retry()}
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    void retry();
+                  }}
                 >
                   Try again
                 </Button>
@@ -359,10 +362,7 @@ const HabitsOverview = memo(function HabitsOverview() {
                 type="button"
                 aria-label="Clear search text"
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  triggerHaptic('light');
-                  setSearchTerm('');
-                }}
+                onClick={() => setSearchTerm('')}
                 className="absolute top-1/2 right-2.5 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-(--color-brand-primary)/15 text-(--color-brand-primary) transition-transform hover:bg-(--color-brand-primary)/25 active:scale-90"
               >
                 <X aria-hidden="true" className="size-3.5" />
@@ -433,7 +433,10 @@ const HabitsOverview = memo(function HabitsOverview() {
               >
                 <Button
                   className="h-11 rounded-full px-6"
-                  onClick={toggleShowAddHabitDialog}
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    toggleShowAddHabitDialog();
+                  }}
                 >
                   <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
                   Add habit

@@ -482,7 +482,7 @@ export default function DailyHabitTracker() {
               }
               transition={IOS_SPRING_TAP}
               onClick={() => {
-                triggerHaptic('selection');
+                triggerHaptic('medium');
                 dateContext.setDate(new Date());
               }}
               className={PAGE_HEADER_ACTION}
@@ -533,7 +533,10 @@ export default function DailyHabitTracker() {
               <Button
                 variant="outline"
                 className="h-11 rounded-full px-6"
-                onClick={() => void mutateHabits()}
+                onClick={() => {
+                  triggerHaptic('medium');
+                  void mutateHabits();
+                }}
               >
                 Try again
               </Button>
@@ -683,7 +686,10 @@ export default function DailyHabitTracker() {
                         <Button
                           variant="outline"
                           className="h-11 rounded-full px-6"
-                          onClick={() => void retryAllHabits()}
+                          onClick={() => {
+                            triggerHaptic('medium');
+                            void retryAllHabits();
+                          }}
                         >
                           Try again
                         </Button>
