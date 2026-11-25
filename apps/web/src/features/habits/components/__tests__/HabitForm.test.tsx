@@ -60,17 +60,23 @@ describe('HabitForm', () => {
     vi.clearAllMocks();
   });
 
-  it('fires an error haptic and highlights invalid fields when submitted incomplete', async () => {
+  it('fires an error haptic and associates an error message when submitted incomplete', async () => {
     renderForm();
 
     await userEvent.click(screen.getByRole('button', { name: 'Add habit' }));
 
     expect(triggerHaptic).toHaveBeenCalledWith('error');
-    expect(screen.getByLabelText(/^Name/)).toHaveAttribute(
-      'aria-invalid',
-      'true',
-    );
+    const nameInput = screen.getByLabelText(/^Name/);
+    expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+    expect(nameInput).toHaveAccessibleDescription('Enter a habit name');
+    expect(screen.getByText('Enter a habit name')).toBeInTheDocument();
     expect(mockAddHabit).not.toHaveBeenCalled();
+
+    // Entering a habit name clears both invalidity and the error description.
+    await userEvent.type(nameInput, 'Read');
+    expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+    expect(nameInput).not.toHaveAttribute('aria-describedby');
+    expect(screen.queryByText('Enter a habit name')).not.toBeInTheDocument();
   });
 
   it('fires a synchronous success haptic on valid submit before the API resolves', async () => {

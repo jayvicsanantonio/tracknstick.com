@@ -44,12 +44,14 @@ test('highlights missing required fields when submitting an incomplete habit', a
   await expect(dialog).toBeVisible();
   const nameInput = dialog.getByLabel('Name');
   await expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+  await expect(nameInput).toHaveAccessibleDescription('Enter a habit name');
   await expect(nameInput).toBeInViewport();
   await expect(dialog.locator('[data-invalid="true"]')).toHaveCount(3);
 
   // Filling the name clears its invalid state right away.
   await nameInput.fill('Meditate');
   await expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(dialog.getByText('Enter a habit name')).toHaveCount(0);
   await expect(dialog.locator('[data-invalid="true"]')).toHaveCount(2);
 });
 
@@ -104,9 +106,16 @@ test('deletes a habit from the habits overview', async ({ page }) => {
 
   await row.getByRole('button', { name: `Delete ${name}` }).click();
   const confirm = page.getByRole('alertdialog', { name: 'Delete Habit' });
+  const deleted = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE' &&
+      /\/api\/v1\/habits\/[^/]+$/.test(new URL(response.url()).pathname) &&
+      response.ok(),
+  );
   await confirm.getByRole('button', { name: 'Delete' }).click();
 
   await expect(row).toHaveCount(0);
+  await deleted;
 
   await page.getByRole('link', { name: 'Daily Tracker' }).click();
   await expect(

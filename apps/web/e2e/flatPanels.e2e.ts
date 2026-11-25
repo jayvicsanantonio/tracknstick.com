@@ -19,8 +19,17 @@ async function deleteHabit(page: Page, name: string) {
     .filter({ hasText: name });
   await row.getByRole('button', { name: `Delete ${name}` }).click();
   const confirm = page.getByRole('alertdialog', { name: 'Delete Habit' });
+  // deleteHabit removes the row optimistically; wait for the API response so
+  // closing the page in afterEach never aborts the DELETE and leaks a habit.
+  const deleted = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE' &&
+      /\/api\/v1\/habits\/[^/]+$/.test(new URL(response.url()).pathname) &&
+      response.ok(),
+  );
   await confirm.getByRole('button', { name: 'Delete' }).click();
   await expect(row).toHaveCount(0);
+  await deleted;
 }
 
 /** Describes each visible element inside a panel that draws a glow or a gradient. */

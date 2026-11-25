@@ -220,6 +220,7 @@ const HabitForm = memo(function HabitForm({
             <Input
               id="habit-name"
               aria-invalid={missingName || undefined}
+              aria-describedby={missingName ? 'habit-name-error' : undefined}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -227,6 +228,15 @@ const HabitForm = memo(function HabitForm({
               placeholder="Enter habit name"
               className="h-11 rounded-xl sm:h-10 dark:border-(--color-border-brand) dark:bg-(--color-surface-secondary) dark:placeholder:text-(--color-brand-text-light)"
             />
+            {missingName ? (
+              <p
+                id="habit-name-error"
+                role="alert"
+                className="text-xs font-medium text-(--color-destructive)"
+              >
+                Enter a habit name
+              </p>
+            ) : null}
           </div>
 
           {/* Icon Picker Section */}

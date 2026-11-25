@@ -116,6 +116,7 @@ const VIBRATE_PATTERNS: Record<
 const CELEBRATION_STYLES = new Set<HapticStyle>(['allDone', 'allDoneSingle']);
 
 const PROMINENT_IOS_DOUBLE_PULSE_STYLES = new Set<HapticStyle>([
+  'heavy',
   'success',
   'allDone',
   'allDoneSingle',
@@ -135,7 +136,17 @@ export function triggerHaptic(
 ): void {
   if (typeof window === 'undefined') return;
   const { hapticsEnabled, hapticStrength } = getPreferences();
-  if (!hapticsEnabled) return;
+  if (!hapticsEnabled) {
+    if (pendingIosPulseTimer !== null) {
+      window.clearTimeout(pendingIosPulseTimer);
+      pendingIosPulseTimer = null;
+    }
+    if (pendingQueuedVibrateTimer !== null) {
+      window.clearTimeout(pendingQueuedVibrateTimer);
+      pendingQueuedVibrateTimer = null;
+    }
+    return;
+  }
 
   const androidOnly = options?.androidOnly === true;
 
@@ -200,6 +211,7 @@ export function triggerHaptic(
     ) {
       pendingIosPulseTimer = window.setTimeout(() => {
         pendingIosPulseTimer = null;
+        if (!getPreferences().hapticsEnabled) return;
         try {
           pulseIosSwitch();
         } catch {

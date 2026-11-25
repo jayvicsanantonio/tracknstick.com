@@ -193,6 +193,62 @@ describe('triggerHaptic & usePreferences', () => {
     expect(clickSpy).toHaveBeenCalledTimes(2);
   });
 
+  it('skips the delayed iOS follow-up pulse if haptics are disabled during the 65ms window', () => {
+    vi.useFakeTimers();
+    Object.defineProperty(navigator, 'vibrate', {
+      configurable: true,
+      value: undefined,
+    });
+
+    triggerHaptic('selection');
+    const label = document
+      .querySelector('input[type="checkbox"][switch]')
+      ?.closest('label');
+    expect(label).not.toBeNull();
+
+    const clickSpy = vi.spyOn(label!, 'click');
+    triggerHaptic('success');
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+
+    const { result } = renderHook(() => usePreferences());
+    act(() => {
+      result.current.setHapticsEnabled(false);
+    });
+
+    vi.advanceTimersByTime(100);
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('produces distinct iOS switch previews for subtle vs prominent heavy haptics', () => {
+    vi.useFakeTimers();
+    Object.defineProperty(navigator, 'vibrate', {
+      configurable: true,
+      value: undefined,
+    });
+
+    triggerHaptic('selection');
+    const label = document
+      .querySelector('input[type="checkbox"][switch]')
+      ?.closest('label');
+    expect(label).not.toBeNull();
+    const clickSpy = vi.spyOn(label!, 'click');
+
+    // Prominent heavy triggers initial pulse + 65ms follow-up pulse.
+    triggerHaptic('heavy');
+    vi.advanceTimersByTime(100);
+    expect(clickSpy).toHaveBeenCalledTimes(2);
+
+    // Subtle heavy triggers a single pulse.
+    clickSpy.mockClear();
+    const { result } = renderHook(() => usePreferences());
+    act(() => {
+      result.current.setHapticStrength('subtle');
+    });
+    triggerHaptic('heavy');
+    vi.advanceTimersByTime(100);
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('does nothing when hapticsEnabled is turned off in preferences', () => {
     const vibrate = vi.fn();
     Object.defineProperty(navigator, 'vibrate', {
