@@ -166,12 +166,42 @@ describe('the launch splash in index.html', () => {
       );
     expect(reduced, 'reduced motion block').not.toBeNull();
     expect(reduced?.[1]).toContain('animation: none');
+    expect(reduced?.[1]).toMatch(/transform:\s*none/);
   });
 
   it('fades out without catching taps once the app is ready', () => {
     const done = rule('#splash.splash-done');
     expect(done).toMatch(/opacity:\s*0/);
     expect(done).toMatch(/pointer-events:\s*none/);
+  });
+
+  it('clears the medallion and wordmark before the emerald veil finishes parting', () => {
+    expect(html).toMatch(/<div class="splash-mark">/);
+    expect(html).toMatch(/<div class="splash-wordmark-wrap"/);
+    expect(rule('#splash.splash-done .splash-mark')).toMatch(/opacity:\s*0/);
+    expect(rule('#splash.splash-done .splash-wordmark-wrap')).toMatch(
+      /opacity:\s*0/,
+    );
+    // The veil waits briefly before dissolving so the mark never ghosts over the page.
+    expect(rule('#splash')).toMatch(
+      /opacity\s+[\d.]+s\s+cubic-bezier\([^)]+\)\s+0\.\d+s/,
+    );
+  });
+
+  it('smoothly transitions the page edges and reveals the app behind the splash', () => {
+    const installed =
+      /@media \(display-mode: standalone\) and \(pointer: coarse\)\s*\{([\s\S]*?)\n {6}\}/.exec(
+        html,
+      );
+    expect(installed?.[1]).toMatch(
+      /html:has\(#splash\),\s*html:has\(#splash\) body\s*\{[^}]*transition:\s*background-color/,
+    );
+    expect(installed?.[1]).toMatch(
+      /html:has\(#splash:not\(\.splash-done\)\) #root\s*\{[^}]*opacity:\s*0/,
+    );
+    expect(installed?.[1]).toMatch(
+      /html:has\(#splash:not\(\.splash-done\)\) nav\[aria-label='Primary'\]\s*\{[^}]*opacity:\s*0/,
+    );
   });
 });
 

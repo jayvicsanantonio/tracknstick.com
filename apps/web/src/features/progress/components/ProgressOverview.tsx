@@ -17,6 +17,7 @@ import IosSheet from '@shared/components/ui/ios-sheet';
 import { DialogDescription, DialogTitle } from '@shared/components/ui/dialog';
 import { DateContext } from '@app/providers/DateContext';
 import { PAGE_CONTAINER } from '@shared/constants/layout';
+import { useHoldSplash } from '@shared/hooks/useHideSplash';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { cn } from '@shared/utils/utils';
@@ -60,6 +61,7 @@ const ProgressOverview = memo(function ProgressOverview() {
     loading: achievementsLoading,
     error: achievementsError,
   } = useAchievements();
+  useHoldSplash(isSummaryLoading || isHistoryLoading);
   const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
   const loadFailed = Boolean(historyError ?? summaryError);

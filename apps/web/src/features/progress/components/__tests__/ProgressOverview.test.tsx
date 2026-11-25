@@ -1,12 +1,14 @@
 // Covers the progress page as a whole: the summary figures, and the calendar, chart and achievements together.
 // A failed request shows an error, not an empty calendar that reads as "no progress".
 
+import { useState } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ProgressOverview from '../ProgressOverview';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
+import { useHideSplash } from '@shared/hooks/useHideSplash';
 import useProgressHistory from '../../hooks/useProgressHistory';
 import useProgressSummary from '../../hooks/useProgressSummary';
 
@@ -323,5 +325,43 @@ describe('ProgressOverview', () => {
     expect(
       screen.queryByRole('button', { name: /back/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it('holds the launch splash while progress loads, then lets it fade', async () => {
+    function AppReady() {
+      useHideSplash(true);
+      return null;
+    }
+
+    const splash = document.createElement('div');
+    splash.id = 'splash';
+    document.body.append(splash);
+
+    try {
+      let finishSummary: () => void = () => undefined;
+      vi.mocked(useProgressSummary).mockImplementation(() => {
+        const [isLoading, setIsLoading] = useState(true);
+        finishSummary = () => setIsLoading(false);
+        return { ...loaded.summary, isLoading };
+      });
+      render(
+        <MemoryRouter>
+          <HabitsStateProvider>
+            <AppReady />
+            <ProgressOverview />
+          </HabitsStateProvider>
+        </MemoryRouter>,
+      );
+      await act(() => Promise.resolve());
+      expect(splash).not.toHaveClass('splash-done');
+
+      act(() => {
+        finishSummary();
+      });
+      await act(() => Promise.resolve());
+      expect(splash).toHaveClass('splash-done');
+    } finally {
+      splash.remove();
+    }
   });
 });
