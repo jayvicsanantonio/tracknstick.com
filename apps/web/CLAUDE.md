@@ -107,13 +107,24 @@ alone. Chromium cannot emulate the display mode, so `e2e/splash.e2e.ts` launches
 it with Blink's `displayModeOverride` setting.
 
 `RootLayout` calls `useHideSplash` once Clerk has answered or an offline session
-begins. The splash then fades out and leaves once it has finished drawing in and
-nothing beneath holds it up, so it fades straight onto the finished first page.
-A loading state that could show beneath it calls `useHoldSplash` while it shows:
-`LoadingFallback`, the welcome page's while its code downloads, and the
-tracker's until its first habits (and, on a day with none due, the check for any
-habits at all) have loaded. A new first-screen loading state needs the same. The
-splash waits at most four seconds on them, then fades onto whatever is still
+begins. The splash then waits for its ring, check and name to finish drawing in,
+for nothing beneath to hold it up, and (when visibly painted in the foreground)
+for two animation frames so the newly committed page finishes painting behind it
+before frame one of the exit. Its exit is two-stage: the medallion and wordmark
+clear first in dedicated wrappers (so they never clash with draw/breathe
+keyframes or ghost over the page's own ring), then the emerald veil and the
+`html`/`body` edges dissolve smoothly into the theme while `#root` and the
+portaled `MobileTabBar` rise gently into focus; once `#splash` is removed from
+the DOM, all `html:has(#splash)` rules stop matching with no residual transform
+or transition. Reduced motion disables all spatial motion and performs a short,
+plain opacity dissolve. A loading state that could show beneath the splash calls
+`useHoldSplash` while it shows: `LoadingFallback`, the welcome page's while its
+code downloads, the tracker's until its first habits (and, on a day with none
+due, the check for any habits at all) have loaded, `HabitsOverview`, and
+`ProgressOverview`. `PhoneWelcome`'s medallion also checks `isSplashVisible()`
+on mount so it starts already drawn when opened behind the splash instead of
+replaying its draw animation. A new first-screen loading state needs the same.
+The splash waits at most four seconds on them, then fades onto whatever is still
 loading.
 
 The iOS launch images in `public/splash` (and their links in `index.html`) and

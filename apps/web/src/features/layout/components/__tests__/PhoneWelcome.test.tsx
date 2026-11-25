@@ -164,4 +164,37 @@ describe('Welcome on a phone', () => {
 
     expect(screen.queryByRole('list', { name: 'What you get' })).toBeNull();
   });
+
+  it('mounts the medallion already drawn when opened behind the launch splash', () => {
+    const splash = document.createElement('div');
+    splash.id = 'splash';
+    document.body.append(splash);
+    const matchSpy = vi
+      .spyOn(window, 'matchMedia')
+      .mockImplementation((query: string) => ({
+        matches: query === '(display-mode: standalone) and (pointer: coarse)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+    try {
+      const { container } = renderWelcome();
+      const paths = container.querySelectorAll(
+        'svg[viewBox="0 0 200 200"] path',
+      );
+      expect(paths).toHaveLength(2);
+      for (const path of paths) {
+        expect(path).toHaveAttribute('pathLength', '1');
+        expect(path).not.toHaveAttribute('stroke-dashoffset', '1');
+      }
+    } finally {
+      matchSpy.mockRestore();
+      splash.remove();
+    }
+  });
 });

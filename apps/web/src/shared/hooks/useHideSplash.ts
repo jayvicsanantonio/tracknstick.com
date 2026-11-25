@@ -3,8 +3,16 @@
 
 import { useEffect } from 'react';
 
-/** How long index.html's #splash takes to fade, with a little to spare. */
-const FADE_MS = 400;
+/**
+ * How long index.html's splash exit and page reveal take to settle, with a
+ * little to spare so #splash stays in the DOM until html:has(#splash)
+ * transitions have finished.
+ */
+const FADE_MS = 620;
+
+/** Media query matching home-screen phone/tablet launches where #splash shows. */
+const STANDALONE_TOUCH_QUERY =
+  '(display-mode: standalone) and (pointer: coarse)';
 
 /**
  * The longest the splash waits on the page beneath once the app is ready. On a
@@ -55,6 +63,50 @@ function drawnIn(splash: HTMLElement): Promise<unknown> {
 }
 
 /**
+ * True while the launch splash is painted on screen (an app opened from a
+ * phone or tablet's home screen), rather than hidden in a browser tab or
+ * already dismissed.
+ */
+export function isSplashVisible(): boolean {
+  if (typeof document === 'undefined' || typeof window === 'undefined') {
+    return false;
+  }
+  const splash = document.getElementById('splash');
+  if (!splash || splash.classList.contains('splash-done')) return false;
+  return (
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia(STANDALONE_TOUCH_QUERY).matches
+  );
+}
+
+/**
+ * True when the splash is visibly covering the viewport in a foreground tab,
+ * so letting the newly committed page paint behind it first prevents
+ * first-frame transition jank.
+ */
+function needsPrePaint(splash: HTMLElement): boolean {
+  return (
+    typeof window.requestAnimationFrame === 'function' &&
+    document.visibilityState !== 'hidden' &&
+    splash.getBoundingClientRect().width > 0
+  );
+}
+
+function finish(splash: HTMLElement, state: SplashState): void {
+  if ((state.holds > 0 && !state.waitedLongEnough) || !splash.isConnected) {
+    return;
+  }
+  if (splash.classList.contains('splash-done')) return;
+  splash.classList.add('splash-done');
+  // The system's chrome takes the theme's colour again, as the page's
+  // edges do once the splash is done.
+  document.getElementById('splash-theme-color')?.remove();
+  // A timer rather than transitionend, which never fires when reduced
+  // motion or a hidden tab skips the fade.
+  window.setTimeout(() => splash.remove(), FADE_MS);
+}
+
+/**
  * Fades the splash out and removes it, once the app is ready, nothing holds
  * it up, and it has drawn in. Looks after the render's effects have all run,
  * so a loading state handing over to the next in one render never lets it go
@@ -72,13 +124,13 @@ function settle() {
       // A loading state may have taken hold while it drew in; letting go
       // settles again.
       if (held() || splash.classList.contains('splash-done')) return;
-      splash.classList.add('splash-done');
-      // The system's chrome takes the theme's colour again, as the page's
-      // edges do once the splash is done.
-      document.getElementById('splash-theme-color')?.remove();
-      // A timer rather than transitionend, which never fires when reduced
-      // motion or a hidden tab skips the fade.
-      window.setTimeout(() => splash.remove(), FADE_MS);
+      if (needsPrePaint(splash)) {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => finish(splash, state));
+        });
+        return;
+      }
+      finish(splash, state);
     });
   });
 }

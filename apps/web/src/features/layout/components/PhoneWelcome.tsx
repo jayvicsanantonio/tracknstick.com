@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useTheme } from '@shared/hooks/useTheme';
+import { isSplashVisible } from '@shared/hooks/useHideSplash';
 import { triggerHaptic } from '@shared/utils/haptics';
 import WelcomeAuthSheet, { type WelcomeAuthMode } from './WelcomeAuthSheet';
 import { welcomeCopy } from './welcomeCopy';
@@ -42,8 +43,11 @@ const CHECK = 'M10 34L25 49L54 17';
 /** The app icon's medallion, drawing its ring closed and its check in. */
 const WelcomeMedallion = memo(function WelcomeMedallion() {
   const reduceMotion = useReducedMotion();
+  // When opened under the launch splash, the splash has just drawn the same
+  // ring and check; mount settled so the reveal never replays or cuts mid-draw.
+  const [openedUnderSplash] = useState(isSplashVisible);
   const drawn = { pathLength: 1 };
-  const from = reduceMotion ? drawn : { pathLength: 0 };
+  const from = reduceMotion || openedUnderSplash ? drawn : { pathLength: 0 };
 
   return (
     <svg

@@ -2,13 +2,14 @@
 // The habits come from a stubbed useAllHabits; the table itself is real.
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import HabitsOverview from '../HabitsOverview';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import type { Habit } from '@/features/habits/types/Habit';
+import { useHideSplash } from '@shared/hooks/useHideSplash';
 
 vi.mock('@/features/habits/hooks/useAllHabits', () => ({
   useAllHabits: vi.fn(),
@@ -219,5 +220,58 @@ describe('HabitsOverview', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(retry).toHaveBeenCalledTimes(1);
+  });
+
+  it('holds the launch splash while habits load, then lets it fade', async () => {
+    function AppReady() {
+      useHideSplash(true);
+      return null;
+    }
+
+    const splash = document.createElement('div');
+    splash.id = 'splash';
+    document.body.append(splash);
+
+    try {
+      vi.mocked(useAllHabits).mockReturnValue({
+        habits: [],
+        isLoading: true,
+        error: undefined,
+        deleteHabit: vi.fn(),
+        retry: vi.fn(),
+      } as unknown as ReturnType<typeof useAllHabits>);
+
+      const { rerender } = render(
+        <MemoryRouter>
+          <HabitsStateProvider>
+            <AppReady />
+            <HabitsOverview />
+          </HabitsStateProvider>
+        </MemoryRouter>,
+      );
+      await act(() => Promise.resolve());
+      expect(splash).not.toHaveClass('splash-done');
+
+      vi.mocked(useAllHabits).mockReturnValue({
+        habits: [habit({})],
+        isLoading: false,
+        error: undefined,
+        deleteHabit: vi.fn(),
+        retry: vi.fn(),
+      } as unknown as ReturnType<typeof useAllHabits>);
+
+      rerender(
+        <MemoryRouter>
+          <HabitsStateProvider>
+            <AppReady />
+            <HabitsOverview />
+          </HabitsStateProvider>
+        </MemoryRouter>,
+      );
+      await act(() => Promise.resolve());
+      expect(splash).toHaveClass('splash-done');
+    } finally {
+      splash.remove();
+    }
   });
 });

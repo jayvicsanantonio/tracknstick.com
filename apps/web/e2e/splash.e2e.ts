@@ -176,6 +176,24 @@ test("paints the page's edges emerald while it shows, then hands them to the the
   expect(after.html).not.toBe(EMERALD);
   expect(after.body).not.toBe(EMERALD);
   expect(after.splashMeta).toBe(false);
+
+  // Once the splash leaves the DOM, the app root sits cleanly settled with no
+  // lingering transforms or transitions.
+  const settled = await page.evaluate(() => {
+    const root = document.getElementById('root');
+    const htmlStyle = getComputedStyle(document.documentElement);
+    const rootStyle = root ? getComputedStyle(root) : null;
+    return {
+      htmlTransition: htmlStyle.transitionDuration,
+      rootOpacity: rootStyle?.opacity ?? '',
+      rootTransform: rootStyle?.transform ?? '',
+    };
+  });
+  expect(settled).toEqual({
+    htmlTransition: '0s',
+    rootOpacity: '1',
+    rootTransform: 'none',
+  });
 });
 
 test('gives way to the app once it is ready', async ({ page }) => {

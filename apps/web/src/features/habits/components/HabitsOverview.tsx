@@ -33,6 +33,7 @@ import SwipeableHabitRow from '@/features/habits/components/SwipeableHabitRow';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import PageHeader from '@/features/layout/components/PageHeader';
 import { PAGE_CONTAINER } from '@shared/constants/layout';
+import { useHoldSplash } from '@shared/hooks/useHideSplash';
 import { useIsMobile } from '@shared/hooks/useIsMobile';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -211,6 +212,7 @@ const SECTION_TITLE: Record<OverviewTab, string> = {
 
 const HabitsOverview = memo(function HabitsOverview() {
   const { habits, isLoading, error, deleteHabit, retry } = useAllHabits();
+  useHoldSplash(isLoading);
   const { openEditDialog, toggleShowAddHabitDialog } = useHabitsContext();
   const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState('');

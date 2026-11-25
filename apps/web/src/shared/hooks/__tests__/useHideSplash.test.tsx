@@ -3,7 +3,11 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useHideSplash, useHoldSplash } from '../useHideSplash';
+import {
+  isSplashVisible,
+  useHideSplash,
+  useHoldSplash,
+} from '../useHideSplash';
 
 function addSplash() {
   const splash = document.createElement('div');
@@ -164,5 +168,121 @@ describe('useHideSplash', () => {
         vi.advanceTimersByTime(1000);
       });
     }).not.toThrow();
+  });
+
+  it('lets a visible splash paint two frames before starting the exit transition', async () => {
+    const splash = addSplash();
+    vi.spyOn(splash, 'getBoundingClientRect').mockReturnValue({
+      width: 390,
+      height: 844,
+      top: 0,
+      left: 0,
+      right: 390,
+      bottom: 844,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    const frames: FrameRequestCallback[] = [];
+    const rafSpy = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+
+    try {
+      renderHook(() => useHideSplash(true));
+      await settle();
+
+      expect(splash).not.toHaveClass('splash-done');
+      expect(frames).toHaveLength(1);
+
+      act(() => {
+        frames.shift()?.(16);
+      });
+      expect(splash).not.toHaveClass('splash-done');
+      expect(frames).toHaveLength(1);
+
+      act(() => {
+        frames.shift()?.(32);
+      });
+      expect(splash).toHaveClass('splash-done');
+    } finally {
+      rafSpy.mockRestore();
+    }
+  });
+
+  it('keeps waiting if a hold takes over between paint frames', async () => {
+    const splash = addSplash();
+    vi.spyOn(splash, 'getBoundingClientRect').mockReturnValue({
+      width: 390,
+      height: 844,
+      top: 0,
+      left: 0,
+      right: 390,
+      bottom: 844,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    const frames: FrameRequestCallback[] = [];
+    const rafSpy = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+
+    try {
+      const { rerender } = renderHook(
+        ({ loading }) => {
+          useHideSplash(true);
+          useHoldSplash(loading);
+        },
+        { initialProps: { loading: false } },
+      );
+      await settle();
+      expect(frames).toHaveLength(1);
+
+      // A new loading state mounts before the second paint frame arrives.
+      rerender({ loading: true });
+      act(() => {
+        frames.shift()?.(16);
+      });
+      act(() => {
+        frames.shift()?.(32);
+      });
+      expect(splash).not.toHaveClass('splash-done');
+    } finally {
+      rafSpy.mockRestore();
+    }
+  });
+
+  it('reports when the launch splash is visibly showing on a home screen app', () => {
+    const matchSpy = vi
+      .spyOn(window, 'matchMedia')
+      .mockImplementation((query: string) => ({
+        matches: query === '(display-mode: standalone) and (pointer: coarse)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+    try {
+      expect(isSplashVisible()).toBe(false);
+
+      const splash = addSplash();
+      expect(isSplashVisible()).toBe(true);
+
+      splash.classList.add('splash-done');
+      expect(isSplashVisible()).toBe(false);
+    } finally {
+      matchSpy.mockRestore();
+    }
   });
 });
