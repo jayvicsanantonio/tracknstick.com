@@ -117,6 +117,24 @@ describe('useTheme', () => {
     expect(meta.content).toBe(THEME_CHROME_COLOR.light);
   });
 
+  it("leaves the launch splash's theme-color alone", () => {
+    const splashColour = document.createElement('meta');
+    splashColour.name = 'theme-color';
+    splashColour.id = 'splash-theme-color';
+    splashColour.media = '(display-mode: standalone) and (pointer: coarse)';
+    splashColour.content = '#064d34';
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.append(splashColour, meta);
+    mockSystemDark(true);
+
+    renderHook(() => useTheme(), { wrapper });
+
+    expect(splashColour.content).toBe('#064d34');
+    expect(meta.content).toBe(THEME_CHROME_COLOR.dark);
+    splashColour.remove();
+  });
+
   it('swaps the browser tab favicon to match the theme', () => {
     const icon = document.createElement('link');
     icon.rel = 'icon';

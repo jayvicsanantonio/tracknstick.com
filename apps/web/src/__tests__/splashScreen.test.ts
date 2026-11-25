@@ -91,6 +91,36 @@ describe('the launch splash in index.html', () => {
     );
   });
 
+  // iOS paints the status bar and the home indicator's strip from the page's
+  // own background and theme-color, not from the fixed splash, so those turn
+  // emerald too while it shows.
+  it("paints the page's edges emerald while it shows in a home screen app", () => {
+    const installed =
+      /@media \(display-mode: standalone\) and \(pointer: coarse\)\s*\{([\s\S]*?)\n {6}\}/.exec(
+        html,
+      );
+    const edges =
+      /html:has\(#splash:not\(\.splash-done\)\),\s*html:has\(#splash:not\(\.splash-done\)\) body\s*\{([^}]*)\}/.exec(
+        installed?.[1] ?? '',
+      );
+    expect(edges, 'edges rule').not.toBeNull();
+    expect(edges?.[1].toLowerCase()).toContain(`background: ${ICON_EMERALD}`);
+  });
+
+  it("tints the system's chrome emerald in a home screen app, ahead of the theme's colour", () => {
+    const metas = [...html.matchAll(/<meta\s+name="theme-color"[^>]*>/g)].map(
+      (match) => match[0],
+    );
+    expect(metas).toHaveLength(2);
+    // The first theme-color whose media matches is the one the system uses.
+    expect(metas[0]).toContain('id="splash-theme-color"');
+    expect(metas[0].toLowerCase()).toContain(`content="${ICON_EMERALD}"`);
+    expect(metas[0]).toContain(
+      'media="(display-mode: standalone) and (pointer: coarse)"',
+    );
+    expect(metas[1]).not.toContain('media=');
+  });
+
   it("draws one circle, the app icon's ring, closing around its check", () => {
     const medallion =
       /<svg\s+class="splash-medallion"[\s\S]*?<\/svg>/.exec(html)?.[0] ?? '';

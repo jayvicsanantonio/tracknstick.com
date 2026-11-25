@@ -26,8 +26,9 @@ export function updateThemeClass(mode: ThemeMode): void {
   root.classList.add(mode);
   root.style.colorScheme = mode;
 
+  // The theme's own theme-color, not the launch splash's.
   const meta = document.querySelector<HTMLMetaElement>(
-    'meta[name="theme-color"]',
+    'meta[name="theme-color"]:not(#splash-theme-color)',
   );
   if (meta) {
     meta.content = THEME_CHROME_COLOR[mode];

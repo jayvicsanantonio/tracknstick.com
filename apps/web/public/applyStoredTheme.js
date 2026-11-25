@@ -27,7 +27,10 @@
     root.classList.remove('light', 'dark');
     root.classList.add(mode);
     root.style.colorScheme = mode;
-    var meta = document.querySelector('meta[name="theme-color"]');
+    // The theme's own theme-color, not the launch splash's.
+    var meta = document.querySelector(
+      'meta[name="theme-color"]:not(#splash-theme-color)',
+    );
     if (meta) {
       meta.setAttribute('content', mode === 'dark' ? DARK_BG : LIGHT_BG);
     }

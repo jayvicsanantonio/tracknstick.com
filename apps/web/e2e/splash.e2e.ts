@@ -146,6 +146,38 @@ test('paints the splash before any script runs, at the centre of the screen', as
   release();
 });
 
+/** The page's own background, which iOS paints under the status bar and home indicator. */
+const edgeColours = (page: Page) =>
+  page.evaluate(() => ({
+    html: getComputedStyle(document.documentElement).backgroundColor,
+    body: getComputedStyle(document.body).backgroundColor,
+    splashMeta: document.getElementById('splash-theme-color') !== null,
+  }));
+
+const EMERALD = 'rgb(6, 77, 52)';
+
+test("paints the page's edges emerald while it shows, then hands them to the theme", async ({
+  page,
+}) => {
+  const release = await holdAppScript(page);
+  await page.goto('/', { waitUntil: 'commit' });
+  await expect(splash(page)).toBeVisible();
+
+  expect(await edgeColours(page)).toEqual({
+    html: EMERALD,
+    body: EMERALD,
+    splashMeta: true,
+  });
+
+  release();
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 15_000 });
+
+  const after = await edgeColours(page);
+  expect(after.html).not.toBe(EMERALD);
+  expect(after.body).not.toBe(EMERALD);
+  expect(after.splashMeta).toBe(false);
+});
+
 test('gives way to the app once it is ready', async ({ page }) => {
   await page.goto('/');
 
