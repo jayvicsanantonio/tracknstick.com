@@ -40,6 +40,10 @@ describe('ProfileSettingsSheet', () => {
     navigator,
     'vibrate',
   );
+  const originalUserAgentDescriptor = Object.getOwnPropertyDescriptor(
+    navigator,
+    'userAgent',
+  );
 
   beforeEach(() => {
     localStorage.clear();
@@ -57,6 +61,13 @@ describe('ProfileSettingsSheet', () => {
       Object.defineProperty(navigator, 'vibrate', originalVibrateDescriptor);
     } else {
       Reflect.deleteProperty(navigator, 'vibrate');
+    }
+    if (originalUserAgentDescriptor) {
+      Object.defineProperty(
+        navigator,
+        'userAgent',
+        originalUserAgentDescriptor,
+      );
     }
   });
 
@@ -112,6 +123,23 @@ describe('ProfileSettingsSheet', () => {
     await userEvent.click(haptics);
     expect(haptics).toBeChecked();
     expect(vibrate).toHaveBeenCalledWith([18, 45, 34]);
+  });
+
+  it('hides Haptic Strength on iOS devices while keeping the Haptic Feedback switch', () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 26_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1',
+    });
+
+    renderSheet();
+
+    expect(
+      screen.getByRole('switch', { name: 'Haptic Feedback' }),
+    ).toBeChecked();
+    expect(
+      screen.queryByRole('radiogroup', { name: 'Haptic strength' }),
+    ).not.toBeInTheDocument();
   });
 
   it('invokes Clerk Manage Account and Sign Out actions', async () => {
