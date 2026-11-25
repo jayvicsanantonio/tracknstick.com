@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import type { ChatConversation } from '@features/chat/hooks/useChatConversation';
 
@@ -280,17 +281,19 @@ export function ChatBox({
       {/* Floating jump-to-latest pill when the reader scrolls up in a long reply */}
       {showScrollToBottom && messages.length > 0 ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-[4.75rem] z-10 flex justify-center sm:bottom-[6.5rem]">
-          <button
-            type="button"
-            onClick={() => {
-              triggerHaptic('selection');
-              scrollToLatest('smooth');
-            }}
-            aria-label="Scroll to latest message"
-            className="ios-liquid-glass pointer-events-auto flex size-9 items-center justify-center rounded-full text-(--color-foreground) transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-92"
-          >
-            <ChevronDown aria-hidden="true" className="size-4" />
-          </button>
+          <IosHapticTarget className="pointer-events-auto inline-flex rounded-full">
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic('selection');
+                scrollToLatest('smooth');
+              }}
+              aria-label="Scroll to latest message"
+              className="ios-liquid-glass pointer-events-auto flex size-9 items-center justify-center rounded-full text-(--color-foreground) transition-transform hover:scale-105 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-92"
+            >
+              <ChevronDown aria-hidden="true" className="size-4" />
+            </button>
+          </IosHapticTarget>
         </div>
       ) : null}
 
@@ -322,26 +325,28 @@ function SuggestionCard({
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="ios-tracker-card group flex h-full min-h-14 w-full cursor-pointer items-center gap-3 rounded-[18px] px-3 py-2.5 text-left text-[15px] leading-snug font-semibold text-(--color-foreground) transition-[background-color,border-color,transform] hover:border-(--color-brand-primary)/35 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] md:min-h-0 md:flex-col md:items-start md:gap-4 md:rounded-[20px] md:p-4"
-    >
-      <div className="flex shrink-0 items-center justify-between md:w-full">
-        <span className="flex size-9 items-center justify-center rounded-[11px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset md:size-11 md:rounded-[14px]">
-          <Icon aria-hidden={true} className="size-[18px] md:size-5" />
-        </span>
+    <IosHapticTarget className="block h-full w-full rounded-[18px] md:rounded-[20px]">
+      <button
+        type="button"
+        onClick={onClick}
+        className="ios-tracker-card group flex h-full min-h-14 w-full cursor-pointer items-center gap-3 rounded-[18px] px-3 py-2.5 text-left text-[15px] leading-snug font-semibold text-(--color-foreground) transition-[background-color,border-color,transform] hover:border-(--color-brand-primary)/35 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] md:min-h-0 md:flex-col md:items-start md:gap-4 md:rounded-[20px] md:p-4"
+      >
+        <div className="flex shrink-0 items-center justify-between md:w-full">
+          <span className="flex size-9 items-center justify-center rounded-[11px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset md:size-11 md:rounded-[14px]">
+            <Icon aria-hidden={true} className="size-[18px] md:size-5" />
+          </span>
+          <ArrowUp
+            aria-hidden="true"
+            className="hidden size-4 text-(--color-brand-primary)/60 transition-transform group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:block"
+          />
+        </div>
+        <span className="flex-1">{text}</span>
+        {/* Picking a suggestion sends it, like the message box's send arrow */}
         <ArrowUp
           aria-hidden="true"
-          className="hidden size-4 text-(--color-brand-primary)/60 transition-transform group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:block"
+          className="size-4 shrink-0 text-(--color-brand-primary)/60 transition-transform group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:hidden"
         />
-      </div>
-      <span className="flex-1">{text}</span>
-      {/* Picking a suggestion sends it, like the message box's send arrow */}
-      <ArrowUp
-        aria-hidden="true"
-        className="size-4 shrink-0 text-(--color-brand-primary)/60 transition-transform group-hover:-translate-y-0.5 group-hover:text-(--color-brand-primary) md:hidden"
-      />
-    </button>
+      </button>
+    </IosHapticTarget>
   );
 }

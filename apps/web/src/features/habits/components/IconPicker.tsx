@@ -13,6 +13,7 @@ import {
 import { Search } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@shared/components/ui/radio-group';
 import { Label } from '@shared/components/ui/label';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import HabitsIcons from '@/icons/habits';
 
 type IconName = keyof typeof HabitsIcons;
@@ -134,23 +135,28 @@ const IconPicker = memo(function IconPicker({
             aria-label={label}
           >
             {shown.map(({ name, label: iconName, Icon }) => (
-              <Label
+              <IosHapticTarget
                 key={name}
-                ref={name === selectedIcon ? selectedRef : undefined}
-                title={iconName}
-                // relative: the visually hidden radio stays inside its tile,
-                // so focusing it scrolls only the grid, never the dialog.
-                className="relative flex aspect-square cursor-pointer items-center justify-center rounded-xl bg-(--color-surface) text-(--color-brand-primary) ring-1 ring-(--color-border-primary) transition-[background-color,color,box-shadow,transform] ring-inset hover:bg-(--color-brand-primary)/10 active:scale-95 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-(--color-ring) has-[[data-state=checked]]:bg-(--color-brand-primary) has-[[data-state=checked]]:text-(--color-primary-foreground) has-[[data-state=checked]]:shadow-md has-[[data-state=checked]]:ring-(--color-brand-primary) motion-reduce:transition-none sm:aspect-auto sm:h-11 dark:bg-(--color-surface-secondary) dark:has-[[data-state=checked]]:bg-(--color-brand-primary)"
+                disabled={name === selectedIcon}
+                className="block rounded-xl"
               >
-                {/* The icon is only a picture, so the radio carries the name */}
-                <RadioGroupItem
-                  value={name}
-                  id={`icon-${name}`}
-                  aria-label={iconName}
-                  className="sr-only"
-                />
-                <Icon aria-hidden="true" className="size-5" />
-              </Label>
+                <Label
+                  ref={name === selectedIcon ? selectedRef : undefined}
+                  title={iconName}
+                  // relative: the visually hidden radio stays inside its tile,
+                  // so focusing it scrolls only the grid, never the dialog.
+                  className="relative flex aspect-square w-full cursor-pointer items-center justify-center rounded-xl bg-(--color-surface) text-(--color-brand-primary) ring-1 ring-(--color-border-primary) transition-[background-color,color,box-shadow,transform] ring-inset hover:bg-(--color-brand-primary)/10 active:scale-95 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-(--color-ring) has-[[data-state=checked]]:bg-(--color-brand-primary) has-[[data-state=checked]]:text-(--color-primary-foreground) has-[[data-state=checked]]:shadow-md has-[[data-state=checked]]:ring-(--color-brand-primary) motion-reduce:transition-none sm:aspect-auto sm:h-11 dark:bg-(--color-surface-secondary) dark:has-[[data-state=checked]]:bg-(--color-brand-primary)"
+                >
+                  {/* The icon is only a picture, so the radio carries the name */}
+                  <RadioGroupItem
+                    value={name}
+                    id={`icon-${name}`}
+                    aria-label={iconName}
+                    className="sr-only"
+                  />
+                  <Icon aria-hidden="true" className="size-5" />
+                </Label>
+              </IosHapticTarget>
             ))}
           </RadioGroup>
         )}

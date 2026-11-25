@@ -15,6 +15,7 @@ import { DialogDescription, DialogTitle } from '@shared/components/ui/dialog';
 import IosSheet from '@shared/components/ui/ios-sheet';
 import IosSegmentedControl from '@shared/components/ui/ios-segmented-control';
 import IosSwitch from '@shared/components/ui/ios-switch';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { useTheme } from '@shared/hooks/useTheme';
 import {
   usePreferences,
@@ -128,22 +129,24 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
 
             <div className="ml-4 h-[0.5px] bg-(--color-border-primary)/60" />
 
-            <button
-              type="button"
-              onClick={handleManageAccount}
-              className="flex min-h-12 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors active:bg-(--color-active-surface)/50"
-            >
-              <span className="flex size-7 items-center justify-center rounded-lg bg-(--color-brand-primary)/15 text-(--color-brand-primary)">
-                <UserCog aria-hidden="true" className="size-4" />
-              </span>
-              <span className="flex-1 text-[16px] text-(--color-foreground)">
-                Manage Account
-              </span>
-              <ChevronRight
-                aria-hidden="true"
-                className="size-4 text-(--color-text-secondary)/70"
-              />
-            </button>
+            <IosHapticTarget className="block w-full">
+              <button
+                type="button"
+                onClick={handleManageAccount}
+                className="flex min-h-12 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors active:bg-(--color-active-surface)/50"
+              >
+                <span className="flex size-7 items-center justify-center rounded-lg bg-(--color-brand-primary)/15 text-(--color-brand-primary)">
+                  <UserCog aria-hidden="true" className="size-4" />
+                </span>
+                <span className="flex-1 text-[16px] text-(--color-foreground)">
+                  Manage Account
+                </span>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-4 text-(--color-text-secondary)/70"
+                />
+              </button>
+            </IosHapticTarget>
           </div>
         </section>
 
@@ -185,6 +188,7 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
                 onCheckedChange={setHapticsEnabled}
                 ariaLabel="Haptic Feedback"
                 hapticStyle="success"
+                nativeSwitchBehavior="onEnableOnly"
               />
             </div>
 
@@ -237,14 +241,16 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
         {/* Sign Out */}
         <section aria-label="Session">
           <div className="ios-grouped-card overflow-hidden rounded-2xl">
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="flex min-h-12 w-full items-center justify-center gap-2 px-4 py-2.5 text-[16px] font-semibold text-(--color-destructive) transition-colors active:bg-(--color-destructive)/10"
-            >
-              <LogOut aria-hidden="true" className="size-4" />
-              Sign Out
-            </button>
+            <IosHapticTarget className="block w-full">
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="flex min-h-12 w-full items-center justify-center gap-2 px-4 py-2.5 text-[16px] font-semibold text-(--color-destructive) transition-colors active:bg-(--color-destructive)/10"
+              >
+                <LogOut aria-hidden="true" className="size-4" />
+                Sign Out
+              </button>
+            </IosHapticTarget>
           </div>
         </section>
 

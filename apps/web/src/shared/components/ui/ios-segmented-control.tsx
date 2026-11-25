@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@shared/utils/utils';
 import { IOS_SPRING_CONTROL } from '@shared/utils/motion';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic, type HapticStyle } from '@shared/utils/haptics';
 
 export interface SegmentedOption<T extends string> {
@@ -42,36 +43,41 @@ export default function IosSegmentedControl<T extends string>({
       {options.map((option) => {
         const isSelected = option.value === value;
         return (
-          <button
+          <IosHapticTarget
             key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={isSelected}
-            onClick={() => {
-              if (!isSelected) {
-                onChange(option.value);
-                if (hapticStyle !== false) {
-                  triggerHaptic(hapticStyle);
-                }
-              }
-            }}
-            className={cn(
-              'relative z-10 flex h-9 flex-1 cursor-pointer items-center justify-center rounded-[9px] px-2.5 text-[13px] font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)',
-              isSelected
-                ? 'text-(--color-foreground)'
-                : 'text-(--color-text-secondary)',
-            )}
+            disabled={isSelected || hapticStyle === false}
+            className="flex flex-1 rounded-[9px]"
           >
-            {isSelected ? (
-              <motion.span
-                layoutId={layoutId}
-                transition={IOS_SPRING_CONTROL}
-                aria-hidden="true"
-                className="absolute inset-0 -z-10 rounded-[9px] bg-(--color-surface) shadow-[0_1px_4px_rgba(0,0,0,0.12),0_0_0_0.5px_rgba(0,0,0,0.04)] dark:bg-(--color-surface-tertiary)"
-              />
-            ) : null}
-            <span className="truncate">{option.label}</span>
-          </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              onClick={() => {
+                if (!isSelected) {
+                  onChange(option.value);
+                  if (hapticStyle !== false) {
+                    triggerHaptic(hapticStyle);
+                  }
+                }
+              }}
+              className={cn(
+                'relative z-10 flex h-9 flex-1 cursor-pointer items-center justify-center rounded-[9px] px-2.5 text-[13px] font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)',
+                isSelected
+                  ? 'text-(--color-foreground)'
+                  : 'text-(--color-text-secondary)',
+              )}
+            >
+              {isSelected ? (
+                <motion.span
+                  layoutId={layoutId}
+                  transition={IOS_SPRING_CONTROL}
+                  aria-hidden="true"
+                  className="absolute inset-0 -z-10 rounded-[9px] bg-(--color-surface) shadow-[0_1px_4px_rgba(0,0,0,0.12),0_0_0_0.5px_rgba(0,0,0,0.04)] dark:bg-(--color-surface-tertiary)"
+                />
+              ) : null}
+              <span className="truncate">{option.label}</span>
+            </button>
+          </IosHapticTarget>
         );
       })}
     </div>

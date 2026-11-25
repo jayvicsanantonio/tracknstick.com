@@ -9,6 +9,7 @@ import EmptyState from '@shared/components/feedback/EmptyState';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
 import type { HabitDraft } from '@/features/habits/context/HabitsStateContextDefinition';
 import HabitsIcons from '@/icons/habits';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 
 const EVERY_DAY: HabitDraft['frequency'] = [
@@ -50,18 +51,20 @@ const NoHabits = memo(function NoHabits() {
               const Icon = HabitsIcons[starter.icon];
               return (
                 <li key={starter.name}>
-                  <button
-                    type="button"
-                    aria-label={`Start with ${starter.name}`}
-                    onClick={() => {
-                      triggerHaptic('light');
-                      openAddHabitDialog(starter);
-                    }}
-                    className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full bg-(--color-brand-primary)/10 px-3.5 text-[13px] font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/20 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/16 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
-                  >
-                    <Icon aria-hidden="true" className="size-4" />
-                    {starter.name}
-                  </button>
+                  <IosHapticTarget className="inline-flex rounded-full">
+                    <button
+                      type="button"
+                      aria-label={`Start with ${starter.name}`}
+                      onClick={() => {
+                        triggerHaptic('light');
+                        openAddHabitDialog(starter);
+                      }}
+                      className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full bg-(--color-brand-primary)/10 px-3.5 text-[13px] font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/20 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/16 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
+                    >
+                      <Icon aria-hidden="true" className="size-4" />
+                      {starter.name}
+                    </button>
+                  </IosHapticTarget>
                 </li>
               );
             })}
@@ -76,16 +79,18 @@ const NoHabits = memo(function NoHabits() {
         </div>
       }
     >
-      <Button
-        onClick={() => {
-          triggerHaptic('medium');
-          openAddHabitDialog();
-        }}
-        className="h-11 rounded-full px-6"
-      >
-        <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
-        Add habit
-      </Button>
+      <IosHapticTarget className="inline-flex rounded-full">
+        <Button
+          onClick={() => {
+            triggerHaptic('medium');
+            openAddHabitDialog();
+          }}
+          className="h-11 rounded-full px-6"
+        >
+          <Plus aria-hidden="true" className="mr-1 h-4 w-4" />
+          Add habit
+        </Button>
+      </IosHapticTarget>
     </EmptyState>
   );
 });

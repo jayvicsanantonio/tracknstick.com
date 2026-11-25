@@ -18,6 +18,10 @@ import { Habit } from '@/features/habits/types/Habit';
 import { frequencyLabel } from '@shared/utils/frequencyLabel';
 import { useHabits } from '@/features/habits/hooks/useHabits';
 import { useHabitsContext } from '@/features/habits/hooks/useHabitsContext';
+import {
+  IosHapticOverlay,
+  IosHapticTarget,
+} from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { IOS_SPRING_SHEET, IOS_SPRING_TAP } from '@shared/utils/motion';
 import { cn } from '@shared/utils/utils';
@@ -46,6 +50,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
   const startPoint = useRef<{ x: number; y: number } | null>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   const clearTimer = useCallback(() => {
     if (longPressTimer.current) {
@@ -70,7 +75,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
   }, [habit.completed, prefersReducedMotion]);
 
   const handlePointerDown = useCallback(
-    (event: React.PointerEvent<HTMLButtonElement>) => {
+    (event: React.PointerEvent<HTMLDivElement>) => {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
       longPressed.current = false;
       setIsPressing(true);
@@ -87,7 +92,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
   );
 
   const handlePointerMove = useCallback(
-    (event: React.PointerEvent<HTMLButtonElement>) => {
+    (event: React.PointerEvent<HTMLDivElement>) => {
       if (!startPoint.current) return;
       const dx = Math.abs(event.clientX - startPoint.current.x);
       const dy = Math.abs(event.clientY - startPoint.current.y);
@@ -121,8 +126,7 @@ const DailyHabitItem = memo(function DailyHabitItem({
       data-habit-item
       className="group relative flex w-full flex-col items-center"
     >
-      <button
-        type="button"
+      <div
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
@@ -133,105 +137,115 @@ const DailyHabitItem = memo(function DailyHabitItem({
             event.preventDefault();
           }
         }}
-        className="group/habit-btn relative flex w-full cursor-pointer flex-col items-center text-center outline-none"
-        onClick={handleToggle}
-        aria-pressed={habit.completed}
-        aria-label={
-          habit.completed
-            ? `Mark ${habit.name} as incomplete`
-            : `Mark ${habit.name} as complete`
-        }
+        className="relative flex w-full flex-col items-center"
       >
-        {/* Flat double-ring circular habit medallion across phone, tablet, and desktop */}
-        <motion.span
-          animate={
-            prefersReducedMotion
-              ? undefined
-              : isPressing
-                ? { scale: 0.9 }
-                : justCompleted
-                  ? { scale: [0.92, 1.07, 1] }
-                  : { scale: 1 }
+        <button
+          ref={toggleButtonRef}
+          type="button"
+          className="group/habit-btn relative flex w-full cursor-pointer flex-col items-center text-center outline-none"
+          onClick={handleToggle}
+          aria-pressed={habit.completed}
+          aria-label={
+            habit.completed
+              ? `Mark ${habit.name} as incomplete`
+              : `Mark ${habit.name} as complete`
           }
-          transition={
-            justCompleted && !isPressing
-              ? {
-                  duration: 0.34,
-                  times: [0, 0.45, 1],
-                  ease: [0.22, 1, 0.36, 1],
-                }
-              : IOS_SPRING_TAP
-          }
-          className="relative mb-2.5 shrink-0 sm:mb-3"
         >
-          <span
-            className={cn(
-              'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 group-focus-visible/habit-btn:ring-[3px] group-focus-visible/habit-btn:ring-(--color-ring) group-focus-visible/habit-btn:ring-offset-2 group-focus-visible/habit-btn:ring-offset-(--color-background) motion-reduce:transition-none sm:size-[88px] sm:group-hover/habit-btn:-translate-y-0.5 sm:group-hover/habit-btn:scale-[1.04] sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:size-[92px] lg:size-[88px]',
-              habit.completed ? 'ios-habit-orb-done' : 'ios-habit-orb',
-            )}
+          {/* Flat double-ring circular habit medallion across phone, tablet, and desktop */}
+          <motion.span
+            animate={
+              prefersReducedMotion
+                ? undefined
+                : isPressing
+                  ? { scale: 0.9 }
+                  : justCompleted
+                    ? { scale: [0.92, 1.07, 1] }
+                    : { scale: 1 }
+            }
+            transition={
+              justCompleted && !isPressing
+                ? {
+                    duration: 0.34,
+                    times: [0, 0.45, 1],
+                    ease: [0.22, 1, 0.36, 1],
+                  }
+                : IOS_SPRING_TAP
+            }
+            className="relative mb-2.5 shrink-0 sm:mb-3"
           >
-            {/* Inner concentric bezel ring */}
             <span
-              aria-hidden="true"
               className={cn(
-                'pointer-events-none absolute inset-[5px] rounded-full border transition-colors duration-200 sm:inset-[6px]',
-                habit.completed
-                  ? 'border-white/35'
-                  : 'border-dashed border-(--color-brand-primary)/28 dark:border-(--color-brand-primary)/30',
+                'relative flex size-20 items-center justify-center overflow-hidden rounded-full transition-[transform,background-color,box-shadow,border-color] duration-200 group-focus-visible/habit-btn:ring-[3px] group-focus-visible/habit-btn:ring-(--color-ring) group-focus-visible/habit-btn:ring-offset-2 group-focus-visible/habit-btn:ring-offset-(--color-background) motion-reduce:transition-none sm:size-[88px] sm:group-hover/habit-btn:-translate-y-0.5 sm:group-hover/habit-btn:scale-[1.04] sm:motion-reduce:group-hover/habit-btn:translate-y-0 sm:motion-reduce:group-hover/habit-btn:scale-100 md:size-[92px] lg:size-[88px]',
+                habit.completed ? 'ios-habit-orb-done' : 'ios-habit-orb',
               )}
-            />
-
-            <Icon
-              aria-hidden="true"
-              strokeWidth={2}
-              className={cn(
-                'relative z-10 size-8 transition-[color,transform] duration-200 sm:size-9 md:size-10',
-                habit.completed
-                  ? 'scale-105 text-(--color-primary-foreground)'
-                  : 'text-(--color-brand-primary)',
-              )}
-            />
-          </span>
-
-          {/* Floating spring checkmark seal */}
-          <AnimatePresence initial={false}>
-            {habit.completed ? (
-              <motion.span
-                key="completed-badge"
+            >
+              {/* Inner concentric bezel ring */}
+              <span
                 aria-hidden="true"
-                data-completed-badge
-                initial={
-                  prefersReducedMotion ? false : { scale: 0.4, opacity: 0 }
-                }
-                animate={{ scale: 1, opacity: 1 }}
-                exit={
-                  prefersReducedMotion
-                    ? undefined
-                    : {
-                        scale: 0.5,
-                        opacity: 0,
-                        transition: { duration: 0.14 },
-                      }
-                }
-                transition={IOS_SPRING_TAP}
-                className="pointer-events-none absolute -top-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:size-7"
-              >
-                <Check className="size-3.5 sm:size-4" strokeWidth={3.2} />
-              </motion.span>
-            ) : null}
-          </AnimatePresence>
-        </motion.span>
+                className={cn(
+                  'pointer-events-none absolute inset-[5px] rounded-full border transition-colors duration-200 sm:inset-[6px]',
+                  habit.completed
+                    ? 'border-white/35'
+                    : 'border-dashed border-(--color-brand-primary)/28 dark:border-(--color-brand-primary)/30',
+                )}
+              />
 
-        {/* Centered habit title & schedule beneath the circle */}
-        <span className="flex w-full min-w-0 flex-col items-center">
-          <span className="line-clamp-2 max-w-full px-0.5 text-center text-[13.5px] leading-[1.25] font-semibold tracking-[-0.01em] text-(--color-foreground) sm:px-1 sm:text-[14px]">
-            {habit.name}
+              <Icon
+                aria-hidden="true"
+                strokeWidth={2}
+                className={cn(
+                  'relative z-10 size-8 transition-[color,transform] duration-200 sm:size-9 md:size-10',
+                  habit.completed
+                    ? 'scale-105 text-(--color-primary-foreground)'
+                    : 'text-(--color-brand-primary)',
+                )}
+              />
+            </span>
+
+            {/* Floating spring checkmark seal */}
+            <AnimatePresence initial={false}>
+              {habit.completed ? (
+                <motion.span
+                  key="completed-badge"
+                  aria-hidden="true"
+                  data-completed-badge
+                  initial={
+                    prefersReducedMotion ? false : { scale: 0.4, opacity: 0 }
+                  }
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={
+                    prefersReducedMotion
+                      ? undefined
+                      : {
+                          scale: 0.5,
+                          opacity: 0,
+                          transition: { duration: 0.14 },
+                        }
+                  }
+                  transition={IOS_SPRING_TAP}
+                  className="pointer-events-none absolute -top-0.5 -right-0.5 flex size-6 items-center justify-center rounded-full bg-(--color-card) text-(--color-brand-primary) shadow-md ring-2 ring-(--color-brand-primary) sm:size-7"
+                >
+                  <Check className="size-3.5 sm:size-4" strokeWidth={3.2} />
+                </motion.span>
+              ) : null}
+            </AnimatePresence>
+          </motion.span>
+
+          {/* Centered habit title & schedule beneath the circle */}
+          <span className="flex w-full min-w-0 flex-col items-center">
+            <span className="line-clamp-2 max-w-full px-0.5 text-center text-[13.5px] leading-[1.25] font-semibold tracking-[-0.01em] text-(--color-foreground) sm:px-1 sm:text-[14px]">
+              {habit.name}
+            </span>
+            <span className="mt-0.5 max-w-full truncate text-[11.5px] leading-tight font-medium text-(--color-text-secondary)/80 sm:text-xs">
+              {frequencyLabel(habit.frequency)}
+            </span>
           </span>
-          <span className="mt-0.5 max-w-full truncate text-[11.5px] leading-tight font-medium text-(--color-text-secondary)/80 sm:text-xs">
-            {frequencyLabel(habit.frequency)}
-          </span>
-        </span>
-      </button>
+        </button>
+        <IosHapticOverlay
+          targetRef={toggleButtonRef}
+          shouldSuppressTap={() => longPressed.current}
+        />
+      </div>
 
       {/* Unclipped celebration star burst centered right over the circular orb */}
       <div
@@ -340,60 +354,67 @@ const DailyHabitItem = memo(function DailyHabitItem({
 
                     {/* Tactile left-aligned iOS action rows */}
                     <div className="space-y-1 p-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('light');
-                          setMenuOpen(false);
-                          openEditDialog(habit, 'edit');
-                        }}
-                        className="flex w-full cursor-pointer items-center gap-3.5 rounded-[16px] px-3 py-2.5 text-left transition-[background-color,transform] outline-none hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.985] active:bg-(--color-brand-primary)/14"
-                      >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset">
-                          <Pencil aria-hidden="true" className="size-[18px]" />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[16px] leading-snug font-semibold text-(--color-foreground)">
-                            Edit Habit
+                      <IosHapticTarget className="block w-full rounded-[16px]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('light');
+                            setMenuOpen(false);
+                            openEditDialog(habit, 'edit');
+                          }}
+                          className="flex w-full cursor-pointer items-center gap-3.5 rounded-[16px] px-3 py-2.5 text-left transition-[background-color,transform] outline-none hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.985] active:bg-(--color-brand-primary)/14"
+                        >
+                          <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset">
+                            <Pencil
+                              aria-hidden="true"
+                              className="size-[18px]"
+                            />
                           </span>
-                          <span className="block text-[12px] leading-tight text-(--color-text-secondary)">
-                            Name, icon, schedule &amp; dates
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[16px] leading-snug font-semibold text-(--color-foreground)">
+                              Edit Habit
+                            </span>
+                            <span className="block text-[12px] leading-tight text-(--color-text-secondary)">
+                              Name, icon, schedule &amp; dates
+                            </span>
                           </span>
-                        </span>
-                        <ChevronRight
-                          aria-hidden="true"
-                          className="size-4 shrink-0 text-(--color-brand-primary)/60"
-                        />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerHaptic('light');
-                          setMenuOpen(false);
-                          openEditDialog(habit, 'stats');
-                        }}
-                        className="flex w-full cursor-pointer items-center gap-3.5 rounded-[16px] px-3 py-2.5 text-left transition-[background-color,transform] outline-none hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.985] active:bg-(--color-brand-primary)/14"
-                      >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset">
-                          <BarChart3
+                          <ChevronRight
                             aria-hidden="true"
-                            className="size-[18px]"
+                            className="size-4 shrink-0 text-(--color-brand-primary)/60"
                           />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[16px] leading-snug font-semibold text-(--color-foreground)">
-                            View Stats
+                        </button>
+                      </IosHapticTarget>
+
+                      <IosHapticTarget className="block w-full rounded-[16px]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic('light');
+                            setMenuOpen(false);
+                            openEditDialog(habit, 'stats');
+                          }}
+                          className="flex w-full cursor-pointer items-center gap-3.5 rounded-[16px] px-3 py-2.5 text-left transition-[background-color,transform] outline-none hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) active:scale-[0.985] active:bg-(--color-brand-primary)/14"
+                        >
+                          <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/22 ring-inset">
+                            <BarChart3
+                              aria-hidden="true"
+                              className="size-[18px]"
+                            />
                           </span>
-                          <span className="block text-[12px] leading-tight text-(--color-text-secondary)">
-                            Streaks, completion rate &amp; history
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[16px] leading-snug font-semibold text-(--color-foreground)">
+                              View Stats
+                            </span>
+                            <span className="block text-[12px] leading-tight text-(--color-text-secondary)">
+                              Streaks, completion rate &amp; history
+                            </span>
                           </span>
-                        </span>
-                        <ChevronRight
-                          aria-hidden="true"
-                          className="size-4 shrink-0 text-(--color-brand-primary)/60"
-                        />
-                      </button>
+                          <ChevronRight
+                            aria-hidden="true"
+                            className="size-4 shrink-0 text-(--color-brand-primary)/60"
+                          />
+                        </button>
+                      </IosHapticTarget>
                     </div>
                   </div>
 

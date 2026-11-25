@@ -22,7 +22,13 @@ vi.mock('@/features/habits/hooks/useHabits', () => ({
   }),
 }));
 
-vi.mock('@shared/utils/haptics', () => ({ triggerHaptic: vi.fn() }));
+vi.mock('@shared/utils/haptics', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@shared/utils/haptics')>();
+  return {
+    ...actual,
+    triggerHaptic: vi.fn(),
+  };
+});
 
 const FIXED_DATE = new Date(2026, 10, 24, 12);
 

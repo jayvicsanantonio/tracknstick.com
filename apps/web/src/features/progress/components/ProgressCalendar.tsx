@@ -16,6 +16,7 @@ import MonthNavButton from '@/features/progress/components/MonthNavButton';
 import MiscellaneousIcons from '@/icons/miscellaneous';
 import { InsightData } from '@/features/progress/types/InsightData';
 import CalendarDayCell from '@/features/progress/components/CalendarDayCell';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { Check } from 'lucide-react';
 
@@ -142,13 +143,15 @@ const ProgressCalendar = memo(function ProgressCalendar({
           </span>
         </h2>
         {!isThisMonth && (
-          <button
-            type="button"
-            onClick={handleThisMonth}
-            className="flex h-9 items-center rounded-full bg-(--color-brand-primary)/14 px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/24 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/20 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
-          >
-            This month
-          </button>
+          <IosHapticTarget className="inline-flex rounded-full">
+            <button
+              type="button"
+              onClick={handleThisMonth}
+              className="flex h-9 items-center rounded-full bg-(--color-brand-primary)/14 px-3 text-xs font-semibold whitespace-nowrap text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/24 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/20 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 dark:text-(--color-brand-text-light)"
+            >
+              This month
+            </button>
+          </IosHapticTarget>
         )}
         <div className="flex items-center gap-1.5">
           <MonthNavButton

@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Copy, Sparkles } from 'lucide-react';
 import Markdown, { type Components } from 'react-markdown';
 import { cn } from '@shared/utils/utils';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 
 export interface Message {
@@ -210,27 +211,29 @@ export function ChatMessage({
 
         {/* Subtle one-tap Copy action once the coach finishes replying */}
         {!isUser && !isTyping && !isStreaming ? (
-          <button
-            type="button"
-            onClick={() => void handleCopy()}
-            aria-label={copied ? 'Copied response' : 'Copy response'}
-            className="mt-1 ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium text-(--color-text-secondary)/75 transition-colors hover:bg-(--color-brand-primary)/10 hover:text-(--color-foreground) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 max-sm:mt-0.5 max-sm:min-h-8 max-sm:gap-1.5 max-sm:px-2.5 max-sm:text-[12px] max-sm:text-(--color-text-secondary)"
-          >
-            {copied ? (
-              <>
-                <Check
-                  aria-hidden="true"
-                  className="size-3 text-(--color-brand-primary) max-sm:size-3.5"
-                />
-                <span className="text-(--color-brand-primary)">Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy aria-hidden="true" className="size-3 max-sm:size-3.5" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
+          <IosHapticTarget className="mt-1 ml-1 inline-flex rounded-full max-sm:mt-0.5">
+            <button
+              type="button"
+              onClick={() => void handleCopy()}
+              aria-label={copied ? 'Copied response' : 'Copy response'}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium text-(--color-text-secondary)/75 transition-colors hover:bg-(--color-brand-primary)/10 hover:text-(--color-foreground) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-95 max-sm:min-h-8 max-sm:gap-1.5 max-sm:px-2.5 max-sm:text-[12px] max-sm:text-(--color-text-secondary)"
+            >
+              {copied ? (
+                <>
+                  <Check
+                    aria-hidden="true"
+                    className="size-3 text-(--color-brand-primary) max-sm:size-3.5"
+                  />
+                  <span className="text-(--color-brand-primary)">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy aria-hidden="true" className="size-3 max-sm:size-3.5" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          </IosHapticTarget>
         ) : null}
       </div>
     </motion.div>

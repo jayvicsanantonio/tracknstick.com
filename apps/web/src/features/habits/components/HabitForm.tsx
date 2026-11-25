@@ -24,6 +24,7 @@ import IconPicker from './IconPicker';
 import FrequencySelector from './FrequencySelector';
 import FormActions from './FormActions';
 import { useDate } from '@app/providers/useDate';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { cn } from '@shared/utils/utils';
 import {
@@ -308,15 +309,20 @@ const HabitForm = memo(function HabitForm({
           {/* Mobile destructive Delete Habit button (standard iOS Contacts/Calendar pattern) */}
           {habit?.id ? (
             <div className="pt-1 sm:hidden">
-              <button
-                type="button"
+              <IosHapticTarget
                 disabled={isSubmitting}
-                onClick={requestDelete}
-                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-(--color-destructive)/30 bg-(--color-surface)/90 px-4 text-[16px] font-semibold text-(--color-destructive) transition-colors active:bg-(--color-destructive)/10 disabled:opacity-50 dark:bg-(--color-surface-tertiary)/50"
+                className="block w-full rounded-2xl"
               >
-                <Trash2 aria-hidden="true" className="size-4" />
-                Delete Habit
-              </button>
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={requestDelete}
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-(--color-destructive)/30 bg-(--color-surface)/90 px-4 text-[16px] font-semibold text-(--color-destructive) transition-colors active:bg-(--color-destructive)/10 disabled:opacity-50 dark:bg-(--color-surface-tertiary)/50"
+                >
+                  <Trash2 aria-hidden="true" className="size-4" />
+                  Delete Habit
+                </button>
+              </IosHapticTarget>
             </div>
           ) : null}
         </div>
@@ -347,12 +353,14 @@ const HabitForm = memo(function HabitForm({
             <AlertDialogCancel className="bg-(--color-muted) text-(--color-foreground) hover:bg-(--color-hover-surface)">
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => void executeDelete()}
-              className="bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring)"
-            >
-              Delete
-            </AlertDialogAction>
+            <IosHapticTarget className="inline-flex w-full sm:w-auto">
+              <AlertDialogAction
+                onClick={() => void executeDelete()}
+                className="w-full bg-(--color-destructive) text-(--color-destructive-foreground) hover:opacity-90 focus:ring-(--color-ring) sm:w-auto"
+              >
+                Delete
+              </AlertDialogAction>
+            </IosHapticTarget>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

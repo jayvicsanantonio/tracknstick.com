@@ -3,6 +3,7 @@
 
 import { memo } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { cn } from '@shared/utils/utils';
 import { Achievement, AchievementStats } from '../types/Achievement';
 import { getAchievementIcon } from '../utils/achievementIcons';
@@ -175,22 +176,24 @@ const AchievementsSummary = memo(function AchievementsSummary({
             )
           )}
 
-          <button
-            type="button"
-            onClick={onToggleList}
-            aria-expanded={isListOpen}
-            aria-controls="all-achievements"
-            className="mt-4 flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl bg-(--color-brand-primary)/12 px-4 text-sm font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/20 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/18 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] dark:text-(--color-brand-text-light)"
-          >
-            {isListOpen ? 'Hide all achievements' : 'See all achievements'}
-            <ChevronDown
-              aria-hidden="true"
-              className={cn(
-                'h-4 w-4 transition-transform',
-                isListOpen && 'rotate-180',
-              )}
-            />
-          </button>
+          <IosHapticTarget className="mt-4 block w-full rounded-2xl">
+            <button
+              type="button"
+              onClick={onToggleList}
+              aria-expanded={isListOpen}
+              aria-controls="all-achievements"
+              className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl bg-(--color-brand-primary)/12 px-4 text-sm font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/20 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/18 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985] dark:text-(--color-brand-text-light)"
+            >
+              {isListOpen ? 'Hide all achievements' : 'See all achievements'}
+              <ChevronDown
+                aria-hidden="true"
+                className={cn(
+                  'h-4 w-4 transition-transform',
+                  isListOpen && 'rotate-180',
+                )}
+              />
+            </button>
+          </IosHapticTarget>
         </>
       )}
     </section>

@@ -14,6 +14,7 @@ import { ChevronRight, Trash2 } from 'lucide-react';
 import HabitsIcons from '@/icons/habits';
 import { Habit } from '@/features/habits/types/Habit';
 import { isArchived } from '@/features/habits/components/habitFilters';
+import { IosHapticOverlay } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { IOS_SPRING_CONTROL } from '@shared/utils/motion';
 import { cn } from '@shared/utils/utils';
@@ -46,6 +47,8 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
   const draggedRef = useRef(false);
   const pointerStartXRef = useRef<number | null>(null);
   const wouldRevealRef = useRef(false);
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
 
   const snapTo = useCallback(
     (revealed: boolean) => {
@@ -115,6 +118,7 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
           while kept mounted in DOM for screen readers & keyboard access) */}
       <div className="absolute inset-y-[1px] right-[1px] flex w-[84px] items-stretch justify-end rounded-r-[19px] bg-(--color-destructive)">
         <button
+          ref={deleteButtonRef}
           type="button"
           aria-label={`Delete ${habit.name}`}
           onClick={() => {
@@ -127,6 +131,7 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
           <Trash2 aria-hidden="true" className="size-4" />
           <span className="text-[11px] font-semibold">Delete</span>
         </button>
+        <IosHapticOverlay targetRef={deleteButtonRef} />
       </div>
 
       {/* Foreground swipeable tactile card matching the Tracker habit cards */}
@@ -146,6 +151,7 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
         className="ios-tracker-card relative z-10 overflow-hidden rounded-[20px]"
       >
         <button
+          ref={editButtonRef}
           type="button"
           aria-label={`Edit ${habit.name}`}
           onClick={() => {
@@ -223,6 +229,11 @@ const SwipeableHabitRow = memo(function SwipeableHabitRow({
             )}
           />
         </button>
+        <IosHapticOverlay
+          targetRef={editButtonRef}
+          shouldSuppressTap={() => draggedRef.current}
+          disabled={isRevealed}
+        />
       </motion.div>
     </li>
   );

@@ -3,6 +3,7 @@
 
 import { useLayoutEffect, type RefObject } from 'react';
 import { Button } from '@shared/components/ui/button';
+import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { ArrowUp, Loader2 } from 'lucide-react';
 import { cn } from '@shared/utils/utils';
 
@@ -52,27 +53,36 @@ export function ChatInput({
           rows={1}
           className="max-h-36 min-h-[38px] flex-1 resize-none overflow-y-auto bg-transparent py-2 text-[16px] leading-6 text-(--color-foreground) outline-none placeholder:text-(--color-text-secondary)/75 sm:min-h-[40px] sm:py-2 sm:text-[15px]"
         />
-        <Button
-          type="submit"
-          size="icon"
-          aria-label="Send message"
+        <IosHapticTarget
           disabled={!canSend}
-          className={cn(
-            'size-9 shrink-0 rounded-full transition-[transform,background-color,color,box-shadow] duration-150 active:scale-90 sm:size-10',
-            canSend
-              ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_2px_8px_rgba(0,0,0,0.14)] hover:bg-(--color-brand-secondary)'
-              : 'bg-(--color-brand-primary)/14 text-(--color-brand-primary)/50 shadow-none disabled:opacity-100',
-          )}
+          className="inline-flex shrink-0 rounded-full"
         >
-          {isLoading ? (
-            <Loader2
-              aria-hidden="true"
-              className="size-4 animate-spin text-(--color-brand-primary) sm:size-5"
-            />
-          ) : (
-            <ArrowUp aria-hidden="true" className="size-5" strokeWidth={2.5} />
-          )}
-        </Button>
+          <Button
+            type="submit"
+            size="icon"
+            aria-label="Send message"
+            disabled={!canSend}
+            className={cn(
+              'size-9 shrink-0 rounded-full transition-[transform,background-color,color,box-shadow] duration-150 active:scale-90 sm:size-10',
+              canSend
+                ? 'bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[0_2px_8px_rgba(0,0,0,0.14)] hover:bg-(--color-brand-secondary)'
+                : 'bg-(--color-brand-primary)/14 text-(--color-brand-primary)/50 shadow-none disabled:opacity-100',
+            )}
+          >
+            {isLoading ? (
+              <Loader2
+                aria-hidden="true"
+                className="size-4 animate-spin text-(--color-brand-primary) sm:size-5"
+              />
+            ) : (
+              <ArrowUp
+                aria-hidden="true"
+                className="size-5"
+                strokeWidth={2.5}
+              />
+            )}
+          </Button>
+        </IosHapticTarget>
       </div>
       <p className="mx-auto mt-2 hidden max-w-3xl text-center text-xs text-(--color-text-secondary)/70 sm:block">
         Enter to send · Shift + Enter for a new line

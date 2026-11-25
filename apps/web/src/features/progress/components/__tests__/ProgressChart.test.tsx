@@ -7,7 +7,13 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { triggerHaptic } from '@shared/utils/haptics';
 import ProgressChart from '../ProgressChart';
 
-vi.mock('@shared/utils/haptics', () => ({ triggerHaptic: vi.fn() }));
+vi.mock('@shared/utils/haptics', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@shared/utils/haptics')>();
+  return {
+    ...actual,
+    triggerHaptic: vi.fn(),
+  };
+});
 
 // jsdom has no layout, so the responsive wrapper would measure 0x0 and draw
 // nothing. Give the chart a fixed size instead.
