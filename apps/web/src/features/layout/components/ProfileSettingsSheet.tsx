@@ -21,7 +21,7 @@ import {
   usePreferences,
   type HapticStrength,
 } from '@shared/hooks/usePreferences';
-import { triggerHaptic } from '@shared/utils/haptics';
+import { isIosDevice, triggerHaptic } from '@shared/utils/haptics';
 import type { ThemePreference } from '@shared/types/theme';
 
 interface ProfileSettingsSheetProps {
@@ -192,7 +192,9 @@ const ProfileSettingsSheet = memo(function ProfileSettingsSheet({
               />
             </div>
 
-            {hapticsEnabled ? (
+            {/* iOS Safari's native switch exposes only a single fixed light Taptic pulse,
+                so Haptic Strength is shown only on platforms with variable vibration control. */}
+            {hapticsEnabled && !isIosDevice() ? (
               <>
                 <div className="ml-14 h-[0.5px] bg-(--color-border-primary)/60" />
                 <div className="space-y-2 px-4 py-3">
