@@ -3,7 +3,7 @@
 
 import { describe, it, expect } from 'vitest';
 import type { Achievement } from '../../types/Achievement';
-import { describeRemaining } from '../achievementRemaining';
+import { describeRemaining, formatProgress } from '../achievementRemaining';
 
 const achievement = (
   overrides: Partial<Achievement>,
@@ -164,4 +164,56 @@ describe('describeRemaining', () => {
       ).toBeNull();
     },
   );
+
+  it('names the rate to reach and the best 30 days so far', () => {
+    const guru = (current: number) =>
+      achievement(
+        {
+          type: 'special_achievement',
+          requirementType: 'percentage',
+          requirementData: { type: 'completion_rate', days: 30 },
+        },
+        current,
+        90,
+      );
+
+    expect(describeRemaining(guru(72), 0)).toBe(
+      '90% over 30 days in a row, best so far 72%',
+    );
+    expect(describeRemaining(guru(0), 0)).toBe('90% over 30 days in a row');
+  });
+
+  it('counts the achievements left to earn', () => {
+    expect(
+      describeRemaining(
+        achievement(
+          {
+            type: 'special_achievement',
+            requirementData: { type: 'achievement_count' },
+          },
+          28,
+          30,
+        ),
+        0,
+      ),
+    ).toBe('2 more achievements');
+  });
+});
+
+describe('formatProgress', () => {
+  it('shows a count as reached over target', () => {
+    expect(formatProgress(achievement({}, 40, 50))).toBe('40 / 50');
+  });
+
+  it('shows a rate as percentages', () => {
+    expect(
+      formatProgress(achievement({ requirementType: 'percentage' }, 72, 90)),
+    ).toBe('72% / 90%');
+  });
+
+  it('shows nothing without progress', () => {
+    expect(
+      formatProgress({ ...achievement({}, 0, 1), progress: undefined }),
+    ).toBeNull();
+  });
 });

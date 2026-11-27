@@ -56,6 +56,34 @@ const LATE_FROM_HOUR = 22;
 const HABIT_COMEBACK_DAYS = 8;
 /** Any check-in this many days after the last one is a return from an absence. */
 const LONG_COMEBACK_DAYS = 31;
+/** Habit Guru's window: this many days in a row. */
+const RATE_WINDOW_DAYS = 30;
+
+/**
+ * The best completion rate, as a whole percentage rounded down, over any
+ * window of consecutive days; 0 until there are that many days.
+ */
+function bestWindowRate(
+  days: readonly { scheduled: number; completed: number }[],
+  windowDays: number
+): number {
+  if (days.length < windowDays) return 0;
+  let scheduled = 0;
+  let completed = 0;
+  let best = 0;
+  for (let i = 0; i < days.length; i++) {
+    scheduled += days[i].scheduled;
+    completed += days[i].completed;
+    if (i >= windowDays) {
+      scheduled -= days[i - windowDays].scheduled;
+      completed -= days[i - windowDays].completed;
+    }
+    if (i >= windowDays - 1 && scheduled > 0) {
+      best = Math.max(best, Math.floor((completed / scheduled) * 100));
+    }
+  }
+  return best;
+}
 
 interface TrackerRow {
   id: number;
@@ -583,6 +611,8 @@ export interface UserLifetimeStats extends ProgressSummaryResponse {
   habitComebacks: number;
   /** Times any check-in came after 30 days or more with none. */
   longComebacks: number;
+  /** The best completion rate over any 30 days in a row; 0 before 30 days. */
+  bestMonthRate: number;
 }
 
 /**
@@ -823,6 +853,7 @@ export async function getUserLifetimeStats(
         memberSince,
         mostHabitsInOneDay,
         ...occasionCounts,
+        bestMonthRate: 0,
       };
     }
 
@@ -839,6 +870,8 @@ export async function getUserLifetimeStats(
     let totalScheduled = 0;
     let totalScheduledCompleted = 0;
     let perfectDays = 0;
+    // Every day walked, in order, for the best rate over a window of days.
+    const walkedDays: { scheduled: number; completed: number }[] = [];
 
     while (currentDate <= endDateObj) {
       const dateStr = currentDate.toISOString().slice(0, 10);
@@ -871,6 +904,10 @@ export async function getUserLifetimeStats(
         }
         ascendingHistory.push({ date: dateStr, completionRate });
       }
+      walkedDays.push({
+        scheduled: scheduledForDay,
+        completed: completedForDay,
+      });
 
       currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
@@ -897,6 +934,7 @@ export async function getUserLifetimeStats(
       memberSince,
       mostHabitsInOneDay,
       ...occasionCounts,
+      bestMonthRate: bestWindowRate(walkedDays, RATE_WINDOW_DAYS),
     };
   } catch (error) {
     console.error('Error calculating user progress summary:', error);

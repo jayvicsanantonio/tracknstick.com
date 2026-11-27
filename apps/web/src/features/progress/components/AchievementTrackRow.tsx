@@ -18,7 +18,10 @@ import { cn } from '@shared/utils/utils';
 import AchievementMedal from './AchievementMedal';
 import NewMark from './NewMark';
 import { getAchievementIcon } from '../utils/achievementIcons';
-import { describeRemaining } from '../utils/achievementRemaining';
+import {
+  describeRemaining,
+  formatProgress,
+} from '../utils/achievementRemaining';
 import {
   medalFor,
   type AchievementTrackGroup,
@@ -93,7 +96,7 @@ const AchievementTrackRow = memo(function AchievementTrackRow({
                   </span>
                   {next.progress && (
                     <span className="shrink-0 font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
-                      {next.progress.currentValue} / {next.progress.targetValue}
+                      {formatProgress(next)}
                     </span>
                   )}
                 </span>
@@ -180,9 +183,7 @@ const AchievementTrackRow = memo(function AchievementTrackRow({
               <span className="shrink-0 text-right text-xs font-medium text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
                 {level.isEarned && level.earnedAt
                   ? formatEarnedDate(level.earnedAt)
-                  : level.progress
-                    ? `${level.progress.currentValue} / ${level.progress.targetValue}`
-                    : null}
+                  : formatProgress(level)}
               </span>
             </li>
           ))}

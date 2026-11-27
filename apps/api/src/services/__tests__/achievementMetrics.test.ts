@@ -29,6 +29,8 @@ const SNAPSHOT: UserStatsSnapshot = {
   weekendDays: 12,
   habitComebacks: 2,
   longComebacks: 1,
+  bestMonthRate: 87,
+  earnedAchievements: 14,
 };
 
 describe('achievement metric registry', () => {
@@ -85,12 +87,14 @@ describe('achievement metric registry', () => {
     ['weekend_warrior', 12],
     ['comeback_kid', 2],
     ['phoenix', 1],
+    ['habit_guru', 87],
+    ['habit_legend', 14],
   ])('measures %s from the snapshot', (key, expected) => {
     expect(measure({ key }, SNAPSHOT)).toBe(expected);
   });
 
   it('returns null rather than zero for an unregistered key', () => {
-    expect(measure({ key: 'habit_legend' }, SNAPSHOT)).toBeNull();
+    expect(measure({ key: 'perfectionist' }, SNAPSHOT)).toBeNull();
   });
 });
 
@@ -120,6 +124,8 @@ describe('achievement tracks', () => {
       weekendDays: 11,
       habitComebacks: 12,
       longComebacks: 13,
+      bestMonthRate: 14,
+      earnedAchievements: 15,
     };
     const valueByTrack = new Map<string, number | null>();
     for (const [key, track] of Object.entries(TRACKS)) {

@@ -23,7 +23,7 @@ test('shows what is left of the next achievements and opens the Tracker from one
   const achievements = page.getByRole('region', { name: 'Achievements' });
 
   // Achievements no one can earn yet are left out of the count.
-  await expect(achievements.getByText(/ of 38 earned$/)).toBeVisible();
+  await expect(achievements.getByText(/ of 40 earned$/)).toBeVisible();
 
   // Each achievement next up says, in words, what is left to do.
   const nextUp = achievements.getByRole('list', { name: 'Next up' });
