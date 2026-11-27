@@ -19,6 +19,8 @@ fails if a file here is not named like `0002_add_something.sql`.
 - `0003_seed_achievements.sql` - Seeds the achievement catalogue, one row per
   achievement, upserted by `key` so ids and earned achievements survive. A
   change to the catalogue is a new migration that upserts the changed rows.
+- `0004_reword_achievement_descriptions.sql` - Rewords the descriptions of
+  Perfect Week, Perfect Month and Time Traveler to say what they count.
 
 ## Changing the Schema
 

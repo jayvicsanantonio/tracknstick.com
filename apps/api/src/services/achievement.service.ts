@@ -4,7 +4,11 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import { AchievementRepository } from '../repositories/achievement.repository.js';
 import { getUserStreaks } from '../repositories/tracker.repository.js';
-import { measure, type UserStatsSnapshot } from './achievementMetrics.js';
+import {
+  isMeasurable,
+  measure,
+  type UserStatsSnapshot,
+} from './achievementMetrics.js';
 import type {
   AchievementProgress,
   AchievementResponse,
@@ -20,20 +24,31 @@ export class AchievementService {
     this.repository = new AchievementRepository(db);
   }
 
+  /**
+   * The catalogue with the user's standing in each. An achievement with no
+   * metric can never be earned, so it is left out unless the user already
+   * holds it.
+   */
   async getAllAchievementsForUser(
-    userId: string
+    userId: string,
+    timeZone = 'UTC'
   ): Promise<AchievementResponse[]> {
     const [allAchievements, userAchievements, snapshot] = await Promise.all([
       this.repository.getAllAchievements(),
       this.repository.getUserAchievements(userId),
-      this.buildSnapshot(userId),
+      this.buildSnapshot(userId, timeZone),
     ]);
 
     const userAchievementMap = new Map(
       userAchievements.map((ua) => [ua.achievementId, ua])
     );
 
-    return allAchievements.map((achievement) => {
+    const shown = allAchievements.filter(
+      (achievement) =>
+        isMeasurable(achievement) || userAchievementMap.has(achievement.id)
+    );
+
+    return shown.map((achievement) => {
       const userAchievement = userAchievementMap.get(achievement.id);
       const isEarned = !!userAchievement;
 
@@ -63,7 +78,10 @@ export class AchievementService {
     return await this.repository.getUserAchievements(userId);
   }
 
-  async checkAndAwardAchievements(userId: string): Promise<Achievement[]> {
+  async checkAndAwardAchievements(
+    userId: string,
+    timeZone = 'UTC'
+  ): Promise<Achievement[]> {
     const allAchievements = await this.repository.getAllAchievements();
     const userAchievements = await this.repository.getUserAchievements(userId);
     const earnedAchievementIds = new Set(
@@ -72,7 +90,7 @@ export class AchievementService {
 
     // One snapshot for the whole pass: nothing in the evaluation path reads
     // user_achievements, so awarding cannot change what the rules measure.
-    const snapshot = await this.buildSnapshot(userId);
+    const snapshot = await this.buildSnapshot(userId, timeZone);
 
     const newlyEarned: Achievement[] = [];
 
@@ -94,13 +112,20 @@ export class AchievementService {
    * consumers refetched under different conditions, so "zero" and "unknown"
    * were indistinguishable.
    */
-  private async buildSnapshot(userId: string): Promise<UserStatsSnapshot> {
+  private async buildSnapshot(
+    userId: string,
+    timeZone: string
+  ): Promise<UserStatsSnapshot> {
     const [stats, streaks] = await Promise.all([
       this.repository.getUserHabitStats(userId),
-      getUserStreaks(this.db, userId),
+      getUserStreaks(this.db, userId, timeZone),
     ]);
 
-    return { ...stats, currentStreak: streaks.currentStreak };
+    return {
+      ...stats,
+      currentStreak: streaks.currentStreak,
+      longestStreak: streaks.longestStreak,
+    };
   }
 
   private calculateProgress(
@@ -145,10 +170,11 @@ export const createAchievementService = (db: D1Database) => {
 // Convenience functions for controllers
 export const getAllAchievementsForUser = async (
   userId: string,
-  db: D1Database
+  db: D1Database,
+  timeZone?: string
 ): Promise<AchievementResponse[]> => {
   const service = createAchievementService(db);
-  return service.getAllAchievementsForUser(userId);
+  return service.getAllAchievementsForUser(userId, timeZone);
 };
 
 export const getUserAchievements = async (
@@ -161,8 +187,9 @@ export const getUserAchievements = async (
 
 export const checkAndAwardAchievements = async (
   userId: string,
-  db: D1Database
+  db: D1Database,
+  timeZone?: string
 ): Promise<Achievement[]> => {
   const service = createAchievementService(db);
-  return service.checkAndAwardAchievements(userId);
+  return service.checkAndAwardAchievements(userId, timeZone);
 };

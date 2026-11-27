@@ -8,7 +8,6 @@ import { Achievement, UserAchievement } from '../types/index.js';
 export interface UserHabitStats {
   totalHabits: number;
   totalCompletions: number;
-  longestStreak: number;
   currentStreaks: number[];
   activeDays: number;
   perfectDays: number;
@@ -142,7 +141,6 @@ export class AchievementRepository {
     const [
       habitCount,
       completions,
-      longestStreak,
       currentStreaks,
       activeDays,
       perfectDays,
@@ -157,11 +155,6 @@ export class AchievementRepository {
       this.db
         .prepare(
           `SELECT COUNT(*) as count FROM trackers WHERE user_id = ? AND deleted_at IS NULL`
-        )
-        .bind(userId),
-      this.db
-        .prepare(
-          `SELECT MAX(longest_streak) as maxStreak FROM habits WHERE user_id = ? AND deleted_at IS NULL`
         )
         .bind(userId),
       this.db
@@ -239,7 +232,6 @@ export class AchievementRepository {
     return {
       totalHabits: (first(habitCount).count as number) || 0,
       totalCompletions: (first(completions).count as number) || 0,
-      longestStreak: (first(longestStreak).maxStreak as number) || 0,
       currentStreaks: (
         (currentStreaks.results ?? []) as { streak: number }[]
       ).map((row) => row.streak),

@@ -13,6 +13,7 @@ import {
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { SWRConfig } from 'swr';
+import { DateContext, type DateContextProps } from '@app/providers/DateContext';
 import { achievementApi } from '../../api';
 import { useAchievements } from '../useAchievements';
 import type { Achievement, AchievementStats } from '../../types/Achievement';
@@ -71,6 +72,22 @@ describe('useAchievements', () => {
     expect(result.current.error).toBeNull();
   });
 
+  it("asks for the achievements in the user's time zone", async () => {
+    const inLosAngeles = ({ children }: { children: ReactNode }) => (
+      <DateContext.Provider
+        value={{ timeZone: 'America/Los_Angeles' } as DateContextProps}
+      >
+        {wrapper({ children })}
+      </DateContext.Provider>
+    );
+    const { result } = renderHook(() => useAchievements(), {
+      wrapper: inLosAngeles,
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(getAllAchievements).toHaveBeenCalledWith('America/Los_Angeles');
+  });
+
   it('reports an error, and no achievements, when loading fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     getAllAchievements.mockRejectedValue(new Error('Network Error'));
@@ -96,11 +113,13 @@ describe('useAchievements', () => {
   });
 
   it('fetches again after a check awards new achievements', async () => {
-    vi.spyOn(achievementApi, 'checkAchievements').mockResolvedValue({
-      message: 'checked',
-      newAchievements: [],
-      count: 1,
-    });
+    const checkAchievements = vi
+      .spyOn(achievementApi, 'checkAchievements')
+      .mockResolvedValue({
+        message: 'checked',
+        newAchievements: [],
+        count: 1,
+      });
     const { result } = renderHook(() => useAchievements(), { wrapper });
     await waitFor(() => expect(result.current.loading).toBe(false));
 
@@ -109,6 +128,9 @@ describe('useAchievements', () => {
       checked = await result.current.checkNewAchievements();
     });
 
+    expect(checkAchievements).toHaveBeenCalledWith(
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+    );
     expect(checked).toEqual({
       message: 'checked',
       newAchievements: [],

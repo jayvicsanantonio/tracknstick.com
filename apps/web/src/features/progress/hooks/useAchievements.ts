@@ -1,8 +1,9 @@
 // Hook for managing achievements data
 // Provides data fetching and state management for achievements
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 import useSWR from 'swr';
+import { DateContext } from '@app/providers/DateContext';
 import { achievementApi, achievementsKey, achievementStatsKey } from '../api';
 import {
   Achievement,
@@ -15,14 +16,17 @@ const logLoadError = (err: unknown) => {
 };
 
 export function useAchievements() {
+  const dateContext = useContext(DateContext);
+  const timeZone =
+    dateContext?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const {
     data: achievements,
     error: achievementsError,
     isLoading: achievementsLoading,
     mutate: mutateAchievements,
   } = useSWR<Achievement[], Error>(
-    achievementsKey,
-    () => achievementApi.getAllAchievements(),
+    [achievementsKey, timeZone],
+    () => achievementApi.getAllAchievements(timeZone),
     { onError: logLoadError },
   );
   const {
@@ -45,7 +49,7 @@ export function useAchievements() {
   const checkNewAchievements =
     useCallback(async (): Promise<AchievementCheckResponse | null> => {
       try {
-        const result = await achievementApi.checkAchievements();
+        const result = await achievementApi.checkAchievements(timeZone);
 
         // Refresh data if new achievements were awarded
         if (result.count > 0) {
@@ -57,7 +61,7 @@ export function useAchievements() {
         console.error('Error checking achievements:', err);
         return null;
       }
-    }, [refetch]);
+    }, [refetch, timeZone]);
 
   // Refresh achievements data
   const refresh = useCallback(() => {

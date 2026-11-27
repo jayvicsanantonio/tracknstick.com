@@ -1,9 +1,10 @@
 // The full list of achievements on the progress page, filtered by category.
-// Earned ones come first, then those under way, then those not started.
+// Earned ones come first, newest first, then those under way, closest first, then those not started.
 
 import { memo } from 'react';
 import { Trophy } from 'lucide-react';
 import EmptyState from '@shared/components/feedback/EmptyState';
+import { parseUTCTimestamp } from '@shared/utils/date/formatDate';
 import { Achievement } from '../types/Achievement';
 import AchievementCard from './AchievementCard';
 import AchievementCategoryTabs from './AchievementCategoryTabs';
@@ -12,6 +13,13 @@ interface ProgressAchievementsProps {
   achievements: Achievement[];
   selectedCategory?: string;
   onCategoryChange?: (category: string) => void;
+}
+
+/** When an achievement was earned, for ordering; 0 when there is no date. */
+function earnedTime(achievement: Achievement): number {
+  return achievement.earnedAt
+    ? parseUTCTimestamp(achievement.earnedAt).getTime()
+    : 0;
 }
 
 const ProgressAchievements = memo(function ProgressAchievements({
@@ -28,14 +36,20 @@ const ProgressAchievements = memo(function ProgressAchievements({
         );
 
   // Group achievements by earned/unearned
-  const earnedAchievements = filteredAchievements.filter(
-    (achievement) => achievement.isEarned,
-  );
+  const earnedAchievements = filteredAchievements
+    .filter((achievement) => achievement.isEarned)
+    .sort((a, b) => earnedTime(b) - earnedTime(a));
   // Under way once anything counts toward it; otherwise not started yet.
-  const inProgressAchievements = filteredAchievements.filter(
-    (achievement) =>
-      !achievement.isEarned && (achievement.progress?.currentValue ?? 0) > 0,
-  );
+  const inProgressAchievements = filteredAchievements
+    .filter(
+      (achievement) =>
+        !achievement.isEarned && (achievement.progress?.currentValue ?? 0) > 0,
+    )
+    .sort(
+      (a, b) =>
+        (b.progress?.progressPercentage ?? 0) -
+        (a.progress?.progressPercentage ?? 0),
+    );
   const notStartedAchievements = filteredAchievements.filter(
     (achievement) =>
       !achievement.isEarned && (achievement.progress?.currentValue ?? 0) === 0,

@@ -56,13 +56,17 @@ habit due was completed.
 
 | Method | Path | Request | Response (contracts) |
 | --- | --- | --- | --- |
-| GET | `/` | none | `achievementListResponseSchema` |
+| GET | `/` | query `achievementsQuerySchema` | `achievementListResponseSchema` |
 | GET | `/earned` | none | `earnedAchievementsResponseSchema` |
 | GET | `/stats` | none | `achievementStatsResponseSchema` |
-| POST | `/check` | none | `checkAchievementsResponseSchema` |
+| POST | `/check` | query `achievementsQuerySchema` | `checkAchievementsResponseSchema` |
 
 `POST /check` awards any achievement the user has newly earned and returns
 those. The catalogue comes from migration `0003_seed_achievements.sql`.
+Streak achievements count the same streak as `/progress`: days on which every
+habit due was completed, in the `timeZone` given. `GET /` leaves out any
+achievement with no metric in `services/achievementMetrics.ts`, which could
+never be earned, unless the user already holds it.
 
 ## Chat: `/api/v1/chat`
 

@@ -4,17 +4,21 @@
 import { Context } from 'hono';
 import type { AppEnv } from '../types/index.js';
 import * as achievementService from '../services/achievement.service.js';
+import { achievementsQuerySchema } from '@tracknstick/contracts';
+import { getValidated } from '../middlewares/validateRequest.js';
 
 /**
  * Get all achievements for the authenticated user with progress
  */
 export const getAllAchievements = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
+  const { timeZone } = getValidated(c, 'query', achievementsQuerySchema);
 
   try {
     const achievements = await achievementService.getAllAchievementsForUser(
       userId,
-      c.env.DB
+      c.env.DB,
+      timeZone
     );
     return c.json({ achievements });
   } catch (error) {
@@ -67,11 +71,13 @@ export const getUserEarnedAchievements = async (c: Context<AppEnv>) => {
  */
 export const checkAchievements = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
+  const { timeZone } = getValidated(c, 'query', achievementsQuerySchema);
 
   try {
     const newlyEarned = await achievementService.checkAndAwardAchievements(
       userId,
-      c.env.DB
+      c.env.DB,
+      timeZone
     );
 
     const response = newlyEarned.map((achievement) => ({

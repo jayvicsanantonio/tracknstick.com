@@ -11,9 +11,12 @@ import {
   getIconBackgroundClass,
 } from '../utils/achievementIcons';
 
-// Category and type labels share one subtle tinted style; the brand color marks earned.
-const CHIP =
-  'rounded-full bg-(--color-brand-primary)/10 px-2 py-0.5 text-xs text-(--color-text-secondary)';
+// An earned date reads as "Nov 18, 2026" in the user's own calendar day.
+const EARNED_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+};
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -22,16 +25,7 @@ interface AchievementCardProps {
 const AchievementCard = memo(function AchievementCard({
   achievement,
 }: AchievementCardProps) {
-  const {
-    name,
-    description,
-    icon,
-    isEarned,
-    earnedAt,
-    progress,
-    category,
-    type,
-  } = achievement;
+  const { name, description, icon, isEarned, earnedAt, progress } = achievement;
 
   return (
     <div
@@ -60,82 +54,36 @@ const AchievementCard = memo(function AchievementCard({
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className="mb-2 flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-(--color-foreground)">
-              {name}
-            </h4>
+          <h4 className="mb-1 text-sm font-semibold text-(--color-foreground)">
+            {name}
+          </h4>
 
-            {isEarned && (
-              <div className="shrink-0 rounded-full bg-(--color-brand-primary) px-2 py-1 text-xs font-medium text-(--color-primary-foreground)">
-                ✓ Earned
-              </div>
-            )}
-          </div>
-
-          <p className="mb-3 text-xs text-(--color-text-secondary)">
-            {description}
-          </p>
+          <p className="text-xs text-(--color-text-secondary)">{description}</p>
 
           {/* Progress Bar */}
           {!isEarned && progress && (
-            <ProgressBar
-              current={progress.currentValue}
-              target={progress.targetValue}
-              percentage={progress.progressPercentage}
-            />
+            <div className="mt-3">
+              <ProgressBar
+                current={progress.currentValue}
+                target={progress.targetValue}
+                percentage={progress.progressPercentage}
+              />
+            </div>
           )}
 
-          {/* Achievement Metadata */}
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className={CHIP}>{getCategoryLabel(category)}</span>
-              <span className={CHIP}>{getTypeLabel(type)}</span>
-            </div>
-
-            {isEarned && earnedAt && (
-              <span className="text-xs text-(--color-text-secondary)">
-                {parseUTCTimestamp(earnedAt).toLocaleDateString()}
-              </span>
-            )}
-          </div>
+          {isEarned && earnedAt && (
+            <p className="mt-2 text-xs font-medium text-(--color-brand-text) dark:text-(--color-brand-text-light)">
+              Earned{' '}
+              {parseUTCTimestamp(earnedAt).toLocaleDateString(
+                undefined,
+                EARNED_DATE_OPTIONS,
+              )}
+            </p>
+          )}
         </div>
       </div>
     </div>
   );
 });
-
-function getCategoryLabel(category: string): string {
-  switch (category) {
-    case 'getting_started':
-      return 'Getting Started';
-    case 'consistency':
-      return 'Consistency';
-    case 'dedication':
-      return 'Dedication';
-    case 'milestones':
-      return 'Milestones';
-    default:
-      return category;
-  }
-}
-
-function getTypeLabel(type: string): string {
-  switch (type) {
-    case 'habit_creation':
-      return 'Creation';
-    case 'streak':
-      return 'Streak';
-    case 'completion':
-      return 'Completion';
-    case 'special_achievement':
-      return 'Special';
-    case 'perfect_completion':
-      return 'Perfect';
-    case 'activity_tracking':
-      return 'Activity';
-    default:
-      return type;
-  }
-}
 
 export default AchievementCard;

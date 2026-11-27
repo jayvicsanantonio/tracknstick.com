@@ -10,10 +10,12 @@ import {
 } from '../types/Achievement';
 
 export const achievementApi = {
-  // Get all achievements with progress for the current user
-  async getAllAchievements(): Promise<Achievement[]> {
+  // Get all achievements with progress for the current user. Streaks count
+  // days in the given time zone.
+  async getAllAchievements(timeZone: string): Promise<Achievement[]> {
     const response = await axiosInstance.get<{ achievements: Achievement[] }>(
       '/api/v1/achievements',
+      { params: { timeZone } },
     );
     return response.data.achievements;
   },
@@ -34,10 +36,13 @@ export const achievementApi = {
     return response.data;
   },
 
-  // Check for new achievements and award them to the user
-  async checkAchievements(): Promise<AchievementCheckResponse> {
+  // Check for new achievements and award them to the user. Streaks count
+  // days in the given time zone.
+  async checkAchievements(timeZone: string): Promise<AchievementCheckResponse> {
     const response = await axiosInstance.post<AchievementCheckResponse>(
       '/api/v1/achievements/check',
+      undefined,
+      { params: { timeZone } },
     );
     return response.data;
   },
