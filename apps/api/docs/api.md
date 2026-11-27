@@ -63,8 +63,10 @@ habit due was completed.
 
 `POST /check` awards any achievement the user has newly earned and returns
 those. The catalogue comes from migration `0003_seed_achievements.sql`.
-Streak achievements count the same streak as `/progress`: days on which every
-habit due was completed, in the `timeZone` given. `GET /` leaves out any
+Achievements measure the same figures as `/progress/summary`, every day in
+the `timeZone` given: the streak (days on which every habit due was
+completed), active days, perfect days, and the most habits done in one day.
+`GET /` leaves out any
 achievement with no metric in `services/achievementMetrics.ts`, which could
 never be earned, unless the user already holds it. An achievement that is
 one of a series names its `track` (`TRACKS` in the same file): check-ins,

@@ -46,7 +46,7 @@ import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import PageHeader from '@/features/layout/components/PageHeader';
 import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
 import { useAchievements } from '@/features/progress/hooks/useAchievements';
-import { checkInHint } from '@/features/progress/utils/achievementHint';
+import { achievementHint as describeAchievementHint } from '@/features/progress/utils/achievementHint';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
 import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
@@ -220,10 +220,9 @@ export default function DailyHabitTracker() {
 
   const doneCount = habits.filter((habit) => habit.completed).length;
 
-  // Each habit checked off is a check-in, so the habits left can earn the
-  // next check-ins level. Skipped without DateContext, as the summary is.
+  // The habits left on the day shown can earn an achievement: an active day,
+  // check-ins, or a perfect day. Skipped without DateContext, as the summary is.
   const { achievements } = useAchievements(Boolean(dateContext));
-  const achievementHint = checkInHint(achievements, habits.length - doneCount);
   const hasNoHabits =
     !isLoading &&
     habits.length === 0 &&
@@ -234,6 +233,12 @@ export default function DailyHabitTracker() {
   const isToday = dateContext
     ? dateContext.date.toDateString() === dateContext.currentDate.toDateString()
     : true;
+
+  const achievementHint = describeAchievementHint(achievements, {
+    habitsLeft: habits.length - doneCount,
+    doneCount,
+    isToday,
+  });
 
   // On a day with nothing due, the next day that has something.
   const nextDueDate = useMemo(

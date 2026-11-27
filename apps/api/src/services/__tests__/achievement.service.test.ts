@@ -1,11 +1,12 @@
 // Runs the achievement service against a real local D1 database.
-// Covers which streak the streak achievements count, the user's time zone, and hiding unmeasurable achievements.
+// Covers which streak and days the achievements count, the user's time zone, and hiding unmeasurable achievements.
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
 import { env } from 'cloudflare:workers';
 import { AchievementService } from '../achievement.service.js';
 import { UNMEASURABLE } from '../achievementMetrics.js';
+import { getUserProgressSummary } from '../../repositories/tracker.repository.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const EVERY_DAY = 'Mon,Tue,Wed,Thu,Fri,Sat,Sun';
@@ -163,5 +164,83 @@ describe('AchievementService', () => {
     expect(byKey.get('streak_14')?.track).toBe('streak');
     expect(byKey.get('social_butterfly')).toBeDefined();
     expect(byKey.get('social_butterfly')).not.toHaveProperty('track');
+  });
+
+  it("counts active days, perfect days and the most habits in one day in the user's time zone", async () => {
+    const userId = 'user_ach_days_time_zone';
+    await addUser(userId);
+    const read = await addHabit(userId, 'Read');
+    const run = await addHabit(userId, 'Run');
+
+    // In Los Angeles both habits are done on each of three days. In UTC each
+    // pair lands on two days: four active days, two of them with both.
+    for (const day of [4, 3, 2]) {
+      await addCompletion(userId, read, `${utcDateDaysAgo(day)}T20:00:00.000Z`);
+      await addCompletion(
+        userId,
+        run,
+        `${utcDateDaysAgo(day - 1)}T03:00:00.000Z`
+      );
+    }
+
+    const value = (
+      achievements: { key: string; progress?: { currentValue: number } }[],
+      key: string
+    ) => achievements.find((a) => a.key === key)?.progress?.currentValue;
+    const inLosAngeles = await service.getAllAchievementsForUser(
+      userId,
+      'America/Los_Angeles'
+    );
+    const inUtc = await service.getAllAchievementsForUser(userId, 'UTC');
+
+    expect(value(inLosAngeles, 'active_30_days')).toBe(3);
+    expect(value(inUtc, 'active_30_days')).toBe(4);
+    expect(value(inLosAngeles, 'perfect_month')).toBe(3);
+    expect(value(inUtc, 'perfect_month')).toBe(2);
+  });
+
+  it("counts the most habits done in one day in the user's time zone", async () => {
+    const userId = 'user_ach_one_day_time_zone';
+    await addUser(userId);
+    const read = await addHabit(userId, 'Read');
+    const run = await addHabit(userId, 'Run');
+    // One Los Angeles day: midday and evening, which are two days in UTC.
+    await addCompletion(userId, read, `${utcDateDaysAgo(2)}T20:00:00.000Z`);
+    await addCompletion(userId, run, `${utcDateDaysAgo(1)}T03:00:00.000Z`);
+
+    const maximalist = async (timeZone: string) =>
+      (await service.getAllAchievementsForUser(userId, timeZone)).find(
+        (a) => a.key === 'maximalist'
+      )?.progress?.currentValue;
+
+    expect(await maximalist('America/Los_Angeles')).toBe(2);
+    expect(await maximalist('UTC')).toBe(1);
+  });
+
+  it('measures the same days and streaks as the progress summary', async () => {
+    const userId = 'user_ach_matches_summary';
+    await addUser(userId);
+    const read = await addHabit(userId, 'Read');
+    const run = await addHabit(userId, 'Run');
+    for (const day of [6, 5, 4, 2, 1]) {
+      await addCompletion(userId, read, `${utcDateDaysAgo(day)}T15:00:00.000Z`);
+    }
+    for (const day of [6, 5, 1]) {
+      // Evening in Tokyo, while Read at 15:00 UTC is past midnight there.
+      await addCompletion(userId, run, `${utcDateDaysAgo(day)}T10:00:00.000Z`);
+    }
+    const timeZone = 'Asia/Tokyo';
+
+    const [achievements, summary] = await Promise.all([
+      service.getAllAchievementsForUser(userId, timeZone),
+      getUserProgressSummary(db, userId, timeZone),
+    ]);
+    const value = (key: string) =>
+      achievements.find((a) => a.key === key)?.progress?.currentValue;
+
+    expect(value('active_30_days')).toBe(summary.activeDays);
+    expect(value('perfect_month')).toBe(summary.perfectDays);
+    expect(value('streak_7')).toBe(summary.longestStreak);
+    expect(value('completions_50')).toBe(summary.totalCompletions);
   });
 });

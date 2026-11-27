@@ -242,6 +242,43 @@ describe('DailyHabitTracker', () => {
     mockAchievements.list = [];
   });
 
+  it("says when today's first check-in earns the next active-days level", () => {
+    mockAchievements.list = [
+      {
+        id: 'active_30_days',
+        key: 'active_30_days',
+        name: 'Monthly Active',
+        description: 'Be active for 30 days',
+        type: 'special_achievement',
+        category: 'dedication',
+        track: 'active_days',
+        requirementType: 'days',
+        requirementValue: 30,
+        isEarned: false,
+        progress: {
+          achievementId: 0,
+          isEarned: false,
+          currentValue: 29,
+          targetValue: 30,
+          progressPercentage: 97,
+        },
+      },
+    ];
+    mockHabits({
+      habits: [
+        habit({ id: '1', name: 'Workout', completed: false }),
+        habit({ id: '2', name: 'Read', completed: false }),
+      ],
+    });
+
+    renderTracker();
+
+    expect(
+      screen.getByText('Your first check-in today earns Monthly Active'),
+    ).toBeInTheDocument();
+    mockAchievements.list = [];
+  });
+
   it('shows a check badge on completed habits only', () => {
     mockHabits({
       habits: [
