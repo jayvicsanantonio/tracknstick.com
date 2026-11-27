@@ -64,6 +64,19 @@ export const ACHIEVEMENT_ICONS = [
   'Zap',
 ] as const;
 
+/**
+ * The series an achievement belongs to, each a ladder of targets on one
+ * count: check-ins, the best streak, active days, perfect days, and habits
+ * created. An achievement with no track is a one-off.
+ */
+export const ACHIEVEMENT_TRACKS = [
+  'check_ins',
+  'streak',
+  'active_days',
+  'perfect_days',
+  'habits',
+] as const;
+
 export const ACHIEVEMENT_REQUIREMENT_TYPES = [
   'count',
   'streak',
@@ -83,7 +96,8 @@ export const achievementProgressSchema = z.object({
 /**
  * One achievement from the catalogue, with the signed-in user's standing.
  * `earnedAt` is present once earned; `progress` is present while it is not,
- * unless the achievement has no measurable metric.
+ * unless the achievement has no measurable metric. `track` is present when it
+ * is one of a series.
  */
 export const achievementSchema = z.object({
   id: z.string(),
@@ -93,6 +107,7 @@ export const achievementSchema = z.object({
   icon: z.enum(ACHIEVEMENT_ICONS).optional(),
   type: z.enum(ACHIEVEMENT_TYPES),
   category: z.enum(ACHIEVEMENT_CATEGORIES),
+  track: z.enum(ACHIEVEMENT_TRACKS).optional(),
   requirementType: z.enum(ACHIEVEMENT_REQUIREMENT_TYPES),
   requirementValue: z.number(),
   requirementData: z.unknown().optional(),
@@ -167,6 +182,7 @@ export const checkAchievementsResponseSchema = z.object({
 
 
 export type AchievementIcon = (typeof ACHIEVEMENT_ICONS)[number];
+export type AchievementTrack = (typeof ACHIEVEMENT_TRACKS)[number];
 export type AchievementProgress = z.infer<typeof achievementProgressSchema>;
 export type AchievementResponse = z.infer<typeof achievementSchema>;
 export type AchievementListResponse = z.infer<

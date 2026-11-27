@@ -1,5 +1,5 @@
 // Pins the colour contracts of both theme palettes in src/styles/index.css.
-// Body text tokens meet WCAG AA contrast, and the destructive colour reads as danger.
+// Body text tokens meet WCAG AA contrast, the destructive colour reads as danger, and medal icons stay visible.
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -82,5 +82,35 @@ describe('dark palette', () => {
     expect(
       contrast(get(dark, 'color-destructive'), get(dark, 'color-background')),
     ).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe.each([
+  ['light', light],
+  ['dark', dark],
+])('%s palette medals', (_theme, palette) => {
+  it.each([
+    'color-medal-bronze',
+    'color-medal-silver',
+    'color-medal-gold',
+    'color-medal-platinum',
+  ])('keeps a medal icon visible on %s', (name) => {
+    expect(
+      contrast(get(palette, 'color-medal-foreground'), get(palette, name)),
+    ).toBeGreaterThanOrEqual(3);
+  });
+
+  it('keeps each medal visible on cards', () => {
+    for (const name of [
+      'color-medal-bronze',
+      'color-medal-silver',
+      'color-medal-gold',
+      'color-medal-platinum',
+    ]) {
+      expect(
+        contrast(get(palette, name), get(palette, 'color-card')),
+        name,
+      ).toBeGreaterThanOrEqual(1.5);
+    }
   });
 });

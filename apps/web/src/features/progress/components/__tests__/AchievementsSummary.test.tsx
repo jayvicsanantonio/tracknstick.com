@@ -129,6 +129,42 @@ describe('AchievementsSummary', () => {
     expect(onSelectNextUp).toHaveBeenCalledTimes(1);
   });
 
+  it('lists only the next level of each track', () => {
+    renderSummary({
+      achievements: [
+        achievement('2', 'Half Century', {
+          type: 'completion',
+          track: 'check_ins',
+          requirementValue: 50,
+          ...progress(40, 50),
+        }),
+        achievement('3', 'Century Club', {
+          type: 'completion',
+          track: 'check_ins',
+          requirementValue: 100,
+          ...progress(40, 100),
+        }),
+        achievement('4', 'Monthly Active', {
+          track: 'active_days',
+          requirementType: 'days',
+          requirementValue: 30,
+          ...progress(19, 30),
+        }),
+        achievement('5', 'Social Butterfly', progress(0, 20)),
+      ],
+    });
+
+    const nextUp = screen.getByRole('list', { name: 'Next up' });
+    const names = within(nextUp)
+      .getAllByRole('listitem')
+      .map((item) => item.querySelector('p')?.textContent);
+    expect(names).toEqual([
+      'Half Century',
+      'Monthly Active',
+      'Social Butterfly',
+    ]);
+  });
+
   it('puts the easy first wins first when nothing has progress yet', () => {
     renderSummary({
       achievements: [

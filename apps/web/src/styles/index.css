@@ -81,6 +81,11 @@
     --color-success: hsl(327, 73%, 56%);
     --color-success-light: hsl(327, 73%, 97%);
     --color-success-text: hsl(326, 84%, 14%);
+    --color-medal-bronze: hsl(28, 62%, 52%);
+    --color-medal-silver: hsl(215, 14%, 66%);
+    --color-medal-gold: hsl(44, 90%, 50%);
+    --color-medal-platinum: hsl(190, 45%, 66%);
+    --color-medal-foreground: hsl(30, 35%, 10%);
   }
 
   .dark {
@@ -128,6 +133,11 @@
     --color-success: hsl(160, 84%, 55%);
     --color-success-light: hsl(155, 58%, 14%);
     --color-success-text: hsl(152, 72%, 77%);
+    --color-medal-bronze: hsl(28, 62%, 56%);
+    --color-medal-silver: hsl(215, 16%, 72%);
+    --color-medal-gold: hsl(44, 90%, 56%);
+    --color-medal-platinum: hsl(190, 50%, 74%);
+    --color-medal-foreground: hsl(30, 35%, 8%);
   }
 }
 

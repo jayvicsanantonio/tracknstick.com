@@ -5,6 +5,7 @@ import type { D1Database } from '@cloudflare/workers-types';
 import { AchievementRepository } from '../repositories/achievement.repository.js';
 import { getUserStreaks } from '../repositories/tracker.repository.js';
 import {
+  TRACKS,
   isMeasurable,
   measure,
   type UserStatsSnapshot,
@@ -60,6 +61,7 @@ export class AchievementService {
         icon: achievement.icon,
         type: achievement.type,
         category: achievement.category,
+        ...(TRACKS[achievement.key] ? { track: TRACKS[achievement.key] } : {}),
         requirementType: achievement.requirementType,
         requirementValue: achievement.requirementValue,
         requirementData: achievement.requirementData

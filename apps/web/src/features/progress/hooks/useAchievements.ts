@@ -1,7 +1,7 @@
 // Hook for managing achievements data
 // Provides data fetching and state management for achievements
 
-import { useState, useCallback, useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import useSWR from 'swr';
 import { DateContext } from '@app/providers/DateContext';
 import { achievementApi, achievementsKey, achievementStatsKey } from '../api';
@@ -77,25 +77,5 @@ export function useAchievements() {
     error: loadFailed ? 'Failed to load achievements. Please try again.' : null,
     checkNewAchievements,
     refresh,
-  };
-}
-
-export function useAchievementProgress() {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-
-  const filterAchievementsByCategory = useCallback(
-    (achievements: Achievement[], category: string) => {
-      if (category === 'all') return achievements;
-      return achievements.filter(
-        (achievement) => achievement.category === category,
-      );
-    },
-    [],
-  );
-
-  return {
-    selectedCategory,
-    setSelectedCategory,
-    filterAchievementsByCategory,
   };
 }

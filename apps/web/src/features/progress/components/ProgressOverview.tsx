@@ -23,10 +23,7 @@ import { triggerHaptic } from '@shared/utils/haptics';
 import { cn } from '@shared/utils/utils';
 import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressSummary from '../hooks/useProgressSummary';
-import {
-  useAchievementProgress,
-  useAchievements,
-} from '../hooks/useAchievements';
+import { useAchievements } from '../hooks/useAchievements';
 
 // Unified brand-harmonized elevated panel surface across phone, tablet, and desktop.
 const PANEL = 'ios-tracker-card rounded-[26px] p-5 sm:p-6';
@@ -62,7 +59,6 @@ const ProgressOverview = memo(function ProgressOverview() {
     error: achievementsError,
   } = useAchievements();
   useHoldSplash(isSummaryLoading || isHistoryLoading);
-  const { selectedCategory, setSelectedCategory } = useAchievementProgress();
 
   const loadFailed = Boolean(historyError ?? summaryError);
   // Before a first check-in, every all-time figure is zero; the page opens on
@@ -221,8 +217,7 @@ const ProgressOverview = memo(function ProgressOverview() {
               >
                 <ProgressAchievements
                   achievements={achievements}
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={setSelectedCategory}
+                  currentStreak={currentStreak}
                 />
               </section>
             )}
@@ -252,7 +247,7 @@ const ProgressOverview = memo(function ProgressOverview() {
           }
         >
           <DialogDescription className="sr-only">
-            Browse all earned and in-progress achievements by category.
+            Every achievement track with its levels, and the one-off badges.
           </DialogDescription>
           <div
             id="all-achievements"
@@ -260,8 +255,7 @@ const ProgressOverview = memo(function ProgressOverview() {
           >
             <ProgressAchievements
               achievements={achievements}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
+              currentStreak={currentStreak}
             />
           </div>
         </IosSheet>

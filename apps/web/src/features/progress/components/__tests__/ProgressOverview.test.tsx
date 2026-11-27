@@ -29,10 +29,6 @@ vi.mock('../../hooks/useAchievements', () => ({
     loading: false,
     error: null,
   }),
-  useAchievementProgress: () => ({
-    selectedCategory: 'all',
-    setSelectedCategory: vi.fn(),
-  }),
 }));
 // jsdom cannot lay out the chart; ProgressChart has tests of its own.
 vi.mock('../ProgressChart', () => ({

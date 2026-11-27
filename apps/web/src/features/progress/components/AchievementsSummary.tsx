@@ -8,6 +8,7 @@ import { cn } from '@shared/utils/utils';
 import { Achievement, AchievementStats } from '../types/Achievement';
 import { getAchievementIcon } from '../utils/achievementIcons';
 import { describeRemaining } from '../utils/achievementRemaining';
+import { groupAchievements } from '../utils/achievementTracks';
 
 /** How many unearned achievements the panel lists. */
 const NEXT_UP_COUNT = 3;
@@ -31,14 +32,19 @@ function target(achievement: Achievement): number {
 }
 
 /**
- * The unearned achievements furthest along, furthest first. Among those
+ * The unearned achievements furthest along, furthest first, taking only the
+ * next level of each track so one ladder cannot fill the list. Among those
  * equally far along, as when nothing is started, the Getting Started ones
  * and then the smallest targets come first, so a new user sees wins within
  * reach rather than a perfect month.
  */
 function nextUp(achievements: Achievement[]): Achievement[] {
-  return achievements
-    .filter((achievement) => !achievement.isEarned)
+  const { tracks, badges } = groupAchievements(achievements);
+  const candidates = [
+    ...tracks.flatMap((group) => (group.next ? [group.next] : [])),
+    ...badges.filter((badge) => !badge.isEarned),
+  ];
+  return candidates
     .sort(
       (a, b) =>
         (b.progress?.progressPercentage ?? 0) -
