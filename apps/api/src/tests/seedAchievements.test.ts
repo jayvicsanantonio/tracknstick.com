@@ -32,7 +32,18 @@ describe('the achievement seed migration', () => {
 
     expect(results).toHaveLength(44);
     expect(new Set(results.map((row) => row.key)).size).toBe(44);
-    expect(results.every((row) => row.isActive === 1)).toBe(true);
+    // The seed makes every row active; migration 0007 retires these four.
+    expect(
+      results
+        .filter((row) => row.isActive !== 1)
+        .map((row) => row.key)
+        .sort()
+    ).toEqual([
+      'habit_architect_advanced',
+      'habit_variety',
+      'minimalist',
+      'perfectionist',
+    ]);
 
     const firstHabit = await db
       .prepare(

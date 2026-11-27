@@ -1,4 +1,4 @@
-// Says what is left to earn an achievement, in the words of what it counts: "10 more check-ins".
+// Says what is left to earn an achievement, in the words of what it counts, and how far along it is.
 // A streak can only be reached by the run going on now, so streaks count from the current streak.
 
 import { plural } from '@shared/utils/plural';
@@ -53,6 +53,13 @@ export function describeRemaining(
     case 'habit_restart':
     case 'long_comeback':
       return null;
+    // A rate, not a count: the target, and the best 30 days once there are 30.
+    case 'completion_rate':
+      return currentValue > 0
+        ? `${targetValue}% over 30 days in a row, best so far ${currentValue}%`
+        : `${targetValue}% over 30 days in a row`;
+    case 'achievement_count':
+      return `${left} more ${plural(left, 'achievement')}`;
   }
 
   if (achievement.type === 'completion') {
@@ -65,4 +72,12 @@ export function describeRemaining(
     return `${left} more active ${plural(left, 'day')}`;
   }
   return `${currentValue} of ${targetValue}`;
+}
+
+/** How far along an achievement is: "40 / 50", or "72% / 90%" for a rate. */
+export function formatProgress(achievement: Achievement): string | null {
+  const { progress } = achievement;
+  if (!progress) return null;
+  const unit = achievement.requirementType === 'percentage' ? '%' : '';
+  return `${progress.currentValue}${unit} / ${progress.targetValue}${unit}`;
 }

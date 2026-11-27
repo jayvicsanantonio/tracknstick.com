@@ -13,6 +13,7 @@ import AchievementMedal from './AchievementMedal';
 import { useAchievements } from '../hooks/useAchievements';
 import useProgressSummary from '../hooks/useProgressSummary';
 import { describeCelebration } from '../utils/achievementCelebration';
+import { formatProgress } from '../utils/achievementRemaining';
 import { getAchievementIcon } from '../utils/achievementIcons';
 
 interface CelebrationSheetProps {
@@ -95,7 +96,7 @@ const CelebrationSheet = memo(function CelebrationSheet({
               </span>
               {next.progress && (
                 <span className="shrink-0 text-xs font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
-                  {next.progress.currentValue} / {next.progress.targetValue}
+                  {formatProgress(next)}
                 </span>
               )}
             </div>

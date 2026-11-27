@@ -25,6 +25,9 @@ fails if a file here is not named like `0002_add_something.sql`.
   Early Bird, Night Owl and Weekend Warrior, which count days, not runs.
 - `0006_add_tracker_tapped_at.sql` - Adds `trackers.tapped_at`, when the app
   says a check-in was tapped, so one sent later keeps its time of day.
+- `0007_settle_hidden_achievements.sql` - Retires Perfectionist, Minimalist,
+  Variety Seeker and the second Habit Architect, and gives Habit Guru and
+  Habit Legend clear targets.
 
 ## Changing the Schema
 

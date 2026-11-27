@@ -12,6 +12,7 @@ import NewMark from './NewMark';
 import { getAchievementIcon } from '../utils/achievementIcons';
 import { groupAchievements } from '../utils/achievementTracks';
 import { formatEarnedDate } from '../utils/formatEarnedDate';
+import { formatProgress } from '../utils/achievementRemaining';
 
 const SECTION_HEADING =
   'mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase';
@@ -113,9 +114,7 @@ const ProgressAchievements = memo(function ProgressAchievements({
                   <span className="mt-1 block text-xs font-medium text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
                     {badge.isEarned && badge.earnedAt
                       ? formatEarnedDate(badge.earnedAt)
-                      : badge.progress
-                        ? `${badge.progress.currentValue} / ${badge.progress.targetValue}`
-                        : null}
+                      : formatProgress(badge)}
                   </span>
                 </div>
               </li>

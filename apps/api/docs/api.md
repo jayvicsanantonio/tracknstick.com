@@ -68,7 +68,10 @@ the `timeZone` given: the streak (days on which every habit due was
 completed), active days, perfect days, the most habits done in one day,
 days with a check-in tapped before 8 AM, or at 10 PM or later, on the day it
 is for (`tappedAt` on the tracker request, else when the request arrived),
-weekend days, and returns after a break.
+weekend days, returns after a break, and the best completion rate over any
+30 days in a row. Habit Legend counts the other achievements earned, so a
+check judges it last. Achievements retired by a migration (`is_active = 0`)
+are never listed.
 `GET /` leaves out any
 achievement with no metric in `services/achievementMetrics.ts`, which could
 never be earned, unless the user already holds it. An achievement that is

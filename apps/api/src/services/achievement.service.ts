@@ -16,6 +16,15 @@ import type {
 } from '@tracknstick/contracts';
 import { Achievement, UserAchievement } from '../types/index.js';
 
+/** The achievement that counts the others, so it is judged after them. */
+const HABIT_LEGEND = 'habit_legend';
+
+/** Achievements earned, Habit Legend aside. */
+function countEarned(userAchievements: UserAchievement[]): number {
+  return userAchievements.filter((ua) => ua.achievement?.key !== HABIT_LEGEND)
+    .length;
+}
+
 export class AchievementService {
   private repository: AchievementRepository;
   private db: D1Database;
@@ -34,11 +43,15 @@ export class AchievementService {
     userId: string,
     timeZone = 'UTC'
   ): Promise<AchievementResponse[]> {
-    const [allAchievements, userAchievements, snapshot] = await Promise.all([
+    const [allAchievements, userAchievements, measured] = await Promise.all([
       this.repository.getAllAchievements(),
       this.repository.getUserAchievements(userId),
       this.buildSnapshot(userId, timeZone),
     ]);
+    const snapshot: UserStatsSnapshot = {
+      ...measured,
+      earnedAchievements: countEarned(userAchievements),
+    };
 
     const userAchievementMap = new Map(
       userAchievements.map((ua) => [ua.achievementId, ua])
@@ -90,18 +103,30 @@ export class AchievementService {
       userAchievements.map((ua) => ua.achievementId)
     );
 
-    // One snapshot for the whole pass: nothing in the evaluation path reads
-    // user_achievements, so awarding cannot change what the rules measure.
-    const snapshot = await this.buildSnapshot(userId, timeZone);
+    // One read of the user's habits for the whole pass. Only Habit Legend
+    // reads what is earned, so it is judged last, counting what this pass
+    // has just awarded too.
+    const measured = await this.buildSnapshot(userId, timeZone);
+    let earnedAchievements = countEarned(userAchievements);
+    const ordered = [
+      ...allAchievements.filter(
+        (achievement) => achievement.key !== HABIT_LEGEND
+      ),
+      ...allAchievements.filter(
+        (achievement) => achievement.key === HABIT_LEGEND
+      ),
+    ];
 
     const newlyEarned: Achievement[] = [];
 
-    for (const achievement of allAchievements) {
+    for (const achievement of ordered) {
       if (earnedAchievementIds.has(achievement.id)) continue;
 
+      const snapshot = { ...measured, earnedAchievements };
       if (this.evaluateAchievement(achievement, snapshot)) {
         await this.repository.earnAchievement(userId, achievement.id);
         newlyEarned.push(achievement);
+        if (achievement.key !== HABIT_LEGEND) earnedAchievements += 1;
       }
     }
 
@@ -117,7 +142,7 @@ export class AchievementService {
   private async buildSnapshot(
     userId: string,
     timeZone: string
-  ): Promise<UserStatsSnapshot> {
+  ): Promise<Omit<UserStatsSnapshot, 'earnedAchievements'>> {
     const [stats, lifetime] = await Promise.all([
       this.repository.getUserHabitStats(userId),
       getUserLifetimeStats(this.db, userId, timeZone),
@@ -135,6 +160,7 @@ export class AchievementService {
       weekendDays: lifetime.weekendDays,
       habitComebacks: lifetime.habitComebacks,
       longComebacks: lifetime.longComebacks,
+      bestMonthRate: lifetime.bestMonthRate,
     };
   }
 

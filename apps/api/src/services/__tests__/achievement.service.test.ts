@@ -138,17 +138,29 @@ describe('AchievementService', () => {
   it('leaves out achievements it cannot measure, unless already earned', async () => {
     const userId = 'user_ach_unmeasurable';
     await addUser(userId);
-    await earn(userId, 'habit_legend');
+    // Active achievements with no metric, as a new catalogue row would be
+    // before its metric is written; the catalogue itself has none left.
+    for (const key of ['test_unmeasured_earned', 'test_unmeasured']) {
+      await db
+        .prepare(
+          `INSERT INTO achievements
+             (key, name, description, icon, type, category,
+              requirement_type, requirement_value, is_active)
+           VALUES (?, ?, 'No metric yet', 'Star', 'special_achievement',
+                   'milestones', 'count', 1, 1)`
+        )
+        .bind(key, key)
+        .run();
+    }
+    await earn(userId, 'test_unmeasured_earned');
 
     const achievements = await service.getAllAchievementsForUser(userId, 'UTC');
     const keys = achievements.map((a) => a.key);
-    const hidden = Object.keys(UNMEASURABLE).filter(
-      (key) => key !== 'habit_legend'
-    );
 
-    expect(keys).toContain('habit_legend');
+    expect(keys).toContain('test_unmeasured_earned');
+    expect(keys).not.toContain('test_unmeasured');
     expect(keys).toContain('streak_7');
-    for (const key of hidden) {
+    for (const key of Object.keys(UNMEASURABLE)) {
       expect(keys, key).not.toContain(key);
     }
   });
@@ -375,6 +387,70 @@ describe('AchievementService', () => {
       }
 
       expect(await valueOf(userId, 'phoenix')).toBe(1);
+    });
+
+    it('measures the best completion rate over any 30 days in a row', async () => {
+      const userId = 'user_ach_habit_guru';
+      await addUser(userId);
+      const read = await db
+        .prepare(
+          `INSERT INTO habits (user_id, name, frequency, start_date)
+           VALUES (?, 'Read', 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', ?) RETURNING id`
+        )
+        .bind(userId, `${utcDateDaysAgo(60)}T00:00:00.000Z`)
+        .first<{ id: number }>();
+      // Read done on 27 of the 30 days from 59 to 30 days ago, then rarely.
+      for (let day = 59; day >= 30; day--) {
+        if (day === 50 || day === 40 || day === 35) continue;
+        await addCheckIn(
+          userId,
+          read!.id,
+          `${utcDateDaysAgo(day)}T03:00:00.000Z`
+        );
+      }
+      await addCheckIn(userId, read!.id, `${utcDateDaysAgo(5)}T03:00:00.000Z`);
+
+      expect(await valueOf(userId, 'habit_guru')).toBe(90);
+    });
+
+    it('measures no completion rate before 30 days of habits', async () => {
+      const userId = 'user_ach_habit_guru_new';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      for (const day of [3, 2, 1]) {
+        await addCheckIn(userId, read, `${utcDateDaysAgo(day)}T03:00:00.000Z`);
+      }
+
+      expect(await valueOf(userId, 'habit_guru')).toBe(0);
+    });
+  });
+
+  describe('Habit Legend', () => {
+    it('counts the other achievements earned, and is awarded in the check that earns the last of them', async () => {
+      const userId = 'user_ach_habit_legend';
+      await addUser(userId);
+      // 29 earned already, none of them Habit Legend.
+      await db
+        .prepare(
+          `INSERT INTO user_achievements (user_id, achievement_id)
+           SELECT ?, id FROM achievements
+           WHERE is_active = 1 AND key NOT IN ('habit_legend', 'first_habit')
+           ORDER BY id LIMIT 29`
+        )
+        .bind(userId)
+        .run();
+      const listed = await service.getAllAchievementsForUser(userId, 'UTC');
+      expect(
+        listed.find((a) => a.key === 'habit_legend')?.progress?.currentValue
+      ).toBe(29);
+
+      // A first habit earns First Step, the 30th.
+      await addHabit(userId, 'Read');
+      const awarded = await service.checkAndAwardAchievements(userId, 'UTC');
+
+      expect(awarded.map((a) => a.key)).toEqual(
+        expect.arrayContaining(['first_habit', 'habit_legend'])
+      );
     });
   });
 });

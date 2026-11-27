@@ -28,6 +28,10 @@ export interface UserStatsSnapshot extends UserHabitStats {
   habitComebacks: number;
   /** Times any check-in came after 30 days or more with none. */
   longComebacks: number;
+  /** The best completion rate over any 30 days in a row; 0 before 30 days. */
+  bestMonthRate: number;
+  /** Achievements earned, Habit Legend aside, which counts them. */
+  earnedAchievements: number;
 }
 
 type Metric = (s: UserStatsSnapshot) => number;
@@ -93,6 +97,10 @@ export const METRICS: Record<string, Metric> = {
   weekend_warrior: (s) => s.weekendDays,
   comeback_kid: (s) => s.habitComebacks,
   phoenix: (s) => s.longComebacks,
+
+  // Consistency over a month, and achievements earned
+  habit_guru: (s) => s.bestMonthRate,
+  habit_legend: (s) => s.earnedAchievements,
 };
 
 /**
@@ -144,14 +152,14 @@ export const TRACKS: Record<string, AchievementTrack> = {
  * and neither list can silently drift from the seeded catalogue.
  */
 export const UNMEASURABLE: Record<string, string> = {
-  perfectionist: 'needs consecutive perfect days, not a total',
-  habit_guru: 'needs a completion rate over a rolling 30-day window',
-  minimalist: 'ambiguous: "maintain just 1 habit for 30 days"',
-  habit_variety: 'habits have no "type" column to vary',
+  perfectionist:
+    'retired by migration 0007: 14 perfect days in a row is Two Weeks Strong',
+  minimalist:
+    'retired by migration 0007: "maintain just 1 habit for 30 days" has no clear rule',
+  habit_variety:
+    'retired by migration 0007: habits have no "type" column to vary',
   habit_architect_advanced:
-    'needs coverage across all frequency types, not a count',
-  habit_legend:
-    'counts earned achievements, which would make evaluation self-referential',
+    'retired by migration 0007: "all frequency types" has no clear rule',
 };
 
 /** Whether an achievement has a metric, and so can be earned at all. */
