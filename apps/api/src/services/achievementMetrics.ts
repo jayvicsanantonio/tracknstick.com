@@ -18,6 +18,16 @@ export interface UserStatsSnapshot extends UserHabitStats {
   perfectDays: number;
   /** The most habits checked off on any one day. */
   maxHabitsInOneDay: number;
+  /** Days with a check-in tapped that same day before 8 AM. */
+  earlyDays: number;
+  /** Days with a check-in tapped that same day at or after 10 PM. */
+  lateDays: number;
+  /** Saturdays and Sundays with a check-in. */
+  weekendDays: number;
+  /** Times a habit was checked off again after 7 days or more without it. */
+  habitComebacks: number;
+  /** Times any check-in came after 30 days or more with none. */
+  longComebacks: number;
 }
 
 type Metric = (s: UserStatsSnapshot) => number;
@@ -76,6 +86,13 @@ export const METRICS: Record<string, Metric> = {
   // Miscellaneous measurable behaviours
   social_butterfly: (s) => s.notedCompletions,
   maximalist: (s) => s.maxHabitsInOneDay,
+
+  // When and how often the user checks in, in their time zone
+  early_bird: (s) => s.earlyDays,
+  night_owl: (s) => s.lateDays,
+  weekend_warrior: (s) => s.weekendDays,
+  comeback_kid: (s) => s.habitComebacks,
+  phoenix: (s) => s.longComebacks,
 };
 
 /**
@@ -127,11 +144,6 @@ export const TRACKS: Record<string, AchievementTrack> = {
  * and neither list can silently drift from the seeded catalogue.
  */
 export const UNMEASURABLE: Record<string, string> = {
-  early_bird: 'needs completion time-of-day in the user timezone',
-  night_owl: 'needs completion time-of-day in the user timezone',
-  weekend_warrior: 'needs weekend-day counting in the user timezone',
-  comeback_kid: 'needs gap analysis between completions',
-  phoenix: 'needs gap analysis between completions',
   perfectionist: 'needs consecutive perfect days, not a total',
   habit_guru: 'needs a completion rate over a rolling 30-day window',
   minimalist: 'ambiguous: "maintain just 1 habit for 30 days"',

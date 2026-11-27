@@ -131,4 +131,37 @@ describe('describeRemaining', () => {
       null,
     );
   });
+
+  it.each([
+    ['early_morning', 3, 7, '4 more days before 8 AM'],
+    ['late_night', 6, 7, '1 more day after 10 PM'],
+    ['weekend_only', 5, 8, '3 more weekend days'],
+  ])('counts the %s days left', (type, current, target, expected) => {
+    expect(
+      describeRemaining(
+        achievement(
+          { type: 'special_achievement', requirementData: { type } },
+          current,
+          target,
+        ),
+        0,
+      ),
+    ).toBe(expected);
+  });
+
+  it.each(['habit_restart', 'long_comeback'])(
+    'says nothing for a %s, which one return earns',
+    (type) => {
+      expect(
+        describeRemaining(
+          achievement(
+            { type: 'special_achievement', requirementData: { type } },
+            0,
+            1,
+          ),
+          0,
+        ),
+      ).toBeNull();
+    },
+  );
 });

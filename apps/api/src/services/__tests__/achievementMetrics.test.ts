@@ -24,6 +24,11 @@ const SNAPSHOT: UserStatsSnapshot = {
   perfectDays: 8,
   notedCompletions: 21,
   maxHabitsInOneDay: 11,
+  earlyDays: 6,
+  lateDays: 5,
+  weekendDays: 12,
+  habitComebacks: 2,
+  longComebacks: 1,
 };
 
 describe('achievement metric registry', () => {
@@ -75,12 +80,17 @@ describe('achievement metric registry', () => {
     ['perfect_week', 8],
     ['social_butterfly', 21],
     ['maximalist', 11],
+    ['early_bird', 6],
+    ['night_owl', 5],
+    ['weekend_warrior', 12],
+    ['comeback_kid', 2],
+    ['phoenix', 1],
   ])('measures %s from the snapshot', (key, expected) => {
     expect(measure({ key }, SNAPSHOT)).toBe(expected);
   });
 
   it('returns null rather than zero for an unregistered key', () => {
-    expect(measure({ key: 'early_bird' }, SNAPSHOT)).toBeNull();
+    expect(measure({ key: 'habit_legend' }, SNAPSHOT)).toBeNull();
   });
 });
 
@@ -105,6 +115,11 @@ describe('achievement tracks', () => {
       perfectDays: 6,
       notedCompletions: 7,
       maxHabitsInOneDay: 8,
+      earlyDays: 9,
+      lateDays: 10,
+      weekendDays: 11,
+      habitComebacks: 12,
+      longComebacks: 13,
     };
     const valueByTrack = new Map<string, number | null>();
     for (const [key, track] of Object.entries(TRACKS)) {

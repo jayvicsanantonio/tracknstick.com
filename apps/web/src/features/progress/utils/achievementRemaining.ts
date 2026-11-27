@@ -43,6 +43,16 @@ export function describeRemaining(
       return `${left} more ${plural(left, 'note')}`;
     case 'single_day_completions':
       return `${targetValue} habits in one day, best so far ${currentValue}`;
+    case 'early_morning':
+      return `${left} more ${plural(left, 'day')} before 8 AM`;
+    case 'late_night':
+      return `${left} more ${plural(left, 'day')} after 10 PM`;
+    case 'weekend_only':
+      return `${left} more weekend ${plural(left, 'day')}`;
+    // One return earns these; a count of what is left says nothing.
+    case 'habit_restart':
+    case 'long_comeback':
+      return null;
   }
 
   if (achievement.type === 'completion') {

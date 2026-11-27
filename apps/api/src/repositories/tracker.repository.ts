@@ -20,19 +20,42 @@ function extractDateKey(value: string | null): string | null {
   return DATE_KEY_RE.test(head) ? head : null;
 }
 
+/** An ISO or SQLite UTC timestamp as an instant, or null when unreadable. */
+function parseInstant(value: string | null): Date | null {
+  if (!value) return null;
+  const iso = SQLITE_DATETIME_RE.test(value)
+    ? `${value.replace(' ', 'T')}Z`
+    : value;
+  const parsed = new Date(iso);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
 function parseInstantToDateKey(
   value: string | null,
   formatter: Intl.DateTimeFormat
 ): string | null {
   if (!value) return null;
   if (DATE_KEY_RE.test(value)) return value;
-  const iso = SQLITE_DATETIME_RE.test(value)
-    ? `${value.replace(' ', 'T')}Z`
-    : value;
-  const parsed = new Date(iso);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return formatter.format(parsed);
+  const parsed = parseInstant(value);
+  return parsed ? formatter.format(parsed) : null;
 }
+
+/** Whole days from one YYYY-MM-DD date key to a later one. */
+function daysBetween(from: string, to: string): number {
+  return Math.round(
+    (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) /
+      86_400_000
+  );
+}
+
+/** Check-ins tapped before this hour count toward Early Bird. */
+const EARLY_BEFORE_HOUR = 8;
+/** Check-ins tapped at or after this hour count toward Night Owl. */
+const LATE_FROM_HOUR = 22;
+/** A habit checked off again this many days after its last check-in is a comeback. */
+const HABIT_COMEBACK_DAYS = 8;
+/** Any check-in this many days after the last one is a return from an absence. */
+const LONG_COMEBACK_DAYS = 31;
 
 interface TrackerRow {
   id: number;
@@ -550,6 +573,16 @@ export async function getUserStreaks(
 /** The lifetime summary, plus the most habits done on any one day. */
 export interface UserLifetimeStats extends ProgressSummaryResponse {
   mostHabitsInOneDay: number;
+  /** Days with a check-in tapped that same day before 8 AM. */
+  earlyDays: number;
+  /** Days with a check-in tapped that same day at or after 10 PM. */
+  lateDays: number;
+  /** Saturdays and Sundays with a check-in. */
+  weekendDays: number;
+  /** Times a habit was checked off again after 7 days or more without it. */
+  habitComebacks: number;
+  /** Times any check-in came after 30 days or more with none. */
+  longComebacks: number;
 }
 
 /**
@@ -563,10 +596,18 @@ export async function getUserProgressSummary(
   userId: string,
   timeZone = 'UTC'
 ): Promise<ProgressSummaryResponse> {
-  // The response is exactly the summary contract, without the extra count.
-  const { mostHabitsInOneDay: _mostHabitsInOneDay, ...summary } =
-    await getUserLifetimeStats(db, userId, timeZone);
-  return summary;
+  // The response is exactly the summary contract, without the extra counts.
+  const stats = await getUserLifetimeStats(db, userId, timeZone);
+  return {
+    currentStreak: stats.currentStreak,
+    longestStreak: stats.longestStreak,
+    totalCompletions: stats.totalCompletions,
+    activeDays: stats.activeDays,
+    perfectDays: stats.perfectDays,
+    overallCompletionRate: stats.overallCompletionRate,
+    activeHabitsCount: stats.activeHabitsCount,
+    memberSince: stats.memberSince,
+  };
 }
 
 /**
@@ -598,7 +639,7 @@ export async function getUserLifetimeStats(
         .bind(userId),
       db
         .prepare(
-          `SELECT habit_id, timestamp
+          `SELECT habit_id, timestamp, created_at
            FROM trackers
            WHERE user_id = ? AND deleted_at IS NULL`
         )
@@ -626,13 +667,22 @@ export async function getUserLifetimeStats(
     const trackers = trackersResult.results as {
       habit_id: number;
       timestamp: string;
+      created_at: string | null;
     }[];
 
     const dateKeyFormatter = new Intl.DateTimeFormat('en-CA', { timeZone });
+    const hourFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hour: 'numeric',
+      hourCycle: 'h23',
+    });
     const todayInTZ = dateKeyFormatter.format(new Date());
 
     // Group completions by local calendar date in the user's timezone.
     const trackersByDate = new Map<string, Set<number>>();
+    const datesByHabit = new Map<number, Set<string>>();
+    const earlyDates = new Set<string>();
+    const lateDates = new Set<string>();
     for (const tracker of trackers) {
       const dateKey = parseInstantToDateKey(
         tracker.timestamp,
@@ -645,7 +695,58 @@ export async function getUserLifetimeStats(
         trackersByDate.set(dateKey, completedSet);
       }
       completedSet.add(tracker.habit_id);
+
+      let habitDates = datesByHabit.get(tracker.habit_id);
+      if (!habitDates) {
+        habitDates = new Set<string>();
+        datesByHabit.set(tracker.habit_id, habitDates);
+      }
+      habitDates.add(dateKey);
+
+      // The time of day is when the check-in was tapped (created_at), which
+      // counts only when tapped on the day it is for: `timestamp` holds the
+      // time the app was opened, and a day checked off later says nothing
+      // about the morning or night it was for.
+      const tappedAt = parseInstant(tracker.created_at);
+      if (tappedAt && dateKeyFormatter.format(tappedAt) === dateKey) {
+        const hour = Number(hourFormatter.format(tappedAt));
+        if (hour < EARLY_BEFORE_HOUR) earlyDates.add(dateKey);
+        if (hour >= LATE_FROM_HOUR) lateDates.add(dateKey);
+      }
     }
+
+    const activeDates = [...trackersByDate.keys()].sort();
+    const weekendDays = activeDates.filter((dateKey) => {
+      const weekday = new Date(`${dateKey}T12:00:00Z`).getUTCDay();
+      return weekday === 0 || weekday === 6;
+    }).length;
+
+    let habitComebacks = 0;
+    for (const habitDates of datesByHabit.values()) {
+      const sorted = [...habitDates].sort();
+      for (let i = 1; i < sorted.length; i++) {
+        if (daysBetween(sorted[i - 1], sorted[i]) >= HABIT_COMEBACK_DAYS) {
+          habitComebacks += 1;
+        }
+      }
+    }
+
+    let longComebacks = 0;
+    for (let i = 1; i < activeDates.length; i++) {
+      if (
+        daysBetween(activeDates[i - 1], activeDates[i]) >= LONG_COMEBACK_DAYS
+      ) {
+        longComebacks += 1;
+      }
+    }
+
+    const occasionCounts = {
+      earlyDays: earlyDates.size,
+      lateDays: lateDates.size,
+      weekendDays,
+      habitComebacks,
+      longComebacks,
+    };
 
     // Earliest date the user started using the app (never in the future).
     let memberSince: string | null = null;
@@ -719,6 +820,7 @@ export async function getUserLifetimeStats(
         activeHabitsCount,
         memberSince,
         mostHabitsInOneDay,
+        ...occasionCounts,
       };
     }
 
@@ -792,6 +894,7 @@ export async function getUserLifetimeStats(
       activeHabitsCount,
       memberSince,
       mostHabitsInOneDay,
+      ...occasionCounts,
     };
   } catch (error) {
     console.error('Error calculating user progress summary:', error);
