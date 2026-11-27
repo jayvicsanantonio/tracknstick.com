@@ -124,7 +124,7 @@ const CelebrationSheet = memo(function CelebrationSheet({
               triggerHaptic('light');
               onContinue();
             }}
-            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-(--color-brand-primary) px-6 text-[15px] font-semibold text-(--color-primary-foreground) transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.98]"
+            className="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-full bg-(--color-brand-solid) px-6 text-[15px] font-semibold text-(--color-primary-foreground) transition-transform focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.98]"
           >
             {hasMore ? 'Next achievement' : 'Keep going'}
           </button>

@@ -126,7 +126,7 @@ const AchievementsSummary = memo(function AchievementsSummary({
         {!loading && !error && (
           <span className="flex items-center gap-1.5">
             {newCount > 0 && (
-              <span className="rounded-full bg-(--color-brand-primary) px-2.5 py-0.5 text-xs font-semibold text-(--color-primary-foreground) tabular-nums">
+              <span className="rounded-full bg-(--color-brand-solid) px-2.5 py-0.5 text-xs font-semibold text-(--color-primary-foreground) tabular-nums">
                 {newCount} new
               </span>
             )}

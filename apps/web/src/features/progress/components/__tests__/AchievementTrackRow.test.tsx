@@ -160,6 +160,9 @@ describe('AchievementTrackRow', () => {
 
     const row = screen.getByRole('button', { name: /Check-ins/ });
     expect(within(row).getByText('New')).toBeVisible();
+    expect(within(row).getByText('New').className).toContain(
+      'color-brand-solid',
+    );
 
     await userEvent.click(row);
 

@@ -1,5 +1,5 @@
 // Pins the colour contracts of both theme palettes in src/styles/index.css.
-// Body text tokens meet WCAG AA contrast, the destructive colour reads as danger, and medal icons stay visible.
+// Text tokens meet WCAG AA contrast, the destructive colour reads as danger, and medal icons stay visible.
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -82,6 +82,20 @@ describe('dark palette', () => {
     expect(
       contrast(get(dark, 'color-destructive'), get(dark, 'color-background')),
     ).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe.each([
+  ['light', light],
+  ['dark', dark],
+])('%s palette solid brand fill', (_theme, palette) => {
+  it('keeps small text on it readable', () => {
+    expect(
+      contrast(
+        get(palette, 'color-primary-foreground'),
+        get(palette, 'color-brand-solid'),
+      ),
+    ).toBeGreaterThanOrEqual(4.5);
   });
 });
 

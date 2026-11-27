@@ -85,7 +85,8 @@ describe('AchievementsSummary', () => {
   it('counts the achievements earned since the last visit', () => {
     renderSummary({ newCount: 2 });
 
-    expect(screen.getByText('2 new')).toBeInTheDocument();
+    // On the fill dark enough, in the light theme, for small white text.
+    expect(screen.getByText('2 new').className).toContain('color-brand-solid');
   });
 
   it('shows no new count when nothing is new', () => {

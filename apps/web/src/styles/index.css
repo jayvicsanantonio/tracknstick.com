@@ -86,6 +86,8 @@
     --color-medal-gold: hsl(44, 90%, 50%);
     --color-medal-platinum: hsl(190, 45%, 66%);
     --color-medal-foreground: hsl(30, 35%, 10%);
+    /* A brand fill dark enough for small primary-foreground text on it. */
+    --color-brand-solid: hsl(327, 84%, 46%);
   }
 
   .dark {
@@ -138,6 +140,8 @@
     --color-medal-gold: hsl(44, 90%, 56%);
     --color-medal-platinum: hsl(190, 50%, 74%);
     --color-medal-foreground: hsl(30, 35%, 8%);
+    /* A brand fill bright enough for small primary-foreground text on it. */
+    --color-brand-solid: hsl(160, 84%, 55%);
   }
 }
 

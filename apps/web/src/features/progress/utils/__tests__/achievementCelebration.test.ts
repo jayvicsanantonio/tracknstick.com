@@ -49,6 +49,27 @@ describe('describeCelebration', () => {
     });
   });
 
+  it('names the next level not yet earned, past any earned in the same check', () => {
+    // One check earned Getting Active, Quarter Century and Half Century.
+    expect(describeCelebration('completions_10', checkIns, 0)).toEqual({
+      medal: 'bronze',
+      level: 'Level 1 of 4 on your check-ins track',
+      next: checkIns[3],
+      remaining: '50 more check-ins',
+    });
+  });
+
+  it('names no next target when every later level is earned too', () => {
+    const allEarned = checkIns.map((level) => ({ ...level, isEarned: true }));
+
+    expect(describeCelebration('completions_25', allEarned, 0)).toEqual({
+      medal: 'silver',
+      level: 'Level 2 of 4 on your check-ins track',
+      next: undefined,
+      remaining: null,
+    });
+  });
+
   it('has no next target at the top of a track', () => {
     expect(describeCelebration('completions_100', checkIns, 0)).toEqual({
       medal: 'platinum',
