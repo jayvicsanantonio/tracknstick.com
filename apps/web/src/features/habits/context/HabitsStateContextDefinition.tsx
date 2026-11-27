@@ -26,6 +26,8 @@ export interface HabitsStateContextValue {
   celebrateAchievements: (achievements: AwardedAchievementResponse[]) => void;
   /** Moves past the achievement being celebrated. */
   dismissAchievementCelebration: () => void;
+  /** Drops every celebration still queued, as when the user changes. */
+  clearAchievementCelebrations: () => void;
 }
 
 export const HabitsStateContext = createContext<HabitsStateContextValue | null>(

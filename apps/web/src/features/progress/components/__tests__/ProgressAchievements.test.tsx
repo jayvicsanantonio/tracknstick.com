@@ -133,9 +133,14 @@ describe('ProgressAchievements', () => {
       />,
     );
 
-    const [earlyBird] = within(
-      screen.getByRole('list', { name: 'Badges' }),
-    ).getAllByRole('listitem');
-    expect(within(earlyBird).getByText('New')).toBeVisible();
+    const badges = within(screen.getByRole('list', { name: 'Badges' }));
+    const earlyBird = badges
+      .getAllByRole('listitem')
+      .find((badge) => within(badge).queryByText('Early Bird'));
+    const socialButterfly = badges
+      .getAllByRole('listitem')
+      .find((badge) => within(badge).queryByText('Social Butterfly'));
+    expect(within(earlyBird!).getByText('New')).toBeVisible();
+    expect(within(socialButterfly!).queryByText('New')).not.toBeInTheDocument();
   });
 });

@@ -48,7 +48,8 @@ const CelebrationSheet = memo(function CelebrationSheet({
       }}
       className="sm:max-w-md"
     >
-      <div className="flex flex-col items-center px-6 pt-2 pb-[max(env(safe-area-inset-bottom),1.5rem)] text-center sm:pt-0 sm:pb-0">
+      {/* Scrolls inside the sheet's capped height on short screens. */}
+      <div className="flex min-h-0 flex-col items-center overflow-y-auto px-6 pt-2 pb-[max(env(safe-area-inset-bottom),1.5rem)] text-center sm:pt-0 sm:pb-0">
         <p className="text-[11px] font-semibold tracking-[0.09em] text-(--color-brand-primary) uppercase">
           Achievement earned
         </p>

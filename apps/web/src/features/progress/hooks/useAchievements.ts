@@ -24,6 +24,7 @@ export function useAchievements(enabled = true) {
     data: achievements,
     error: achievementsError,
     isLoading: achievementsLoading,
+    isValidating: achievementsValidating,
     mutate: mutateAchievements,
   } = useSWR<Achievement[], Error>(
     enabled ? [achievementsKey, timeZone] : null,
@@ -75,6 +76,8 @@ export function useAchievements(enabled = true) {
     achievements: achievements ?? [],
     stats: stats ?? null,
     loading: achievementsLoading || statsLoading,
+    /** True while the list is being fetched, even over a cached one. */
+    validating: achievementsValidating,
     error: loadFailed ? 'Failed to load achievements. Please try again.' : null,
     checkNewAchievements,
     refresh,

@@ -1,7 +1,7 @@
 // Finds the achievements earned since the user last opened the Progress page, to mark them new.
-// What has been seen is kept on this device per user; a first visit, or blocked storage, marks nothing new.
+// Seen ids are kept on this device per user, from a fresh list; a first visit, or blocked storage, marks nothing new.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Achievement } from '../types/Achievement';
 
 const STORAGE_KEY_PREFIX = 'track-n-stick-seen-achievements';
@@ -19,18 +19,26 @@ function readSeen(key: string): string[] | null {
 
 /**
  * The ids of earned achievements the user has not seen on the Progress page
- * before. Worked out once per visit, when the achievements and the user are
- * known; everything earned is then remembered as seen, so the marks last for
- * this visit only.
+ * before. Worked out once per visit, when the user is known and the list is
+ * fresh: a cached list from before an award elsewhere would be remembered as
+ * seen without ever being marked. Everything earned is then remembered as
+ * seen, so the marks last for this visit only.
  */
 export function useNewAchievements(
   achievements: Achievement[],
   userId: string | null | undefined,
+  isFresh: boolean,
 ): ReadonlySet<string> {
   const [newIds, setNewIds] = useState<ReadonlySet<string> | null>(null);
+  // A ref, not the state, guards the one-time read: Strict Mode replays the
+  // effect with the same render's state, and the replay would find nothing
+  // new in the ids the first run just stored.
+  const workedOut = useRef(false);
 
   useEffect(() => {
-    if (newIds !== null || !userId || achievements.length === 0) return;
+    if (workedOut.current || !isFresh || !userId || achievements.length === 0)
+      return;
+    workedOut.current = true;
 
     const key = `${STORAGE_KEY_PREFIX}:${userId}`;
     const earned = achievements
@@ -49,7 +57,7 @@ export function useNewAchievements(
       found = NONE;
     }
     setNewIds(found);
-  }, [achievements, userId, newIds]);
+  }, [achievements, userId, isFresh]);
 
   return newIds ?? NONE;
 }

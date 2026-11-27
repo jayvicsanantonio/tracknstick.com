@@ -1,7 +1,8 @@
 // Covers which earned achievements read as new: those earned since the user last opened the Progress page.
-// What has been seen is kept on this device per user; a first visit marks nothing new.
+// Seen ids are kept on this device per user, from a fresh list only; a first visit marks nothing new.
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { StrictMode } from 'react';
 import { renderHook } from '@testing-library/react';
 import type { Achievement } from '../../types/Achievement';
 import { useNewAchievements } from '../useNewAchievements';
@@ -31,6 +32,7 @@ describe('useNewAchievements', () => {
       useNewAchievements(
         [achievement('1', true), achievement('2', false)],
         'user_1',
+        true,
       ),
     );
 
@@ -45,6 +47,7 @@ describe('useNewAchievements', () => {
       useNewAchievements(
         [achievement('1', true), achievement('2', true)],
         'user_1',
+        true,
       ),
     );
 
@@ -58,7 +61,7 @@ describe('useNewAchievements', () => {
     localStorage.setItem(KEY, JSON.stringify(['1']));
 
     const { result } = renderHook(() =>
-      useNewAchievements([achievement('1', true)], 'user_2'),
+      useNewAchievements([achievement('1', true)], 'user_2', true),
     );
 
     expect([...result.current]).toEqual([]);
@@ -68,8 +71,8 @@ describe('useNewAchievements', () => {
   });
 
   it('waits for the achievements and the user before remembering anything', () => {
-    renderHook(() => useNewAchievements([], 'user_1'));
-    renderHook(() => useNewAchievements([achievement('1', true)], null));
+    renderHook(() => useNewAchievements([], 'user_1', true));
+    renderHook(() => useNewAchievements([achievement('1', true)], null, true));
 
     expect(localStorage.length).toBe(0);
   });
@@ -83,9 +86,45 @@ describe('useNewAchievements', () => {
     });
 
     const { result } = renderHook(() =>
-      useNewAchievements([achievement('1', true)], 'user_1'),
+      useNewAchievements([achievement('1', true)], 'user_1', true),
     );
 
     expect([...result.current]).toEqual([]);
+  });
+
+  it('waits for a fresh list, so an achievement earned elsewhere still reads as new', () => {
+    localStorage.setItem(KEY, JSON.stringify(['1']));
+    // The cached list from before the award, while it is fetched again.
+    let list = [achievement('1', true), achievement('2', false)];
+    let isFresh = false;
+
+    const { result, rerender } = renderHook(() =>
+      useNewAchievements(list, 'user_1', isFresh),
+    );
+
+    expect([...result.current]).toEqual([]);
+    expect(JSON.parse(localStorage.getItem(KEY)!)).toEqual(['1']);
+
+    list = [achievement('1', true), achievement('2', true)];
+    isFresh = true;
+    rerender();
+
+    expect([...result.current]).toEqual(['2']);
+  });
+
+  it('keeps its marks when Strict Mode runs its effect twice', () => {
+    localStorage.setItem(KEY, JSON.stringify(['1']));
+
+    const { result } = renderHook(
+      () =>
+        useNewAchievements(
+          [achievement('1', true), achievement('2', true)],
+          'user_1',
+          true,
+        ),
+      { wrapper: StrictMode },
+    );
+
+    expect([...result.current]).toEqual(['2']);
   });
 });

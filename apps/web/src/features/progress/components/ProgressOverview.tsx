@@ -58,10 +58,15 @@ const ProgressOverview = memo(function ProgressOverview() {
     achievements,
     stats,
     loading: achievementsLoading,
+    validating: achievementsValidating,
     error: achievementsError,
   } = useAchievements();
   const { userId } = useAuth();
-  const newAchievementIds = useNewAchievements(achievements, userId);
+  const newAchievementIds = useNewAchievements(
+    achievements,
+    userId,
+    !achievementsValidating,
+  );
   useHoldSplash(isSummaryLoading || isHistoryLoading);
 
   const loadFailed = Boolean(historyError ?? summaryError);

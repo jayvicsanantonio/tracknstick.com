@@ -26,8 +26,9 @@ const mockToast = vi.hoisted(() => vi.fn());
 vi.mock('@app/providers/useDate', () => ({
   useDate: () => ({ date: DATE, setDate: vi.fn(), timeZone: 'UTC' }),
 }));
+const mockAuth = vi.hoisted(() => ({ userId: 'user_1' }));
 vi.mock('@clerk/clerk-react', () => ({
-  useAuth: () => ({ isSignedIn: true, userId: 'user_1' }),
+  useAuth: () => ({ isSignedIn: true, userId: mockAuth.userId }),
 }));
 vi.mock('@shared/hooks/useOfflineSession', () => ({
   useOfflineSession: () => false,
@@ -95,6 +96,7 @@ describe('useHabits', () => {
     vi.useRealTimers();
     localStorage.clear();
     mockToast.mockReset();
+    mockAuth.userId = 'user_1';
     vi.restoreAllMocks();
     if (originalVibrateDescriptor) {
       Object.defineProperty(navigator, 'vibrate', originalVibrateDescriptor);
@@ -214,6 +216,60 @@ describe('useHabits', () => {
       ]),
     );
     expect(mockToast).not.toHaveBeenCalled();
+  });
+
+  it("ignores a check that answers after the signed-in user changed, and clears the last user's celebrations", async () => {
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
+      message: 'ok',
+    });
+    const earned = (key: string) => ({
+      id: key,
+      key,
+      name: key,
+      description: `${key} description`,
+      type: 'completion' as const,
+      category: 'dedication' as const,
+    });
+    let answerLateCheck: (value: never) => void = () => undefined;
+    vi.spyOn(achievementApi, 'checkAchievements')
+      .mockResolvedValueOnce({
+        message: 'checked',
+        newAchievements: [earned('first')],
+        count: 1,
+      })
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            answerLateCheck = resolve;
+          }),
+      );
+    const view = renderHook(
+      () => ({ habits: useHabits(), state: useHabitsContext() }),
+      { wrapper },
+    );
+    await waitFor(() =>
+      expect(view.result.current.habits.habits).toHaveLength(1),
+    );
+
+    await act(() => view.result.current.habits.toggleHabit('7'));
+    await waitFor(() =>
+      expect(view.result.current.state.achievementCelebrations).toHaveLength(1),
+    );
+    await act(() => view.result.current.habits.toggleHabit('7'));
+
+    mockAuth.userId = 'user_2';
+    view.rerender();
+    expect(view.result.current.state.achievementCelebrations).toEqual([]);
+
+    await act(async () => {
+      answerLateCheck({
+        message: 'checked',
+        newAchievements: [earned('late')],
+        count: 1,
+      } as never);
+      await Promise.resolve();
+    });
+    expect(view.result.current.state.achievementCelebrations).toEqual([]);
   });
 
   it('fetches the achievements again after each check, so their progress stays current', async () => {

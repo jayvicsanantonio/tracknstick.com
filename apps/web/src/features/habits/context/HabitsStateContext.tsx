@@ -29,6 +29,10 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
     setAchievementCelebrations((queued) => queued.slice(1));
   }, []);
 
+  const clearAchievementCelebrations = useCallback(() => {
+    setAchievementCelebrations([]);
+  }, []);
+
   // Opening with the toggle starts a blank form, never a starter habit left
   // over from an earlier opening.
   const toggleShowAddHabitDialog = useCallback(() => {
@@ -71,6 +75,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       achievementCelebrations,
       celebrateAchievements,
       dismissAchievementCelebration,
+      clearAchievementCelebrations,
     }),
     [
       editingHabit,
@@ -86,6 +91,7 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       achievementCelebrations,
       celebrateAchievements,
       dismissAchievementCelebration,
+      clearAchievementCelebrations,
     ],
   );
 

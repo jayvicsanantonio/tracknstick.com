@@ -3,6 +3,7 @@ import {
   useState,
   useEffect,
   useMemo,
+  useRef,
   useSyncExternalStore,
 } from 'react';
 import useSWR, { mutate } from 'swr';
@@ -77,7 +78,8 @@ interface UseHabitsReturn {
 }
 export function useHabits(): UseHabitsReturn {
   const { toast } = useToast();
-  const { celebrateAchievements } = useHabitsContext();
+  const { celebrateAchievements, clearAchievementCelebrations } =
+    useHabitsContext();
   const [timeoutId, setTimeoutId] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
@@ -89,10 +91,23 @@ export function useHabits(): UseHabitsReturn {
   const offline = useOfflineSession();
   const isSignedIn = clerkSignedIn === true || offline;
 
+  // The signed-in user, for the achievement checks still in flight. When it
+  // changes in place, the last user's celebrations are cleared, and a check
+  // that answers afterwards is dropped rather than shown to the new user.
+  const checkedUser = useRef(userId);
+  useEffect(() => {
+    if (checkedUser.current && checkedUser.current !== userId) {
+      clearAchievementCelebrations();
+    }
+    checkedUser.current = userId;
+  }, [userId, clearAchievementCelebrations]);
+
   // Check for new achievements
   const checkAchievements = useCallback(async () => {
+    const checkedFor = checkedUser.current;
     try {
       const result = await achievementApi.checkAchievements(timeZone);
+      if (checkedUser.current !== checkedFor) return;
       void mutateAchievementCaches();
       if (result.count > 0) {
         triggerHaptic('achievement', { androidOnly: true });
