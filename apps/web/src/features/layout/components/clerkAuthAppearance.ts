@@ -24,7 +24,7 @@ export const clerkAuthAppearance = {
     form: 'space-y-3 w-full',
     formContainer: 'space-y-3 w-full',
     formButtonPrimary:
-      'bg-(--color-brand-primary) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) sm:!text-(--color-text-inverse) rounded-2xl font-semibold shadow-none transition-all duration-150 w-full min-h-[50px] py-3 px-4 text-base touch-manipulation active:scale-[0.98]',
+      'bg-(--color-brand-solid) hover:bg-(--color-brand-secondary) dark:bg-(--color-brand-secondary) dark:hover:bg-(--color-brand-primary) text-(--color-text-inverse) sm:!text-(--color-text-inverse) rounded-2xl font-semibold shadow-none transition-all duration-150 w-full min-h-[50px] py-3 px-4 text-base touch-manipulation active:scale-[0.98]',
     formButtonSecondary:
       'text-(--color-brand-primary) hover:text-(--color-brand-secondary) font-medium w-full min-h-[48px] py-3 px-4 text-base touch-manipulation',
     socialButtonsBlockButton:

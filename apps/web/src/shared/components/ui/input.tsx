@@ -11,7 +11,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
         'focus:border-(--color-ring) focus-visible:ring-2 focus-visible:ring-(--color-ring)/40',
         'file:inline-flex file:h-7 file:bg-transparent file:text-sm file:font-medium',
         'file:text-(--color-foreground)',
-        'selection:bg-(--color-brand-primary) selection:text-(--color-text-inverse)',
+        'selection:bg-(--color-brand-solid) selection:text-(--color-text-inverse)',
         'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
         'aria-invalid:ring-2 aria-invalid:ring-(--color-destructive)/20',
         'md:text-sm',

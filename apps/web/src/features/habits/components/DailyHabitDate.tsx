@@ -186,7 +186,7 @@ const DailyHabitDate = memo(function DailyHabitDate({
           <button
             type="button"
             onClick={goToToday}
-            className="sr-only focus:not-sr-only focus:absolute focus:top-1/2 focus:left-1/2 focus:z-10 focus:-translate-x-1/2 focus:-translate-y-1/2 focus:rounded-full focus:bg-(--color-brand-primary) focus:px-3 focus:py-1.5 focus:text-[13px] focus:font-semibold focus:whitespace-nowrap focus:text-(--color-primary-foreground) focus:ring-2 focus:ring-(--color-ring) focus:outline-none sm:hidden"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-1/2 focus:left-1/2 focus:z-10 focus:-translate-x-1/2 focus:-translate-y-1/2 focus:rounded-full focus:bg-(--color-brand-solid) focus:px-3 focus:py-1.5 focus:text-[13px] focus:font-semibold focus:whitespace-nowrap focus:text-(--color-primary-foreground) focus:ring-2 focus:ring-(--color-ring) focus:outline-none sm:hidden"
           >
             Go to today
           </button>

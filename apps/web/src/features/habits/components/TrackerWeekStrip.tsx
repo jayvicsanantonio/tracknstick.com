@@ -267,7 +267,7 @@ const TrackerWeekStrip = memo(function TrackerWeekStrip({
                 className={cn(
                   'flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs tabular-nums',
                   day.isToday
-                    ? 'bg-(--color-brand-primary) font-bold text-(--color-primary-foreground) shadow-[0_2px_8px_color-mix(in_oklab,var(--color-brand-primary)_38%,transparent)]'
+                    ? 'bg-(--color-brand-solid) font-bold text-(--color-primary-foreground) shadow-[0_2px_8px_color-mix(in_oklab,var(--color-brand-primary)_38%,transparent)]'
                     : day.isSelected
                       ? 'font-bold text-(--color-foreground)'
                       : day.isFuture

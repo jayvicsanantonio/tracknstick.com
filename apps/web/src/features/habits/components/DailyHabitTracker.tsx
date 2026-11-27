@@ -393,7 +393,7 @@ export default function DailyHabitTracker() {
             className={cn(
               'flex h-10 items-center gap-1 rounded-full border px-3 text-[13px] font-semibold tracking-[-0.01em] transition-[background-color,border-color,color,box-shadow] duration-150',
               swipeFeedback.ready
-                ? 'border-(--color-brand-primary) bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-md'
+                ? 'border-(--color-brand-solid) bg-(--color-brand-solid) text-(--color-primary-foreground) shadow-md'
                 : 'ios-liquid-glass text-(--color-brand-text) dark:text-(--color-brand-text-light)',
             )}
           >

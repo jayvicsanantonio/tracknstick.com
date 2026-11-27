@@ -79,7 +79,7 @@ const FrequencySelector = memo(function FrequencySelector({
                   className={cn(
                     'rounded-full px-2.5 py-1 text-xs font-semibold transition-colors active:scale-95',
                     active
-                      ? 'bg-(--color-brand-primary) text-(--color-primary-foreground)'
+                      ? 'bg-(--color-brand-solid) text-(--color-primary-foreground)'
                       : 'bg-(--color-brand-primary)/10 text-(--color-brand-text) hover:bg-(--color-brand-primary)/18 dark:text-(--color-brand-text-light)',
                   )}
                 >
@@ -104,7 +104,7 @@ const FrequencySelector = memo(function FrequencySelector({
               value={day}
               aria-label={day}
               title={day}
-              className="size-10 flex-none rounded-full text-sm transition-all duration-150 active:scale-92 data-[state=off]:border-2 data-[state=off]:border-(--color-border-primary) data-[state=off]:bg-(--color-surface-tertiary) data-[state=off]:text-(--color-text-secondary) data-[state=off]:hover:border-(--color-brand-primary) data-[state=off]:hover:bg-(--color-hover-brand) data-[state=off]:hover:text-(--color-text-inverse) data-[state=on]:border-2 data-[state=on]:border-(--color-brand-primary) data-[state=on]:bg-(--color-brand-primary) data-[state=on]:font-bold data-[state=on]:text-(--color-text-inverse) data-[state=on]:shadow-lg sm:h-10 sm:w-10 sm:text-sm dark:data-[state=off]:border-2 dark:data-[state=off]:border-(--color-border-primary) dark:data-[state=off]:bg-(--color-brand-light) dark:data-[state=off]:text-(--color-brand-text-light) dark:data-[state=off]:hover:border-(--color-brand-primary) dark:data-[state=on]:border-2 dark:data-[state=on]:border-(--color-brand-primary) dark:data-[state=on]:bg-(--color-brand-primary) dark:data-[state=on]:text-(--color-text-inverse) dark:data-[state=on]:shadow-(--color-brand-primary)/30 dark:data-[state=on]:shadow-lg"
+              className="size-10 flex-none rounded-full text-sm transition-all duration-150 active:scale-92 data-[state=off]:border-2 data-[state=off]:border-(--color-border-primary) data-[state=off]:bg-(--color-surface-tertiary) data-[state=off]:text-(--color-text-secondary) data-[state=off]:hover:border-(--color-brand-primary) data-[state=off]:hover:bg-(--color-hover-brand) data-[state=off]:hover:text-(--color-text-inverse) data-[state=on]:border-2 data-[state=on]:border-(--color-brand-solid) data-[state=on]:bg-(--color-brand-solid) data-[state=on]:font-bold data-[state=on]:text-(--color-text-inverse) data-[state=on]:shadow-lg sm:h-10 sm:w-10 sm:text-sm dark:data-[state=off]:border-2 dark:data-[state=off]:border-(--color-border-primary) dark:data-[state=off]:bg-(--color-brand-light) dark:data-[state=off]:text-(--color-brand-text-light) dark:data-[state=off]:hover:border-(--color-brand-primary) dark:data-[state=on]:border-2 dark:data-[state=on]:border-(--color-brand-primary) dark:data-[state=on]:bg-(--color-brand-primary) dark:data-[state=on]:text-(--color-text-inverse) dark:data-[state=on]:shadow-(--color-brand-primary)/30 dark:data-[state=on]:shadow-lg"
             >
               {day[0]}
             </ToggleGroupItem>

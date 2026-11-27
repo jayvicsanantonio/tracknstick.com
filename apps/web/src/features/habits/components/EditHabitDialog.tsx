@@ -148,7 +148,7 @@ function EditHabitTabs({
             >
               <TabsTrigger
                 value="edit"
-                className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+                className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-solid) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
               >
                 Edit
               </TabsTrigger>
@@ -159,7 +159,7 @@ function EditHabitTabs({
             >
               <TabsTrigger
                 value="stats"
-                className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-primary) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
+                className="w-full rounded-xl text-[13px] font-semibold text-(--color-text-secondary) hover:text-(--color-foreground) data-[state=active]:bg-(--color-brand-solid) data-[state=active]:text-(--color-primary-foreground) data-[state=active]:shadow-[0_2px_10px_color-mix(in_oklab,var(--color-brand-primary)_35%,transparent)] sm:rounded-xl"
               >
                 Stats
               </TabsTrigger>

@@ -172,7 +172,7 @@ const CalendarDayCell = memo(function CalendarDayCell({
         className={cn(
           'flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-medium tabular-nums',
           isToday
-            ? 'bg-(--color-brand-primary) font-bold text-(--color-primary-foreground) shadow-[0_2px_8px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)]'
+            ? 'bg-(--color-brand-solid) font-bold text-(--color-primary-foreground) shadow-[0_2px_8px_color-mix(in_oklab,var(--color-brand-primary)_40%,transparent)]'
             : hasHappened
               ? 'text-(--color-foreground)'
               : 'text-(--color-text-secondary)/55',
