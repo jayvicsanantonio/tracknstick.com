@@ -178,7 +178,7 @@ export function ChatMessage({
           className={cn(
             'rounded-[22px] px-4 py-2.5 select-text',
             isUser
-              ? 'rounded-br-[6px] bg-(--color-brand-primary) text-(--color-primary-foreground) shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_2px_8px_rgba(0,0,0,0.12)]'
+              ? 'rounded-br-[6px] bg-(--color-brand-solid) text-(--color-primary-foreground) shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_2px_8px_rgba(0,0,0,0.12)]'
               : 'coach-bubble rounded-tl-[6px] py-3 text-(--color-foreground)',
           )}
         >

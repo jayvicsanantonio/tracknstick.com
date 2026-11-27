@@ -89,14 +89,14 @@ describe.each([
   ['light', light],
   ['dark', dark],
 ])('%s palette solid brand fill', (_theme, palette) => {
-  it('keeps small text on it readable', () => {
-    expect(
-      contrast(
-        get(palette, 'color-primary-foreground'),
-        get(palette, 'color-brand-solid'),
-      ),
-    ).toBeGreaterThanOrEqual(4.5);
-  });
+  it.each(['color-primary-foreground', 'color-text-inverse'])(
+    'keeps small %s text on it readable',
+    (text) => {
+      expect(
+        contrast(get(palette, text), get(palette, 'color-brand-solid')),
+      ).toBeGreaterThanOrEqual(4.5);
+    },
+  );
 });
 
 describe.each([

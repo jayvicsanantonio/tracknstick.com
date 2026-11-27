@@ -7,7 +7,7 @@ export const buttonVariants = cva(
       variant: {
         // Brand-aware defaults using design tokens
         default:
-          'bg-(--color-primary) text-(--color-primary-foreground) shadow-xs hover:bg-(--color-primary)/90',
+          'bg-(--color-brand-solid) text-(--color-primary-foreground) shadow-xs hover:bg-(--color-brand-solid)/90',
         destructive:
           'bg-red-500 text-white shadow-xs hover:bg-red-500/90 focus-visible:ring-red-500/20 dark:focus-visible:ring-red-500/40',
         outline:

@@ -201,7 +201,7 @@ const PhoneWelcome = memo(function PhoneWelcome() {
         <button
           type="button"
           onClick={() => openSheet('signUp')}
-          className="flex h-[52px] w-full touch-manipulation items-center justify-center rounded-2xl bg-(--color-brand-primary) text-[17px] font-semibold text-(--color-primary-foreground) shadow-[0_8px_20px_color-mix(in_oklab,var(--color-brand-primary)_30%,transparent)] transition-transform active:scale-[0.98]"
+          className="flex h-[52px] w-full touch-manipulation items-center justify-center rounded-2xl bg-(--color-brand-solid) text-[17px] font-semibold text-(--color-primary-foreground) shadow-[0_8px_20px_color-mix(in_oklab,var(--color-brand-primary)_30%,transparent)] transition-transform active:scale-[0.98]"
         >
           Get started
         </button>
