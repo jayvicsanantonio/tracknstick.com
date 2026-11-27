@@ -1,18 +1,24 @@
-// The full list of achievements on the progress page, filtered by category.
-// Earned ones come first, newest first, then those under way, closest first, then those not started.
+// The full list of achievements on the progress page: one row per track, then the one-off badges.
+// A track is a ladder of targets on one count; badges list earned first, newest first, then closest first.
 
 import { memo } from 'react';
 import { Trophy } from 'lucide-react';
 import EmptyState from '@shared/components/feedback/EmptyState';
 import { parseUTCTimestamp } from '@shared/utils/date/formatDate';
 import { Achievement } from '../types/Achievement';
-import AchievementCard from './AchievementCard';
-import AchievementCategoryTabs from './AchievementCategoryTabs';
+import AchievementMedal from './AchievementMedal';
+import AchievementTrackRow from './AchievementTrackRow';
+import { getAchievementIcon } from '../utils/achievementIcons';
+import { groupAchievements } from '../utils/achievementTracks';
+import { formatEarnedDate } from '../utils/formatEarnedDate';
+
+const SECTION_HEADING =
+  'mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase';
 
 interface ProgressAchievementsProps {
   achievements: Achievement[];
-  selectedCategory?: string;
-  onCategoryChange?: (category: string) => void;
+  /** The streak running now, which the streak track counts from. */
+  currentStreak: number;
 }
 
 /** When an achievement was earned, for ordering; 0 when there is no date. */
@@ -22,39 +28,20 @@ function earnedTime(achievement: Achievement): number {
     : 0;
 }
 
+/** Earned badges first, newest first; then the rest, closest to earned first. */
+function byBadgeOrder(a: Achievement, b: Achievement): number {
+  return (
+    Number(b.isEarned) - Number(a.isEarned) ||
+    earnedTime(b) - earnedTime(a) ||
+    (b.progress?.progressPercentage ?? 0) -
+      (a.progress?.progressPercentage ?? 0)
+  );
+}
+
 const ProgressAchievements = memo(function ProgressAchievements({
   achievements,
-  selectedCategory = 'all',
-  onCategoryChange,
+  currentStreak,
 }: ProgressAchievementsProps) {
-  // Filter achievements by selected category
-  const filteredAchievements =
-    selectedCategory === 'all'
-      ? achievements
-      : achievements.filter(
-          (achievement) => achievement.category === selectedCategory,
-        );
-
-  // Group achievements by earned/unearned
-  const earnedAchievements = filteredAchievements
-    .filter((achievement) => achievement.isEarned)
-    .sort((a, b) => earnedTime(b) - earnedTime(a));
-  // Under way once anything counts toward it; otherwise not started yet.
-  const inProgressAchievements = filteredAchievements
-    .filter(
-      (achievement) =>
-        !achievement.isEarned && (achievement.progress?.currentValue ?? 0) > 0,
-    )
-    .sort(
-      (a, b) =>
-        (b.progress?.progressPercentage ?? 0) -
-        (a.progress?.progressPercentage ?? 0),
-    );
-  const notStartedAchievements = filteredAchievements.filter(
-    (achievement) =>
-      !achievement.isEarned && (achievement.progress?.currentValue ?? 0) === 0,
-  );
-
   if (achievements.length === 0) {
     return (
       <EmptyState
@@ -66,54 +53,66 @@ const ProgressAchievements = memo(function ProgressAchievements({
     );
   }
 
+  const { tracks, badges } = groupAchievements(achievements);
+
   return (
     <div className="space-y-6">
-      {/* Category Tabs */}
-      <AchievementCategoryTabs
-        selectedCategory={selectedCategory}
-        onCategoryChange={onCategoryChange}
-        achievements={achievements}
-      />
-
-      {/* Earned Achievements */}
-      {earnedAchievements.length > 0 && (
+      {tracks.length > 0 && (
         <div>
-          <h3 className="mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
-            Earned ({earnedAchievements.length})
-          </h3>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {earnedAchievements.map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
+          <h3 className={SECTION_HEADING}>Tracks</h3>
+          <ul
+            aria-label="Tracks"
+            className="grid grid-cols-1 gap-3 md:grid-cols-2"
+          >
+            {tracks.map((group) => (
+              <li key={group.track}>
+                <AchievementTrackRow
+                  group={group}
+                  currentStreak={currentStreak}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
 
-      {/* In Progress Achievements */}
-      {inProgressAchievements.length > 0 && (
+      {badges.length > 0 && (
         <div>
-          <h3 className="mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
-            In Progress ({inProgressAchievements.length})
-          </h3>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {inProgressAchievements.map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
+          <h3 className={SECTION_HEADING}>Badges</h3>
+          <ul
+            aria-label="Badges"
+            className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {[...badges].sort(byBadgeOrder).map((badge) => (
+              <li
+                key={badge.id}
+                className={`flex items-center gap-3 rounded-[20px] p-4 ${
+                  badge.isEarned ? 'ios-tracker-card-done' : 'ios-tracker-card'
+                }`}
+              >
+                <AchievementMedal
+                  medal={badge.isEarned ? 'gold' : null}
+                  Icon={getAchievementIcon(badge.icon)}
+                  decorative
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-(--color-foreground)">
+                    {badge.name}
+                  </p>
+                  <span className="block text-xs text-(--color-text-secondary)">
+                    {badge.description}
+                  </span>
+                  <span className="mt-1 block text-xs font-medium text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
+                    {badge.isEarned && badge.earnedAt
+                      ? formatEarnedDate(badge.earnedAt)
+                      : badge.progress
+                        ? `${badge.progress.currentValue} / ${badge.progress.targetValue}`
+                        : null}
+                  </span>
+                </div>
+              </li>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* Not Started Achievements */}
-      {notStartedAchievements.length > 0 && (
-        <div>
-          <h3 className="mb-3 text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
-            Not Started ({notStartedAchievements.length})
-          </h3>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {notStartedAchievements.map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} />
-            ))}
-          </div>
+          </ul>
         </div>
       )}
     </div>

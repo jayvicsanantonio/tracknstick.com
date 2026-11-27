@@ -1,6 +1,7 @@
 // Maps each achievement to the value that measures it
 // Keyed by achievement key, which is UNIQUE in the schema and needs no re-seed
 
+import type { AchievementTrack } from '@tracknstick/contracts';
 import type { UserHabitStats } from '../repositories/achievement.repository.js';
 
 /**
@@ -69,6 +70,49 @@ export const METRICS: Record<string, Metric> = {
   // Miscellaneous measurable behaviours
   social_butterfly: (s) => s.notedCompletions,
   maximalist: (s) => s.maxHabitsInOneDay,
+};
+
+/**
+ * The series each achievement belongs to. Every achievement on a track is
+ * measured by the same value, so the track reads as one ladder of targets.
+ * Achievements absent here are one-offs.
+ */
+export const TRACKS: Record<string, AchievementTrack> = {
+  first_completion: 'check_ins',
+  completions_10: 'check_ins',
+  completions_25: 'check_ins',
+  completions_50: 'check_ins',
+  completions_100: 'check_ins',
+  completions_250: 'check_ins',
+  completions_500: 'check_ins',
+  completions_1000: 'check_ins',
+
+  streak_3: 'streak',
+  streak_7: 'streak',
+  streak_14: 'streak',
+  streak_21: 'streak',
+  streak_30: 'streak',
+  streak_50: 'streak',
+  streak_66: 'streak',
+  streak_100: 'streak',
+  streak_365: 'streak',
+  streak_500: 'streak',
+  streak_1000: 'streak',
+
+  first_week: 'active_days',
+  active_30_days: 'active_days',
+  active_60_days: 'active_days',
+  active_100_days: 'active_days',
+  time_traveler: 'active_days',
+
+  perfect_week: 'perfect_days',
+  perfect_month: 'perfect_days',
+
+  first_habit: 'habits',
+  three_habits: 'habits',
+  five_habits: 'habits',
+  ten_habits: 'habits',
+  twenty_habits: 'habits',
 };
 
 /**

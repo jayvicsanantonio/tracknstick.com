@@ -5,6 +5,7 @@ import { beforeAll, describe, it, expect } from 'vitest';
 import { env } from 'cloudflare:workers';
 import {
   METRICS,
+  TRACKS,
   UNMEASURABLE,
   measure,
   type UserStatsSnapshot,
@@ -80,5 +81,57 @@ describe('achievement metric registry', () => {
 
   it('returns null rather than zero for an unregistered key', () => {
     expect(measure({ key: 'early_bird' }, SNAPSHOT)).toBeNull();
+  });
+});
+
+describe('achievement tracks', () => {
+  it('puts only measured achievements on a track', () => {
+    for (const key of Object.keys(TRACKS)) {
+      expect(key in METRICS, `"${key}" is on a track but not measured`).toBe(
+        true
+      );
+    }
+  });
+
+  it('measures every achievement on a track by the same value', () => {
+    // Distinct values, so two metrics that differ cannot agree by chance.
+    const snapshot: UserStatsSnapshot = {
+      totalHabits: 1,
+      totalCompletions: 2,
+      currentStreaks: [],
+      currentStreak: 3,
+      longestStreak: 4,
+      activeDays: 5,
+      perfectDays: 6,
+      notedCompletions: 7,
+      maxHabitsInOneDay: 8,
+    };
+    const valueByTrack = new Map<string, number | null>();
+    for (const [key, track] of Object.entries(TRACKS)) {
+      const value = measure({ key }, snapshot);
+      if (!valueByTrack.has(track)) valueByTrack.set(track, value);
+      expect(value, `"${key}" on the ${track} track`).toBe(
+        valueByTrack.get(track)
+      );
+    }
+  });
+
+  it.each([
+    ['first_completion', 'check_ins'],
+    ['completions_1000', 'check_ins'],
+    ['streak_3', 'streak'],
+    ['streak_1000', 'streak'],
+    ['first_week', 'active_days'],
+    ['time_traveler', 'active_days'],
+    ['perfect_week', 'perfect_days'],
+    ['first_habit', 'habits'],
+    ['twenty_habits', 'habits'],
+  ])('puts %s on the %s track', (key, track) => {
+    expect(TRACKS[key]).toBe(track);
+  });
+
+  it('leaves one-off achievements off every track', () => {
+    expect(TRACKS.social_butterfly).toBeUndefined();
+    expect(TRACKS.maximalist).toBeUndefined();
   });
 });

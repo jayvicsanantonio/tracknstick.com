@@ -66,7 +66,10 @@ those. The catalogue comes from migration `0003_seed_achievements.sql`.
 Streak achievements count the same streak as `/progress`: days on which every
 habit due was completed, in the `timeZone` given. `GET /` leaves out any
 achievement with no metric in `services/achievementMetrics.ts`, which could
-never be earned, unless the user already holds it.
+never be earned, unless the user already holds it. An achievement that is
+one of a series names its `track` (`TRACKS` in the same file): check-ins,
+streak, active days, perfect days or habits, each a ladder of targets on one
+count.
 
 ## Chat: `/api/v1/chat`
 

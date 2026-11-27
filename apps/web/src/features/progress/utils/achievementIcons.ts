@@ -72,13 +72,3 @@ export const getAchievementIcon = (iconName?: string): LucideIcon => {
     ? ACHIEVEMENT_ICONS[iconName as AchievementIcon]
     : Trophy;
 };
-
-// Icon color: one brand palette for every category, inverted once earned
-export const getIconColorClass = (isEarned: boolean) =>
-  isEarned
-    ? 'text-(--color-primary-foreground)'
-    : 'text-(--color-brand-primary)';
-
-// Icon background: a brand tint, filled with the brand color once earned
-export const getIconBackgroundClass = (isEarned: boolean) =>
-  isEarned ? 'bg-(--color-brand-primary)' : 'bg-(--color-brand-primary)/12';

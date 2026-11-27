@@ -1,25 +1,24 @@
-// Covers the full achievement list: earned ones, those under way, and those not started, each under its own heading.
-// An achievement with nothing done toward it reads as not started, not as in progress.
-// Earned ones list newest first, and those under way list closest to earned first.
+// Covers the full achievement list: one row per track, then the one-off achievements as badges.
+// There are no category tabs: the tracks are the grouping.
 
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import ProgressAchievements from '../ProgressAchievements';
 import type { Achievement } from '../../types/Achievement';
 
 const achievement = (
-  id: string,
+  key: string,
   name: string,
   overrides: Partial<Achievement> = {},
 ): Achievement => ({
-  id,
-  key: id,
+  id: key,
+  key,
   name,
   description: `${name} description`,
-  type: 'streak',
-  category: 'consistency',
+  type: 'completion',
+  category: 'dedication',
   requirementType: 'count',
-  requirementValue: 7,
+  requirementValue: 1,
   isEarned: false,
   ...overrides,
 });
@@ -30,90 +29,80 @@ const progress = (currentValue: number, targetValue: number) => ({
     isEarned: false,
     currentValue,
     targetValue,
-    progressPercentage: Math.round((currentValue / targetValue) * 100),
+    progressPercentage: (currentValue / targetValue) * 100,
   },
 });
 
+const achievements: Achievement[] = [
+  achievement('streak_3', 'On a Roll', {
+    type: 'streak',
+    track: 'streak',
+    requirementValue: 3,
+    isEarned: true,
+    earnedAt: '2026-11-20 12:00:00',
+  }),
+  achievement('completions_10', 'Getting Active', {
+    track: 'check_ins',
+    requirementValue: 10,
+    ...progress(4, 10),
+  }),
+  achievement('social_butterfly', 'Social Butterfly', {
+    type: 'special_achievement',
+    description: 'Add notes to habit completions 20 times',
+    ...progress(0, 20),
+  }),
+  achievement('early_bird', 'Early Bird', {
+    type: 'special_achievement',
+    isEarned: true,
+    earnedAt: '2026-11-21 12:00:00',
+  }),
+];
+
 describe('ProgressAchievements', () => {
-  it('lists earned, in-progress and not-started achievements under their own headings', () => {
+  it('lists one row per track, in the tracks order', () => {
     render(
-      <ProgressAchievements
-        achievements={[
-          achievement('1', 'First Step', {
-            isEarned: true,
-            earnedAt: '2026-11-01 10:00:00',
-          }),
-          achievement('2', 'Perfect Week', progress(3, 7)),
-          achievement('3', 'Perfect Month', progress(0, 30)),
-          achievement('4', 'Century'),
-        ]}
-      />,
+      <ProgressAchievements achievements={achievements} currentStreak={0} />,
     );
 
-    expect(
-      screen.getByRole('heading', { name: 'Earned (1)' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'In Progress (1)' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Not Started (2)' }),
-    ).toBeInTheDocument();
+    const tracks = within(screen.getByRole('list', { name: 'Tracks' }))
+      .getAllByRole('button')
+      .map((row) => row.textContent);
+    expect(tracks[0]).toMatch(/^Check-ins/);
+    expect(tracks[1]).toMatch(/^Streak/);
+    expect(tracks).toHaveLength(2);
   });
 
-  it('has no In Progress heading when nothing has been started', () => {
+  it('lists one-off achievements as badges, earned first', () => {
     render(
-      <ProgressAchievements
-        achievements={[achievement('3', 'Perfect Month', progress(0, 30))]}
-      />,
+      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+    );
+
+    const badges = within(
+      screen.getByRole('list', { name: 'Badges' }),
+    ).getAllByRole('listitem');
+    expect(
+      badges.map((badge) => badge.querySelector('p')?.textContent),
+    ).toEqual(['Early Bird', 'Social Butterfly']);
+    expect(badges[0]).toHaveTextContent(/Earned Nov 2\d, 2026/);
+    expect(badges[1]).toHaveTextContent('0 / 20');
+    expect(badges[1]).toHaveTextContent(
+      'Add notes to habit completions 20 times',
+    );
+  });
+
+  it('has no category tabs', () => {
+    render(
+      <ProgressAchievements achievements={achievements} currentStreak={0} />,
     );
 
     expect(
-      screen.queryByRole('heading', { name: /In Progress/ }),
+      screen.queryByRole('button', { name: /Getting Started/ }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Not Started (1)' }),
-    ).toBeInTheDocument();
   });
 
-  it('lists earned achievements newest first', () => {
-    render(
-      <ProgressAchievements
-        achievements={[
-          achievement('1', 'First Step', {
-            isEarned: true,
-            earnedAt: '2026-11-01 10:00:00',
-          }),
-          achievement('2', 'Week Streak', {
-            isEarned: true,
-            earnedAt: '2026-11-21 10:00:00',
-          }),
-          achievement('3', 'On a Roll', {
-            isEarned: true,
-            earnedAt: '2026-11-20 10:00:00',
-          }),
-        ]}
-      />,
-    );
+  it('says so when there are no achievements to show', () => {
+    render(<ProgressAchievements achievements={[]} currentStreak={0} />);
 
-    expect(
-      screen.getAllByRole('heading', { level: 4 }).map((h) => h.textContent),
-    ).toEqual(['Week Streak', 'On a Roll', 'First Step']);
-  });
-
-  it('lists achievements under way closest to earned first', () => {
-    render(
-      <ProgressAchievements
-        achievements={[
-          achievement('1', 'Centurion', progress(8, 100)),
-          achievement('2', 'Half Century', progress(40, 50)),
-          achievement('3', 'Monthly Active', progress(19, 30)),
-        ]}
-      />,
-    );
-
-    expect(
-      screen.getAllByRole('heading', { level: 4 }).map((h) => h.textContent),
-    ).toEqual(['Half Century', 'Monthly Active', 'Centurion']);
+    expect(screen.getByText('No achievements to show')).toBeInTheDocument();
   });
 });

@@ -151,4 +151,17 @@ describe('AchievementService', () => {
       expect(keys, key).not.toContain(key);
     }
   });
+
+  it('names the track of each achievement that is one of a series', async () => {
+    const userId = 'user_ach_tracks';
+    await addUser(userId);
+
+    const achievements = await service.getAllAchievementsForUser(userId, 'UTC');
+    const byKey = new Map(achievements.map((a) => [a.key, a]));
+
+    expect(byKey.get('completions_50')?.track).toBe('check_ins');
+    expect(byKey.get('streak_14')?.track).toBe('streak');
+    expect(byKey.get('social_butterfly')).toBeDefined();
+    expect(byKey.get('social_butterfly')).not.toHaveProperty('track');
+  });
 });
