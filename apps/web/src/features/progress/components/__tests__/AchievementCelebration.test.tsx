@@ -110,7 +110,9 @@ describe('AchievementCelebration', () => {
     const second = screen.getByRole('dialog', { name: 'Maximalist' });
     expect(second).toHaveTextContent('Badge earned');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Keep going' }));
+    const keepGoing = screen.getByRole('button', { name: 'Keep going' });
+    expect(keepGoing.className).toContain('color-brand-solid');
+    await userEvent.click(keepGoing);
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(context().achievementCelebrations).toEqual([]);

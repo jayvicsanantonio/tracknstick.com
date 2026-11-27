@@ -9,7 +9,7 @@ export interface Celebration {
   medal: Medal;
   /** "Level 3 of 8 on your check-ins track"; null before the list loads. */
   level: string | null;
-  /** The track's next level after this one, if there is one. */
+  /** The track's next level after this one not yet earned, if any. */
   next: Achievement | undefined;
   /** What is left to reach the next level. */
   remaining: string | null;
@@ -39,13 +39,16 @@ export function describeCelebration(
   const levels = group?.levels ?? [earned];
   const index = levels.findIndex((candidate) => candidate.key === key);
   const trackName = (group?.label ?? '').toLowerCase();
-  const next = levels[index + 1];
+  const isTop = index === levels.length - 1;
+  // The next level still to reach: one check can earn several levels, and
+  // the ones it earned alongside this are already behind the user.
+  const next = levels.slice(index + 1).find((level) => !level.isEarned);
 
   return {
     medal: medalFor(index + 1, levels.length),
-    level: next
-      ? `Level ${index + 1} of ${levels.length} on your ${trackName} track`
-      : `The top of your ${trackName} track`,
+    level: isTop
+      ? `The top of your ${trackName} track`
+      : `Level ${index + 1} of ${levels.length} on your ${trackName} track`,
     next,
     remaining: next ? describeRemaining(next, currentStreak) : null,
   };

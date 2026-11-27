@@ -5,7 +5,7 @@ import { memo } from 'react';
 
 const NewMark = memo(function NewMark() {
   return (
-    <span className="shrink-0 rounded-full bg-(--color-brand-primary) px-1.5 py-px text-[10px] leading-4 font-bold tracking-wide text-(--color-primary-foreground) uppercase">
+    <span className="shrink-0 rounded-full bg-(--color-brand-solid) px-1.5 py-px text-[10px] leading-4 font-bold tracking-wide text-(--color-primary-foreground) uppercase">
       New
     </span>
   );
