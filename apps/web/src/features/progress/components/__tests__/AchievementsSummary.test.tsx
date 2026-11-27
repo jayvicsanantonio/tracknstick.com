@@ -1,5 +1,5 @@
 // Covers the achievements summary on the progress page: how many are earned and what is next.
-// It lists the unearned achievements closest to being earned and opens the full list on request.
+// It lists the unearned achievements closest to being earned, says what is left of each, and opens the full list on request.
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
@@ -63,6 +63,8 @@ function renderSummary(
     error: null,
     isListOpen: false,
     onToggleList: vi.fn(),
+    currentStreak: 0,
+    onSelectNextUp: vi.fn(),
     ...overrides,
   };
   render(<AchievementsSummary {...props} />);
@@ -89,6 +91,42 @@ describe('AchievementsSummary', () => {
     expect(names).toEqual(['Century', 'Perfect Week', 'On a Roll']);
     expect(within(nextUp).queryByText('First Step')).not.toBeInTheDocument();
     expect(within(nextUp).getByText('90 / 100')).toBeInTheDocument();
+  });
+
+  it('says what is left of each achievement next up', () => {
+    renderSummary({
+      achievements: [
+        achievement('2', 'Half Century', {
+          type: 'completion',
+          ...progress(40, 50),
+        }),
+        achievement('3', 'Two Weeks Strong', progress(8, 14)),
+      ],
+      currentStreak: 2,
+    });
+
+    const nextUp = screen.getByRole('list', { name: 'Next up' });
+    expect(within(nextUp).getByText('10 more check-ins')).toBeInTheDocument();
+    expect(
+      within(nextUp).getByText('12 more days in a row'),
+    ).toBeInTheDocument();
+  });
+
+  it('asks for a new streak when none is running', () => {
+    renderSummary({
+      achievements: [achievement('3', 'Two Weeks Strong', progress(8, 14))],
+      currentStreak: 0,
+    });
+
+    expect(screen.getByText('Start a streak today')).toBeInTheDocument();
+  });
+
+  it('goes to the Tracker when an achievement next up is tapped', async () => {
+    const { onSelectNextUp } = renderSummary();
+
+    await userEvent.click(screen.getByRole('button', { name: /^Century/ }));
+
+    expect(onSelectNextUp).toHaveBeenCalledTimes(1);
   });
 
   it('puts the easy first wins first when nothing has progress yet', () => {

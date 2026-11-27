@@ -75,7 +75,7 @@ export function useHabits(): UseHabitsReturn {
   // Check for new achievements
   const checkAchievements = useCallback(async () => {
     try {
-      const result = await achievementApi.checkAchievements();
+      const result = await achievementApi.checkAchievements(timeZone);
       if (result.count > 0) {
         triggerHaptic('achievement', { androidOnly: true });
         // Show toast for new achievements
@@ -90,7 +90,7 @@ export function useHabits(): UseHabitsReturn {
     } catch (error) {
       console.error('Failed to check achievements:', error);
     }
-  }, [toast]);
+  }, [toast, timeZone]);
 
   const habitsEndpointKey =
     date && isSignedIn ? habitsForDateKey(date, timeZone) : null;

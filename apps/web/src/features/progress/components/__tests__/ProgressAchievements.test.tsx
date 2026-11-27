@@ -1,5 +1,6 @@
 // Covers the full achievement list: earned ones, those under way, and those not started, each under its own heading.
 // An achievement with nothing done toward it reads as not started, not as in progress.
+// Earned ones list newest first, and those under way list closest to earned first.
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -73,5 +74,46 @@ describe('ProgressAchievements', () => {
     expect(
       screen.getByRole('heading', { name: 'Not Started (1)' }),
     ).toBeInTheDocument();
+  });
+
+  it('lists earned achievements newest first', () => {
+    render(
+      <ProgressAchievements
+        achievements={[
+          achievement('1', 'First Step', {
+            isEarned: true,
+            earnedAt: '2026-11-01 10:00:00',
+          }),
+          achievement('2', 'Week Streak', {
+            isEarned: true,
+            earnedAt: '2026-11-21 10:00:00',
+          }),
+          achievement('3', 'On a Roll', {
+            isEarned: true,
+            earnedAt: '2026-11-20 10:00:00',
+          }),
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getAllByRole('heading', { level: 4 }).map((h) => h.textContent),
+    ).toEqual(['Week Streak', 'On a Roll', 'First Step']);
+  });
+
+  it('lists achievements under way closest to earned first', () => {
+    render(
+      <ProgressAchievements
+        achievements={[
+          achievement('1', 'Centurion', progress(8, 100)),
+          achievement('2', 'Half Century', progress(40, 50)),
+          achievement('3', 'Monthly Active', progress(19, 30)),
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getAllByRole('heading', { level: 4 }).map((h) => h.textContent),
+    ).toEqual(['Half Century', 'Monthly Active', 'Centurion']);
   });
 });

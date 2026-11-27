@@ -5,8 +5,10 @@ import { useState } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ProgressOverview from '../ProgressOverview';
+import { DateContext, type DateContextProps } from '@app/providers/DateContext';
+import type { Achievement } from '../../types/Achievement';
 import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import { useHideSplash } from '@shared/hooks/useHideSplash';
 import useProgressHistory from '../../hooks/useProgressHistory';
@@ -14,9 +16,10 @@ import useProgressSummary from '../../hooks/useProgressSummary';
 
 vi.mock('../../hooks/useProgressHistory', () => ({ default: vi.fn() }));
 vi.mock('../../hooks/useProgressSummary', () => ({ default: vi.fn() }));
+const mockAchievements = vi.hoisted(() => ({ list: [] as Achievement[] }));
 vi.mock('../../hooks/useAchievements', () => ({
   useAchievements: () => ({
-    achievements: [],
+    achievements: mockAchievements.list,
     stats: {
       totalAchievements: 44,
       earnedAchievements: 3,
@@ -83,6 +86,7 @@ describe('ProgressOverview', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    mockAchievements.list = [];
   });
 
   it('shows the all-time lifetime progress hero summary across viewports', () => {
@@ -289,6 +293,74 @@ describe('ProgressOverview', () => {
       screen.getByRole('button', { name: 'See all achievements' }),
     );
     expect(screen.getByTestId('all-achievements')).toBeInTheDocument();
+  });
+
+  it('on a phone, shows the achievements right after the all-time summary', () => {
+    const desktop = vi.mocked(window.matchMedia).getMockImplementation();
+    vi.mocked(window.matchMedia).mockImplementation(
+      (query: string) =>
+        ({
+          matches: query === '(max-width: 639px)',
+          media: query,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+    renderOverview();
+
+    const achievements = screen.getByRole('heading', { name: 'Achievements' });
+    const calendar = screen.getByRole('heading', { name: 'November 2026' });
+    expect(
+      achievements.compareDocumentPosition(calendar) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    vi.mocked(window.matchMedia).mockImplementation(desktop!);
+  });
+
+  it('opens the Tracker on today when an achievement next up is tapped', async () => {
+    vi.useRealTimers();
+    mockAchievements.list = [
+      {
+        id: '1',
+        key: 'completions_50',
+        name: 'Half Century',
+        description: 'Complete habits 50 times',
+        type: 'completion',
+        category: 'dedication',
+        requirementType: 'count',
+        requirementValue: 50,
+        isEarned: false,
+        progress: {
+          achievementId: 1,
+          isEarned: false,
+          currentValue: 40,
+          targetValue: 50,
+          progressPercentage: 80,
+        },
+      },
+    ];
+    const setDate = vi.fn<(day: Date) => void>();
+    render(
+      <DateContext.Provider value={{ setDate } as unknown as DateContextProps}>
+        <MemoryRouter initialEntries={['/progress']}>
+          <HabitsStateProvider>
+            <Routes>
+              <Route path="/progress" element={<ProgressOverview />} />
+              <Route path="/" element={<p>Tracker</p>} />
+            </Routes>
+          </HabitsStateProvider>
+        </MemoryRouter>
+      </DateContext.Provider>,
+    );
+
+    expect(screen.getByText('10 more check-ins')).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: /^Half Century/ }),
+    );
+
+    expect(screen.getByText('Tracker')).toBeInTheDocument();
+    const [day] = setDate.mock.calls[0];
+    expect(day.toDateString()).toBe(new Date().toDateString());
   });
 
   it('shows an error instead of the progress when the history fails to load', () => {

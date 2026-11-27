@@ -1,7 +1,21 @@
-// Response shapes for the achievements endpoints (/api/v1/achievements).
-// These endpoints take no request body or query, so there are no request schemas.
+// Request and response shapes for the achievements endpoints (/api/v1/achievements).
+// None takes a body; the list and the check take the user's time zone as a query.
 
 import { z } from 'zod';
+
+// --- Requests -------------------------------------------------------------
+
+/**
+ * GET /achievements and POST /achievements/check. The streak achievements
+ * count days in this time zone, as the progress summary does.
+ */
+export const achievementsQuerySchema = z.object({
+  timeZone: z.string().default('UTC'),
+});
+
+export type AchievementsQuery = z.input<typeof achievementsQuerySchema>;
+
+// --- Responses ------------------------------------------------------------
 
 export const ACHIEVEMENT_TYPES = [
   'habit_creation',

@@ -6,6 +6,8 @@ import type { AppEnv } from '../types/index.js';
 import { clerkMiddleware } from '../middlewares/clerkMiddleware.js';
 import { withClerkFailureHandling } from '../middlewares/middlewareFailureHandler.js';
 import * as achievementController from '../controllers/achievement.controller.js';
+import { validateRequest } from '../middlewares/validateRequest.js';
+import { achievementsQuerySchema } from '@tracknstick/contracts';
 
 // Create a sub-application for achievements
 const app = new Hono<AppEnv>();
@@ -16,7 +18,12 @@ const app = new Hono<AppEnv>();
 const requireAuth = withClerkFailureHandling(clerkMiddleware());
 
 // GET /api/v1/achievements - Get all achievements with progress for user
-app.get('/', requireAuth, achievementController.getAllAchievements);
+app.get(
+  '/',
+  requireAuth,
+  validateRequest(achievementsQuerySchema, 'query'),
+  achievementController.getAllAchievements
+);
 
 // GET /api/v1/achievements/earned - Get only earned achievements for user
 app.get(
@@ -29,6 +36,11 @@ app.get(
 app.get('/stats', requireAuth, achievementController.getAchievementStats);
 
 // POST /api/v1/achievements/check - Check and award new achievements
-app.post('/check', requireAuth, achievementController.checkAchievements);
+app.post(
+  '/check',
+  requireAuth,
+  validateRequest(achievementsQuerySchema, 'query'),
+  achievementController.checkAchievements
+);
 
 export { app as achievementRoutes };

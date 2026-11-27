@@ -181,7 +181,8 @@ describe('useHabits', () => {
     vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
       message: 'ok',
     });
-    vi.spyOn(achievementApi, 'checkAchievements')
+    const checkAchievements = vi
+      .spyOn(achievementApi, 'checkAchievements')
       .mockResolvedValueOnce({ count: 0, newAchievements: [] } as never)
       .mockResolvedValueOnce({
         count: 1,
@@ -196,6 +197,8 @@ describe('useHabits', () => {
     // Checking first of two habits -> heavy
     await act(() => view.result.current.toggleHabit('7'));
     expect(triggerHaptic).toHaveBeenCalledWith('heavy');
+    // Streak achievements count days in the user's time zone.
+    await waitFor(() => expect(checkAchievements).toHaveBeenCalledWith('UTC'));
 
     // Mock refetch keeping habit 7 done so habit 8 is the final incomplete habit
     vi.spyOn(habitsApi, 'fetchHabits').mockResolvedValue([

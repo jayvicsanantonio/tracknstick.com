@@ -1,12 +1,13 @@
 // The progress page's achievements panel: how many are earned, and the few closest to being earned.
-// Its button opens the full list, with the category filter, below the page's panels.
+// Each of those says what is left and opens the Tracker; its button opens the full list, with the category filter.
 
 import { memo } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { cn } from '@shared/utils/utils';
 import { Achievement, AchievementStats } from '../types/Achievement';
 import { getAchievementIcon } from '../utils/achievementIcons';
+import { describeRemaining } from '../utils/achievementRemaining';
 
 /** How many unearned achievements the panel lists. */
 const NEXT_UP_COUNT = 3;
@@ -18,6 +19,10 @@ interface AchievementsSummaryProps {
   error: string | null;
   isListOpen: boolean;
   onToggleList: () => void;
+  /** The streak running now, which the streak achievements next up count from. */
+  currentStreak: number;
+  /** Opens the Tracker, where the next achievement is worked toward. */
+  onSelectNextUp: () => void;
 }
 
 /** How much is left to do: the target, or the requirement when there is no progress yet. */
@@ -83,6 +88,8 @@ const AchievementsSummary = memo(function AchievementsSummary({
   error,
   isListOpen,
   onToggleList,
+  currentStreak,
+  onSelectNextUp,
 }: AchievementsSummaryProps) {
   const total = stats?.totalAchievements ?? achievements.length;
   const earned =
@@ -138,31 +145,51 @@ const AchievementsSummary = memo(function AchievementsSummary({
                 {upcoming.map((achievement) => {
                   const Icon = getAchievementIcon(achievement.icon);
                   const progress = achievement.progress;
+                  const remaining = describeRemaining(
+                    achievement,
+                    currentStreak,
+                  );
                   return (
-                    <li
-                      key={achievement.id}
-                      className="flex items-center gap-3 rounded-2xl bg-(--color-brand-primary)/6 p-2.5 ring-1 ring-(--color-brand-primary)/12 ring-inset"
-                    >
-                      <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
-                        <Icon aria-hidden="true" className="h-4 w-4" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-[14px] font-semibold text-(--color-foreground)">
-                            {achievement.name}
-                          </p>
-                          {progress && (
-                            <span className="shrink-0 rounded-full bg-(--color-brand-primary)/12 px-2 py-0.5 text-[11px] font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
-                              {progress.currentValue} / {progress.targetValue}
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1.5">
-                          <ProgressBar
-                            percent={progress?.progressPercentage ?? 0}
+                    <li key={achievement.id}>
+                      <IosHapticTarget className="block w-full rounded-2xl">
+                        <button
+                          type="button"
+                          onClick={onSelectNextUp}
+                          className="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-(--color-brand-primary)/6 p-2.5 text-left ring-1 ring-(--color-brand-primary)/12 transition-[background-color,transform] ring-inset hover:bg-(--color-brand-primary)/10 focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:outline-none active:scale-[0.985]"
+                        >
+                          <span className="flex size-10 shrink-0 items-center justify-center rounded-[13px] bg-(--color-brand-primary)/14 text-(--color-brand-primary) ring-1 ring-(--color-brand-primary)/24 ring-inset">
+                            <Icon aria-hidden="true" className="h-4 w-4" />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="truncate text-[14px] font-semibold text-(--color-foreground)">
+                                {achievement.name}
+                              </p>
+                              {progress && (
+                                <span className="shrink-0 rounded-full bg-(--color-brand-primary)/12 px-2 py-0.5 text-[11px] font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
+                                  {progress.currentValue} /{' '}
+                                  {progress.targetValue}
+                                </span>
+                              )}
+                            </div>
+                            <div className="mt-1.5">
+                              <ProgressBar
+                                percent={progress?.progressPercentage ?? 0}
+                              />
+                            </div>
+                            {remaining && (
+                              <span className="mt-1.5 block truncate text-[12px] font-medium text-(--color-text-secondary)">
+                                {remaining}
+                              </span>
+                            )}
+                          </div>
+                          <ChevronRight
+                            aria-hidden="true"
+                            className="h-4 w-4 shrink-0 text-(--color-text-secondary)/70"
                           />
-                        </div>
-                      </div>
+                          <span className="sr-only">, go to Tracker</span>
+                        </button>
+                      </IosHapticTarget>
                     </li>
                   );
                 })}

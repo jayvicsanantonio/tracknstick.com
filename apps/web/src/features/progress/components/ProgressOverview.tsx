@@ -1,6 +1,6 @@
 // The Progress page body: all-time lifetime hero summary, the month's calendar and chart,
-// and achievements. Shares one unified open-canvas elevated card design across phone,
-// tablet, and desktop.
+// and achievements, which phones show right under the summary. Shares one unified
+// open-canvas elevated card design across phone, tablet, and desktop.
 
 import { useState, useCallback, useContext, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -83,6 +83,26 @@ const ProgressOverview = memo(function ProgressOverview() {
     setShowAllAchievements((open) => !open);
   }, []);
 
+  // Next up is worked toward by checking off today's habits.
+  const handleSelectNextUp = useCallback(() => {
+    triggerHaptic('light');
+    dateContext?.setDate(new Date());
+    void navigate('/');
+  }, [dateContext, navigate]);
+
+  const achievementsSummary = (
+    <AchievementsSummary
+      achievements={achievements}
+      stats={stats}
+      loading={achievementsLoading}
+      error={achievementsError}
+      isListOpen={showAllAchievements}
+      onToggleList={handleToggleAchievements}
+      currentStreak={currentStreak}
+      onSelectNextUp={handleSelectNextUp}
+    />
+  );
+
   return (
     <div className="flex h-full flex-1 flex-col">
       <MobileNavBar title="Progress" />
@@ -129,6 +149,9 @@ const ProgressOverview = memo(function ProgressOverview() {
                 isLoading={isSummaryLoading}
               />
             )}
+
+            {/* Phones: achievements right under the summary, above the calendar */}
+            {isMobile && achievementsSummary}
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <section
@@ -185,14 +208,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                   )}
                 </section>
 
-                <AchievementsSummary
-                  achievements={achievements}
-                  stats={stats}
-                  loading={achievementsLoading}
-                  error={achievementsError}
-                  isListOpen={showAllAchievements}
-                  onToggleList={handleToggleAchievements}
-                />
+                {!isMobile && achievementsSummary}
               </div>
             </div>
 

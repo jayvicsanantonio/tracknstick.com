@@ -1,4 +1,4 @@
-// Covers how an earned achievement card reads: its badge, its palette, and the date it was earned.
+// Covers how an achievement card reads: when it was earned, its palette, and no catalogue labels.
 // Earned cards use the brand tokens; earnedAt is a UTC SQLite timestamp shown as its local calendar date.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -21,10 +21,20 @@ const earned: Achievement = {
 };
 
 describe('AchievementCard', () => {
-  it('marks an earned achievement as earned', () => {
+  it('marks an earned achievement as earned, once, with its date', () => {
+    vi.stubEnv('TZ', 'UTC');
     render(<AchievementCard achievement={earned} />);
 
-    expect(screen.getByText(/Earned/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Earned/)).toHaveLength(1);
+    expect(screen.getByText('Earned Nov 18, 2026')).toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
+
+  it('leaves out the catalogue category and type labels', () => {
+    render(<AchievementCard achievement={earned} />);
+
+    expect(screen.queryByText('Getting Started')).not.toBeInTheDocument();
+    expect(screen.queryByText('Creation')).not.toBeInTheDocument();
   });
 
   it('styles an earned card with the brand palette only', () => {
@@ -70,9 +80,7 @@ describe('AchievementCard', () => {
     it('shows the local date an achievement was earned on', () => {
       render(<AchievementCard achievement={earned} />);
 
-      expect(
-        screen.getByText(new Date(2026, 10, 17).toLocaleDateString()),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Earned Nov 17, 2026')).toBeInTheDocument();
     });
   });
 });

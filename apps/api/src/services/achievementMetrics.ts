@@ -3,9 +3,14 @@
 
 import type { UserHabitStats } from '../repositories/achievement.repository.js';
 
-/** Everything an achievement rule can measure, read once per request. */
+/**
+ * Everything an achievement rule can measure, read once per request. The
+ * streaks count days on which every scheduled habit was done, in the user's
+ * time zone, as the progress summary does.
+ */
 export interface UserStatsSnapshot extends UserHabitStats {
   currentStreak: number;
+  longestStreak: number;
 }
 
 type Metric = (s: UserStatsSnapshot) => number;
@@ -37,7 +42,7 @@ export const METRICS: Record<string, Metric> = {
   completions_500: (s) => s.totalCompletions,
   completions_1000: (s) => s.totalCompletions,
 
-  // Streaks measure the best run ever achieved
+  // Streaks measure the best run ever of days on which every habit was done
   streak_3: (s) => s.longestStreak,
   streak_7: (s) => s.longestStreak,
   streak_14: (s) => s.longestStreak,
@@ -86,6 +91,11 @@ export const UNMEASURABLE: Record<string, string> = {
   habit_legend:
     'counts earned achievements, which would make evaluation self-referential',
 };
+
+/** Whether an achievement has a metric, and so can be earned at all. */
+export function isMeasurable(achievement: { key: string }): boolean {
+  return Object.prototype.hasOwnProperty.call(METRICS, achievement.key);
+}
 
 /**
  * The measured value for an achievement, or null when it has no metric.
