@@ -1,7 +1,7 @@
 // End-to-end checks of the habit flows a signed-in user relies on, through the real API and D1.
 // Each test creates a habit with a name of its own, so no test depends on another's data.
 
-import { expect, test } from '@playwright/test';
+import { expect, test } from './signedInTest';
 import { addHabit } from './addHabit';
 
 /** A habit name no other test or run uses. */

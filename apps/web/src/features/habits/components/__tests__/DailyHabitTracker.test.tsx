@@ -12,6 +12,7 @@ import { useAllHabits } from '@/features/habits/hooks/useAllHabits';
 import { useHideSplash } from '@shared/hooks/useHideSplash';
 import { DateContext } from '@app/providers/DateContext';
 import type { Habit } from '@/features/habits/types/Habit';
+import type { Achievement } from '@/features/progress/types/Achievement';
 
 vi.mock('@/features/habits/hooks/useHabits', () => ({ useHabits: vi.fn() }));
 vi.mock('@/features/habits/hooks/useAllHabits', () => ({
@@ -28,6 +29,10 @@ vi.mock('@/features/progress/hooks/useProgressSummary', () => ({
   default: () => ({ currentStreak: 0, longestStreak: 0, isLoading: false }),
 }));
 vi.mock('../TrackerWeekStrip', () => ({ default: () => null }));
+const mockAchievements = vi.hoisted(() => ({ list: [] as Achievement[] }));
+vi.mock('@/features/progress/hooks/useAchievements', () => ({
+  useAchievements: () => ({ achievements: mockAchievements.list }),
+}));
 vi.mock('../DailyHabitProgressIndicator', () => ({
   default: ({
     completionRate,
@@ -196,6 +201,45 @@ describe('DailyHabitTracker', () => {
     const section = screen.getByRole('region', { name: "Today's Habits" });
     expect(section).toBeInTheDocument();
     expect(within(section).getByText('1/2 done')).toBeInTheDocument();
+  });
+
+  it('says when checking off the habits left earns the next check-ins level', () => {
+    mockAchievements.list = [
+      {
+        id: 'completions_50',
+        key: 'completions_50',
+        name: 'Half Century',
+        description: 'Complete habits 50 times',
+        type: 'completion',
+        category: 'dedication',
+        track: 'check_ins',
+        requirementType: 'count',
+        requirementValue: 50,
+        isEarned: false,
+        progress: {
+          achievementId: 0,
+          isEarned: false,
+          currentValue: 48,
+          targetValue: 50,
+          progressPercentage: 96,
+        },
+      },
+    ];
+    mockHabits({
+      habits: [
+        habit({ id: '1', name: 'Workout', completed: false }),
+        habit({ id: '2', name: 'Read', completed: false }),
+        habit({ id: '3', name: 'Walk', completed: true }),
+      ],
+    });
+
+    renderTracker();
+
+    const section = screen.getByRole('region', { name: "Today's Habits" });
+    expect(
+      within(section).getByText('2 more check-ins earn Half Century'),
+    ).toBeInTheDocument();
+    mockAchievements.list = [];
   });
 
   it('shows a check badge on completed habits only', () => {

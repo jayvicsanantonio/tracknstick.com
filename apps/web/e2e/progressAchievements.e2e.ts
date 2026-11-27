@@ -1,7 +1,7 @@
 // End-to-end checks of the achievements on the Progress page and its tracks, through the real API and D1.
 // Named to run after emptyStates.e2e.ts, which needs the test user to start with no habits.
 
-import { expect, test } from '@playwright/test';
+import { expect, test } from './signedInTest';
 import { addHabit } from './addHabit';
 
 test('shows what is left of the next achievements and opens the Tracker from one', async ({

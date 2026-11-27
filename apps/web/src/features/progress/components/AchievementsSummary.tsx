@@ -24,6 +24,8 @@ interface AchievementsSummaryProps {
   currentStreak: number;
   /** Opens the Tracker, where the next achievement is worked toward. */
   onSelectNextUp: () => void;
+  /** How many achievements were earned since the last visit. */
+  newCount: number;
 }
 
 /** How much is left to do: the target, or the requirement when there is no progress yet. */
@@ -96,6 +98,7 @@ const AchievementsSummary = memo(function AchievementsSummary({
   onToggleList,
   currentStreak,
   onSelectNextUp,
+  newCount,
 }: AchievementsSummaryProps) {
   const total = stats?.totalAchievements ?? achievements.length;
   const earned =
@@ -118,8 +121,15 @@ const AchievementsSummary = memo(function AchievementsSummary({
           Achievements
         </h2>
         {!loading && !error && (
-          <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-xs font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
-            {earned} of {total} earned
+          <span className="flex items-center gap-1.5">
+            {newCount > 0 && (
+              <span className="rounded-full bg-(--color-brand-primary) px-2.5 py-0.5 text-xs font-semibold text-(--color-primary-foreground) tabular-nums">
+                {newCount} new
+              </span>
+            )}
+            <span className="rounded-full bg-(--color-brand-primary)/12 px-2.5 py-0.5 text-xs font-semibold text-(--color-brand-text) tabular-nums dark:text-(--color-brand-text-light)">
+              {earned} of {total} earned
+            </span>
           </span>
         )}
       </div>

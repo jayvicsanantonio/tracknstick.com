@@ -3,7 +3,8 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { expect, test, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
+import { expect, test } from './signedInTest';
 import { addHabit } from './addHabit';
 
 // The service worker of the build `vite preview` serves (PREVIEW_OUT_DIR in

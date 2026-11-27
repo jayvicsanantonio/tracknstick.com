@@ -4,9 +4,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { SWRConfig } from 'swr';
+import { SWRConfig, mutate } from 'swr';
 import { AxiosError, type AxiosResponse } from 'axios';
 import { useHabits } from '../useHabits';
+import { useHabitsContext } from '../useHabitsContext';
+import { HabitsStateProvider } from '@/features/habits/context/HabitsStateContext';
 import * as habitsApi from '@/features/habits/api';
 import { achievementApi } from '@/features/progress/api';
 import { triggerHaptic } from '@shared/utils/haptics';
@@ -24,8 +26,9 @@ const mockToast = vi.hoisted(() => vi.fn());
 vi.mock('@app/providers/useDate', () => ({
   useDate: () => ({ date: DATE, setDate: vi.fn(), timeZone: 'UTC' }),
 }));
+const mockAuth = vi.hoisted(() => ({ userId: 'user_1' }));
 vi.mock('@clerk/clerk-react', () => ({
-  useAuth: () => ({ isSignedIn: true, userId: 'user_1' }),
+  useAuth: () => ({ isSignedIn: true, userId: mockAuth.userId }),
 }));
 vi.mock('@shared/hooks/useOfflineSession', () => ({
   useOfflineSession: () => false,
@@ -35,6 +38,10 @@ vi.mock('@shared/hooks/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
 }));
 vi.mock('@shared/utils/sound', () => ({ playHabitSound: vi.fn() }));
+vi.mock('swr', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('swr')>();
+  return { ...actual, mutate: vi.fn(actual.mutate) };
+});
 vi.mock('@shared/utils/haptics', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@shared/utils/haptics')>();
   return {
@@ -55,7 +62,7 @@ const habit: Habit = {
 // Fresh cache per test so one test's data cannot answer another's
 const wrapper = ({ children }: { children: ReactNode }) => (
   <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
-    {children}
+    <HabitsStateProvider>{children}</HabitsStateProvider>
   </SWRConfig>
 );
 
@@ -89,6 +96,7 @@ describe('useHabits', () => {
     vi.useRealTimers();
     localStorage.clear();
     mockToast.mockReset();
+    mockAuth.userId = 'user_1';
     vi.restoreAllMocks();
     if (originalVibrateDescriptor) {
       Object.defineProperty(navigator, 'vibrate', originalVibrateDescriptor);
@@ -173,6 +181,122 @@ describe('useHabits', () => {
       'Failed to toggle habit completion:',
       expect.any(AxiosError),
     );
+  });
+
+  it('celebrates the achievements a check awards, instead of a toast', async () => {
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
+      message: 'ok',
+    });
+    const earned = {
+      id: 'a1',
+      key: 'completions_50',
+      name: 'Half Century',
+      description: 'Complete habits 50 times',
+      type: 'completion' as const,
+      category: 'dedication' as const,
+    };
+    vi.spyOn(achievementApi, 'checkAchievements').mockResolvedValue({
+      message: 'checked',
+      newAchievements: [earned],
+      count: 1,
+    });
+    const view = renderHook(
+      () => ({ habits: useHabits(), state: useHabitsContext() }),
+      { wrapper },
+    );
+    await waitFor(() =>
+      expect(view.result.current.habits.habits).toHaveLength(1),
+    );
+
+    await act(() => view.result.current.habits.toggleHabit('7'));
+
+    await waitFor(() =>
+      expect(view.result.current.state.achievementCelebrations).toEqual([
+        earned,
+      ]),
+    );
+    expect(mockToast).not.toHaveBeenCalled();
+  });
+
+  it("ignores a check that answers after the signed-in user changed, and clears the last user's celebrations", async () => {
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
+      message: 'ok',
+    });
+    const earned = (key: string) => ({
+      id: key,
+      key,
+      name: key,
+      description: `${key} description`,
+      type: 'completion' as const,
+      category: 'dedication' as const,
+    });
+    let answerLateCheck: (value: never) => void = () => undefined;
+    vi.spyOn(achievementApi, 'checkAchievements')
+      .mockResolvedValueOnce({
+        message: 'checked',
+        newAchievements: [earned('first')],
+        count: 1,
+      })
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            answerLateCheck = resolve;
+          }),
+      );
+    const view = renderHook(
+      () => ({ habits: useHabits(), state: useHabitsContext() }),
+      { wrapper },
+    );
+    await waitFor(() =>
+      expect(view.result.current.habits.habits).toHaveLength(1),
+    );
+
+    await act(() => view.result.current.habits.toggleHabit('7'));
+    await waitFor(() =>
+      expect(view.result.current.state.achievementCelebrations).toHaveLength(1),
+    );
+    await act(() => view.result.current.habits.toggleHabit('7'));
+
+    mockAuth.userId = 'user_2';
+    view.rerender();
+    expect(view.result.current.state.achievementCelebrations).toEqual([]);
+
+    await act(async () => {
+      answerLateCheck({
+        message: 'checked',
+        newAchievements: [earned('late')],
+        count: 1,
+      } as never);
+      await Promise.resolve();
+    });
+    expect(view.result.current.state.achievementCelebrations).toEqual([]);
+  });
+
+  it('fetches the achievements again after each check, so their progress stays current', async () => {
+    vi.spyOn(habitsApi, 'toggleHabitCompletion').mockResolvedValue({
+      message: 'ok',
+    });
+    const { result } = await renderTracker();
+    vi.mocked(mutate).mockClear();
+
+    await act(() => result.current.toggleHabit('7'));
+
+    await waitFor(() => {
+      const matchesAchievements = vi
+        .mocked(mutate)
+        .mock.calls.map(([match]) => match)
+        .filter(
+          (match): match is (key: unknown) => boolean =>
+            typeof match === 'function',
+        )
+        .some(
+          (match) =>
+            match(['/api/v1/achievements', 'UTC']) &&
+            match('/api/v1/achievements/stats') &&
+            !match(['progressSummary', 'UTC']),
+        );
+      expect(matchesAchievements).toBe(true);
+    });
   });
 
   it('triggers distinct heavy, allDone, light, and achievement haptics across toggle states', async () => {

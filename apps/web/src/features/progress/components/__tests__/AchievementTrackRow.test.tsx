@@ -45,9 +45,19 @@ const checkIns = [
   level('completions_100', 'Century Club', 100, at(40, 100)),
 ];
 
-function renderTrack(levels: Achievement[], currentStreak = 0) {
+function renderTrack(
+  levels: Achievement[],
+  currentStreak = 0,
+  newIds: ReadonlySet<string> = new Set(),
+) {
   const [group] = groupAchievements(levels).tracks;
-  render(<AchievementTrackRow group={group} currentStreak={currentStreak} />);
+  render(
+    <AchievementTrackRow
+      group={group}
+      currentStreak={currentStreak}
+      newIds={newIds}
+    />,
+  );
 }
 
 describe('AchievementTrackRow', () => {
@@ -132,12 +142,37 @@ describe('AchievementTrackRow', () => {
   it('colours the row with theme tokens, not fixed palette colours', async () => {
     const [group] = groupAchievements(checkIns).tracks;
     const { container } = render(
-      <AchievementTrackRow group={group} currentStreak={0} />,
+      <AchievementTrackRow
+        group={group}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
     await userEvent.click(screen.getByRole('button', { name: /Check-ins/ }));
 
     expect(container.innerHTML).not.toMatch(
       /\b(?:bg|text|from|to|ring)-(?:blue|purple|orange|indigo|red|emerald|amber|yellow|cyan|teal|gray|green|zinc|slate)-/,
     );
+  });
+
+  it('marks a track, and its level, with a level earned since the last visit', async () => {
+    renderTrack(checkIns, 0, new Set(['completions_25']));
+
+    const row = screen.getByRole('button', { name: /Check-ins/ });
+    expect(within(row).getByText('New')).toBeVisible();
+
+    await userEvent.click(row);
+
+    const levels = within(
+      screen.getByRole('list', { name: 'Check-ins levels' }),
+    ).getAllByRole('listitem');
+    expect(within(levels[1]).getByText('New')).toBeVisible();
+    expect(within(levels[0]).queryByText('New')).not.toBeInTheDocument();
+  });
+
+  it('has no new mark when nothing is new', () => {
+    renderTrack(checkIns);
+
+    expect(screen.queryByText('New')).not.toBeInTheDocument();
   });
 });

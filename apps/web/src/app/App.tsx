@@ -2,6 +2,7 @@ import { SignedIn } from '@clerk/clerk-react';
 import { HabitsStateProvider } from '@features/habits/context/HabitsStateContext';
 import AddHabitDialog from '@features/habits/components/AddHabitDialog';
 import EditHabitDialog from '@features/habits/components/EditHabitDialog';
+import AchievementCelebration from '@features/progress/components/AchievementCelebration';
 import { PWAInstallPrompt } from '@shared/components/feedback/PWAInstallPrompt';
 import ErrorBoundary from '@shared/components/feedback/ErrorBoundary';
 import { APP_MAX_WIDTH } from '@shared/constants/layout';
@@ -20,6 +21,7 @@ const AppContent = memo(function AppContent({ children }: AppProps) {
       {children}
       <AddHabitDialog />
       <EditHabitDialog />
+      <AchievementCelebration />
       {/* Offered once signed in: on the welcome page it would cover a
           first-time visitor's Get started button. */}
       <SignedIn>

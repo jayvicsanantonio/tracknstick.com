@@ -1,4 +1,4 @@
-// End-to-end checks of what a brand-new account sees on each page, and of starting from a starter habit.
+// End-to-end checks of what a brand-new account sees on each page, and of starting from a starter habit and its first achievement.
 // Needs the test user to have no habits, so it runs first of the signed-in files (they run in name order) and deletes what it adds.
 
 import { expect, test } from '@playwright/test';
@@ -43,6 +43,14 @@ test('guides a new account from an empty Tracker to its first habit', async ({
   await expect(dialog.getByLabel('Name')).toHaveValue(STARTER);
   await dialog.getByRole('button', { name: 'Add habit' }).click();
   await expect(dialog).toBeHidden();
+
+  // The first habit earns the first achievement, celebrated in a sheet with
+  // its place on the habits track.
+  const celebration = page.getByRole('dialog', { name: 'First Step' });
+  await expect(celebration).toContainText('Achievement earned');
+  await expect(celebration).toContainText('Level 1 of 5 on your habits track');
+  await celebration.getByRole('button', { name: 'Keep going' }).click();
+  await expect(celebration).toBeHidden();
   await expect(
     page.getByRole('button', { name: `Mark ${STARTER} as complete` }),
   ).toBeVisible();

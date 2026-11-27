@@ -1,4 +1,5 @@
 import { useState, ReactNode, useCallback, useMemo } from 'react';
+import type { AwardedAchievementResponse } from '@tracknstick/contracts';
 import { useToggle } from '@shared/hooks/use-toggle';
 import { Habit } from '@/features/habits/types/Habit';
 import {
@@ -13,6 +14,24 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
   const [showAddHabitDialog, toggleAddHabitDialog] = useToggle(false);
   const [addHabitDraft, setAddHabitDraft] = useState<HabitDraft | null>(null);
   const [showEditHabitDialog, toggleShowEditHabitDialog] = useToggle(false);
+  const [achievementCelebrations, setAchievementCelebrations] = useState<
+    AwardedAchievementResponse[]
+  >([]);
+
+  const celebrateAchievements = useCallback(
+    (achievements: AwardedAchievementResponse[]) => {
+      setAchievementCelebrations((queued) => [...queued, ...achievements]);
+    },
+    [],
+  );
+
+  const dismissAchievementCelebration = useCallback(() => {
+    setAchievementCelebrations((queued) => queued.slice(1));
+  }, []);
+
+  const clearAchievementCelebrations = useCallback(() => {
+    setAchievementCelebrations([]);
+  }, []);
 
   // Opening with the toggle starts a blank form, never a starter habit left
   // over from an earlier opening.
@@ -53,6 +72,10 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       showEditHabitDialog,
       toggleShowEditHabitDialog,
       openEditDialog,
+      achievementCelebrations,
+      celebrateAchievements,
+      dismissAchievementCelebration,
+      clearAchievementCelebrations,
     }),
     [
       editingHabit,
@@ -65,6 +88,10 @@ export function HabitsStateProvider({ children }: { children: ReactNode }) {
       showEditHabitDialog,
       toggleShowEditHabitDialog,
       openEditDialog,
+      achievementCelebrations,
+      celebrateAchievements,
+      dismissAchievementCelebration,
+      clearAchievementCelebrations,
     ],
   );
 

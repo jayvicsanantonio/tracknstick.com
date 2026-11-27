@@ -16,6 +16,7 @@ import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { cn } from '@shared/utils/utils';
 import AchievementMedal from './AchievementMedal';
+import NewMark from './NewMark';
 import { getAchievementIcon } from '../utils/achievementIcons';
 import { describeRemaining } from '../utils/achievementRemaining';
 import {
@@ -36,17 +37,21 @@ interface AchievementTrackRowProps {
   group: AchievementTrackGroup;
   /** The streak running now, which the streak track counts from. */
   currentStreak: number;
+  /** Ids of achievements earned since the last visit, marked new. */
+  newIds: ReadonlySet<string>;
 }
 
 const AchievementTrackRow = memo(function AchievementTrackRow({
   group,
   currentStreak,
+  newIds,
 }: AchievementTrackRowProps) {
   const [open, setOpen] = useState(false);
   const levelsId = useId();
   const { track, label, levels, earnedCount, next } = group;
   const medal = earnedCount > 0 ? medalFor(earnedCount, levels.length) : null;
   const remaining = next ? describeRemaining(next, currentStreak) : null;
+  const hasNew = levels.some((level) => newIds.has(level.id));
   const percent = Math.min(
     100,
     Math.max(0, Math.round(next?.progress?.progressPercentage ?? 0)),
@@ -69,8 +74,11 @@ const AchievementTrackRow = memo(function AchievementTrackRow({
 
           <span className="block min-w-0 flex-1">
             <span className="flex items-baseline justify-between gap-2">
-              <span className="text-[15px] font-semibold text-(--color-foreground)">
-                {label}
+              <span className="flex items-center gap-1.5">
+                <span className="text-[15px] font-semibold text-(--color-foreground)">
+                  {label}
+                </span>
+                {hasNew && <NewMark />}
               </span>
               <span className="shrink-0 text-xs font-medium text-(--color-text-secondary) tabular-nums">
                 Level {earnedCount} of {levels.length}
@@ -152,16 +160,19 @@ const AchievementTrackRow = memo(function AchievementTrackRow({
                 decorative
               />
               <div className="min-w-0 flex-1">
-                <p
-                  className={cn(
-                    'text-sm font-semibold',
-                    level.isEarned
-                      ? 'text-(--color-foreground)'
-                      : 'text-(--color-text-secondary)',
-                  )}
-                >
-                  {level.name}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <p
+                    className={cn(
+                      'text-sm font-semibold',
+                      level.isEarned
+                        ? 'text-(--color-foreground)'
+                        : 'text-(--color-text-secondary)',
+                    )}
+                  >
+                    {level.name}
+                  </p>
+                  {newIds.has(level.id) && <NewMark />}
+                </div>
                 <span className="block text-xs text-(--color-text-secondary)">
                   {level.description}
                 </span>

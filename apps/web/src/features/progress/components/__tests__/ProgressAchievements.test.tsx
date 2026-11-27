@@ -61,7 +61,11 @@ const achievements: Achievement[] = [
 describe('ProgressAchievements', () => {
   it('lists one row per track, in the tracks order', () => {
     render(
-      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
 
     const tracks = within(screen.getByRole('list', { name: 'Tracks' }))
@@ -74,7 +78,11 @@ describe('ProgressAchievements', () => {
 
   it('lists one-off achievements as badges, earned first', () => {
     render(
-      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
 
     const badges = within(
@@ -92,7 +100,11 @@ describe('ProgressAchievements', () => {
 
   it('has no category tabs', () => {
     render(
-      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
 
     expect(
@@ -101,8 +113,34 @@ describe('ProgressAchievements', () => {
   });
 
   it('says so when there are no achievements to show', () => {
-    render(<ProgressAchievements achievements={[]} currentStreak={0} />);
+    render(
+      <ProgressAchievements
+        achievements={[]}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
+    );
 
     expect(screen.getByText('No achievements to show')).toBeInTheDocument();
+  });
+
+  it('marks a badge earned since the last visit', () => {
+    render(
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set(['early_bird'])}
+      />,
+    );
+
+    const badges = within(screen.getByRole('list', { name: 'Badges' }));
+    const earlyBird = badges
+      .getAllByRole('listitem')
+      .find((badge) => within(badge).queryByText('Early Bird'));
+    const socialButterfly = badges
+      .getAllByRole('listitem')
+      .find((badge) => within(badge).queryByText('Social Butterfly'));
+    expect(within(earlyBird!).getByText('New')).toBeVisible();
+    expect(within(socialButterfly!).queryByText('New')).not.toBeInTheDocument();
   });
 });

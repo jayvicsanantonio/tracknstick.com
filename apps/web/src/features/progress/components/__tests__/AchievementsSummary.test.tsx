@@ -65,6 +65,7 @@ function renderSummary(
     onToggleList: vi.fn(),
     currentStreak: 0,
     onSelectNextUp: vi.fn(),
+    newCount: 0,
     ...overrides,
   };
   render(<AchievementsSummary {...props} />);
@@ -79,6 +80,18 @@ describe('AchievementsSummary', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Achievements earned' }),
     ).toHaveAttribute('aria-valuenow', '20');
+  });
+
+  it('counts the achievements earned since the last visit', () => {
+    renderSummary({ newCount: 2 });
+
+    expect(screen.getByText('2 new')).toBeInTheDocument();
+  });
+
+  it('shows no new count when nothing is new', () => {
+    renderSummary();
+
+    expect(screen.queryByText(/ new$/)).not.toBeInTheDocument();
   });
 
   it('lists the three unearned achievements closest to being earned, closest first', () => {

@@ -88,6 +88,18 @@ describe('useAchievements', () => {
     expect(getAllAchievements).toHaveBeenCalledWith('America/Los_Angeles');
   });
 
+  it('asks for nothing when it is not enabled', async () => {
+    const getStats = vi
+      .spyOn(achievementApi, 'getAchievementStats')
+      .mockResolvedValue(stats);
+    const { result } = renderHook(() => useAchievements(false), { wrapper });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(getAllAchievements).not.toHaveBeenCalled();
+    expect(getStats).not.toHaveBeenCalled();
+    expect(result.current.achievements).toEqual([]);
+  });
+
   it('reports an error, and no achievements, when loading fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     getAllAchievements.mockRejectedValue(new Error('Network Error'));
