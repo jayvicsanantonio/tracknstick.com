@@ -81,6 +81,11 @@ export const manageTrackerSchema = z.object({
    * completed, whatever it was before. Left out, the request toggles the day.
    */
   completed: z.boolean().optional(),
+  /**
+   * When the user tapped the check-in, which can be well before the request
+   * arrives when it was made offline. Time-of-day achievements read it.
+   */
+  tappedAt: z.iso.datetime().optional(),
 });
 
 export const getHabitStatsSchema = z.object({

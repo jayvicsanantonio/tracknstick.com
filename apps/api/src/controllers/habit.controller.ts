@@ -169,7 +169,7 @@ export const getTrackers = async (c: Context<AppEnv>) => {
 export const manageTracker = async (c: Context<AppEnv>) => {
   const { userId } = c.get('auth');
   const { habitId } = getValidated(c, 'param', habitIdParamSchema);
-  const { timestamp, timeZone, notes, completed } = getValidated(
+  const { timestamp, timeZone, notes, completed, tappedAt } = getValidated(
     c,
     'json',
     manageTrackerSchema
@@ -183,7 +183,8 @@ export const manageTracker = async (c: Context<AppEnv>) => {
       timeZone,
       notes,
       c.env.DB,
-      completed
+      completed,
+      tappedAt
     );
 
     if (result.status === 'added') {

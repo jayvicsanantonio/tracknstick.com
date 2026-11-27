@@ -5,7 +5,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
 import {
-  applyMigrations,
+  applyMigrationFile,
   createMigratedDatabase,
   listMigrationFiles,
 } from './realD1.js';
@@ -96,7 +96,9 @@ describe('migrated database', () => {
       .bind('user_existing')
       .run();
 
-    await applyMigrations(db);
+    // Wrangler runs each later file once; only the baseline meets a database
+    // that already has the schema. ADD COLUMN, for one, cannot run twice.
+    await applyMigrationFile(db, '0001_initial_schema.sql');
 
     const user = await db
       .prepare('SELECT clerk_user_id FROM users WHERE clerk_user_id = ?')
@@ -130,7 +132,7 @@ describe('the leftover knex tables', () => {
       ),
     ]);
 
-    await applyMigrations(db);
+    await applyMigrationFile(db, '0002_drop_knex_tables.sql');
 
     const tables = await namesOf(db, 'table');
     expect(tables).not.toContain('knex_migrations');

@@ -114,6 +114,22 @@ describe('pending completions', () => {
       expect(pendingCompletions()).toEqual([]);
     });
 
+    it('sends the time the change was tapped, kept with it', async () => {
+      const post = vi
+        .spyOn(axiosInstance, 'post')
+        .mockResolvedValue({ data: { message: 'ok' } });
+      queueCompletion(change({ tappedAt: '2026-11-23T06:30:00.000Z' }));
+
+      await sendPendingCompletions('user_1');
+
+      expect(post).toHaveBeenCalledWith('/api/v1/habits/7/trackers', {
+        timestamp: '2026-11-23T16:00:00.000Z',
+        timeZone: 'UTC',
+        completed: true,
+        tappedAt: '2026-11-23T06:30:00.000Z',
+      });
+    });
+
     it("drops another user's changes without sending them", async () => {
       const post = vi.spyOn(axiosInstance, 'post');
       queueCompletion(change({ userId: 'user_2' }));

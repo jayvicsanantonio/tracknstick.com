@@ -6,7 +6,7 @@ SET description = 'Check off a habit before 8 AM on 7 days'
 WHERE key = 'early_bird';
 
 UPDATE achievements
-SET description = 'Check off a habit after 10 PM on 7 days'
+SET description = 'Check off a habit at 10 PM or later on 7 days'
 WHERE key = 'night_owl';
 
 UPDATE achievements

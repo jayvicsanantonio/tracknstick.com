@@ -15,21 +15,29 @@ export function listMigrationFiles(): string[] {
 }
 
 /**
- * Runs every migration file against the database, in order.
+ * Runs one migration file against the database.
  *
  * Line comments are removed and statements are split on ';'. That is enough
  * for plain DDL and DML. A migration with ';' or '--' inside a string literal,
  * or with a trigger body, would need a real SQL splitter here.
  */
+export async function applyMigrationFile(
+  db: D1Database,
+  file: string
+): Promise<void> {
+  const statements = readFileSync(new URL(file, MIGRATIONS_DIR), 'utf8')
+    .replace(/--.*$/gm, '')
+    .split(';')
+    .map((statement) => statement.trim())
+    .filter(Boolean);
+
+  await db.batch(statements.map((statement) => db.prepare(statement)));
+}
+
+/** Runs every migration file against the database, in order. */
 export async function applyMigrations(db: D1Database): Promise<void> {
   for (const file of listMigrationFiles()) {
-    const statements = readFileSync(new URL(file, MIGRATIONS_DIR), 'utf8')
-      .replace(/--.*$/gm, '')
-      .split(';')
-      .map((statement) => statement.trim())
-      .filter(Boolean);
-
-    await db.batch(statements.map((statement) => db.prepare(statement)));
+    await applyMigrationFile(db, file);
   }
 }
 

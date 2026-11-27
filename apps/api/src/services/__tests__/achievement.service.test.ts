@@ -300,6 +300,27 @@ describe('AchievementService', () => {
       expect(await valueOf(userId, 'early_bird', 'UTC')).toBe(1);
     });
 
+    it('reads the tap time the app sent over the time the check-in arrived', async () => {
+      const userId = 'user_ach_tapped_at';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      // Tapped at 06:30 in Tokyo while offline, sent at 22:30 that night.
+      const timestamp = `${utcDateDaysAgo(3)}T21:30:00.000Z`;
+      await addCheckIn(
+        userId,
+        read,
+        timestamp,
+        `${utcDateDaysAgo(2)}T13:30:00.000Z`
+      );
+      await db
+        .prepare('UPDATE trackers SET tapped_at = ? WHERE habit_id = ?')
+        .bind(timestamp, read)
+        .run();
+
+      expect(await valueOf(userId, 'early_bird')).toBe(1);
+      expect(await valueOf(userId, 'night_owl')).toBe(0);
+    });
+
     it('counts days with a check-in tapped after 10 PM on that same day', async () => {
       const userId = 'user_ach_night_owl';
       await addUser(userId);

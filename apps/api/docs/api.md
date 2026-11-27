@@ -66,7 +66,8 @@ those. The catalogue comes from migration `0003_seed_achievements.sql`.
 Achievements measure the same figures as `/progress/summary`, every day in
 the `timeZone` given: the streak (days on which every habit due was
 completed), active days, perfect days, the most habits done in one day,
-days with a check-in tapped before 8 AM or after 10 PM on the day it is for,
+days with a check-in tapped before 8 AM, or at 10 PM or later, on the day it
+is for (`tappedAt` on the tracker request, else when the request arrived),
 weekend days, and returns after a break.
 `GET /` leaves out any
 achievement with no metric in `services/achievementMetrics.ts`, which could

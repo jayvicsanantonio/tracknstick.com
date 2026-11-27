@@ -10,7 +10,7 @@ describe('achievement descriptions', () => {
     ['perfect_month', 'Have 30 perfect days, when you complete every habit'],
     ['time_traveler', 'Check in on 180 different days'],
     ['early_bird', 'Check off a habit before 8 AM on 7 days'],
-    ['night_owl', 'Check off a habit after 10 PM on 7 days'],
+    ['night_owl', 'Check off a habit at 10 PM or later on 7 days'],
     ['weekend_warrior', 'Check in on 8 weekend days'],
   ])('describes %s by what it counts', async (key, description) => {
     const row = await env.DB.prepare(

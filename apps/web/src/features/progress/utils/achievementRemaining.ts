@@ -46,7 +46,7 @@ export function describeRemaining(
     case 'early_morning':
       return `${left} more ${plural(left, 'day')} before 8 AM`;
     case 'late_night':
-      return `${left} more ${plural(left, 'day')} after 10 PM`;
+      return `${left} more ${plural(left, 'day')} at 10 PM or later`;
     case 'weekend_only':
       return `${left} more weekend ${plural(left, 'day')}`;
     // One return earns these; a count of what is left says nothing.

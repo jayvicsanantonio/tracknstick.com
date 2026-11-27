@@ -520,14 +520,15 @@ export async function createTracker(
   userId: string,
   habitId: number | string,
   timestamp: string,
-  notes?: string
+  notes?: string,
+  tappedAt?: string
 ): Promise<number> {
   const result = await db
     .prepare(
-      `INSERT INTO trackers (habit_id, user_id, timestamp, notes)
-       VALUES (?, ?, ?, ?)`
+      `INSERT INTO trackers (habit_id, user_id, timestamp, notes, tapped_at)
+       VALUES (?, ?, ?, ?, ?)`
     )
-    .bind(habitId, userId, timestamp, notes || null)
+    .bind(habitId, userId, timestamp, notes || null, tappedAt ?? null)
     .run();
 
   if (!result.success) {

@@ -134,7 +134,7 @@ describe('describeRemaining', () => {
 
   it.each([
     ['early_morning', 3, 7, '4 more days before 8 AM'],
-    ['late_night', 6, 7, '1 more day after 10 PM'],
+    ['late_night', 6, 7, '1 more day at 10 PM or later'],
     ['weekend_only', 5, 8, '3 more weekend days'],
   ])('counts the %s days left', (type, current, target, expected) => {
     expect(

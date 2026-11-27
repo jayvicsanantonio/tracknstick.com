@@ -639,7 +639,8 @@ export async function getUserLifetimeStats(
         .bind(userId),
       db
         .prepare(
-          `SELECT habit_id, timestamp, created_at
+          `SELECT habit_id, timestamp,
+                  COALESCE(tapped_at, created_at) AS tapped_at
            FROM trackers
            WHERE user_id = ? AND deleted_at IS NULL`
         )
@@ -667,7 +668,7 @@ export async function getUserLifetimeStats(
     const trackers = trackersResult.results as {
       habit_id: number;
       timestamp: string;
-      created_at: string | null;
+      tapped_at: string | null;
     }[];
 
     const dateKeyFormatter = new Intl.DateTimeFormat('en-CA', { timeZone });
@@ -703,11 +704,12 @@ export async function getUserLifetimeStats(
       }
       habitDates.add(dateKey);
 
-      // The time of day is when the check-in was tapped (created_at), which
-      // counts only when tapped on the day it is for: `timestamp` holds the
-      // time the app was opened, and a day checked off later says nothing
-      // about the morning or night it was for.
-      const tappedAt = parseInstant(tracker.created_at);
+      // The time of day is when the check-in was tapped: tapped_at, as the
+      // app sent it, or created_at for check-ins from before it did. It counts
+      // only when tapped on the day it is for: `timestamp` holds the time the
+      // app was opened, and a day checked off later says nothing about the
+      // morning or night it was for.
+      const tappedAt = parseInstant(tracker.tapped_at);
       if (tappedAt && dateKeyFormatter.format(tappedAt) === dateKey) {
         const hour = Number(hourFormatter.format(tappedAt));
         if (hour < EARLY_BEFORE_HOUR) earlyDates.add(dateKey);

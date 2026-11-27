@@ -246,7 +246,8 @@ export const manageTracker = async (
   timeZone: string,
   notes?: string,
   db?: D1Database,
-  completed?: boolean
+  completed?: boolean,
+  tappedAt?: string
 ): Promise<TrackerResult> => {
   if (!db) {
     throw new Error('Database instance is required');
@@ -297,12 +298,19 @@ export const manageTracker = async (
         message: 'Habit marked as not completed',
       };
     } else {
+      // A tap cannot come after the request that reports it.
+      const now = new Date();
+      const tappedAtKept =
+        tappedAt && Date.parse(tappedAt) > now.getTime()
+          ? now.toISOString()
+          : tappedAt;
       const trackerId = await habitRepository.createTracker(
         db,
         userId,
         habitId,
         timestamp,
-        notes
+        notes,
+        tappedAtKept
       );
       result = {
         status: 'added',
