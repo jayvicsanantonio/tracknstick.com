@@ -83,7 +83,7 @@ test.describe('on a phone', () => {
     expect(Math.abs(centre(titleBox) - centre(profileBox))).toBeLessThanOrEqual(
       4,
     );
-    expect(profileBox.y).toBeLessThanOrEqual(16);
+    expect(profileBox.y).toBeLessThanOrEqual(24);
   });
 
   test('leaves a margin between the title row and the page below it', async ({

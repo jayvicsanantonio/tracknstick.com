@@ -127,7 +127,7 @@ function TrackerSkeleton() {
           <div className="pb-3.5 sm:pb-0">
             <div className="ios-tracker-card-until-lg h-12 w-full animate-pulse rounded-2xl motion-reduce:animate-none sm:h-[52px] lg:bg-(--color-brand-primary)/8" />
           </div>
-          <div className="flex flex-1 items-center justify-center pt-3 pb-7 sm:py-8 lg:py-3">
+          <div className="flex flex-1 items-center justify-center pt-3 pb-4 sm:py-8 lg:py-3">
             <div className="size-56 animate-pulse rounded-full bg-(--color-brand-primary)/12 motion-reduce:animate-none min-[390px]:size-64 sm:size-68 md:size-72 lg:size-52" />
           </div>
           <div className="hidden h-[58px] animate-pulse rounded-2xl bg-(--color-brand-primary)/8 motion-reduce:animate-none lg:block" />
@@ -614,7 +614,7 @@ export default function DailyHabitTracker() {
                   aria-label="Progress"
                   style={dayMotionStyle}
                   className={cn(
-                    'relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center pt-3 pb-7 sm:py-8 lg:py-3',
+                    'relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center pt-3 pb-4 sm:py-8 lg:py-3',
                     isDayLoading && 'pointer-events-none',
                   )}
                 >
