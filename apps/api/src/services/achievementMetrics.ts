@@ -6,12 +6,18 @@ import type { UserHabitStats } from '../repositories/achievement.repository.js';
 
 /**
  * Everything an achievement rule can measure, read once per request. The
- * streaks count days on which every scheduled habit was done, in the user's
- * time zone, as the progress summary does.
+ * streaks and the day counts come from the progress summary, every day in
+ * the user's time zone, so achievements agree with the Progress page.
  */
 export interface UserStatsSnapshot extends UserHabitStats {
   currentStreak: number;
   longestStreak: number;
+  /** Days with at least one check-in. */
+  activeDays: number;
+  /** Days on which every scheduled habit was done. */
+  perfectDays: number;
+  /** The most habits checked off on any one day. */
+  maxHabitsInOneDay: number;
 }
 
 type Metric = (s: UserStatsSnapshot) => number;

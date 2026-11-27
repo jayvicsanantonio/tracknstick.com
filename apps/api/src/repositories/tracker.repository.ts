@@ -547,6 +547,11 @@ export async function getUserStreaks(
   }
 }
 
+/** The lifetime summary, plus the most habits done on any one day. */
+export interface UserLifetimeStats extends ProgressSummaryResponse {
+  mostHabitsInOneDay: number;
+}
+
 /**
  * Computes all-time lifetime progress metrics since the user started using the app.
  * Reads user, habits, and tracker rows in a single D1 batch transaction and walks
@@ -558,6 +563,22 @@ export async function getUserProgressSummary(
   userId: string,
   timeZone = 'UTC'
 ): Promise<ProgressSummaryResponse> {
+  // The response is exactly the summary contract, without the extra count.
+  const { mostHabitsInOneDay: _mostHabitsInOneDay, ...summary } =
+    await getUserLifetimeStats(db, userId, timeZone);
+  return summary;
+}
+
+/**
+ * The lifetime summary's figures, every day counted in the user's time zone,
+ * and the most habits done on any one of those days. Achievements measure
+ * these, so they always agree with the Progress page.
+ */
+export async function getUserLifetimeStats(
+  db: D1Database,
+  userId: string,
+  timeZone = 'UTC'
+): Promise<UserLifetimeStats> {
   try {
     if (!isValidTimeZone(timeZone)) {
       console.warn(`Invalid timezone "${timeZone}", falling back to UTC`);
@@ -682,6 +703,10 @@ export async function getUserProgressSummary(
 
     const totalCompletions = trackers.length;
     const activeDays = trackersByDate.size;
+    let mostHabitsInOneDay = 0;
+    for (const completedOnDay of trackersByDate.values()) {
+      mostHabitsInOneDay = Math.max(mostHabitsInOneDay, completedOnDay.size);
+    }
 
     if (!earliestHabitStart) {
       return {
@@ -693,6 +718,7 @@ export async function getUserProgressSummary(
         overallCompletionRate: null,
         activeHabitsCount,
         memberSince,
+        mostHabitsInOneDay,
       };
     }
 
@@ -765,6 +791,7 @@ export async function getUserProgressSummary(
       overallCompletionRate,
       activeHabitsCount,
       memberSince,
+      mostHabitsInOneDay,
     };
   } catch (error) {
     console.error('Error calculating user progress summary:', error);

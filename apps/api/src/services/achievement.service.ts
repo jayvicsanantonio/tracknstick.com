@@ -3,7 +3,7 @@
 
 import type { D1Database } from '@cloudflare/workers-types';
 import { AchievementRepository } from '../repositories/achievement.repository.js';
-import { getUserStreaks } from '../repositories/tracker.repository.js';
+import { getUserLifetimeStats } from '../repositories/tracker.repository.js';
 import {
   TRACKS,
   isMeasurable,
@@ -118,15 +118,18 @@ export class AchievementService {
     userId: string,
     timeZone: string
   ): Promise<UserStatsSnapshot> {
-    const [stats, streaks] = await Promise.all([
+    const [stats, lifetime] = await Promise.all([
       this.repository.getUserHabitStats(userId),
-      getUserStreaks(this.db, userId, timeZone),
+      getUserLifetimeStats(this.db, userId, timeZone),
     ]);
 
     return {
       ...stats,
-      currentStreak: streaks.currentStreak,
-      longestStreak: streaks.longestStreak,
+      currentStreak: lifetime.currentStreak,
+      longestStreak: lifetime.longestStreak,
+      activeDays: lifetime.activeDays,
+      perfectDays: lifetime.perfectDays,
+      maxHabitsInOneDay: lifetime.mostHabitsInOneDay,
     };
   }
 
