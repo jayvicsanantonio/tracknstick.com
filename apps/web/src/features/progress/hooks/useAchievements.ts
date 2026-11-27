@@ -15,7 +15,8 @@ const logLoadError = (err: unknown) => {
   console.error('Error fetching achievements:', err);
 };
 
-export function useAchievements() {
+/** The achievements and their stats; `enabled` false skips both requests. */
+export function useAchievements(enabled = true) {
   const dateContext = useContext(DateContext);
   const timeZone =
     dateContext?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -25,7 +26,7 @@ export function useAchievements() {
     isLoading: achievementsLoading,
     mutate: mutateAchievements,
   } = useSWR<Achievement[], Error>(
-    [achievementsKey, timeZone],
+    enabled ? [achievementsKey, timeZone] : null,
     () => achievementApi.getAllAchievements(timeZone),
     { onError: logLoadError },
   );
@@ -35,7 +36,7 @@ export function useAchievements() {
     isLoading: statsLoading,
     mutate: mutateStats,
   } = useSWR<AchievementStats, Error>(
-    achievementStatsKey,
+    enabled ? achievementStatsKey : null,
     () => achievementApi.getAchievementStats(),
     { onError: logLoadError },
   );

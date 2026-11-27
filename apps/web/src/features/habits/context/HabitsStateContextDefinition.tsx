@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import type { AwardedAchievementResponse } from '@tracknstick/contracts';
 import { Habit, HabitPayload } from '@/features/habits/types/Habit';
 
 export type EditHabitTab = 'edit' | 'stats';
@@ -19,6 +20,12 @@ export interface HabitsStateContextValue {
   showEditHabitDialog: boolean;
   toggleShowEditHabitDialog: () => void;
   openEditDialog: (habit: Habit, initialTab?: EditHabitTab) => void;
+  /** Newly earned achievements still to celebrate, the one shown first. */
+  achievementCelebrations: AwardedAchievementResponse[];
+  /** Queues achievements a check just awarded for the celebration sheet. */
+  celebrateAchievements: (achievements: AwardedAchievementResponse[]) => void;
+  /** Moves past the achievement being celebrated. */
+  dismissAchievementCelebration: () => void;
 }
 
 export const HabitsStateContext = createContext<HabitsStateContextValue | null>(

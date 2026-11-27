@@ -45,6 +45,8 @@ import { findNextDueDate } from '@/features/habits/utils/nextDueDate';
 import MobileNavBar from '@/features/layout/components/MobileNavBar';
 import PageHeader from '@/features/layout/components/PageHeader';
 import useProgressSummary from '@/features/progress/hooks/useProgressSummary';
+import { useAchievements } from '@/features/progress/hooks/useAchievements';
+import { checkInHint } from '@/features/progress/utils/achievementHint';
 import { DateContext } from '@app/providers/DateContext';
 import { Button } from '@shared/components/ui/button';
 import { IosHapticTarget } from '@shared/components/ui/ios-haptic-target';
@@ -217,6 +219,11 @@ export default function DailyHabitTracker() {
   const isBestStreak = currentStreak > 0 && currentStreak >= longestStreak;
 
   const doneCount = habits.filter((habit) => habit.completed).length;
+
+  // Each habit checked off is a check-in, so the habits left can earn the
+  // next check-ins level. Skipped without DateContext, as the summary is.
+  const { achievements } = useAchievements(Boolean(dateContext));
+  const achievementHint = checkInHint(achievements, habits.length - doneCount);
   const hasNoHabits =
     !isLoading &&
     habits.length === 0 &&
@@ -738,6 +745,15 @@ export default function DailyHabitTracker() {
                             {doneCount}/{habits.length} done
                           </span>
                         </div>
+
+                        {achievementHint && (
+                          <div className="-mt-2 mb-3 flex justify-center sm:-mt-1">
+                            <p className="inline-flex items-center gap-1.5 rounded-full bg-(--color-brand-primary)/10 px-3 py-1.5 text-xs font-semibold text-(--color-brand-text) ring-1 ring-(--color-brand-primary)/18 ring-inset dark:text-(--color-brand-text-light)">
+                              <Trophy aria-hidden="true" className="size-3.5" />
+                              {achievementHint}
+                            </p>
+                          </div>
+                        )}
 
                         <div className="my-auto py-1 lg:py-2">
                           <DailyHabitList />

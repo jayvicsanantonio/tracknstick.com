@@ -61,7 +61,11 @@ const achievements: Achievement[] = [
 describe('ProgressAchievements', () => {
   it('lists one row per track, in the tracks order', () => {
     render(
-      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
 
     const tracks = within(screen.getByRole('list', { name: 'Tracks' }))
@@ -74,7 +78,11 @@ describe('ProgressAchievements', () => {
 
   it('lists one-off achievements as badges, earned first', () => {
     render(
-      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
 
     const badges = within(
@@ -92,7 +100,11 @@ describe('ProgressAchievements', () => {
 
   it('has no category tabs', () => {
     render(
-      <ProgressAchievements achievements={achievements} currentStreak={0} />,
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
     );
 
     expect(
@@ -101,8 +113,29 @@ describe('ProgressAchievements', () => {
   });
 
   it('says so when there are no achievements to show', () => {
-    render(<ProgressAchievements achievements={[]} currentStreak={0} />);
+    render(
+      <ProgressAchievements
+        achievements={[]}
+        currentStreak={0}
+        newIds={new Set()}
+      />,
+    );
 
     expect(screen.getByText('No achievements to show')).toBeInTheDocument();
+  });
+
+  it('marks a badge earned since the last visit', () => {
+    render(
+      <ProgressAchievements
+        achievements={achievements}
+        currentStreak={0}
+        newIds={new Set(['early_bird'])}
+      />,
+    );
+
+    const [earlyBird] = within(
+      screen.getByRole('list', { name: 'Badges' }),
+    ).getAllByRole('listitem');
+    expect(within(earlyBird).getByText('New')).toBeVisible();
   });
 });

@@ -7,6 +7,7 @@ import {
 } from 'react';
 import useSWR, { mutate } from 'swr';
 import { useToast } from '@shared/hooks/use-toast';
+import { useHabitsContext } from './useHabitsContext';
 import { useDate } from '@app/providers/useDate';
 import { triggerHaptic } from '@shared/utils/haptics';
 import { playHabitSound } from '@shared/utils/sound';
@@ -28,7 +29,11 @@ import {
   removeCompletion,
   subscribeToPendingCompletions,
 } from '@/features/habits/api/pendingCompletions';
-import { achievementApi } from '@/features/progress/api';
+import {
+  achievementApi,
+  achievementsKey,
+  achievementStatsKey,
+} from '@/features/progress/api';
 import { useAuth } from '@clerk/clerk-react';
 import {
   lastSignedInUserId,
@@ -41,6 +46,17 @@ const mutateProgressCaches = () =>
     (key) =>
       Array.isArray(key) &&
       (key[0] === 'progressSummary' || key[0] === 'progressHistory'),
+  );
+
+/**
+ * Revalidates cached achievements and their stats after a check: each check
+ * changes the counts they measure, and the Tracker's hint reads them.
+ */
+const mutateAchievementCaches = () =>
+  mutate(
+    (key) =>
+      key === achievementStatsKey ||
+      (Array.isArray(key) && key[0] === achievementsKey),
   );
 
 interface UseHabitsReturn {
@@ -61,6 +77,7 @@ interface UseHabitsReturn {
 }
 export function useHabits(): UseHabitsReturn {
   const { toast } = useToast();
+  const { celebrateAchievements } = useHabitsContext();
   const [timeoutId, setTimeoutId] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
@@ -76,21 +93,16 @@ export function useHabits(): UseHabitsReturn {
   const checkAchievements = useCallback(async () => {
     try {
       const result = await achievementApi.checkAchievements(timeZone);
+      void mutateAchievementCaches();
       if (result.count > 0) {
         triggerHaptic('achievement', { androidOnly: true });
-        // Show toast for new achievements
-        result.newAchievements.forEach((achievement) => {
-          toast({
-            title: '🏆 Achievement Earned!',
-            description: `${achievement.name}: ${achievement.description}`,
-            duration: 5000,
-          });
-        });
+        // Celebrate each new achievement in its own sheet
+        celebrateAchievements(result.newAchievements);
       }
     } catch (error) {
       console.error('Failed to check achievements:', error);
     }
-  }, [toast, timeZone]);
+  }, [celebrateAchievements, timeZone]);
 
   const habitsEndpointKey =
     date && isSignedIn ? habitsForDateKey(date, timeZone) : null;

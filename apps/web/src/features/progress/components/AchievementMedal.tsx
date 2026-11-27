@@ -24,7 +24,7 @@ interface AchievementMedalProps {
   /** The medal earned, or null before any is. */
   medal: Medal | null;
   Icon: LucideIcon;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
   /** Hidden from screen readers when the text beside it says the same. */
   decorative?: boolean;
 }
@@ -44,7 +44,7 @@ const AchievementMedal = memo(function AchievementMedal({
       aria-hidden={decorative ? true : undefined}
       className={cn(
         'flex shrink-0 items-center justify-center rounded-full',
-        size === 'sm' ? 'size-8' : 'size-11',
+        size === 'sm' ? 'size-8' : size === 'lg' ? 'size-24' : 'size-11',
         medal
           ? cn(
               MEDAL_FILL[medal],
@@ -55,7 +55,9 @@ const AchievementMedal = memo(function AchievementMedal({
     >
       <Icon
         aria-hidden="true"
-        className={size === 'sm' ? 'size-4' : 'size-5'}
+        className={
+          size === 'sm' ? 'size-4' : size === 'lg' ? 'size-11' : 'size-5'
+        }
       />
     </span>
   );

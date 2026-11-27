@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useContext, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react';
 import { WifiOff } from 'lucide-react';
 import ProgressHeroSummary from '@/features/progress/components/ProgressHeroSummary';
 import ProgressGettingStarted from '@/features/progress/components/ProgressGettingStarted';
@@ -24,6 +25,7 @@ import { cn } from '@shared/utils/utils';
 import useProgressHistory from '../hooks/useProgressHistory';
 import useProgressSummary from '../hooks/useProgressSummary';
 import { useAchievements } from '../hooks/useAchievements';
+import { useNewAchievements } from '../hooks/useNewAchievements';
 
 // Unified brand-harmonized elevated panel surface across phone, tablet, and desktop.
 const PANEL = 'ios-tracker-card rounded-[26px] p-5 sm:p-6';
@@ -58,6 +60,8 @@ const ProgressOverview = memo(function ProgressOverview() {
     loading: achievementsLoading,
     error: achievementsError,
   } = useAchievements();
+  const { userId } = useAuth();
+  const newAchievementIds = useNewAchievements(achievements, userId);
   useHoldSplash(isSummaryLoading || isHistoryLoading);
 
   const loadFailed = Boolean(historyError ?? summaryError);
@@ -96,6 +100,7 @@ const ProgressOverview = memo(function ProgressOverview() {
       onToggleList={handleToggleAchievements}
       currentStreak={currentStreak}
       onSelectNextUp={handleSelectNextUp}
+      newCount={newAchievementIds.size}
     />
   );
 
@@ -218,6 +223,7 @@ const ProgressOverview = memo(function ProgressOverview() {
                 <ProgressAchievements
                   achievements={achievements}
                   currentStreak={currentStreak}
+                  newIds={newAchievementIds}
                 />
               </section>
             )}
@@ -256,6 +262,7 @@ const ProgressOverview = memo(function ProgressOverview() {
             <ProgressAchievements
               achievements={achievements}
               currentStreak={currentStreak}
+              newIds={newAchievementIds}
             />
           </div>
         </IosSheet>

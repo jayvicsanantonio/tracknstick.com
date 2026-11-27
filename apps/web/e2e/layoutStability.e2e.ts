@@ -4,13 +4,8 @@
 // The scripts below that run in the page use the browser's types.
 /// <reference lib="dom" />
 
-import {
-  expect,
-  test,
-  type Browser,
-  type Page,
-  type TestInfo,
-} from '@playwright/test';
+import { type Browser, type Page, type TestInfo } from '@playwright/test';
+import { expect, test } from './signedInTest';
 import { AUTH_FILE } from './authFile';
 
 const EVERY_DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

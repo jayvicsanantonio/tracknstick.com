@@ -8,6 +8,7 @@ import { parseUTCTimestamp } from '@shared/utils/date/formatDate';
 import { Achievement } from '../types/Achievement';
 import AchievementMedal from './AchievementMedal';
 import AchievementTrackRow from './AchievementTrackRow';
+import NewMark from './NewMark';
 import { getAchievementIcon } from '../utils/achievementIcons';
 import { groupAchievements } from '../utils/achievementTracks';
 import { formatEarnedDate } from '../utils/formatEarnedDate';
@@ -19,6 +20,8 @@ interface ProgressAchievementsProps {
   achievements: Achievement[];
   /** The streak running now, which the streak track counts from. */
   currentStreak: number;
+  /** Ids of achievements earned since the last visit, marked new. */
+  newIds: ReadonlySet<string>;
 }
 
 /** When an achievement was earned, for ordering; 0 when there is no date. */
@@ -41,6 +44,7 @@ function byBadgeOrder(a: Achievement, b: Achievement): number {
 const ProgressAchievements = memo(function ProgressAchievements({
   achievements,
   currentStreak,
+  newIds,
 }: ProgressAchievementsProps) {
   if (achievements.length === 0) {
     return (
@@ -69,6 +73,7 @@ const ProgressAchievements = memo(function ProgressAchievements({
                 <AchievementTrackRow
                   group={group}
                   currentStreak={currentStreak}
+                  newIds={newIds}
                 />
               </li>
             ))}
@@ -96,9 +101,12 @@ const ProgressAchievements = memo(function ProgressAchievements({
                   decorative
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-(--color-foreground)">
-                    {badge.name}
-                  </p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-(--color-foreground)">
+                      {badge.name}
+                    </p>
+                    {newIds.has(badge.id) && <NewMark />}
+                  </div>
                   <span className="block text-xs text-(--color-text-secondary)">
                     {badge.description}
                   </span>

@@ -16,6 +16,9 @@ import useProgressSummary from '../../hooks/useProgressSummary';
 
 vi.mock('../../hooks/useProgressHistory', () => ({ default: vi.fn() }));
 vi.mock('../../hooks/useProgressSummary', () => ({ default: vi.fn() }));
+vi.mock('@clerk/clerk-react', () => ({
+  useAuth: () => ({ userId: 'user_1' }),
+}));
 const mockAchievements = vi.hoisted(() => ({ list: [] as Achievement[] }));
 vi.mock('../../hooks/useAchievements', () => ({
   useAchievements: () => ({
@@ -83,6 +86,7 @@ describe('ProgressOverview', () => {
   afterEach(() => {
     vi.useRealTimers();
     mockAchievements.list = [];
+    localStorage.clear();
   });
 
   it('shows the all-time lifetime progress hero summary across viewports', () => {
@@ -357,6 +361,33 @@ describe('ProgressOverview', () => {
     expect(screen.getByText('Tracker')).toBeInTheDocument();
     const [day] = setDate.mock.calls[0];
     expect(day.toDateString()).toBe(new Date().toDateString());
+  });
+
+  it('counts the achievements earned since the last visit', () => {
+    localStorage.setItem(
+      'track-n-stick-seen-achievements:user_1',
+      JSON.stringify(['1']),
+    );
+    const earned = (id: string, name: string): Achievement => ({
+      id,
+      key: id,
+      name,
+      description: `${name} description`,
+      type: 'completion',
+      category: 'dedication',
+      requirementType: 'count',
+      requirementValue: 1,
+      isEarned: true,
+      earnedAt: '2026-11-20 12:00:00',
+    });
+    mockAchievements.list = [
+      earned('1', 'First Step'),
+      earned('2', 'Getting Active'),
+    ];
+
+    renderOverview();
+
+    expect(screen.getByText('1 new')).toBeInTheDocument();
   });
 
   it('shows an error instead of the progress when the history fails to load', () => {
