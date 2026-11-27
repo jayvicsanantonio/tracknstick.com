@@ -1,5 +1,5 @@
 // Runs the achievement service against a real local D1 database.
-// Covers which streak and days the achievements count, the user's time zone, and hiding unmeasurable achievements.
+// Covers what the achievements count, in the user's time zone, and hiding unmeasurable achievements.
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
@@ -138,15 +138,15 @@ describe('AchievementService', () => {
   it('leaves out achievements it cannot measure, unless already earned', async () => {
     const userId = 'user_ach_unmeasurable';
     await addUser(userId);
-    await earn(userId, 'early_bird');
+    await earn(userId, 'habit_legend');
 
     const achievements = await service.getAllAchievementsForUser(userId, 'UTC');
     const keys = achievements.map((a) => a.key);
     const hidden = Object.keys(UNMEASURABLE).filter(
-      (key) => key !== 'early_bird'
+      (key) => key !== 'habit_legend'
     );
 
-    expect(keys).toContain('early_bird');
+    expect(keys).toContain('habit_legend');
     expect(keys).toContain('streak_7');
     for (const key of hidden) {
       expect(keys, key).not.toContain(key);
@@ -242,5 +242,139 @@ describe('AchievementService', () => {
     expect(value('perfect_month')).toBe(summary.perfectDays);
     expect(value('streak_7')).toBe(summary.longestStreak);
     expect(value('completions_50')).toBe(summary.totalCompletions);
+  });
+
+  describe('one-off achievements', () => {
+    // Tokyo keeps no daylight saving time, so each hour below is exact.
+    const TOKYO = 'Asia/Tokyo';
+
+    /** A check-in for the day of `timestamp`, tapped at `createdAt`. */
+    async function addCheckIn(
+      userId: string,
+      habitId: number,
+      timestamp: string,
+      createdAt = timestamp
+    ) {
+      await db
+        .prepare(
+          `INSERT INTO trackers (habit_id, user_id, timestamp, created_at)
+           VALUES (?, ?, ?, ?)`
+        )
+        .bind(
+          habitId,
+          userId,
+          timestamp,
+          createdAt.replace('T', ' ').slice(0, 19)
+        )
+        .run();
+    }
+
+    async function valueOf(userId: string, key: string, timeZone = TOKYO) {
+      const achievements = await service.getAllAchievementsForUser(
+        userId,
+        timeZone
+      );
+      return achievements.find((a) => a.key === key)?.progress?.currentValue;
+    }
+
+    it('counts days with a check-in tapped before 8 AM on that same day', async () => {
+      const userId = 'user_ach_early_bird';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      // 21:30 UTC is 06:30 the next morning in Tokyo.
+      for (const day of [5, 4, 3]) {
+        await addCheckIn(userId, read, `${utcDateDaysAgo(day)}T21:30:00.000Z`);
+      }
+      // Tapped early, but for a day a week before: not an early check-in.
+      await addCheckIn(
+        userId,
+        read,
+        `${utcDateDaysAgo(9)}T03:00:00.000Z`,
+        `${utcDateDaysAgo(2)}T21:30:00.000Z`
+      );
+      // Noon in Tokyo.
+      await addCheckIn(userId, read, `${utcDateDaysAgo(1)}T03:00:00.000Z`);
+
+      expect(await valueOf(userId, 'early_bird')).toBe(3);
+      // In UTC only the noon check-in, at 03:00 there, is early.
+      expect(await valueOf(userId, 'early_bird', 'UTC')).toBe(1);
+    });
+
+    it('reads the tap time the app sent over the time the check-in arrived', async () => {
+      const userId = 'user_ach_tapped_at';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      // Tapped at 06:30 in Tokyo while offline, sent at 22:30 that night.
+      const timestamp = `${utcDateDaysAgo(3)}T21:30:00.000Z`;
+      await addCheckIn(
+        userId,
+        read,
+        timestamp,
+        `${utcDateDaysAgo(2)}T13:30:00.000Z`
+      );
+      await db
+        .prepare('UPDATE trackers SET tapped_at = ? WHERE habit_id = ?')
+        .bind(timestamp, read)
+        .run();
+
+      expect(await valueOf(userId, 'early_bird')).toBe(1);
+      expect(await valueOf(userId, 'night_owl')).toBe(0);
+    });
+
+    it('counts days with a check-in tapped after 10 PM on that same day', async () => {
+      const userId = 'user_ach_night_owl';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      // 13:30 UTC is 22:30 in Tokyo.
+      for (const day of [4, 2]) {
+        await addCheckIn(userId, read, `${utcDateDaysAgo(day)}T13:30:00.000Z`);
+      }
+      // 12:59 UTC is 21:59 in Tokyo.
+      await addCheckIn(userId, read, `${utcDateDaysAgo(3)}T12:59:00.000Z`);
+
+      expect(await valueOf(userId, 'night_owl')).toBe(2);
+    });
+
+    it('counts the weekend days with a check-in', async () => {
+      const userId = 'user_ach_weekend_warrior';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      // Saturday 7, Sunday 8 and Tuesday 10 November 2026, at noon in Tokyo.
+      for (const date of ['2026-11-07', '2026-11-08', '2026-11-10']) {
+        await addCheckIn(userId, read, `${date}T03:00:00.000Z`);
+      }
+
+      expect(await valueOf(userId, 'weekend_warrior')).toBe(2);
+    });
+
+    it('counts the times a habit was checked off again after 7 days or more without it', async () => {
+      const userId = 'user_ach_comeback_kid';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      const run = await addHabit(userId, 'Run');
+      // Read: a break of 9 days, from the 2nd to the 12th.
+      for (const date of ['2026-11-01', '2026-11-02', '2026-11-12']) {
+        await addCheckIn(userId, read, `${date}T03:00:00.000Z`);
+      }
+      // Run: a break of 6 days, from the 2nd to the 9th, is too short.
+      for (const date of ['2026-11-02', '2026-11-09']) {
+        await addCheckIn(userId, run, `${date}T03:00:00.000Z`);
+      }
+
+      expect(await valueOf(userId, 'comeback_kid')).toBe(1);
+    });
+
+    it('counts the returns after 30 days or more with no check-in at all', async () => {
+      const userId = 'user_ach_phoenix';
+      await addUser(userId);
+      const read = await addHabit(userId, 'Read');
+      // 33 days away, from 1 September to 5 October; then 29 days away, to
+      // 4 November, which is too short.
+      for (const date of ['2026-09-01', '2026-10-05', '2026-11-04']) {
+        await addCheckIn(userId, read, `${date}T03:00:00.000Z`);
+      }
+
+      expect(await valueOf(userId, 'phoenix')).toBe(1);
+    });
   });
 });

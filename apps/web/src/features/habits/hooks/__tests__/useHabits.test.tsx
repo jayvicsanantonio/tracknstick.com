@@ -126,9 +126,19 @@ describe('useHabits', () => {
       .mockResolvedValue({ message: 'ok' });
     const { result } = await renderTracker();
 
+    const before = Date.now();
     await act(() => result.current.toggleHabit('7'));
 
-    expect(toggle).toHaveBeenCalledWith('7', DATE, 'UTC', true);
+    // The last argument is when the user tapped, for time-of-day achievements.
+    expect(toggle).toHaveBeenCalledWith(
+      '7',
+      DATE,
+      'UTC',
+      true,
+      expect.any(Date),
+    );
+    const tappedAt: Date = toggle.mock.calls[0][4]!;
+    expect(tappedAt.getTime()).toBeGreaterThanOrEqual(before);
     expect(triggerHaptic).toHaveBeenCalledWith('allDoneSingle');
   });
 
@@ -149,6 +159,7 @@ describe('useHabits', () => {
         timestamp: DATE.toISOString(),
         timeZone: 'UTC',
         completed: true,
+        tappedAt: expect.any(String) as string,
       },
     ]);
     expect(mockToast).toHaveBeenCalledWith({

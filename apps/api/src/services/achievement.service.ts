@@ -130,6 +130,11 @@ export class AchievementService {
       activeDays: lifetime.activeDays,
       perfectDays: lifetime.perfectDays,
       maxHabitsInOneDay: lifetime.mostHabitsInOneDay,
+      earlyDays: lifetime.earlyDays,
+      lateDays: lifetime.lateDays,
+      weekendDays: lifetime.weekendDays,
+      habitComebacks: lifetime.habitComebacks,
+      longComebacks: lifetime.longComebacks,
     };
   }
 

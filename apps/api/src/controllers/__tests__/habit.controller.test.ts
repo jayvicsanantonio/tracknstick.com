@@ -198,6 +198,7 @@ describe('Habit Controller', () => {
         requestData.timeZone,
         requestData.notes,
         mockDB,
+        undefined,
         undefined
       );
 
@@ -207,6 +208,35 @@ describe('Habit Controller', () => {
           message: 'Tracker added',
         },
         201
+      );
+    });
+
+    it('passes the tap time the app sends to the service', async () => {
+      mockContext.jsonData = {
+        timestamp: '2023-06-15T10:00:00Z',
+        timeZone: 'UTC',
+        completed: true,
+        tappedAt: '2023-06-15T06:30:00Z',
+      };
+      mockContext.paramData = { habitId: '1' };
+
+      vi.mocked(habitService.manageTracker).mockResolvedValue({
+        status: 'added',
+        trackerId: '1',
+        message: 'Habit marked as completed',
+      });
+
+      await habitController.manageTracker(mockContext as Context);
+
+      expect(habitService.manageTracker).toHaveBeenCalledWith(
+        mockClerkUserId,
+        '1',
+        '2023-06-15T10:00:00Z',
+        'UTC',
+        undefined,
+        mockDB,
+        true,
+        '2023-06-15T06:30:00Z'
       );
     });
 
@@ -232,7 +262,8 @@ describe('Habit Controller', () => {
         'UTC',
         undefined,
         mockDB,
-        false
+        false,
+        undefined
       );
       expect(mockContext.json).toHaveBeenCalledWith(
         { message: 'Habit already not completed' },

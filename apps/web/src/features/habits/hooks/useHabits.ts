@@ -278,6 +278,10 @@ export function useHabits(): UseHabitsReturn {
         false,
       );
 
+      // When the user tapped: kept with a change saved on the device, so it
+      // keeps its time of day however late it is sent.
+      const tappedAt = new Date();
+
       // Offline, before Clerk loads, the last visit's user makes the change.
       const changedBy = userId ?? lastSignedInUserId();
       const change =
@@ -289,12 +293,19 @@ export function useHabits(): UseHabitsReturn {
               timestamp: date.toISOString(),
               timeZone,
               completed,
+              tappedAt: tappedAt.toISOString(),
             }
           : null;
 
       try {
         if (!date) throw new Error('Date context is not available');
-        await apiToggleHabitCompletion(habitId, date, timeZone, completed);
+        await apiToggleHabitCompletion(
+          habitId,
+          date,
+          timeZone,
+          completed,
+          tappedAt,
+        );
         // Saved: an earlier change to this day, kept offline, is outdated.
         if (change) removeCompletion(change);
         void mutateHabits();

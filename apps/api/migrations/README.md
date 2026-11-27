@@ -21,6 +21,10 @@ fails if a file here is not named like `0002_add_something.sql`.
   change to the catalogue is a new migration that upserts the changed rows.
 - `0004_reword_achievement_descriptions.sql` - Rewords the descriptions of
   Perfect Week, Perfect Month and Time Traveler to say what they count.
+- `0005_reword_time_of_day_achievements.sql` - Rewords the descriptions of
+  Early Bird, Night Owl and Weekend Warrior, which count days, not runs.
+- `0006_add_tracker_tapped_at.sql` - Adds `trackers.tapped_at`, when the app
+  says a check-in was tapped, so one sent later keeps its time of day.
 
 ## Changing the Schema
 

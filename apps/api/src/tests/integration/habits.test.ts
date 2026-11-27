@@ -214,5 +214,56 @@ describe('Habits API Integration', () => {
       expect(res.status).toBe(200);
       expect(await completionsOf(habitId)).toBe(0);
     });
+
+    async function tappedAtOf(habitId: string) {
+      const row = await env.DB.prepare(
+        'SELECT tapped_at FROM trackers WHERE habit_id = ?'
+      )
+        .bind(Number(habitId))
+        .first();
+      return row.tapped_at;
+    }
+
+    it('keeps when the check-in was tapped, as the app sends it', async () => {
+      const habitId = await createHabit('user_tapped_at');
+
+      const res = await send('POST', `/habits/${habitId}/trackers`, {
+        timestamp,
+        timeZone: 'UTC',
+        completed: true,
+        tappedAt: '2026-11-23T06:45:00.000Z',
+      });
+
+      expect(res.status).toBe(201);
+      expect(await tappedAtOf(habitId)).toBe('2026-11-23T06:45:00.000Z');
+    });
+
+    it('keeps no later tap time than the moment the request arrives', async () => {
+      const habitId = await createHabit('user_tapped_at_future');
+      const before = Date.now();
+
+      await send('POST', `/habits/${habitId}/trackers`, {
+        timestamp,
+        timeZone: 'UTC',
+        completed: true,
+        tappedAt: '2099-01-01T00:00:00.000Z',
+      });
+
+      const stored = Date.parse(await tappedAtOf(habitId));
+      expect(stored).toBeGreaterThanOrEqual(before);
+      expect(stored).toBeLessThanOrEqual(Date.now());
+    });
+
+    it('keeps no tap time when the app sends none', async () => {
+      const habitId = await createHabit('user_no_tapped_at');
+
+      await send('POST', `/habits/${habitId}/trackers`, {
+        timestamp,
+        timeZone: 'UTC',
+        completed: true,
+      });
+
+      expect(await tappedAtOf(habitId)).toBeNull();
+    });
   });
 });

@@ -106,6 +106,9 @@ export const toggleHabitCompletion = async (
   date: Date,
   timeZone: string,
   completed: boolean,
+  // When the user tapped, which time-of-day achievements read; a change sent
+  // later from the device keeps its own.
+  tappedAt?: Date,
 ): Promise<ToggleTrackerResponse> => {
   const response = await axiosInstance.post<ToggleTrackerResponse>(
     `/api/v1/habits/${habitId}/trackers`,
@@ -113,6 +116,7 @@ export const toggleHabitCompletion = async (
       timestamp: date.toISOString(),
       timeZone,
       completed,
+      ...(tappedAt ? { tappedAt: tappedAt.toISOString() } : {}),
     },
   );
 

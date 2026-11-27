@@ -15,6 +15,8 @@ export interface PendingCompletion {
   timestamp: string;
   timeZone: string;
   completed: boolean;
+  /** When the user tapped; left out by changes kept before it was recorded. */
+  tappedAt?: string;
 }
 
 const STORAGE_KEY = 'track-n-stick-pending-completions';
@@ -114,6 +116,7 @@ export async function sendPendingCompletions(userId: string): Promise<void> {
         new Date(change.timestamp),
         change.timeZone,
         change.completed,
+        change.tappedAt ? new Date(change.tappedAt) : undefined,
       );
       removeCompletion(change);
     } catch (error) {
